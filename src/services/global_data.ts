@@ -1,11 +1,12 @@
 // 全局对象 单例
 
 interface GlobalProps {
-  name: string
+  name: string,
 }
 
 class GlobalObj implements GlobalProps {
   name: string;
+  columnList = []
   constructor (name) {
     this.name = name
   }

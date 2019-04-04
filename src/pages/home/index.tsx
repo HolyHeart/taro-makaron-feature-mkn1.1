@@ -1,6 +1,6 @@
 import { ComponentClass } from 'react'
 import Taro, { Component, Config } from '@tarojs/taro'
-import { View, Button, Text } from '@tarojs/components'
+import { View } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 
 import globalData from '../../services/global_data'
@@ -12,6 +12,8 @@ import Title from '../../components/Title'
 import CustomIcon from '../../components/Icon'
 import CategoryItem from '../../components/CategoryItem'
 import AuthModal from '../../components/AuthModal'
+import { core } from '../../services/service'
+import Session from '../../services/session'
 
 
 // console.log('mock_data', mock_data)
@@ -50,7 +52,7 @@ interface Home {
 }))
 class Home extends Component {
   config: Config = {
-    navigationBarTitleText: '马卡龙玩图-taro'
+    navigationBarTitleText: '马卡龙玩图'
   }
 
   state = {
@@ -62,13 +64,10 @@ class Home extends Component {
     const {getSystemInfo} = this.props
     const systemInfo = Taro.getSystemInfoSync()
     getSystemInfo(systemInfo)
-
-    const categoryList =  this.getCategotyList(mock_data.result)
-    this.setState({
-      categoryList
-    })
   }
-  componentDidMount () { }
+  componentDidMount () {
+    this._initPage()
+  }
   componentWillReceiveProps (nextProps) {
     // console.log(this.props, nextProps)  
   }
@@ -78,6 +77,18 @@ class Home extends Component {
   componentDidShow () { }
 
   componentDidHide () { }
+
+  _initPage = async () => {
+    await Session.set()
+    if (globalData.columnList && globalData.columnList.length === 0) {
+      const columnData = await core.column()
+      globalData.columnList = (columnData.result && columnData.result.result) || []
+      console.log('columnData', columnData, globalData)
+    }
+    this.setState({
+      categoryList: globalData.columnList
+    })
+  }
 
   getCategotyList (data: Array<any>) {
     const list = []
@@ -196,18 +207,25 @@ class Home extends Component {
             <image src={bg} mode="widthFix" style="width:100%;height:100%"/>
           </View>
           <View className="main-container">
-            <View className="category-wrap">
-             {
-               categoryList.map(item => {
-                 return <CategoryItem 
-                    onGetUserInfo={this.handleGetUserInfo}
-                    key={item.themeId} 
-                    url={item.generalShowUrl || ''}
-                    onClick={this.handleChooseTheme.bind(this, item)}
-                  />
-               })
-             }
-            </View>
+            {
+              categoryList.map(column => {
+                return (
+                  <View className='category-wrap' key={column.columnId}>
+                    {
+                      (column.themeList || []).map(item => {
+                        return <CategoryItem 
+                          column={column.columnNum === 1 ? 1 : 2}
+                          onGetUserInfo={this.handleGetUserInfo}
+                          key={item.themeId} 
+                          url={item.generalShowUrl || ''}
+                          onClick={this.handleChooseTheme.bind(this, item)}
+                        />
+                      })
+                    }
+                  </View>
+                )
+              })
+            }            
           </View>
         </View> 
         {showAuth && <AuthModal onClick={this.closeAuthModal}/>}

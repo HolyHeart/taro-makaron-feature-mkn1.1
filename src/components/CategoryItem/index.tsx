@@ -10,7 +10,8 @@ type ComponentStateProps = {}
 type ComponentOwnProps = {
   onGetUserInfo: (data:any) => void,
   onClick?: () => void,
-  url: string
+  url: string,
+  column: number
 }
 
 type ComponentState = {}
@@ -23,7 +24,8 @@ interface CategotyItem {
 
 class CategotyItem extends Component {
   static defaultProps = {
-    url: loading
+    url: loading,
+    column: 2
   }
   componentWillReceiveProps (nextProps) {
     // console.log(this.props, nextProps)
@@ -33,9 +35,9 @@ class CategotyItem extends Component {
     onGetUserInfo(data)
   }
   render() {
-    const { onClick, url } = this.props
+    const { onClick, url, column } = this.props
     return (
-      <View className="category-box" onClick={onClick}>                             
+      <View className={`category-box ${column === 2 ? 'two' : 'one'}`} onClick={onClick}>                             
         <Button 
           className="category-box-button"
           hoverClass="btn-hover" 

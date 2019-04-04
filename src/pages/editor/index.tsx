@@ -188,7 +188,9 @@ class Editor extends Component {
     this.initSceneData(() => {
       this.initCoverData()
     })    
-    this.initSegment()
+    const separateResult = globalData.separateResult = await this.initSegment()
+    console.log('separateResult', separateResult)
+    await this.initSeparateData(separateResult)
   }
 
   test = async () => {
@@ -291,35 +293,15 @@ class Editor extends Component {
       getSystemInfo(systemInfo)
     }
   }
-  initRawImage = () => {    
+  initRawImage = () => {
     const {rawImage} = this.state
+    globalData.choosedImage = globalData.choosedImage || 'http://tmp/wxcfe56965f4d986f0.o6zAJsztn2DIgXEGteELseHpiOtU.6gRGsIZIvyytf45cffd60a62912bada466d51e03f6fa.jpg'
     this.setState({
       rawImage: {
         ...rawImage,
         localUrl: globalData.choosedImage
       }
     })
-  }
-  // 初始化分割
-  initSegment = async () => {
-    const {foreground} = this.state   
-    let segmentData
-    try {   
-      Taro.showLoading({
-        title: '照片变身中...',
-        mask: true,
-      })
-      segmentData = await service.core.segmentDemo(globalData.choosedImage, mock_segment_url , 3000)
-      Taro.hideLoading()
-    } catch(err) {
-      console.log('catch', err)
-    }     
-    this.setState({      
-      foreground: {
-        ...foreground,
-        remoteUrl: segmentData.result
-      }
-    })    
   }
   // 初始化场景信息
   initSceneData = async (callback) => {
@@ -362,6 +344,73 @@ class Editor extends Component {
     // console.log('initCoverData cover', cover, coverList)
   }
   
+  // 初始化分割
+  initSegment = async () => {     
+    let separateRes
+    try {
+      separateRes = await service.core.separateLocalImg(globalData.choosedImage, {
+        type: -1,
+        loading: true,
+        showLoading: () => {
+          console.log('showLoading')
+          Taro.showLoading({
+            title: '照片变身中...',
+            mask: true,
+          })
+        },
+        hideLoading: () => {
+          console.log('hideLoading')
+          Taro.hideLoading()
+        }
+      })
+      const {cateImageDict = {}} = separateRes.result || {}
+      if (!cateImageDict['16'] && !cateImageDict['16-1']) {
+        console.log('技术犯规了')
+        // Taro.redirectTo({url: '/pages/home/index'})       
+        return 
+      } 
+    } catch(err) {
+      console.log('catch', err)
+      return {}
+    }
+    return (separateRes && separateRes.result) || {}
+  }
+
+  initSeparateData = async (separateResult) => {  
+    const { currentScene, foreground } = this.state 
+    this.changeSceneChooseSegment(currentScene, separateResult, (res = {}) => {      
+      this.setState({      
+        foreground: {
+          ...foreground,
+          remoteUrl: res.separateUrl
+        }
+      }) 
+    }) 
+  }
+
+  // 根据场景决定头像
+  async changeSceneChooseSegment (currentScene, separateResult = {}, callback) {    
+    const { imageHost } = appConfig
+    if (!separateResult.cateImageDict) {
+      return
+    }
+    // 判断分离的是全身还是头像
+    let separateUrl = ''
+    let separateMaskUrl = ''
+    if (currentScene.segmentType === 1) {
+      separateUrl = imageHost + separateResult.cateImageDict['16-1']
+      separateMaskUrl = imageHost + separateResult.maskImageDict['16-1']
+    } else {
+      separateUrl = imageHost + separateResult.cateImageDict['16']
+      separateMaskUrl = imageHost + separateResult.maskImageDict['16']
+    }
+    typeof callback === 'function' && callback({
+      separateUrl,
+      separateMaskUrl
+    })    
+  }
+
+ 
   // 背景
   handleBackgroundClick = () => {
     this.setForegroundActiveStatus(false)

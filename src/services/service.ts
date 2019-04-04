@@ -3,21 +3,21 @@ import Taro from '@tarojs/taro'
 import {commonRequest, request} from './http'
 import { api } from './api.config'
 import tool from '@/utils/tool'
+import { cacheSegment, cacheImg } from './cache'
 
 interface segmentData {
   clientType: string;
   timestamp: string;
   imageUrl: string;
-  segmentType?: string;
+  segmentType?: number;
 }
 
 interface separateOptionsData {
-  type: string;
-  loading: boolean;
-  showLoading?: ()=>{};
-  hideLoading?: ()=>{};
+  type?: number;
+  loading?: boolean;
+  showLoading?(): void;
+  hideLoading?(): void;
 }
-
 
 export const base = {
   uploadToken: function () {    
@@ -87,7 +87,7 @@ export const base = {
   }
 }
 export const core = {
-  segment: function (remoteImgUrl, segmentType) {
+  segment: function (remoteImgUrl, segmentType?:number) {
     let postData:segmentData = {
       clientType: 'mini-program',
       timestamp: Date.now().toString(),
@@ -130,9 +130,76 @@ export const core = {
       }, time)
     })
   },
-  separateLocalImg: function (localImgPath:string = '', options:separateOptionsData) {
+  separateLocalImg:  async function (localImgPath:string = '', options:separateOptionsData = {}) {
     // 上传本地图片并分割图片
     // options = { type, loading, showLoading, hideLoading, }
+    // 判断是否在缓存里   
+    let keyType = ''  // all表示人 head表示头 -1表示全部
+    switch (options.type) {
+      case -1:
+        keyType = 'all'
+        break
+      case 0:
+        keyType = 'body'
+        break
+      case 1:
+        keyType = 'head'
+        break
+      default:
+        keyType = 'all'
+    }
+    const cacheKey = `local_${localImgPath}_separate_type_${keyType}`
+    if (cacheSegment.get(cacheKey)) {
+      console.log('cacheSegment', cacheKey, cacheSegment.get(cacheKey))
+      return cacheSegment.get(cacheKey)
+    }
+    // 先上传到静态服务器
+    let remoteImageUrl = ''
+    // 判断是否有远程图片地址
+    const cacheRemoteUrlKey = `${localImgPath}_remoteUrl`
+    if (cacheImg.get(cacheRemoteUrlKey)) {
+      remoteImageUrl = cacheImg.get(cacheRemoteUrlKey)
+    } else {
+      try {
+        if (options.loading) {
+          typeof options.showLoading === 'function' && options.showLoading()
+        }
+        const {picurl} = await base.upload(localImgPath, 'png')
+        remoteImageUrl = cacheImg.set(cacheRemoteUrlKey, picurl)
+      } catch (err) {
+        console.log('上传图片失败', err)
+      }
+    } 
+     // 最后进行人景分离
+    let separateData
+    try {
+      if (options.loading) {
+        typeof options.showLoading === 'function' && options.showLoading()
+      }        
+      if (options.type === 0 || options.type === 1) {
+        separateData = await core.segment(remoteImageUrl, options.type)
+      } else {
+        separateData = await core.segment(remoteImageUrl)
+      }    
+      if (options.loading) {
+        typeof options.hideLoading === 'function' && options.hideLoading()
+      }    
+    } catch (err) {
+      console.log('人景分离失败', err)
+      if (options.loading) {
+        typeof options.hideLoading === 'function' && options.hideLoading()
+      }
+      Taro.showToast({
+        title: '分离照片失败',
+        icon: 'fail',
+        duration: 3000
+      })
+      return 
+    }
+    // 存储分割缓存
+    return cacheSegment.set(cacheKey, {
+      ...separateData.result
+    })
   }
 }
 

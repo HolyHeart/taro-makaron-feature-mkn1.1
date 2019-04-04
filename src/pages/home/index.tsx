@@ -100,8 +100,14 @@ class Home extends Component {
     return list
   }
 
-  handleChooseTheme = (item: object) => {
-    // console.log('handleChooseTheme', item)    
+  handleChooseTheme = async (item: object) => {
+    console.log('handleChooseTheme', item)  
+    globalData.themeId = item.themeId   
+    globalData.themeData = null
+    if (globalData.themeId) {
+      const res = await core.theme(globalData.themeId)
+      globalData.themeData = res.result && res.result.result 
+    }
   }
 
   handleGetUserInfo = (data) => {
@@ -121,11 +127,11 @@ class Home extends Component {
 
   todo = () => {
     this.showActionSheet((path)=>{
-      console.log('choosedImage', path)    
+      console.log('choosedImage', path, globalData)    
       globalData.choosedImage = path
-      Taro.redirectTo({
-        url: '/pages/dynamic/index'
-      })   
+      // Taro.redirectTo({
+      //   url: '/pages/editor/index'
+      // })   
     })
   }
 

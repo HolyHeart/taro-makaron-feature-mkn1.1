@@ -3,17 +3,17 @@ import Taro, { Component, Config } from '@tarojs/taro'
 import { View } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 
-import globalData from '../../services/global_data'
-import { getSystemInfo } from '../../model/actions/global'
-import './index.less'
-import bg from '../../assets/images/bg.png'
+import globalData from '@/services/global_data'
+import { getSystemInfo } from '@/model/actions/global'
+import bg from '@/assets/images/bg.png'
+import Title from '@/components/Title'
+import CustomIcon from '@/components/Icon'
+import CategoryItem from '@/components/CategoryItem'
+import AuthModal from '@/components/AuthModal'
+import { core } from '@/services/service'
+import Session from '@/services/session'
 import mock_data from './mock.json'
-import Title from '../../components/Title'
-import CustomIcon from '../../components/Icon'
-import CategoryItem from '../../components/CategoryItem'
-import AuthModal from '../../components/AuthModal'
-import { core } from '../../services/service'
-import Session from '../../services/session'
+import './index.less'
 
 
 // console.log('mock_data', mock_data)
@@ -176,7 +176,7 @@ class Home extends Component {
           })
         }		
       }
-    })
+    }).catch(err => console.log(err))
   }
 
   showAuthModal = (flag = false) => {
@@ -214,7 +214,7 @@ class Home extends Component {
                     {
                       (column.themeList || []).map(item => {
                         return <CategoryItem 
-                          column={column.columnNum === 1 ? 1 : 2}
+                          column={column.columnNum}
                           onGetUserInfo={this.handleGetUserInfo}
                           key={item.themeId} 
                           url={item.generalShowUrl || ''}

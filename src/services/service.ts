@@ -2,7 +2,7 @@
 import Taro from '@tarojs/taro'
 import {commonRequest, request} from './http'
 import { api } from './api.config'
-import tool from '../utils/tool'
+import tool from '@/utils/tool'
 
 interface segmentData {
   clientType: string;
@@ -10,6 +10,14 @@ interface segmentData {
   imageUrl: string;
   segmentType?: string;
 }
+
+interface separateOptionsData {
+  type: string;
+  loading: boolean;
+  showLoading?: ()=>{};
+  hideLoading?: ()=>{};
+}
+
 
 export const base = {
   uploadToken: function () {    
@@ -102,6 +110,16 @@ export const core = {
       data: data,
     })
   },
+  theme: function (themeId) {    
+    return request({
+      url: api.core.theme,
+      method: 'GET',
+      data: {},
+      params: {
+        themeId
+      }
+    })    
+  },
   segmentDemo: function (rawImgUrl, resImgUrl, time = 100) {
     console.log('分割图片：', rawImgUrl)
     return new Promise((resolve) => {
@@ -111,6 +129,10 @@ export const core = {
         })
       }, time)
     })
+  },
+  separateLocalImg: function (localImgPath:string = '', options:separateOptionsData) {
+    // 上传本地图片并分割图片
+    // options = { type, loading, showLoading, hideLoading, }
   }
 }
 

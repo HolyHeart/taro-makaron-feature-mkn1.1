@@ -31,7 +31,8 @@ export const api = {
   },
   core: {
     segment: `${getHost('miniapi', ENV)}/segment/instance/original`,
-    column: `${getHost('miniapi', ENV)}/bg/column/theme/list`
+    column: `${getHost('miniapi', ENV)}/bg/column/theme/list`,
+    theme: `${getHost('miniapi', ENV)}/bg/:themeId/themeData`, // ${getHost()}/bg/${themeId}/themeData
   }
 }
 export default {

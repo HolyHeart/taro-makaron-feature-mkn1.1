@@ -2,11 +2,20 @@
 
 interface GlobalProps {
   name: string,
+  choosedImage: string,
+  userInfo: object,
+  columnList: Array<object>,
+  themeId: string,
+  themeData: any,
 }
 
 class GlobalObj implements GlobalProps {
   name: string;
+  choosedImage = ''
+  userInfo = {}
   columnList = []
+  themeId = ''
+  themeData = null
   constructor (name) {
     this.name = name
   }

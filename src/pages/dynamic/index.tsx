@@ -3,19 +3,20 @@ import Taro, { Component, Config } from '@tarojs/taro'
 import { View, Button, Image, Canvas } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 
-import globalData from '../../services/global_data'
-import { getSystemInfo } from '../../model/actions/global'
-import tool from '../../utils/tool'
-import {createCache} from '../../services/cache'
-import './index.less'
-import Title from '../../components/Title'
-import CustomIcon from '../../components/Icon'
-import Sticker from '../../components/Sticker'
-import SceneList from '../../components/SceneList'
-import ResultModal from '../../components/ResultModal'
-
-import service from '../../services/service'
+import { getSystemInfo } from '@/model/actions/global'
+import tool from '@/utils/tool'
+import Title from '@/components/Title'
+import CustomIcon from '@/components/Icon'
+import Sticker from '@/components/Sticker'
+import SceneList from '@/components/SceneList'
+import ResultModal from '@/components/ResultModal'
+import globalData from '@/services/global_data'
+import Session from '@/services/session'
+import service from '@/services/service'
+import { appConfig } from '@/services/config'
+import { createCache } from '@/services/cache'
 import mock_theme_data from './mock_theme_data.json'
+import './index.less'
 
 const mock_path = 'https://static01.versa-ai.com/upload/783272fc1375/999deac02e85f3ea.png'
 const mock_segment_url = 'https://static01.versa-ai.com/images/process/segment/2019/01/14/b4cf047a-17a5-11e9-817f-00163e001583.png'
@@ -28,7 +29,17 @@ const getSceneList = function (sceneList:Array<object> = []) {
       const {music = {}} = JSON.parse(sceneConfig)
       supportMusic = music.fileUrl ? true : false
     } 
-    result.push({bgUrl, sceneId, sceneName, shareContent, thumbnailUrl, sceneConfig, segmentType, segmentZIndex, bgZIndex, supportMusic})
+    result.push({
+      bgUrl, 
+      sceneId, 
+      sceneName, 
+      shareContent, 
+      thumbnailUrl, 
+      sceneConfig, 
+      segmentType, 
+      segmentZIndex, 
+      bgZIndex, 
+      supportMusic})
   })
   return result
 }
@@ -161,22 +172,24 @@ class Dynamic extends Component {
     this.initSystemInfo()    
   }
   componentDidMount () { 
+    this._initPage()
+  }
+  componentWillReceiveProps (nextProps) {
+    // console.log(this.props, nextProps)  
+  }
+  componentWillUnmount () { }
+  componentDidShow () { }
+  componentDidHide () { }
+
+  _initPage = async () => {
     this.calFrameRect()
     this.initRawImage()
+    await Session.set()
     this.initSceneData(() => {
       this.initCoverData()
     })    
     this.initSegment()
   }
-  componentWillReceiveProps (nextProps) {
-    // console.log(this.props, nextProps)  
-  }
-
-  componentWillUnmount () { }
-
-  componentDidShow () { }
-
-  componentDidHide () { }
 
   test = async () => {
     // try {
@@ -309,9 +322,15 @@ class Dynamic extends Component {
     })    
   }
   // 初始化场景信息
-  initSceneData = (callback) => {
+  initSceneData = async (callback) => {
     // 全局主题数据
-    const themeData = mock_theme_data.result
+    if (!globalData.themeData) {
+      const themeId = globalData.themeId || appConfig.themeId
+      const res = await service.core.theme(themeId)
+      globalData.themeData = res.result && res.result.result   
+    }
+    // const themeData = mock_theme_data.result
+    const themeData = globalData.themeData || {sceneList: []}
     this.themeData.sceneList = getSceneList(themeData.sceneList || [])
 
     // 去除sceneConfig属性

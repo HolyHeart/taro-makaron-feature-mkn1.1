@@ -48,7 +48,8 @@ const formatRawCoverList = (list:Array<any> = []) => {
       zIndex: 0,
       fixed: false,
       isActive: false,
-      visible: false
+      visible: false,
+      deleted: false
     }
     cover_model.remoteUrl = v.imageUrl
     cover_model.id = v.id
@@ -56,10 +57,11 @@ const formatRawCoverList = (list:Array<any> = []) => {
     cover_model.fixed = v.fixed || false
     cover_model.isActive = v.isActive || false
     cover_model.visible = true
+    cover_model.deleted = false
     return cover_model
   })
 }
-  // 下载照片并存储到本地
+// 下载照片并存储到本地
 const downloadRemoteImage = async (remoteUrl = '') => {
   // 判断是否在缓存里
   const cacheKey = `remoteUrl_${remoteUrl}_localPath`
@@ -77,6 +79,21 @@ const downloadRemoteImage = async (remoteUrl = '') => {
   console.log('downloadRemoteImage', cacheKey, localImagePath)
   return cacheImg.set(cacheKey, localImagePath)
 }
+const calcVideoSize = (maxWidth = 306, maxHeight = 408, width, height) => {
+  const frame_ratio = maxWidth / maxHeight
+  const video_ratio = width / height
+  if ( frame_ratio < video_ratio ) {
+    width = maxWidth
+    height = width / video_ratio
+  } else {
+    height = maxHeight
+    width = height * video_ratio
+  }
+  return {
+    width,
+    height
+  }
+}
 
 const work = {
   pageToHome,
@@ -84,6 +101,7 @@ const work = {
   getSceneInfoById,
   getCoverInfoById,
   formatRawCoverList,
-  downloadRemoteImage
+  downloadRemoteImage,
+  calcVideoSize
 }
 export default work

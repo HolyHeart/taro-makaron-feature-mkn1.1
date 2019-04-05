@@ -33,6 +33,7 @@ export const api = {
     segment: `${getHost('miniapi', ENV)}/segment/instance/original`,
     column: `${getHost('miniapi', ENV)}/bg/column/theme/list`,
     theme: `${getHost('miniapi', ENV)}/bg/:themeId/themeData`, // ${getHost()}/bg/${themeId}/themeData
+    filterConvertVideo: `${getHost('miniapi', ENV)}/video/merge`,
   }
 }
 export default {

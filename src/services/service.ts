@@ -200,6 +200,19 @@ export const core = {
     return cacheSegment.set(cacheKey, {
       ...separateData.result
     })
+  },
+  filterConvertVideo: function (videoParams:string = '') {
+    let postData = {
+      clientType: 'mini-program',
+      timestamp: Date.now().toString(),
+      videoConfig: videoParams
+    }     
+    return request({
+      url: api.core.filterConvertVideo,
+      method: 'POST',
+      header: {'content-type': 'application/x-www-form-urlencoded'},
+      data: postData,
+    })    
   }
 }
 

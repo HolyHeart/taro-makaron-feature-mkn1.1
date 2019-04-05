@@ -84,7 +84,11 @@ type PageState = {
   music: {
     remoteUrl: string,
     play: boolean,
-  }
+  },
+  currentScene: {
+    bgUrl: string
+  },
+  videoRatio: number
 }
 
 type IProps = PageStateProps & PageDispatchProps & PageOwnProps
@@ -135,6 +139,7 @@ class Dynamic extends Component {
       fixed: false, // 是否固定
       isActive: true, // 是否激活
       visible: true, // 是否显示
+      loaded: false, // 是否加载完毕
     },
     coverList: [
       // {
@@ -154,6 +159,7 @@ class Dynamic extends Component {
       // fixed: false, // 是否固定
       // isActive: false, // 是否激活
       // visible: true, // 是否显示
+      // deleted: false, // 是否删除
       // }
     ],
     music: {
@@ -161,11 +167,19 @@ class Dynamic extends Component {
       play: true
     },
     sceneList: [],
-    currentScene: {},    
+    currentScene: {
+      bgUrl: '', // ...
+    },    
     result: {
       show: false,
-      url: '',
-    }
+      shareVideoRemoteUrl: '',
+      shareImageRemoteUrl: '',
+      shareVideoInfo: {
+        width: 0,
+        height: 0
+      }
+    },
+    videoRatio: 2
   }
 
   // 全局主题数据
@@ -181,6 +195,8 @@ class Dynamic extends Component {
   }
 
   innerAudioContext = Taro.createInnerAudioContext()
+
+  isSaving = false // 是否正在保存
 
   componentWillMount () {
     this.initSystemInfo()    
@@ -202,13 +218,16 @@ class Dynamic extends Component {
   componentDidHide () { }
 
   _initPage = async () => {
+    globalData.choosedImage = globalData.choosedImage || 'http://tmp/wxcfe56965f4d986f0.o6zAJsztn2DIgXEGteELseHpiOtU.6gRGsIZIvyytf45cffd60a62912bada466d51e03f6fa.jpg'
     this.calFrameRect()
     this.initRawImage()
     await Session.set()
     this.initSceneData(() => {
       this.initCoverData()
     })    
-    this.initSegment()
+    const separateResult = globalData.separateResult = await this.initSegment()
+    console.log('separateResult', separateResult)
+    await this.initSeparateData(separateResult)
   }
 
   test = async () => {
@@ -270,11 +289,83 @@ class Dynamic extends Component {
     if (type === 'play') {
       setTimeout(()=>{
         this.innerAudioContext.play()        
-      }, 100)
+      }, 50)
     } else {
       this.innerAudioContext.pause()
     }   
   } 
+  // 根据场景决定头像 setSegmentTypeByScene
+  setSegmentTypeByScene = async (currentScene, separateResult = {}, callback) => {    
+    const { imageHost } = appConfig
+    if (!separateResult.cateImageDict) {
+      return
+    }
+    // 判断分离的是全身还是头像
+    let separateUrl = ''
+    let separateMaskUrl = ''
+    if (currentScene.segmentType === 1) {
+      separateUrl = imageHost + separateResult.cateImageDict['16-1']
+      separateMaskUrl = imageHost + separateResult.maskImageDict['16-1']
+    } else {
+      separateUrl = imageHost + separateResult.cateImageDict['16']
+      separateMaskUrl = imageHost + separateResult.maskImageDict['16']
+    }
+    typeof callback === 'function' && callback({
+      separateUrl,
+      separateMaskUrl
+    })    
+  }
+  // 合成视频或gif
+  createShareSource = async (saveType = 'mp4') => {
+    // saveType 'mp4, all, gif'
+    return new Promise(async (resolve, reject) => {
+      const {currentScene, frame, music, foreground, coverList = [], videoRatio = 2} = this.state
+      // 贴纸   
+      const stickerList = coverList.filter(v => !v.deleted).map(v => {
+        return {
+          url: v.remoteUrl,            
+          width: parseFloat(v.width) * videoRatio,
+          height: parseFloat(v.height) * videoRatio,
+          x: parseFloat(v.x) * videoRatio,
+          y: parseFloat(v.y) * videoRatio,
+          rotate: parseFloat(v.rotate),
+          zIndex: parseFloat(v.zIndex),
+        }
+      })
+      const postData = {
+        saveType,
+        background:{
+          url: currentScene.bgUrl,
+          width: frame.width * videoRatio,
+          height: frame.height * videoRatio
+        },
+        foreground: {
+          url: foreground.remoteUrl,
+          width: parseFloat(foreground.width) * videoRatio,
+          height: parseFloat(foreground.height) * videoRatio,
+          x: parseFloat(foreground.x) * videoRatio,
+          y: parseFloat(foreground.y) * videoRatio,
+          rotate: parseFloat(foreground.rotate),
+          zIndex: parseFloat(foreground.zIndex),
+        },
+        stickerList: stickerList,
+        music: {
+          url: music.remoteUrl
+        }
+      }
+      console.log('postData', postData, JSON.stringify(postData))
+      try {
+        const data = await service.core.filterConvertVideo(JSON.stringify(postData))
+        if (data.result.responseCode === '0000' && data.result.result) {
+          resolve(data.result.result)
+        } else {
+          reject('生成视频或gif失败_' + saveType)
+        }
+      } catch (err) {
+        reject(err)
+      }
+    })
+  }
 
   // 初始化系统信息
   initSystemInfo = () => {
@@ -284,7 +375,7 @@ class Dynamic extends Component {
       getSystemInfo(systemInfo)
     }
   }
-  initRawImage = () => {    
+  initRawImage = () => {   
     const {rawImage} = this.state
     this.setState({
       rawImage: {
@@ -293,26 +384,48 @@ class Dynamic extends Component {
       }
     })
   }
-  // 初始化分割
-  initSegment = async () => {
-    const {foreground} = this.state   
-    let segmentData
-    try {   
-      Taro.showLoading({
-        title: '照片变身中...',
-        mask: true,
+  // 分割图片
+  initSegment = async () => {     
+    let separateRes
+    try {
+      separateRes = await service.core.separateLocalImg(globalData.choosedImage, {
+        type: -1,
+        loading: true,
+        showLoading: () => {
+          console.log('showLoading')
+          Taro.showLoading({
+            title: '照片变身中...',
+            mask: true,
+          })
+        },
+        hideLoading: () => {
+          console.log('hideLoading')
+          Taro.hideLoading()
+        }
       })
-      segmentData = await service.core.segmentDemo(globalData.choosedImage, mock_segment_url , 3000)
-      Taro.hideLoading()
+      const {cateImageDict = {}} = separateRes.result || {}
+      if (!cateImageDict['16'] && !cateImageDict['16-1']) {
+        console.log('技术犯规了')
+        // Taro.redirectTo({url: '/pages/home/index'})       
+        return 
+      } 
     } catch(err) {
       console.log('catch', err)
-    }     
-    this.setState({      
-      foreground: {
-        ...foreground,
-        remoteUrl: segmentData.result
-      }
-    })    
+      return {}
+    }
+    return (separateRes && separateRes.result) || {}
+  }
+  // 初始化分割图片
+  initSeparateData = async (separateResult) => {  
+    const { currentScene, foreground } = this.state 
+    this.setSegmentTypeByScene(currentScene, separateResult, (res = {}) => {      
+      this.setState({      
+        foreground: {
+          ...foreground,
+          remoteUrl: res.separateUrl
+        }
+      }) 
+    }) 
   }
   // 初始化场景信息
   initSceneData = async (callback) => {
@@ -369,12 +482,13 @@ class Dynamic extends Component {
           ...this.state.music,
           remoteUrl
         }
-      })
-      if (this.state.music.play) {
-        this.setAudio('play')
-      } else {
-        this.setAudio('pause')
-      }         
+      }, ()=> {
+        if (this.state.music.play) {
+          this.setAudio('play')
+        } else {
+          this.setAudio('pause')
+        } 
+      })   
     }
   }
   
@@ -391,7 +505,8 @@ class Dynamic extends Component {
     const {width, height} = detail
     this.setStateTarget('foreground', {
       originWidth: width,
-      originHeight: height
+      originHeight: height,
+      loaded: true
     }, () => {
       this.foregroundAuto()
       // 初始化音乐
@@ -472,19 +587,51 @@ class Dynamic extends Component {
     })
   }
   // 保存
-  handleOpenResult = async () => {     
+  handleOpenResult = async () => {   
+    if (!this.state.foreground.remoteUrl) {
+      return
+    }
+    if (!this.state.currentScene.bgUrl) {
+      return
+    }
+    if (this.isSaving) {
+      return
+    }  
+    this.setAudio('pause')
     Taro.showLoading({
-      title: '照片生成中...',
+      title: '保存中...',
       mask: true,
     }) 
-    // const canvasImageUrl = await this.createCanvas()
-    Taro.hideLoading()
-    // this.setState({
-    //   result: {
-    //     url: canvasImageUrl,
-    //     show: true
-    //   }
-    // })
+    this.isSaving = true
+    let result
+    try {
+      result = await this.createShareSource('mp4')
+      Taro.hideLoading()
+      this.isSaving = false
+    } catch (err) {
+      Taro.hideLoading()
+      this.isSaving = false
+      Taro.showToast({
+        title: '生成视频失败',
+        icon: 'fail',
+        duration: 3000
+      })
+      return
+    }  
+    const shareVideoRemoteUrl = result.videoUrl
+    const shareImageRemoteUrl = result.thumbnailUrl
+    const {width = 690, height = 920} = result.videoSize || {}
+    const shareVideoInfo = work.calcVideoSize(690, 920, width, height)
+    this.setState({
+      result: {
+        show: true,
+        shareVideoRemoteUrl,
+        shareImageRemoteUrl,
+        shareVideoInfo: shareVideoInfo
+      }
+    }, () => {
+      console.log('result', this.state)
+    })
   }
   // 再玩一次
   handleResultClick = () => {
@@ -914,10 +1061,10 @@ class Dynamic extends Component {
         >马卡龙玩图-动态贴纸</Title>
         <View className="main">
           <View className="pic-section">
-            <View className={`raw ${foreground.remoteUrl ? 'hidden' : ''}`}>
+            <View className={`raw ${(foreground.remoteUrl && foreground.loaded) ? 'hidden' : ''}`}>
               <Image src={rawImage.localUrl} style="width:100%;height:100%" mode="aspectFit"/>
             </View>
-            <View className={`crop ${foreground.remoteUrl ? '' : 'hidden'}`} id="crop">                
+            <View className={`crop ${(foreground.remoteUrl && foreground.loaded) ? '' : 'hidden'}`} id="crop">                
               <View className="background-image">
                 <Image 
                   src={currentScene.bgUrl} 
@@ -963,7 +1110,12 @@ class Dynamic extends Component {
         </View>        
         {result.show &&
           <ResultModal 
-            url={result.url}
+            type='video'
+            video={{
+              url: result.shareVideoRemoteUrl,
+              width: result.shareVideoInfo.width,
+              height: result.shareVideoInfo.height,
+            }}
             onClick={this.handleResultClick}
           />
         }        

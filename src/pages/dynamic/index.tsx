@@ -191,8 +191,14 @@ class Dynamic extends Component {
   componentWillReceiveProps (nextProps) {
     // console.log(this.props, nextProps)  
   }
-  componentWillUnmount () { }
-  componentDidShow () { }
+  componentWillUnmount () {
+    this.setAudio('pause')
+  }
+  componentDidShow () {    
+    if (this.state.music.play) {
+      this.setAudio('play')
+    }
+  }
   componentDidHide () { }
 
   _initPage = async () => {

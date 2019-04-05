@@ -6,6 +6,7 @@ interface GlobalProps {
   userInfo: object,
   columnList: Array<object>,
   themeId: string,
+  sceneType: number,
   themeData: any,
   separateResult: object,
 }
@@ -16,6 +17,7 @@ class GlobalObj implements GlobalProps {
   userInfo = {}
   columnList = []
   themeId = ''
+  sceneType = 0
   themeData = null
   separateResult = {}
   constructor (name) {

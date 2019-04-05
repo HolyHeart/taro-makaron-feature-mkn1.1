@@ -23,13 +23,18 @@ const mock_segment_url = 'https://static01.versa-ai.com/images/process/segment/2
 const getSceneList = function (sceneList:Array<object> = []) {
   const result = []
   sceneList.forEach(v => {
-    const {bgUrl, sceneId, sceneName, shareContent, thumbnailUrl, sceneConfig, segmentType, segmentZIndex, bgZIndex} = v
+    const {sceneType, bgUrl, sceneId, sceneName, shareContent, thumbnailUrl, sceneConfig, segmentType, segmentZIndex, bgZIndex} = v
     let supportMusic = false
+    let hasIcon = false
     if (sceneConfig) {
       const {music = {}} = JSON.parse(sceneConfig)
-      supportMusic = music.fileUrl ? true : false
+      supportMusic = music.fileUrl ? true : false      
     } 
+    if (sceneType === 2 || sceneType === 1 ) {
+      hasIcon = true
+    }
     result.push({
+      sceneType,
       bgUrl, 
       sceneId, 
       sceneName, 
@@ -39,7 +44,8 @@ const getSceneList = function (sceneList:Array<object> = []) {
       segmentType, 
       segmentZIndex, 
       bgZIndex, 
-      supportMusic})
+      supportMusic,
+      hasIcon})
   })
   return result
 }
@@ -91,7 +97,7 @@ interface Dynamic {
 }))
 class Dynamic extends Component {
   config: Config = {
-    navigationBarTitleText: '马卡龙玩图-taro',
+    navigationBarTitleText: '马卡龙玩图',
     disableScroll: true,
   }
 
@@ -368,8 +374,10 @@ class Dynamic extends Component {
   
   // 背景
   handleBackgroundClick = () => {
-    this.setForegroundActiveStatus(false)
-    this.setCoverListActiveStatus({type: 'all'}, false)
+    this.setForegroundActiveStatus(false, () => {
+      this.storeForegroundInfo()
+    })
+    this.setCoverListActiveStatus({type: 'all'}, false)    
   }
   // 人物
   handleForegroundLoaded = (detail:object, item?:any) => {
@@ -598,8 +606,8 @@ class Dynamic extends Component {
   }
 
   // 设置人物状态
-  setForegroundActiveStatus = (value = false) => {
-    this.setStateTarget('foreground', {isActive: value})
+  setForegroundActiveStatus = (value = false, callback?:()=>void) => {
+    this.setStateTarget('foreground', {isActive: value}, callback)
   }
   // 设置贴纸状态
   setCoverListActiveStatus = (options = {}, value = false) => {
@@ -820,7 +828,7 @@ class Dynamic extends Component {
   storeForegroundInfo = () => {
     const {foreground, currentScene} = this.state
     const clone_foreground = tool.deepClone(foreground)
-    clone_foreground.isActive = false
+    // clone_foreground.isActive = false
     const sceneId = currentScene.sceneId || 'demo_scene'    
     this.cache['foreground'].set(sceneId, clone_foreground)
     // console.log('this.cache.foreground', this.cache['foreground'].get(sceneId))
@@ -1008,7 +1016,7 @@ class Dynamic extends Component {
           renderLeft={
             <CustomIcon type="back" theme="dark" onClick={this.PageToHome}/>
           }
-        >马卡龙玩图</Title>
+        >马卡龙玩图-动态贴纸</Title>
         <View className="main">
           <View className="pic-section">
             <View className={`raw ${foreground.remoteUrl ? 'hidden' : ''}`}>

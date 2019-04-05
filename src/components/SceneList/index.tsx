@@ -52,6 +52,8 @@ class SceneList extends Component {
                 thumbnailUrl={item.thumbnailUrl}
                 bgUrl={item.bgUrl}
                 sceneName={item.sceneName}
+                hasIcon={item.hasIcon}
+                iconType={item.supportMusic ? 'gif-music' : 'gif-music'}
                 onClick={this.handleClick.bind(this, item)}
               />
           })}

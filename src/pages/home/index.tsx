@@ -103,7 +103,8 @@ class Home extends Component {
   handleChooseTheme = async (item: object) => {
     console.log('handleChooseTheme', item)  
     globalData.themeId = item.themeId   
-    globalData.themeData = null
+    globalData.sceneType = item.sceneType
+    globalData.themeData = null    
     if (globalData.themeId) {
       const res = await core.theme(globalData.themeId)
       globalData.themeData = res.result && res.result.result 
@@ -129,9 +130,16 @@ class Home extends Component {
     this.showActionSheet((path)=>{
       console.log('choosedImage', path, globalData)    
       globalData.choosedImage = path
-      // Taro.redirectTo({
-      //   url: '/pages/editor/index'
-      // })   
+      const { sceneType } = globalData
+      if (sceneType === 1) {
+        Taro.redirectTo({url: '/pages/filter/index'}) 
+      } else if (sceneType === 2) {
+        Taro.redirectTo({url: '/pages/dynamic/index'}) 
+      } else if (sceneType === 3) {
+        Taro.redirectTo({url: '/pages/segment/index'}) 
+      } else {
+        Taro.redirectTo({url: '/pages/editor/index'}) 
+      }
     })
   }
 

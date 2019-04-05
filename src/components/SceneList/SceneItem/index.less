@@ -1,20 +1,31 @@
 .scene-item {
   position: relative;
   display: inline-block;
-  width: 120rpx;
-  height: 150rpx;
-  margin-right: 44rpx;
-  box-shadow:1px 1px 5px rgba(0,0,0,0.3);
-  .music-icon {
+  width: 120px;
+  height: 150px;
+  margin-right: 44px;
+  box-shadow:1px 1px 5px rgba(0, 0, 0, 0.3);
+  .music {
     position: absolute;
-    right: 7rpx;
-    top: 10rpx;
-    width: 20rpx;
-    height: 20rpx;
+    z-index: 1;
+    right: 7px;
+    top: 10px;    
+    &.gif-music {
+      width: 56px;
+      height: 18px;
+      background-size: 56px 18px; 
+      background-image: url(data:image/png;base64,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)
+    }
+    &.gif {
+      width: 36px;
+      height: 18px;
+      background-size: 36px 18px; 
+      background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEgAAAAkCAMAAAAdBYxUAAABEVBMVEUAAACL4/z/0EmT8P+L4/3/0En/0EqL4/z/z0qK4vz/z0qK4/3/z0qM5PyL4///0EyK5f//z0n/0kv/z1CL4/3/z0qL4/3/0EqL4v3/z0r/0Er/0EuK4/3/M2b/z0n///+K4vz/Y4r/6u//vM3/a5D/PG3iXov/V4H/fJ3/UXyR1/P/xNP/xkv/XYX/OWb/kq3/cZT/Z43/R3X/4Oj/ztqludmvq8y0osb/rsP/o7r/i6jMf6f/d5nfY4/tTXz5O23/SmH/Wl//V1//Xl7/Wl7/bFv/d1n/l1P/nlL/q1D/+fr/l7H/gqH/Pm//8fX/4ej/2uT/s8b/p73/nbb/hqTTdJ3Uc5zsT37/S3j/TGH/wNCUtELJAAAAHXRSTlMAv78Q2PPZxcW6upCQXVFROzsREPPWoqKhoV1c8tAhgioAAAIgSURBVEjHrZbZdtowEEANJVvbtGmaZu1YsQMxoWBskwXS7HtYsu///yERYw2ygoLICfcB+3Dsa2k0Go2V5Mv4bCozVdi4X97ZBR3+3v7xadG27aHh9NzCpKXnR2qRs74MJo7O7Jj0T41mYqStWUONkYNzoRr99dbzbbHNf+iXE1vwXQ3OWFtT2Ib+OSwK09ffCU8GPY/wEZ7J9EeaxnBe2/AxDm0a03vxCRvVaiNfAoGXzbb4xckmaOniNIGeNRA0XRazGgKyxJjDL/g3EX/lnEzx2o2gSKy7v4QP1vG3bBAdkGgU8xA969D5fL3mAUTBKn8+UEWhQ+QAOSNTOzNTyQHlGbug4Nww5qqiXFeOkyjNlx49BeDET28CcYVT6CWCIpkmrXEUbQASMHbpA3FXqWwaRKckmremUfRAs6EBEQbRMYlm1BDxAGd7iLwVQQSCfRmkDIp2ALlkbAVvIi/mSb/81yTaI9GwNYWi3U6sW3hTYzH/DCKfREPW36SoQiPSi5p5gaMR0dTUGHlbnAYXGYItp6YG+xa3BeEYRGqwZ1F033nVzWlE5uWfo4SUyVzWiMwJufBmizhMpqRfRlG/W0QGCSlzU+U2KIXNmitXzbxpu8oI3NWZ5CXqLZJlRC1syFP1giFutWTYa7KwdZVaqtL5IIzAiFpqzYej+ZAc8HH0+QNyoEf255uIwbY1g2+0qPWbxtbvoZ/Wb2Zeaf1eATTrI4AqVCOzAAAAAElFTkSuQmCC)
+    }
   } 
   .bg {
-    width: 120rpx;
-    height: 120rpx;
+    width: 120px;
+    height: 120px;
     position: relative;              
   }  
   .tag {   

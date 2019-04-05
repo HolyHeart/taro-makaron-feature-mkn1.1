@@ -25,9 +25,9 @@ class App extends Component {
    */
   config: Config = {
     pages: [
-      'pages/home/index',
+      'pages/dynamic/index', 
+      'pages/home/index',           
       'pages/editor/index',
-      'pages/dynamic/index',
       'pages/index/index'
     ],
     window: {
@@ -39,8 +39,7 @@ class App extends Component {
     }
   }
 
-  componentDidMount () {
-  }
+  componentDidMount () {}
 
   componentDidShow () {}
 

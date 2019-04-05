@@ -3,9 +3,7 @@ import Taro, { Component } from '@tarojs/taro'
 import { View, Text, Image } from '@tarojs/components'
 
 import './index.less'
-import loading from '../../../assets/images/pic_loading.png'
-import icon_music_gif from '../../../assets/images/icon_music_gif.png'
-import icon_only_gif from '../../../assets/images/icon_only_gif.png'
+import loading from '@/assets/images/pic_loading.png'
 
 type ComponentStateProps = {}
 
@@ -14,7 +12,8 @@ type ComponentOwnProps = {
   bgUrl: string,
   thumbnailUrl: string,
   sceneName: string,
-  active: boolean
+  active: boolean,
+  icon: any  
 }
 
 type ComponentState = {}
@@ -30,20 +29,18 @@ class SceneItem extends Component {
     bgUrl: loading,
     thumbnailUrl: loading,
     sceneName: '',
-    active: false
+    active: false,
+    hasIcon: false, // 是否有音乐icon
+    iconType: 'gif-music', // 'gif-music' 'gif'
   }
   componentWillReceiveProps (nextProps) {
     // console.log(this.props, nextProps)
   }
   render() {
-    const { onClick, active, thumbnailUrl, bgUrl, sceneName } = this.props
+    const { onClick, active, thumbnailUrl, bgUrl, sceneName, hasIcon, iconType } = this.props
     return (
       <View className="scene-item" onClick={onClick}>
-        <Image
-          className="music-icon"
-          src={icon_music_gif}
-          mode="widthFix"
-        /> 
+        {hasIcon && <View className={`music ${iconType}`}></View>}
         <View className="bg">
           <Image
             src={bgUrl}

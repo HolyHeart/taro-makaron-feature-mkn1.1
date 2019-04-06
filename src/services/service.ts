@@ -120,6 +120,16 @@ export const core = {
       }
     })    
   },
+  recommend: function () {
+    // 获取推荐主题信息
+    return request({
+      url: api.core.recommend,
+      method: 'GET',
+      data: {
+        clientType: 'mini-program'
+      },
+    })
+  },
   segmentDemo: function (rawImgUrl, resImgUrl, time = 100) {
     console.log('分割图片：', rawImgUrl)
     return new Promise((resolve) => {

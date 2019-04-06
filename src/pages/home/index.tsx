@@ -4,7 +4,6 @@ import { View } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 
 import { getSystemInfo } from '@/model/actions/global'
-import bg from '@/assets/images/bg.png'
 import Title from '@/components/Title'
 import CustomIcon from '@/components/Icon'
 import CategoryItem from '@/components/CategoryItem'
@@ -12,11 +11,9 @@ import AuthModal from '@/components/AuthModal'
 import globalData from '@/services/global_data'
 import { core } from '@/services/service'
 import Session from '@/services/session'
-import mock_data from './mock.json'
+import bg from '@/assets/images/bg.png'
 import './index.less'
 
-
-// console.log('mock_data', mock_data)
 type PageStateProps = {
   counter: {
     num: number
@@ -93,7 +90,6 @@ class Home extends Component {
     if (globalData.columnList && globalData.columnList.length === 0) {
       const columnData = await core.column()
       globalData.columnList = (columnData.result && columnData.result.result) || []
-      console.log('columnData', columnData, globalData)
     }
     this.setState({
       categoryList: globalData.columnList
@@ -216,12 +212,10 @@ class Home extends Component {
   }
 
   render () {
-    const { global } = this.props
     const { categoryList, showAuth } = this.state
     return (
       <View className='page-home'>
-        <Title 
-          top={global.system.statusBarHeight + 10}
+        <Title
           renderLeft={
             <CustomIcon type="menu" theme="light"/>
           }

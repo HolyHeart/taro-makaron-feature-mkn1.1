@@ -31,7 +31,6 @@ function encodeToURIString(data, isUIR?:boolean) {
   }
   return ary.join('&')
 }
-
 /**
  * @description paddStringToUrl 将对象转化为问号参数形式添加在url地址的后面，会进行URI编码处理
  * @param {string} url 原url地址
@@ -50,7 +49,6 @@ function formatQueryUrl(path = '', query = {}) {
   }
   return url
 }
-
 /**
  * @description 深拷贝
  * @param {*} obj 目标对象

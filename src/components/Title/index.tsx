@@ -7,10 +7,10 @@ import './index.less'
 type ComponentStateProps = {}
 
 type ComponentOwnProps = {
-  top: number,
   renderLeft: any,
   children: any, 
-  color?: string 
+  color?: string,
+  leftStyleObj?: object
 }
 
 type ComponentState = {}
@@ -25,14 +25,42 @@ class Title extends Component {
   static defaultProps = {
     color: '#fff'
   }
-  componentWillReceiveProps (nextProps) {
-    // console.log(this.props, nextProps)
+  state = {
+    statusBarHeight: 20, // 状态栏高度
+    titleBarHeight: 44,
+  }
+  componentWillMount () {}
+  componentDidMount () {
+    this.clacHeight()
+  }
+  clacHeight = () => {
+    const systemInfo = Taro.getSystemInfoSync()
+    const statusBarHeight = systemInfo.statusBarHeight || 20   
+    let totalTopHeight = 72
+    if (systemInfo.model.indexOf('iPhone X') !== -1) {
+      totalTopHeight = 85
+    } else if (systemInfo.model.indexOf('iPhone') !== -1) {
+      totalTopHeight = 62
+    }
+    const titleBarHeight = totalTopHeight - statusBarHeight
+    this.setState({
+      statusBarHeight,
+      titleBarHeight
+    })
+  }
+  calcStyle = () => {
+    const {statusBarHeight, titleBarHeight} = this.state
+    const style = {
+      top: statusBarHeight + 'px',
+      height: titleBarHeight + 'px',
+    }
+    return style
   }
   render() {
-    const { top, color } = this.props
+    const { color, leftStyleObj } = this.props
     return (
-      <View className='title-wrap' style={{top: top + 'px'}}>
-        <View className="left">
+      <View className='title-wrap' style={this.calcStyle()}>
+        <View className="left" style={leftStyleObj}>
           {this.props.renderLeft}
         </View>
         <Text style={{color}}>{this.props.children}</Text>  

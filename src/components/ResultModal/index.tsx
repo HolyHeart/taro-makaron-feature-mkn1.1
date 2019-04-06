@@ -13,7 +13,8 @@ type ComponentOwnProps = {
   onClick?: () => void,
   type?: string,
   video?: object,
-  image?: object
+  image?: object,
+  renderButton?: any
 }
 
 type ComponentState = {}
@@ -25,7 +26,6 @@ interface ResultModal {
 }
 
 class ResultModal extends Component {
-
   static defaultProps = {
     type: 'image',
     image: {
@@ -42,19 +42,24 @@ class ResultModal extends Component {
   handleClick = () => {
    this.props.onClick && this.props.onClick()
   }
+  pageToHome = () => {
+    Taro.redirectTo({
+      url: '/pages/home/index'
+    })
+  }
   render() {
     const { image, video, type } = this.props
     return (
       <View className='result-wrap'>
         <View className="modal-mask"></View>
         <View className="modal-content">
-          <Title 
-            top={20 + 10}
+          <Title
             color="#333"
+            leftStyleObj={{left: Taro.pxTransform(15)}}
             renderLeft={
-              <CustomIcon type="back" theme="dark" onClick={work.pageToHome}/>
+              <CustomIcon type="home" theme="dark" onClick={this.pageToHome}/>
             }
-          >马卡龙</Title>
+          >马卡龙玩图</Title>
           {type === 'image' && 
             <View class="pic-wrap">
               <Image class="pic" src={image.url} mode="aspectFill" />
@@ -73,10 +78,8 @@ class ResultModal extends Component {
                 objectFit='cover'
               ></Video>     
             </View> 
-          }           
-          <View className="btn-wrap">
-            <Button className="custom-button dark" hoverClass="btn-hover"  onClick={this.handleClick}>再玩一次</Button>            
-          </View>
+          } 
+          {this.props.renderButton}
         </View>        
       </View>
     )

@@ -17,7 +17,6 @@ import Session from '@/services/session'
 import service from '@/services/service'
 import { appConfig } from '@/services/config'
 import { createCache } from '@/services/cache'
-import mock_theme_data from './mock_theme_data.json'
 import './index.less'
 
 const mock_path = 'https://static01.versa-ai.com/upload/783272fc1375/999deac02e85f3ea.png'
@@ -435,7 +434,6 @@ class Dynamic extends Component {
       const res = await service.core.theme(themeId)
       globalData.themeData = res.result && res.result.result   
     }
-    // const themeData = mock_theme_data.result
     const themeData = globalData.themeData || {sceneList: []}
     this.themeData.sceneList = getSceneList(themeData.sceneList || [])
 
@@ -636,6 +634,10 @@ class Dynamic extends Component {
   // 再玩一次
   handleResultClick = () => {
     this.setResultModalStatus(false)
+  }
+  // 保存gif
+  handleSaveGif = () => {
+    console.log('handleSaveGif')
   }
 
   setResultModalStatus = (flag = false) => {
@@ -1048,13 +1050,13 @@ class Dynamic extends Component {
   }
 
   render () {
-    const { global } = this.props
+    // const { global } = this.props
     const { rawImage, frame, foreground, coverList, sceneList, currentScene, result, music } = this.state
     return (
       <View className='page-dynamic'>
-        <Title 
-          top={global.system.statusBarHeight + 10}
+        <Title
           color="#333"
+          leftStyleObj={{left: Taro.pxTransform(8)}}
           renderLeft={
             <CustomIcon type="back" theme="dark" onClick={work.pageToHome}/>
           }
@@ -1117,6 +1119,12 @@ class Dynamic extends Component {
               height: result.shareVideoInfo.height,
             }}
             onClick={this.handleResultClick}
+            renderButton={
+              <View className="btn-wrap">
+                <Button className="custom-button pink btn-1" hoverClass="btn-hover"  onClick={this.handleSaveGif}>分享给好友</Button>
+                <Button className="custom-button dark btn-2" hoverClass="btn-hover"  onClick={this.handleSaveGif}>保存Gif</Button>            
+              </View>
+            }
           />
         }        
       </View>

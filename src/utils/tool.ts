@@ -1,6 +1,57 @@
 import Taro from '@tarojs/taro'
 
 /**
+ * @description encodeToURIString 把一个对象类型转化为问号参数类型的字符串
+ * @param {object} data 要解析的对象
+ * @param {boolean} isUIR 是否转化为URIComponent，默认转化，只有当值为false时，不转化
+ * @return {string} 问号参数类型的字符串
+ */
+function encodeToURIString(data, isUIR?:boolean) {
+  // 默认参数isUIR不为false，值皆为true
+  if (isUIR !== false) {
+    isUIR = true
+  }
+  const ary = []
+  // url编码
+  function encodeString(str, isUIR) {
+    return isUIR ? encodeURIComponent(str) : str
+  }
+  if (Object.prototype.toString.call(data) === '[object Object]') {
+    for (const key in data) {
+      if (data.hasOwnProperty(key)) {
+        if (Array.isArray(data[key])) {
+          data[key].forEach(function(v) {
+            ary.push(key + '=' + encodeString(v, isUIR))
+          })
+        } else {
+          ary.push(key + '=' + encodeString(data[key], isUIR))
+        }
+      }
+    }
+  }
+  return ary.join('&')
+}
+
+/**
+ * @description paddStringToUrl 将对象转化为问号参数形式添加在url地址的后面，会进行URI编码处理
+ * @param {string} url 原url地址
+ * @return {string} 返回拼接好的新url地址
+ */
+function paddStringToUrl(url) {
+  const hasSearch = /\?/.test(url)
+  return url + (hasSearch ? '&' : '?')
+}
+function formatQueryUrl(path = '', query = {}) {
+  let url = ''
+  if (Object.keys(query).length > 0) {
+    url = paddStringToUrl(path) + encodeToURIString(query)
+  } else {
+    url = path
+  }
+  return url
+}
+
+/**
  * @description 深拷贝
  * @param {*} obj 目标对象
  * @return {*} 返回的深拷贝对象
@@ -56,7 +107,10 @@ const calcCenterPosition = (offsetX, offsetY, width, height) => {
   }
 }
 
+
 const tool = {  
+  formatQueryUrl,
+  deepClone,
   uuid: function () { // 生产uuid
     const s:Array<any> = []
     const hexDigits = '0123456789abcdef'
@@ -99,8 +153,7 @@ const tool = {
       hash[arr[i]] = true
     }
     return false
-  }, 
-  deepClone: deepClone,
+  },   
   getRotateAngle,
   calcCenterPosition,  
 }

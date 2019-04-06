@@ -25,8 +25,8 @@ class App extends Component {
    */
   config: Config = {
     pages: [      
-      'pages/dynamic/index',
       'pages/home/index',  
+      'pages/dynamic/index',      
       'pages/editor/index',
       'pages/index/index'
     ],

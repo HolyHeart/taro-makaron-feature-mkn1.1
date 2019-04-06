@@ -168,12 +168,16 @@ class Dynamic extends Component {
     sceneList: [],
     currentScene: {
       bgUrl: '', // ...
+      shareContent: '',
+      sceneId: '',
     },    
     result: {
       show: false,
-      shareVideoRemoteUrl: '',
-      shareImageRemoteUrl: '',
-      shareVideoInfo: {
+      shareImage: {
+        remoteUrl: '',
+      },
+      shareVideo: {
+        remoteUrl: '',
         width: 0,
         height: 0
       }
@@ -215,6 +219,40 @@ class Dynamic extends Component {
     }
   }
   componentDidHide () { }
+  onShareAppMessage (res) {
+    // if (res.from === 'button') {
+    //   console.log('页面按钮分享', res.target)
+    // }
+    const {currentScene, result = {}} = this.state  
+    const {shareVideo = {}, shareImage = {}} = result
+    const shareContent = currentScene.shareContent || (globalData.themeData && globalData.themeData.shareContent)
+    const shareImageUrl = `${shareImage.remoteUrl}?x-oss-process=image/resize,m_pad,h_420,w_525`
+    const data = {
+      shareSource: shareVideo.remoteUrl,
+      themeId: globalData.themeId || '',
+      sceneId: currentScene.sceneId || '',
+      width: shareVideo.width,
+      height: shareVideo.height
+    }
+    const path = tool.formatQueryUrl('/pages/index', data)
+    const {userInfo = {}} = globalData 
+    const title = `@${userInfo.nickName}：${shareContent}`
+    if (!shareImage.remoteUrl) {
+      return {
+        title: title,
+        path: '/pages/home'
+      }
+    }
+    console.log(title, path, shareImageUrl)
+    return {
+      title: title,
+      path: path,
+      imageUrl: shareImageUrl,			
+      success: () => {
+        console.log('分享成功')
+      },
+    }
+  }
 
   _initPage = async () => {
     globalData.choosedImage = globalData.choosedImage || 'http://tmp/wxcfe56965f4d986f0.o6zAJsztn2DIgXEGteELseHpiOtU.6gRGsIZIvyytf45cffd60a62912bada466d51e03f6fa.jpg'
@@ -623,9 +661,14 @@ class Dynamic extends Component {
     this.setState({
       result: {
         show: true,
-        shareVideoRemoteUrl,
-        shareImageRemoteUrl,
-        shareVideoInfo: shareVideoInfo
+        shareImage: {
+          remoteUrl: shareImageRemoteUrl,
+        },
+        shareVideo: {
+          remoteUrl: shareVideoRemoteUrl,
+          width: shareVideoInfo.width,
+          height: shareVideoInfo.height
+        }
       }
     }, () => {
       console.log('result', this.state)
@@ -1114,14 +1157,13 @@ class Dynamic extends Component {
           <ResultModal 
             type='video'
             video={{
-              url: result.shareVideoRemoteUrl,
-              width: result.shareVideoInfo.width,
-              height: result.shareVideoInfo.height,
+              url: result.shareVideo.remoteUrl,
+              width: result.shareVideo.width,
+              height: result.shareVideo.height,
             }}
-            onClick={this.handleResultClick}
             renderButton={
               <View className="btn-wrap">
-                <Button className="custom-button pink btn-1" hoverClass="btn-hover"  onClick={this.handleSaveGif}>分享给好友</Button>
+                <Button className="custom-button pink btn-1" hoverClass="btn-hover" openType="share"  onClick={this.handleSaveGif}>分享给好友</Button>
                 <Button className="custom-button dark btn-2" hoverClass="btn-hover"  onClick={this.handleSaveGif}>保存Gif</Button>            
               </View>
             }

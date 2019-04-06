@@ -77,6 +77,16 @@ class Home extends Component {
   componentDidShow () { }
 
   componentDidHide () { }
+  onShareAppMessage (res) {
+    if (res.from === 'button') {
+      // 来自页面内转发按钮
+      console.log(res.target)
+    }
+    return {
+      title: '马卡龙',
+      path: '/pages/home/index'
+    }
+  }
 
   _initPage = async () => {
     await Session.set()

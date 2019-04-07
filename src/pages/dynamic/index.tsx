@@ -19,8 +19,8 @@ import { appConfig } from '@/services/config'
 import { createCache } from '@/services/cache'
 import './index.less'
 
-const mock_path = 'https://static01.versa-ai.com/upload/783272fc1375/999deac02e85f3ea.png'
-const mock_segment_url = 'https://static01.versa-ai.com/images/process/segment/2019/01/14/b4cf047a-17a5-11e9-817f-00163e001583.png'
+// const mock_path = 'https://static01.versa-ai.com/upload/783272fc1375/999deac02e85f3ea.png'
+// const mock_segment_url = 'https://static01.versa-ai.com/images/process/segment/2019/01/14/b4cf047a-17a5-11e9-817f-00163e001583.png'
 const getSceneList = function (sceneList:Array<object> = []) {
   const result = []
   sceneList.forEach(v => {
@@ -443,7 +443,7 @@ class Dynamic extends Component {
       const {cateImageDict = {}} = separateRes.result || {}
       if (!cateImageDict['16'] && !cateImageDict['16-1']) {
         console.log('技术犯规了')
-        // Taro.redirectTo({url: '/pages/home/index'})       
+        work.pageToError()
         return 
       } 
     } catch(err) {

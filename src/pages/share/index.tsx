@@ -98,6 +98,7 @@ class Share extends Component {
     return (
       <View className='page-share'>
         <Title
+          leftStyleObj={{left: Taro.pxTransform(12)}}
           renderLeft={
             <CustomIcon type="home" theme="dark" onClick={this.pageToHome}/>
           }

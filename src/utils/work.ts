@@ -7,6 +7,11 @@ const pageToHome = () => {
     url: '/pages/home/index'
   }) 
 }
+const pageToError = () => {
+  Taro.redirectTo({
+    url: '/pages/error/index'
+  }) 
+}
 const getDomRect = (id:string, callback?:(rect:object)=>void) => {
   Taro.createSelectorQuery().select('#' + id).boundingClientRect(function(rect){
     // rect.id      // 节点的ID
@@ -97,6 +102,7 @@ const calcVideoSize = (maxWidth = 306, maxHeight = 408, width, height) => {
 
 const work = {
   pageToHome,
+  pageToError,
   getDomRect,
   getSceneInfoById,
   getCoverInfoById,

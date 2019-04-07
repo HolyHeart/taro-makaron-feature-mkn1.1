@@ -1,6 +1,6 @@
 import { ComponentClass } from 'react'
 import Taro, { Component, Config } from '@tarojs/taro'
-import { View } from '@tarojs/components'
+import { View, Image } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 
 import { getSystemInfo } from '@/model/actions/global'
@@ -15,9 +15,6 @@ import bg from '@/assets/images/bg.png'
 import './index.less'
 
 type PageStateProps = {
-  counter: {
-    num: number
-  },
   global: {
     system: object
   }
@@ -39,8 +36,7 @@ interface Home {
   props: IProps;
 }
 
-@connect(({ counter, global }) => ({
-  counter,
+@connect(({ global }) => ({
   global
 }), (dispatch) => ({
   getSystemInfo (data) {
@@ -222,7 +218,7 @@ class Home extends Component {
         >马卡龙玩图</Title>
         <View className="main">
           <View className="main-bg">
-            <image src={bg} mode="widthFix" style="width:100%;height:100%"/>
+            <Image src={bg} mode="widthFix" style="width:100%;height:100%"/>
           </View>
           <View className="main-container">
             {

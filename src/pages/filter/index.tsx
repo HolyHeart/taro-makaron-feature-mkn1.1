@@ -20,7 +20,7 @@ import { appConfig } from '@/services/config'
 import { createCache } from '@/services/cache'
 import './index.less'
 
-// const mock_path = 'https://static01.versa-ai.com/upload/783272fc1375/999deac02e85f3ea.png'
+const mock_path = 'https://static01.versa-ai.com/upload/783272fc1375/999deac02e85f3ea.png'
 // const mock_segment_url = 'https://static01.versa-ai.com/images/process/segment/2019/01/14/b4cf047a-17a5-11e9-817f-00163e001583.png'
 
 type PageStateProps = {
@@ -64,7 +64,7 @@ type PageState = {
 
 type IProps = PageStateProps & PageDispatchProps & PageOwnProps
 
-interface Dynamic {
+interface Filter {
   props: IProps;
 }
 
@@ -76,7 +76,7 @@ interface Dynamic {
     dispatch(getSystemInfo(data))
   }
 }))
-class Dynamic extends Component {
+class Filter extends Component {
   config: Config = {
     navigationBarTitleText: '马卡龙玩图',
     disableScroll: true,
@@ -93,6 +93,21 @@ class Dynamic extends Component {
       left: 0,
       top: 0,
     },    
+    background: {
+      id: 'background',      
+      localUrl: '',
+      remoteUrl: '',
+      zIndex: 0,
+      width:0,
+      height:0,
+      x: 0,
+      y:0,
+      originWidth: 0, // 原始宽度
+      originHeight: 0, // 原始高度
+      autoWidth: 0, // 自适应后的宽度
+      autoHeight: 0, // 自适应后的高度
+      autoScale: 0, // 相对画框缩放比例
+    },
     foreground: {
       id: 'foreground',
       remoteUrl: '',
@@ -413,10 +428,14 @@ class Dynamic extends Component {
     }
   }
   initRawImage = () => {   
-    const {rawImage} = this.state
+    const {rawImage, background} = this.state
     this.setState({
       rawImage: {
         ...rawImage,
+        localUrl: globalData.choosedImage
+      },
+      background: {
+        ...background,
         localUrl: globalData.choosedImage
       }
     })
@@ -459,14 +478,21 @@ class Dynamic extends Component {
   }
   // 初始化分割图片
   initSeparateData = async (separateResult) => {  
-    const { currentScene, foreground } = this.state 
-    this.setSegmentTypeByScene(currentScene, separateResult, (res = {}) => {      
-      this.setState({      
-        foreground: {
-          ...foreground,
-          remoteUrl: res.separateUrl
-        }
-      }) 
+    if (!separateResult.cateImageDict) {
+      return
+    }
+    const { foreground } = this.state 
+    // 判断分离的是全身还是头像
+    // 16：只含人尺寸的全身
+    // 16-2：全图尺寸下全身
+    // 16-1：只含人头像尺寸的头像
+    // 16-3：全图尺寸下的头像
+    let separateUrl = appConfig.imageHost + separateResult.cateImageDict['16-2']    
+    this.setState({      
+      foreground: {
+        ...foreground,
+        remoteUrl: separateUrl
+      }
     }) 
   }
   // 初始化场景信息
@@ -546,6 +572,18 @@ class Dynamic extends Component {
       this.storeForegroundInfo()
     })
     this.setCoverListActiveStatus({type: 'all'}, false)    
+  }
+  // 背景图片加载
+  onBackgroundLoaded = (e:object,) => {    
+    const {detail= {}} = e
+    console.log('onBackgroundLoaded', detail)
+    const {width = 0, height = 0} = detail
+    this.setStateTarget('background', {
+      originWidth: width,
+      originHeight: height
+    }, () => {
+      this.backgroundAuto()      
+    })
   }
   // 人物
   onForegroundLoaded = (detail:object, item?:any) => {
@@ -760,6 +798,59 @@ class Dynamic extends Component {
     this.setState({
       coverList
     })
+  }
+
+  // 背景自适应
+  backgroundAuto =(callback?:()=>void) => { 
+    const size = this.calcBackgroundSize()
+    const position = this.calcBackgroundPosition(size)
+    this.setStateTarget('background', {
+      ...size,
+      ...position
+    }, () => {
+      typeof callback === 'function' && callback()
+    })
+  } 
+  calcBackgroundSize = () => {
+    const { background, frame} = this.state
+    const { originWidth, originHeight } = background 
+    const imageRatio = originWidth / originHeight  
+    // 计算宽高比例
+    const result = {
+      autoScale: 1,
+      autoWidth: 0,
+      autoHeight: 0,
+      width: 0,
+      height: 0
+    }
+    if ((originWidth / originHeight) > (frame.width / frame.height) ) {  
+      // 图片宽高比大于框
+      // 将图片宽度缩放为与框相同    
+      result.autoScale = frame.height / originHeight
+      result.autoWidth = frame.width
+      result.autoHeight = result.autoWidth / imageRatio
+    } else {      
+      result.autoScale = frame.width / originWidth
+      result.autoHeight = frame.height
+      result.autoWidth = result.autoHeight * imageRatio
+    }   
+    
+    result.width = result.autoWidth
+    result.height = result.autoHeight
+    return result
+  }
+  calcBackgroundPosition = ({width, height} = {}) => {
+    const { frame } = this.state    
+    let x = 0
+    let y = 0
+    x -= (width - frame.width) * 0.5
+    y -= (height - frame.height) * 0.5
+    const result = {
+      x,
+      y,
+      rotate: 0
+    }
+    return result
   }
   
   // 人物自适应
@@ -1137,9 +1228,9 @@ class Dynamic extends Component {
 
   render () {
     // const { global } = this.props
-    const { loading, rawImage, frame, foreground, coverList, sceneList, currentScene, result, music } = this.state
+    const { loading, rawImage, frame, background, foreground, coverList, sceneList, currentScene, result, music } = this.state
     return (
-      <View className='page-dynamic'>
+      <View className='page-filter'>
         <Title
           color="#333"
           leftStyleObj={{left: Taro.pxTransform(8)}}
@@ -1149,41 +1240,46 @@ class Dynamic extends Component {
         >马卡龙玩图-动态贴纸</Title>
         <View className="main">
           <View className="pic-section">
-            <View className={`raw ${(foreground.remoteUrl && foreground.loaded) ? 'hidden' : ''}`}>
-              <Image src={rawImage.localUrl} style="width:100%;height:100%" mode="aspectFit"/>
+            <View className={`raw ${!(foreground.remoteUrl && foreground.loaded) ? 'hidden' : ''}`}>
+              <Image src={rawImage.localUrl} style="width:100%; height:100%" 
+                mode="aspectFit"/>
             </View>
-            <View className={`crop ${(foreground.remoteUrl && foreground.loaded) ? '' : 'hidden'}`} id="crop">                
-              <View className="background-image">
-                <Image 
-                  src={currentScene.bgUrl} 
-                  style="width:100%;height:100%" 
-                  mode="scaleToFill"
-                  onClick={this.handleBackgroundClick}
-                />
-              </View>           
-              <Sticker 
-                ref="foreground"
-                url={foreground.remoteUrl}
-                stylePrams={foreground}                
-                framePrams={frame}
-                onChangeStyle={this.handleChangeStyle}
-                onImageLoaded={this.onForegroundLoaded}
-                onTouchstart={this.handleForegroundTouchstart}
-                onTouchend={this.handleForegroundTouchend}
-              />
-              {coverList.map(item => {
-                return <Sticker 
-                        key={item.id}
-                        url={item.remoteUrl} 
-                        stylePrams={item}
-                        framePrams={frame}
-                        onChangeStyle={this.handleChangeCoverStyle}
-                        onImageLoaded={this.onCoverLoaded}
-                        onTouchstart={this.handleCoverTouchstart}
-                        onTouchend={this.handleCoverTouchend}
-                      />
-              })}
-              <Voice status={music.play ? 'on' : 'off'} onClick={this.handleToggleMusic}/>
+            <View className={`crop ${!(foreground.remoteUrl && foreground.loaded) ? '' : 'hidden'}`} id="crop">                
+              <View 
+                className='play-section' 
+                style={{width: `${background.width}px`, height: `${background.height}px`, left: `${background.x}px`, top: `${background.y}px`}}
+              >
+                <View className="background-image">
+                  <Image 
+                    src={background.localUrl} 
+                    style="width:100%;height:100%" 
+                    mode="scaleToFill"
+                    onClick={this.handleBackgroundClick}
+                    onLoad={this.onBackgroundLoaded}
+                  />
+                </View> 
+                <View className="foreground-image">
+                  <Image 
+                    src={foreground.remoteUrl} 
+                    style="width:100%;height:100%" 
+                    mode="scaleToFill"
+                    onLoad={this.onForegroundLoaded}
+                  />
+                </View>                
+                {coverList.map(item => {
+                  return <Sticker 
+                          key={item.id}
+                          url={item.remoteUrl} 
+                          stylePrams={item}
+                          framePrams={frame}
+                          onChangeStyle={this.handleChangeCoverStyle}
+                          onImageLoaded={this.onCoverLoaded}
+                          onTouchstart={this.handleCoverTouchstart}
+                          onTouchend={this.handleCoverTouchend}
+                        />
+                })}
+                <Voice status={music.play ? 'on' : 'off'} onClick={this.handleToggleMusic}/>
+              </View> 
             </View>  
           </View>
           <SceneList 
@@ -1218,4 +1314,4 @@ class Dynamic extends Component {
   }
 }
 
-export default Dynamic as ComponentClass<PageOwnProps, PageState>
+export default Filter as ComponentClass<PageOwnProps, PageState>

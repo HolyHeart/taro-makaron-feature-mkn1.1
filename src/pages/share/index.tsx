@@ -15,11 +15,7 @@ import tool from '@/utils/tool'
 import './index.less'
 
 // const demo = 'https://static01.versa-ai.com/upload/201bae375f8b/18e62d91-fc04-46c6-8f21-7224b53eb4b7.mp4'
-type PageStateProps = {
-  counter: {
-    num: number
-  }
-}
+type PageStateProps = {}
 
 type PageDispatchProps = {}
 
@@ -65,6 +61,19 @@ class Share extends Component {
   componentWillUnmount () { }
   componentDidShow () { }
   componentDidHide () { }
+  onShareAppMessage (res) {
+    const themeData = globalData.themeData || {generalShowUrl: '', shareContent: ''}
+    const shareContent = themeData.shareContent || ''
+    const url = themeData.generalShowUrl
+    return {
+      title: shareContent,
+      path: '/pages/home/index',
+      imageUrl: url,			
+      success: () => {
+        console.log('分享成功')
+      },
+    }
+  }
 
   _initPage = async () => {
     await Session.set()

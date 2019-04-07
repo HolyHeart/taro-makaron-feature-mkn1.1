@@ -76,7 +76,7 @@ class Home extends Component {
       console.log(res.target)
     }
     return {
-      title: '马卡龙',
+      title: '马卡龙玩图',
       path: '/pages/home/index'
     }
   }

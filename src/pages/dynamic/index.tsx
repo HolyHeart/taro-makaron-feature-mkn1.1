@@ -153,6 +153,9 @@ class Dynamic extends Component {
         remoteUrl: '',
         width: 0,
         height: 0
+      },
+      shareGif: {
+        remoteUrl: '',
       }
     },
     videoRatio: 2
@@ -213,7 +216,8 @@ class Dynamic extends Component {
     if (!shareImage.remoteUrl) {
       return {
         title: title,
-        path: '/pages/home'
+        path: '/pages/home/index',
+        imageUrl: currentScene.thumbnailUrl,	
       }
     }
     console.log(title, path, shareImageUrl)
@@ -385,6 +389,19 @@ class Dynamic extends Component {
         reject(err)
       }
     })
+  }
+  // 生成gif
+  createGif = async (loading = false, callback) => {
+    // 生成gif      
+    loading && Taro.showLoading({title: '生成Gif中...', mask: true})
+    try {
+      const gif_result = await this.createShareSource('gif') 
+      const shareGifRemoteUrl = gif_result.gif
+      typeof callback === 'function' && callback(shareGifRemoteUrl)   
+      loading && Taro.hideLoading()
+    } catch (err) {   
+      loading && Taro.hideLoading()       
+    }
   }
 
   // 初始化系统信息
@@ -666,17 +683,47 @@ class Dynamic extends Component {
           height: shareVideoInfo.height
         }
       }
-    }, () => {
-      console.log('result', this.state)
     })
+    // 生成gif
+    this.handleSaveGif(false)
   }
   // 再玩一次
   handleResultClick = () => {
     this.setResultModalStatus(false)
   }
   // 保存gif
-  handleSaveGif = () => {
-    console.log('handleSaveGif')
+  handleSaveGif = (loading, callback?) => {
+    this.createGif(loading, (remoteUrl) => {
+      const { result } = this.state 
+      this.setState({
+        result: {
+          ...result,
+          shareGif: {
+            remoteUrl: remoteUrl
+          }
+        }
+      }, () => {
+        typeof callback === 'function' && callback(remoteUrl)
+      })   
+    })
+  }
+  // 显示gif
+  handleShowGif =  () => {
+    const { result } = this.state
+    const remoteUrl = result.shareGif && result.shareGif.remoteUrl
+    if (!remoteUrl) {
+      this.handleSaveGif(true, (remoteUrl) => {
+        Taro.previewImage({
+          current: remoteUrl, 
+          urls: [remoteUrl]
+        })
+      })
+    } else {
+      Taro.previewImage({
+        current: remoteUrl,
+        urls: [remoteUrl]
+      })
+    }        
   }
 
   setResultModalStatus = (flag = false) => {
@@ -1160,8 +1207,8 @@ class Dynamic extends Component {
             }}
             renderButton={
               <View className="btn-wrap">
-                <Button className="custom-button pink btn-1" hoverClass="btn-hover" openType="share"  onClick={this.handleSaveGif}>分享给好友</Button>
-                <Button className="custom-button dark btn-2" hoverClass="btn-hover"  onClick={this.handleSaveGif}>保存Gif</Button>            
+                <Button className="custom-button pink btn-1" hoverClass="btn-hover" openType="share" >分享给好友</Button>
+                <Button className="custom-button dark btn-2" hoverClass="btn-hover"  onClick={this.handleShowGif}>保存Gif</Button>            
               </View>
             }
           />

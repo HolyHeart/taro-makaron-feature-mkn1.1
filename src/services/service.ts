@@ -130,6 +130,19 @@ export const core = {
       },
     })
   },
+  reportFormId: function (formId) {
+    const postData = {
+      clientType: 'mini-program',
+      timestamp: Date.now().toString(),
+      formId: formId
+    }
+    return request({
+      url: api.core.reportFormId,
+      method: 'POST',
+      header: {'content-type': 'application/x-www-form-urlencoded'},
+      data: postData,
+    })
+  },
   segmentDemo: function (rawImgUrl, resImgUrl, time = 100) {
     console.log('分割图片：', rawImgUrl)
     return new Promise((resolve) => {

@@ -35,6 +35,7 @@ export const api = {
     theme: `${getHost('miniapi', ENV)}/bg/:themeId/themeData`,
     recommend: `${getHost('miniapi', ENV)}/scene/recommend`,
     filterConvertVideo: `${getHost('miniapi', ENV)}/video/merge`,
+    reportFormId: `${getHost('miniapi', ENV)}/user/miniProgram/report`,
   }
 }
 export default {

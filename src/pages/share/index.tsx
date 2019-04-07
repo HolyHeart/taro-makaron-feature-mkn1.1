@@ -150,11 +150,8 @@ class Share extends Component {
     })
   }
 
-  formSubmit = (e) => {
-    console.log('formSubmit', e)
-  }
   handleGetUserInfo = (e) => {
-    console.log('handleGetUserInfo', e)
+    // console.log('handleGetUserInfo', e)
     const {detail: {userInfo}} = e   
     if (userInfo) {
       globalData.userInfo = userInfo      
@@ -257,7 +254,11 @@ class Share extends Component {
     this.getThemeData()
   }
   handleFormSubmit = (e) => {
-    console.log('handleFormSubmit', e)
+    // console.log('handleFormSubmit', e)
+    const {detail: {formId}} = e
+    if (formId) {
+      service.core.reportFormId(formId)
+    }
   }
 
   render () {
@@ -296,7 +297,7 @@ class Share extends Component {
           }          
         </View>
         <View className='sub-section'>
-          <Form onSubmit={this.formSubmit} reportSubmit>
+          <Form onSubmit={this.handleFormSubmit} reportSubmit>
             <Button
               className="button animation-btn" 
               hoverClass="btnhover"

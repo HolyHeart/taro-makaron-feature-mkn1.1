@@ -12,6 +12,7 @@ import Voice from '@/components/Voice'
 import Sticker from '@/components/Sticker'
 import SceneList from '@/components/SceneList'
 import ResultModal from '@/components/ResultModal'
+import Loading from '@/components/Loading'
 import globalData from '@/services/global_data'
 import Session from '@/services/session'
 import service from '@/services/service'
@@ -21,35 +22,6 @@ import './index.less'
 
 // const mock_path = 'https://static01.versa-ai.com/upload/783272fc1375/999deac02e85f3ea.png'
 // const mock_segment_url = 'https://static01.versa-ai.com/images/process/segment/2019/01/14/b4cf047a-17a5-11e9-817f-00163e001583.png'
-const getSceneList = function (sceneList:Array<object> = []) {
-  const result = []
-  sceneList.forEach(v => {
-    const {sceneType, bgUrl, sceneId, sceneName, shareContent, thumbnailUrl, sceneConfig, segmentType, segmentZIndex, bgZIndex} = v
-    let supportMusic = false
-    let hasIcon = false
-    if (sceneConfig) {
-      const {music = {}} = JSON.parse(sceneConfig)
-      supportMusic = music.fileUrl ? true : false      
-    } 
-    if (sceneType === 2 || sceneType === 1 ) {
-      hasIcon = true
-    }
-    result.push({
-      sceneType,
-      bgUrl, 
-      sceneId, 
-      sceneName, 
-      shareContent, 
-      thumbnailUrl, 
-      sceneConfig, 
-      segmentType, 
-      segmentZIndex, 
-      bgZIndex, 
-      supportMusic,
-      hasIcon})
-  })
-  return result
-}
 
 type PageStateProps = {
   global: {
@@ -170,7 +142,8 @@ class Dynamic extends Component {
       bgUrl: '', // ...
       shareContent: '',
       sceneId: '',
-    },    
+    },  
+    loading: false,
     result: {
       show: false,
       shareImage: {
@@ -282,6 +255,16 @@ class Dynamic extends Component {
     Taro.redirectTo({
       url: '/pages/home/index'
     }) 
+  }
+  showLoading = () => {
+    this.setState({
+      loading: true
+    })
+  }
+  hideLoading = () => {
+    this.setState({
+      loading: false
+    })
   }
   setStateTarget = (key, value = {}, callback?:() => void) => {
     const target = this.state[key]
@@ -429,15 +412,19 @@ class Dynamic extends Component {
         type: -1,
         loading: true,
         showLoading: () => {
-          console.log('showLoading')
-          Taro.showLoading({
-            title: '照片变身中...',
-            mask: true,
-          })
+          // console.log('showLoading')
+          // Taro.showLoading({
+          //   title: '照片变身中...',
+          //   mask: true,
+          // })
+          this.showLoading()
         },
         hideLoading: () => {
-          console.log('hideLoading')
-          Taro.hideLoading()
+          // console.log('hideLoading')
+          // Taro.hideLoading()          
+          if (this.state.foreground.loaded) {
+            this.hideLoading()
+          }
         }
       })
       const {cateImageDict = {}} = separateRes.result || {}
@@ -448,6 +435,7 @@ class Dynamic extends Component {
       } 
     } catch(err) {
       console.log('catch', err)
+      this.hideLoading()
       return {}
     }
     return (separateRes && separateRes.result) || {}
@@ -473,7 +461,7 @@ class Dynamic extends Component {
       globalData.themeData = res.result && res.result.result   
     }
     const themeData = globalData.themeData || {sceneList: []}
-    this.themeData.sceneList = getSceneList(themeData.sceneList || [])
+    this.themeData.sceneList = work.getSceneList(themeData.sceneList || [])
 
     // 去除sceneConfig属性
     const sceneList = this.themeData.sceneList.map((v:object) => {
@@ -544,7 +532,8 @@ class Dynamic extends Component {
   }
   // 人物
   onForegroundLoaded = (detail:object, item?:any) => {
-    // console.log('handleForegroundLoaded', detail, item)
+    // console.log('handleForegroundLoaded', detail, item)    
+    this.hideLoading()
     const {width, height} = detail
     this.setStateTarget('foreground', {
       originWidth: width,
@@ -1101,7 +1090,7 @@ class Dynamic extends Component {
 
   render () {
     // const { global } = this.props
-    const { rawImage, frame, foreground, coverList, sceneList, currentScene, result, music } = this.state
+    const { loading, rawImage, frame, foreground, coverList, sceneList, currentScene, result, music } = this.state
     return (
       <View className='page-dynamic'>
         <Title
@@ -1159,7 +1148,8 @@ class Dynamic extends Component {
           <View className="button-section">
             <Button className="custom-button pink" hoverClass="btn-hover" onClick={this.handleOpenResult}>保存</Button>
           </View>        
-        </View>        
+        </View> 
+        <Loading visible={loading} />       
         {result.show &&
           <ResultModal 
             type='video'

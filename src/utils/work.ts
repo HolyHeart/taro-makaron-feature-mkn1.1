@@ -25,6 +25,35 @@ const getDomRect = (id:string, callback?:(rect:object)=>void) => {
     typeof callback === 'function' && callback(rect)
   }).exec()
 }
+const getSceneList = function (sceneList:Array<object> = []) {
+  const result = []
+  sceneList.forEach(v => {
+    const {sceneType, bgUrl, sceneId, sceneName, shareContent, thumbnailUrl, sceneConfig, segmentType, segmentZIndex, bgZIndex} = v
+    let supportMusic = false
+    let hasIcon = false
+    if (sceneConfig) {
+      const {music = {}} = JSON.parse(sceneConfig)
+      supportMusic = music.fileUrl ? true : false      
+    } 
+    if (sceneType === 2 || sceneType === 1 ) {
+      hasIcon = true
+    }
+    result.push({
+      sceneType,
+      bgUrl, 
+      sceneId, 
+      sceneName, 
+      shareContent, 
+      thumbnailUrl, 
+      sceneConfig, 
+      segmentType, 
+      segmentZIndex, 
+      bgZIndex, 
+      supportMusic,
+      hasIcon})
+  })
+  return result
+}
 const getSceneInfoById = (id:string, list:Array<any> = [], key:string) => {
   return list.filter(v => {
     return v[key] === id
@@ -104,6 +133,7 @@ const work = {
   pageToHome,
   pageToError,
   getDomRect,
+  getSceneList,
   getSceneInfoById,
   getCoverInfoById,
   formatRawCoverList,

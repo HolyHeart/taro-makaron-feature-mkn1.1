@@ -3,25 +3,25 @@ import Taro, { Component, Config } from '@tarojs/taro'
 import { View, Form, Button, Image, Video } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 
-import { add, minus, asyncAdd } from '@/model/actions/counter'
 import Title from '@/components/Title'
 import CustomIcon from '@/components/Icon'
 import RecommendList from '@/components/RecommendList'
+import AuthModal from '@/components/AuthModal'
+import { appConfig } from '@/services/config'
 import Session from '@/services/session'
 import service from '@/services/service'
+import globalData from '@/services/global_data'
+import tool from '@/utils/tool'
 import './index.less'
-const demo = 'http://hiphotos.baidu.com/news/crop%3D48%2C0%2C532%2C357%3Bq%3D80%3B/sign=e160db01df1373f0e17035df993b73d7/a71ea8d3fd1f4134a72946042b1f95cad1c85ea9.jpg'
+
+// const demo = 'https://static01.versa-ai.com/upload/201bae375f8b/18e62d91-fc04-46c6-8f21-7224b53eb4b7.mp4'
 type PageStateProps = {
   counter: {
     num: number
   }
 }
 
-type PageDispatchProps = {
-  add: () => void
-  dec: () => void
-  asyncAdd: () => any
-}
+type PageDispatchProps = {}
 
 type PageOwnProps = {}
 
@@ -33,18 +33,10 @@ interface Share {
   props: IProps;
 }
 
-@connect(({ counter }) => ({
-  counter
+@connect(({ }) => ({
+
 }), (dispatch) => ({
-  add () {
-    dispatch(add())
-  },
-  dec () {
-    dispatch(minus())
-  },
-  asyncAdd () {
-    dispatch(asyncAdd())
-  }
+  
 }))
 class Share extends Component {
   config: Config = {
@@ -52,12 +44,17 @@ class Share extends Component {
   }
 
   state = {
-    shareSourceType: 'video', // 'video' 'image'
-    shareSource: 'https://static01.versa-ai.com/upload/201bae375f8b/18e62d91-fc04-46c6-8f21-7224b53eb4b7.mp4',
+    showAuth: false,
+    isFromApp: false,
+    shareSourceType: 'image', // 'video' 'image'
+    shareSource: '',
     videoPoster: '',
     width: 690,
     height: 920,
-    recommendList: []
+    recommendList: [],
+    themeId: '',
+    sceneId: '',
+    themeData: {},
   }
   componentDidMount () { 
     this._initPage()
@@ -71,14 +68,71 @@ class Share extends Component {
 
   _initPage = async () => {
     await Session.set()
+    this.processLoadData()
+    // 提前获取主题信息
+    this.getThemeData((themeData = {}) => {
+      this.setState({
+        themeData
+      })
+    })
     this.getRecommendList()
   }
+
+  processLoadData = () => {
+    console.log('share page', this.$router.params) // 输出 { id: 2, type: 'test' }
+    let isFromApp, shareSourceType = 'image', videoPoster = '', shareVideoInfo = {width: 690, height: 920,}
+    let {shareSource, themeId, sceneId, from, remoteURL = '', width = 690, height = 920} = this.$router.params
+    if (from === 'app') {
+      isFromApp = true
+      if (remoteURL.indexOf('versa-ai.com') > -1) {
+        shareSource = remoteURL
+      } else {
+        shareSource = appConfig.imageHost + remoteURL 
+      }               
+    } else {
+      isFromApp = false
+      if (shareSource) {
+        shareSource = decodeURIComponent(shareSource)          
+      }       
+    }
+    shareSourceType = tool.calcSourceType(shareSource)
+    if (shareSourceType === 'video') {          
+      videoPoster = `${shareSource}?x-oss-process=video/snapshot,t_0,f_png,w_0,h_0,m_fast` 
+      shareVideoInfo = tool.calcVideoSize(690, 920, width, height)
+    }
+    if (!themeId) {     
+      themeId = appConfig.themeId
+    }
+    globalData.themeId = themeId
+    globalData.sceneId = sceneId
+    this.setState({
+      isFromApp,
+      shareSourceType,
+      shareSource,
+      videoPoster,
+      width: shareVideoInfo.width,
+      height: shareVideoInfo.height,
+      themeId,
+      sceneId,
+    })
+  }
+
   getRecommendList = async () => {
     const recommendData = await service.core.recommend()
-    console.log('recommendData', recommendData.result.result)
+    // console.log('recommendData', recommendData.result.result)
     this.setState({
       recommendList: (recommendData.result && recommendData.result.result) || []
     })
+  }
+
+  getThemeData = async (callback?:(data?)=>void) => {
+    if (!globalData.themeId) {
+      return
+    }
+    const themeId = globalData.themeId || ''
+    const themeData = await service.core.theme(themeId)
+    globalData.themeData = themeData.result.result
+    typeof callback === 'function' && callback(themeData.result.result)
   }
 
   pageToHome = () => {
@@ -86,15 +140,119 @@ class Share extends Component {
       url: '/pages/home/index'
     })
   }
+
   formSubmit = (e) => {
     console.log('formSubmit', e)
   }
   handleGetUserInfo = (e) => {
     console.log('handleGetUserInfo', e)
+    const {detail: {userInfo}} = e   
+    if (userInfo) {
+      globalData.userInfo = userInfo      
+      this.todo()
+    } else {
+      Taro.showToast({
+        title: '请授权',
+        icon: 'success',
+        duration: 2000
+      })
+    }
+  }
+  todo = () => {
+    this.showActionSheet((path)=>{      
+      globalData.choosedImage = path
+      // console.log('choosedImage', path, globalData)
+      const { themeData = {}, sceneId } = globalData      
+      let url = ''
+      if (themeData.sceneType === 1) {
+        url = '/pages/filter/index'
+      } else if (themeData.sceneType === 2) {
+        url = '/pages/dynamic/index'
+      } else if (themeData.sceneType === 3) {
+        url = '/pages/segment/index'
+      } else {
+        url = '/pages/editor/index'
+      }
+      if (sceneId) {
+        url = url + '?sceneId=' + sceneId
+      }        
+      Taro.redirectTo({url})         
+    })
+  }
+  showActionSheet = async (callback) => {
+    const _this = this
+    Taro.showActionSheet({
+      itemList: [
+        '拍摄人像照',
+        '从相册选择带有人像的照片',
+      ],
+      success: function ({tapIndex}) {
+        if (tapIndex === 0) {
+          Taro.authorize({
+            scope: "scope.camera",
+          }).then(res => {
+            // console.log('res', res)
+            Taro.chooseImage({
+              count: 1,
+              sourceType: ['camera'],
+              sizeType: ['compressed '],
+            }).then(({tempFilePaths: [path]}) => {
+              typeof callback === 'function' && callback(path)
+            })
+          }, err => {
+            console.log('authorize err', err)
+            Taro.getSetting().then(authSetting => {
+              if (authSetting['scope.camera']) {
+              } else {
+                Taro.showModal({
+                  title: '拍摄图片需要授权',
+                  content: '拍摄图片需要授权\n可以授权吗？',
+                  confirmText: "允许",
+                  cancelText: "拒绝",                      
+                }).then(res => {     
+                  if (res.confirm) {
+                    _this.showAuthModal(true)
+                  }
+                })
+              }                
+            })
+          })
+        } else if (tapIndex === 1) { 
+          Taro.chooseImage({
+            count: 1,
+            sourceType: ['album'],
+          }).then(({tempFilePaths: [path]}) => {
+            typeof callback === 'function' && callback(path)
+          })
+        }		
+      }
+    }).catch(err => console.log(err))
+  }
+  showAuthModal = (flag = false) => {
+    this.setState({
+      showAuth: flag
+    })
+  }
+  closeAuthModal = () => {
+    this.setState({
+      showAuth: false
+    })
+  }
+  handleRecommendClick = (data) => {
+    if (!data.themeId) {
+      return
+    }
+    globalData.themeData = null
+    globalData.themeId = data.themeId  
+    globalData.sceneId = ''
+    this.getThemeData()
+  }
+  handleFormSubmit = (e) => {
+    console.log('handleFormSubmit', e)
   }
 
   render () {
-    const {shareSourceType, shareSource, videoPoster, width, height, recommendList} = this.state
+    const {shareSourceType, shareSource, videoPoster, width, height, recommendList, showAuth} = this.state
     return (
       <View className='page-share'>
         <Title
@@ -106,10 +264,10 @@ class Share extends Component {
         >马卡龙玩图</Title>
         <View className='main-section'>
           {shareSourceType === 'image' && 
-            <View className='pic-wrap'>
-              <View class="share-bg"></View>
+            <View className='pic-wrap'>              
+              {themeData.sceneType === 3 && <View class="share-bg"></View>}
               <View class="share-img">
-                <Image src={demo} style='width: 100%; height: 100%' mode='scaleToFill'/>      
+                <Image src={shareSource} style='width: 100%; height: 100%' mode='scaleToFill'/>      
               </View>
             </View>
           }
@@ -121,7 +279,7 @@ class Share extends Component {
                 loop
                 autoplay
                 src={shareSource}
-                poster={demo}
+                poster={videoPoster}
                 objectFit='cover'
                 controls
               ></Video>            
@@ -139,13 +297,18 @@ class Share extends Component {
           </Form>    
           <View className='recommend-wrap'>
             <View className='recommend-title'>你还可以玩：</View>
-            <RecommendList list={recommendList} />
+            <RecommendList 
+              list={recommendList} 
+              onGetUserInfo={this.handleGetUserInfo} 
+              onFormSubmit={this.handleFormSubmit}
+              onClick={this.handleRecommendClick}
+            />
           </View>      
-        </View>        
+        </View> 
+        {showAuth && <AuthModal onClick={this.closeAuthModal}/>}       
       </View>
     )
   }
 }
 
 export default Share as ComponentClass<PageOwnProps, PageState>
-{/* <View className=''></View> */}

@@ -52,7 +52,7 @@ class Error extends Component {
     const { choosedImage } = this.state
     return (
       <View className='page-error'>   
-        <Image className='bg' src={bg} mode="widthFix" style="width:100%; height:100%"/>     
+        <Image className='bg' src={bg} mode='aspectFill' style='width:100%; height:100%'/>     
         <View className='main'>
           <View class='pic-wrap'> 
             <View class='error-image'>

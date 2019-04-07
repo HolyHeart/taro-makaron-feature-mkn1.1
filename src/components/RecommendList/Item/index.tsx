@@ -7,6 +7,8 @@ type ComponentStateProps = {}
 
 type ComponentOwnProps = {
   onClick?: () => void,
+  onGetUserInfo?: (item:object) => void,
+  onFormSubmit?: (item:object) => void,
   data: object,
 }
 
@@ -21,12 +23,16 @@ interface Item {
 class Item extends Component {
   static defaultProps = {
     data: {},
+    onGetUserInfo: () => {},
+    onFormSubmit: () => {},
   }  
   formSubmit = (e) => {
-    console.log('formSubmit', e)
+    const { onFormSubmit} = this.props
+    typeof onFormSubmit === 'function' && onFormSubmit(e)
   }
   handleGetUserInfo = (e) => {
-    console.log('handleGetUserInfo', e)
+    const { onGetUserInfo} = this.props
+    typeof onGetUserInfo === 'function' && onGetUserInfo(e)
   }
   render() {
     const { onClick, data } = this.props
@@ -35,7 +41,7 @@ class Item extends Component {
         <Form onSubmit={this.formSubmit} reportSubmit>
             <Button
               className="recommend-button" 
-              hoverClass="btnhover"
+              hoverClass="btn-hover"
               openType="getUserInfo" 
               onGetUserInfo={this.handleGetUserInfo}
               formType='submit'>

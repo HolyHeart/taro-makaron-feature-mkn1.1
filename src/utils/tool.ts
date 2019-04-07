@@ -104,6 +104,32 @@ const calcCenterPosition = (offsetX, offsetY, width, height) => {
     y: offsetY + 0.5 * height
   }
 }
+// 计算资源类型
+const calcSourceType = (src:string) => {
+  let type = 'image'
+  if (/\.(png|svg|jpg|gif|jpeg)$/i.test(src)) {
+    type = 'image'
+  } else if (/\.(mp4|avi|mpeg)$/i.test(src)) {
+    type = 'video'
+  }
+  return type
+}
+// 计算视频储存
+const calcVideoSize = function (maxWidth = 612, maxHeight = 816, width, height) {
+  const frame_ratio = maxWidth / maxHeight
+  const video_ratio = width / height
+  if ( frame_ratio < video_ratio ) {
+    width = maxWidth
+    height = width / video_ratio
+  } else {
+    height = maxHeight
+    width = height * video_ratio
+  }
+  return {
+    width,
+    height
+  }
+}
 
 
 const tool = {  
@@ -153,7 +179,9 @@ const tool = {
     return false
   },   
   getRotateAngle,
-  calcCenterPosition,  
+  calcCenterPosition, 
+  calcSourceType,
+  calcVideoSize
 }
 
 export default tool

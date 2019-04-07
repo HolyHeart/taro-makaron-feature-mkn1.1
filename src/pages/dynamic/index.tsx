@@ -234,7 +234,7 @@ class Dynamic extends Component {
       width: shareVideo.width,
       height: shareVideo.height
     }
-    const path = tool.formatQueryUrl('/pages/index', data)
+    const path = tool.formatQueryUrl('/pages/share/index', data)
     const {userInfo = {}} = globalData 
     const title = `@${userInfo.nickName}：${shareContent}`
     if (!shareImage.remoteUrl) {
@@ -482,11 +482,18 @@ class Dynamic extends Component {
         ...rest
       }
     })
-    const currentScene = sceneList[0]
+
+    const {sceneId} = this.$router.params
+    let currentScene 
+    if (sceneId) {
+      currentScene = sceneList.find(v => v.sceneId === sceneId) || {}
+    } else {
+      currentScene = sceneList[0]
+    }
 
     this.setState({
       sceneList: sceneList,
-      currentScene: currentScene
+      currentScene: currentScene || {}
     }, () => {
       // console.log('state', this.state)
       typeof callback === 'function' && callback()

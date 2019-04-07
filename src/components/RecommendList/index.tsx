@@ -8,6 +8,8 @@ type ComponentStateProps = {}
 
 type ComponentOwnProps = {
   onClick?: (item:object) => void,
+  onGetUserInfo?: (item:object) => void,
+  onFormSubmit?: (item:object) => void,
   list: Array<object>,
   styleObj: object
 }
@@ -24,7 +26,9 @@ class RecommendList extends Component {
 
   static defaultProps = {
     list: [],
-    currentScene: {}
+    currentScene: {},
+    onGetUserInfo: () => {},
+    onFormSubmit: () => {},
   }
 
   handleClick = (item) => {
@@ -33,7 +37,7 @@ class RecommendList extends Component {
   }
 
   render() {
-    const { styleObj, list } = this.props
+    const { styleObj, list, onGetUserInfo, onFormSubmit } = this.props
     return (
       <View className="recommend" style={styleObj}>
         <ScrollView 
@@ -44,6 +48,8 @@ class RecommendList extends Component {
             return <Item 
                 key={index}
                 data={item}
+                onGetUserInfo={onGetUserInfo}
+                onFormSubmit={onFormSubmit}
                 onClick={this.handleClick.bind(this, item)}
               />
           })}

@@ -101,12 +101,13 @@ class Share extends Component {
     } else {
       isFromApp = false
       if (shareSource) {
-        shareSource = decodeURIComponent(shareSource)          
+        shareSource = decodeURIComponent(shareSource)  
       }       
-    }
+    }      
     shareSourceType = tool.calcSourceType(shareSource)
     if (shareSourceType === 'video') {          
       videoPoster = `${shareSource}?x-oss-process=video/snapshot,t_0,f_png,w_0,h_0,m_fast` 
+      debugger
       shareVideoInfo = tool.calcVideoSize(690, 920, width, height)
     }
     if (!themeId) {     

@@ -25,13 +25,12 @@ class App extends Component {
    */
   config: Config = {
     pages: [
-      
-      'pages/home/index',      
+      'pages/home/index', 
+      'pages/share/index',            
       'pages/dynamic/index',  
       'pages/filter/index',    
       'pages/editor/index',
-      'pages/error/index', 
-      'pages/share/index', 
+      'pages/error/index',       
       'pages/index/index'
     ],
     window: {

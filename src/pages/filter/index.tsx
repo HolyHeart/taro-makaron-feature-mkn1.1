@@ -571,7 +571,7 @@ class Filter extends Component {
         size
       }
     }, () => {
-      console.log('filter', this.state.filter)
+      // console.log('filter', this.state.filter)
     }) 
   }
   // 初始化贴纸

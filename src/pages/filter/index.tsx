@@ -110,6 +110,7 @@ class Filter extends Component {
     },
     foreground: {
       id: 'foreground',
+      // remoteUrl: 'https://static01.versa-ai.com/images/process/segment/2019/04/08/f3e6de00-59a2-11e9-aa20-525400c5c0fe.png',
       remoteUrl: '',
       zIndex:2,
       width:0,
@@ -121,10 +122,20 @@ class Filter extends Component {
       originHeight: 0, // 原始高度
       autoWidth: 0, // 自适应后的宽度
       autoHeight: 0, // 自适应后的高度
-      autoScale: 0, // 相对画框缩放比例
-      fixed: false, // 是否固定
-      isActive: true, // 是否激活
-      visible: true, // 是否显示
+      autoScale: 0, // 相对画框缩放比例      
+      loaded: false, // 是否加载完毕
+    },
+    filter: {
+      // remoteUrl: 'https://static01.versa-ai.com/upload/prod/image/3da2df2b-fab9-40d0-8b11-0f1bd96247bf.png',
+      remoteUrl: '',
+      axis: 'x', // x y轴
+      size: 1, // 大小
+      originWidth: 0, // 原始宽度
+      originHeight: 0, // 原始高度
+      width: 100, // 实际宽度
+      height: 100, // 实际高度
+      x: 0, // x坐标
+      y: 0, // y坐标
       loaded: false, // 是否加载完毕
     },
     coverList: [
@@ -252,6 +263,7 @@ class Filter extends Component {
     this.initRawImage()
     await Session.set()
     this.initSceneData(() => {
+      this.initFilterData()
       this.initCoverData()
     })    
     const separateResult = globalData.separateResult = await this.initSegment()
@@ -530,6 +542,28 @@ class Filter extends Component {
       typeof callback === 'function' && callback()
     })
   } 
+  // 初始化夹层滤镜
+  initFilterData = () => {
+    const { currentScene } = this.state
+    const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
+    const sceneConfig = JSON.parse(sceneInfo.sceneConfig)
+    const {filter = {}} = sceneConfig
+    const remoteUrl = filter.imageUrls[0]
+    const loaded = false
+    const axis = filter.position && filter.position.axis || 'x'
+    const size = filter.position && filter.position.size || 1  
+    this.setState({      
+      filter: {
+        ...this.state.filter,
+        remoteUrl,
+        loaded,
+        axis,
+        size
+      }
+    }, () => {
+      console.log('filter', this.state.filter)
+    }) 
+  }
   // 初始化贴纸
   initCoverData = () => {
     const {currentScene} = this.state    
@@ -546,7 +580,7 @@ class Filter extends Component {
   // 初始化音乐
   initMusicData () {
     const { currentScene } = this.state
-    const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
+    const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId') || {}
     const sceneConfig = JSON.parse(sceneInfo.sceneConfig)
     const remoteUrl = sceneConfig.music && sceneConfig.music.fileUrl
     if (remoteUrl) {
@@ -567,10 +601,7 @@ class Filter extends Component {
   }
   
   // 背景
-  handleBackgroundClick = () => {
-    this.setForegroundActiveStatus(false, () => {
-      this.storeForegroundInfo()
-    })
+  handleBackgroundClick = () => {    
     this.setCoverListActiveStatus({type: 'all'}, false)    
   }
   // 背景图片加载
@@ -586,8 +617,9 @@ class Filter extends Component {
     })
   }
   // 人物
-  onForegroundLoaded = (detail:object, item?:any) => {
-    // console.log('handleForegroundLoaded', detail, item)    
+  onForegroundLoaded = (e:object) => {
+    const {detail= {}} = e
+    console.log('handleForegroundLoaded', detail)    
     this.hideLoading()
     const {width, height} = detail
     this.setStateTarget('foreground', {
@@ -595,9 +627,21 @@ class Filter extends Component {
       originHeight: height,
       loaded: true
     }, () => {
-      this.foregroundAuto()
       // 初始化音乐
       this.initMusicData()
+    })
+  }
+  // 滤镜
+  onFilterLoaded = (e:object,) => {    
+    const {detail= {}} = e
+    console.log('onFilterLoaded', detail)
+    const {width = 0, height = 0} = detail
+    this.setStateTarget('filter', {
+      originWidth: width,
+      originHeight: height,
+      loaded: true
+    }, () => {
+      this.filterAuto() 
     })
   }
   handleChangeStyle = (data) => {
@@ -610,14 +654,7 @@ class Filter extends Component {
     }, () => {      
     }) 
   }
-  handleForegroundTouchstart = (sticker) => {
-    // console.log('handleForegroundTouchstart', sticker)
-    this.setForegroundActiveStatus(true)
-    this.setCoverListActiveStatus({type: 'all'}, false)
-  }
-  handleForegroundTouchend = () => {
-    this.storeForegroundInfo()
-  }
+ 
   // 贴纸
   onCoverLoaded = (detail:object, item?:any) => {
     // console.log('handleCoverLoaded', detail, item)
@@ -667,8 +704,8 @@ class Filter extends Component {
       currentScene: scene
     }, () => {
       // console.log('handleChooseScene', this.state.currentScene)
-      this.foregroundAuto()
       this.initCoverData()
+      this.initFilterData()   
       // 初始化音乐
       this.initMusicData()
     })
@@ -852,210 +889,40 @@ class Filter extends Component {
     }
     return result
   }
-  
-  // 人物自适应
-  foregroundAuto = (callback?:()=>void) => {
-    // 先判断是否有缓存
-    const {currentScene} = this.state
-    const sceneId = currentScene.sceneId || 'demo_scene'  
-    const cache_foreground = this.cache['foreground']
-    const scene_foreground_params = cache_foreground.get(sceneId)
-
-    if ( scene_foreground_params ) {
-      this.setStateTarget('foreground', {
-        ...scene_foreground_params
-      }, () => {
-        typeof callback === 'function' && callback()
-      })
-      return
-    }
-
-    const size = this.calcForegroundSize()
-    const position = this.calcForegroundPosition(size)
-    this.setStateTarget('foreground', {
-      ...size,
-      ...position
+  // 滤镜自适应
+  filterAuto = (callback?:()=>void) => {
+    // 获取图片原始大小
+    const { filter, background } = this.state
+    const { originWidth = 0, originHeight = 0, axis = 'x', size = 1} = filter || {}
+    const boxWidth = background.width
+    const boxHeight = background.height
+    // 计算宽高比例
+    let ratio = originWidth / originHeight
+    let width = 0, height = 0, x = 0, y = 0
+    if (axis === 'x') {
+      // 图片宽度以x轴计算
+      width = boxWidth * size
+      height = width / ratio
+    } else {
+      height = boxHeight * size
+      width = height * ratio
+    }    
+    // 位移使图片居中
+    x -= (width - boxWidth) * 0.5
+    y -= (height - boxHeight) * 0.5
+    this.setState({
+      filter: {
+        ...this.state.filter,
+        width,
+        height,
+        x,
+        y
+      }
     }, () => {
       typeof callback === 'function' && callback()
     })
-  } 
-  // 计算人物尺寸
-  calcForegroundSize = () => {
-    const {currentScene, sceneList, foreground, frame} = this.state
-    const {originWidth, originHeight} = foreground    
-    const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
-
-    const imageRatio = originWidth / originHeight
-    const params = JSON.parse(sceneInfo.sceneConfig)
-    const autoScale = parseFloat(params.size.default)
-
-    const result = {
-      autoScale,
-      autoWidth: 0,
-      autoHeight: 0,
-      width: 0,
-      height: 0
-    }
-    if (originWidth > originHeight) {
-      // 以最短边计算
-      result.autoWidth = frame.width * autoScale
-      result.autoHeight = result.autoWidth / imageRatio
-    } else {        
-      result.autoHeight = frame.height * autoScale
-      result.autoWidth = result.autoHeight * imageRatio
-    } 
-    result.width = result.autoWidth
-    result.height = result.autoHeight
-
-    return result
   }
-  // 计算人物位置
-  calcForegroundPosition = ({width, height} = {}) => {
-    const {currentScene, sceneList, foreground, frame} = this.state
-    const {originWidth, originHeight} = foreground
-    width = width || foreground.width
-    height = height || foreground.height    
-    const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
-
-    const boxWidth = frame.width
-    const boxHeight = frame.height
-    const sceneConfig = JSON.parse(sceneInfo.sceneConfig)
-    const {position} = sceneConfig
-    const type = position.place || '0'
-    const result = {
-      x: 0,
-      y: 0,
-      rotate: 0
-    }
-    switch (type) {
-      case '0':
-        result.x = (boxWidth - width) * 0.5
-        result.y = (boxHeight - height) * 0.5
-        break
-      case '1':
-        result.x = 0
-        result.y = 0
-        break
-      case '2':
-        result.x = (boxWidth - width) * 0.5
-        result.y = 0
-        break
-      case '3':
-        result.x = boxWidth - width
-        result.y = 0
-        break
-      case '4':
-        result.x = boxWidth - width
-        result.y = (boxHeight - height) * 0.5
-        break
-      case '5':
-        result.x = boxWidth - width
-        result.y = boxHeight - height
-        break
-      case '6':
-        result.x = (boxWidth - width) * 0.5
-        result.y = boxHeight - height
-        break
-      case '7':
-        result.x = 0
-        result.y = boxHeight - height
-        break
-      case '8':
-        result.x = 0
-        result.y = (boxHeight - height) * 0.5
-        break
-      case '9':
-        const result_location = location(position, boxWidth, boxHeight, width, height)
-        result.x = result_location.x
-        result.y = result_location.y
-        break
-      case '10':
-        const result_center = centerLocation(position, boxWidth, boxHeight, width, height)
-        result.x = result_center.x
-        result.y = result_center.y
-        break
-      // case '11':
-      //   faceCenterLocation ()
-      //   break
-      default:
-        result.x = (boxWidth - width) * 0.5
-        result.y = (boxHeight - height) * 0.5
-    }
-    result.rotate = parseInt(sceneConfig.rotate)
-
-    return result
-
-    function location (position, boxWidth, boxHeight, width, height) {
-      const result = {
-        x: 0,
-        y: 0
-      }
-      if (position.xAxis.derection === 'left') {
-        result.x = position.xAxis.offset * boxWidth
-      }
-      if (position.xAxis.derection === 'right') {
-        result.x = boxWidth * (1 - position.xAxis.offset) - width
-      }
-      if (position.yAxis.derection === 'top') {
-        result.y = position.yAxis.offset * boxHeight
-      }
-      if (position.yAxis.derection === 'bottom') {
-        result.y = boxHeight * (1 - position.yAxis.offset) - height
-      }
-      return result
-    }
-    // 中心点设置位置
-    function centerLocation (position, boxWidth, boxHeight, width, height) {
-      const result = {
-        x: 0,
-        y: 0
-      }
-      if (position.xAxis.derection === 'left') {
-        result.x = position.xAxis.offset * boxWidth - width * 0.5
-      }
-      if (position.xAxis.derection === 'right') {
-        result.x = boxWidth * (1 - position.xAxis.offset) - width * 0.5
-      }
-      if (position.yAxis.derection === 'top') {
-        result.y = position.yAxis.offset * boxHeight - height * 0.5
-      }
-      if (position.yAxis.derection === 'bottom') {
-        result.y = boxHeight * (1 - position.yAxis.offset) - height * 0.5
-      }
-      return result
-    }
-    // 脸部中心点设置位置
-    function faceCenterLocation () {
-      // const faceCenterPosition = (globalData.separateResult && 
-      //       globalData.separateResult.faceCenterDict && globalData.separateResult.faceCenterDict['16-1']) || [0, 0]
-      // const imageSize = (globalData.separateResult && 
-      //       globalData.separateResult.imageSizeDict && globalData.separateResult.imageSizeDict['16-1']) || [1, 1]
-      // const faceLeft = (faceCenterPosition[0] / imageSize[0]) || 0.5 // 脸部中心点距离左边比例
-      // const faceTop = (faceCenterPosition[1] / imageSize[1]) || 0.5 // 脸部中心点距离顶边比例 
-      // if (position.xAxis.derection === 'left') {
-      //   sticker.x = position.xAxis.offset * boxWidth - width * faceLeft
-      // }
-      // if (position.xAxis.derection === 'right') {
-      //   sticker.x = boxWidth * (1 - position.xAxis.offset) - width * faceLeft
-      // }
-      // if (position.yAxis.derection === 'top') {
-      //   sticker.y = position.yAxis.offset * boxHeight - height * faceTop
-      // }
-      // if (position.yAxis.derection === 'bottom') {
-      //   sticker.y = boxHeight * (1 - position.yAxis.offset) - height * faceTop
-      // }      
-    }    
-  }
-  // 缓存人物尺寸位置
-  storeForegroundInfo = () => {
-    const {foreground, currentScene} = this.state
-    const clone_foreground = tool.deepClone(foreground)
-    // clone_foreground.isActive = false
-    const sceneId = currentScene.sceneId || 'demo_scene'    
-    this.cache['foreground'].set(sceneId, clone_foreground)
-    // console.log('this.cache.foreground', this.cache['foreground'].get(sceneId))
-  }
-
+  
   // 贴纸自适应
   coverAuto = (originInfo, cover, callback?:()=>void) => {
     const size = this.calcCoverSize(originInfo, cover)    
@@ -1228,7 +1095,7 @@ class Filter extends Component {
 
   render () {
     // const { global } = this.props
-    const { loading, rawImage, frame, background, foreground, coverList, sceneList, currentScene, result, music } = this.state
+    const { loading, rawImage, frame, background, filter, foreground, coverList, sceneList, currentScene, result, music } = this.state
     return (
       <View className='page-filter'>
         <Title
@@ -1237,14 +1104,14 @@ class Filter extends Component {
           renderLeft={
             <CustomIcon type="back" theme="dark" onClick={work.pageToHome}/>
           }
-        >马卡龙玩图-动态贴纸</Title>
+        >马卡龙玩图</Title>
         <View className="main">
           <View className="pic-section">
-            <View className={`raw ${!(foreground.remoteUrl && foreground.loaded) ? 'hidden' : ''}`}>
+            <View className={`raw ${(foreground.remoteUrl && foreground.loaded) ? 'hidden' : ''}`}>
               <Image src={rawImage.localUrl} style="width:100%; height:100%" 
                 mode="aspectFit"/>
             </View>
-            <View className={`crop ${!(foreground.remoteUrl && foreground.loaded) ? '' : 'hidden'}`} id="crop">                
+            <View className={`crop ${(foreground.remoteUrl && foreground.loaded) ? '' : 'hidden'}`} id="crop">                
               <View 
                 className='play-section' 
                 style={{width: `${background.width}px`, height: `${background.height}px`, left: `${background.x}px`, top: `${background.y}px`}}
@@ -1258,6 +1125,16 @@ class Filter extends Component {
                     onLoad={this.onBackgroundLoaded}
                   />
                 </View> 
+                <View                   
+                  className="filter-image" 
+                  style={{width: `${filter.width}px`, height: `${filter.height}px`, left: `${filter.x}px`, top: `${filter.y}px`}}
+                >
+                  <Image 
+                    class="bg-img {{filter.visible ? '' : 'hidden'}}" 
+                    src={filter.remoteUrl}
+                    style="width: 100%; height:100%;" 
+                    onLoad={this.onFilterLoaded}/>
+                </View>
                 <View className="foreground-image">
                   <Image 
                     src={foreground.remoteUrl} 

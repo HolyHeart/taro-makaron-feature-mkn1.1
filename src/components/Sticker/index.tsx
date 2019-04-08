@@ -5,6 +5,7 @@ import tool from '../../utils/tool'
 import './index.less'
 import loading from '../../assets/images/pic_loading.png'
 import scale from '../../assets/images/scale.png'
+import close from '@/assets/images/icon_close_dark.png'
 
 type ComponentStateProps = {}
 
@@ -13,6 +14,7 @@ type ComponentOwnProps = {
   onTouchend: (data?:any) => void,
   onTouchstart: (data?:any) => void,
   onImageLoaded?: (detail:object, item?:any) => void,
+  onDeleteSticker?:(item?:any) => void,
   url: string,
   stylePrams: object
 }
@@ -53,6 +55,7 @@ class Sticker extends Component {
       fixed: false, // 是否固定
       isActive: false, // 是否激活
       visible: true, // 是否显示
+      deleteable: false, //是否可以删除
     },
   }
   state = {
@@ -335,6 +338,11 @@ class Sticker extends Component {
     onImageLoaded && onImageLoaded(e.detail, stylePrams)
   }
 
+  handleDeleteSticker = () => {
+    const { onDeleteSticker, stylePrams } = this.props
+    typeof onDeleteSticker === 'function' && onDeleteSticker(stylePrams)
+  }
+
   changeStyleParams = (obj:any, type?:string) => {
     const {stylePrams} = this.props
     const {onChangeStyle} = this.props
@@ -400,13 +408,20 @@ class Sticker extends Component {
           onTouchmove={this.throttledStickerOntouchmove}
           onTouchend={this.stickerOntouchend}/>
         <View className={`border ${stylePrams.isActive ? 'active' : ''}`}></View>
-        <View className={`control ${stylePrams.isActive ? 'active' : ''}`}
+        <View className={`control move ${stylePrams.isActive ? 'active' : ''}`}
           onTouchstart={this.arrowOntouchstart} 
           onTouchmove={this.throttledArrowOntouchmove}
           onTouchend={this.arrowOntouchend}
         >
           <Image src={scale} mode="widthFix" style="width:50%;height:50%"/>
         </View>
+        { stylePrams.deleteable &&
+          <View className={`control close ${stylePrams.isActive ? 'active' : ''}`}
+            onClick={this.handleDeleteSticker}
+          >
+            <Image src={close} mode="widthFix" style="width:80%;height:80%" />
+          </View>
+        }        
       </View>
     )
   }

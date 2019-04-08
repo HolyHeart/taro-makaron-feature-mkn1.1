@@ -611,6 +611,23 @@ class Dynamic extends Component {
     // console.log('handleCoverTouchend', sticker)
     this.storeCoverInfo(sticker)
   }
+  handleDeleteCover = (sticker) => {
+    // console.log('handleDeleteCover', sticker)
+    const {id} = sticker
+    const {coverList} = this.state
+    coverList.forEach((v, i) => {
+      if (v.id === id) {
+        coverList[i] = {
+          ...v,
+          deleted: true,
+          visible: false
+        }
+      }
+    })
+    this.setState({
+      coverList: coverList
+    })
+  }
   handleToggleMusic = (status) => {
     if (status === 'on') {
       this.setAudio('pause')
@@ -1181,6 +1198,7 @@ class Dynamic extends Component {
                         onImageLoaded={this.onCoverLoaded}
                         onTouchstart={this.handleCoverTouchstart}
                         onTouchend={this.handleCoverTouchend}
+                        onDeleteSticker={this.handleDeleteCover.bind(this, item)}
                       />
               })}
               <Voice status={music.play ? 'on' : 'off'} onClick={this.handleToggleMusic}/>

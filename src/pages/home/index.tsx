@@ -54,9 +54,9 @@ class Home extends Component {
   }
 
   componentWillMount () {
-    const {getSystemInfo} = this.props
-    const systemInfo = Taro.getSystemInfoSync()
-    getSystemInfo(systemInfo)
+    // const {getSystemInfo} = this.props
+    // const systemInfo = Taro.getSystemInfoSync()
+    // getSystemInfo(systemInfo)
   }
   componentDidMount () {
     this._initPage()

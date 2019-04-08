@@ -26,8 +26,9 @@ class App extends Component {
   config: Config = {
     pages: [
       'pages/home/index', 
-      'pages/share/index',            
       'pages/dynamic/index',  
+      
+      'pages/share/index',  
       'pages/filter/index',    
       'pages/editor/index',
       'pages/error/index',       

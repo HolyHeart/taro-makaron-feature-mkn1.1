@@ -83,7 +83,8 @@ const formatRawCoverList = (list:Array<any> = []) => {
       fixed: false,
       isActive: false,
       visible: false,
-      deleted: false
+      deleted: false,
+      deleteable: true
     }
     cover_model.remoteUrl = v.imageUrl
     cover_model.id = v.id
@@ -92,6 +93,7 @@ const formatRawCoverList = (list:Array<any> = []) => {
     cover_model.isActive = v.isActive || false
     cover_model.visible = true
     cover_model.deleted = false
+    cover_model.deleteable = true
     return cover_model
   })
 }

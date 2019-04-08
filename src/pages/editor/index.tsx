@@ -5,10 +5,12 @@ import { connect } from '@tarojs/redux'
 
 import { getSystemInfo } from '@/model/actions/global'
 import tool from '@/utils/tool'
+import work from '@/utils/work'
 import Title from '@/components/Title'
 import CustomIcon from '@/components/Icon'
 import Sticker from '@/components/Sticker'
 import SceneList from '@/components/SceneList'
+import Loading from '@/components/Loading'
 import ResultModal from '@/components/ResultModal'
 import globalData from '@/services/global_data'
 import Session from '@/services/session'
@@ -19,29 +21,6 @@ import './index.less'
 
 const mock_path = 'https://static01.versa-ai.com/upload/783272fc1375/999deac02e85f3ea.png'
 const mock_segment_url = 'https://static01.versa-ai.com/images/process/segment/2019/01/14/b4cf047a-17a5-11e9-817f-00163e001583.png'
-const getSceneList = function (sceneList:Array<object> = []) {
-  const result = []
-  sceneList.forEach(v => {
-    const {bgUrl, sceneId, sceneName, shareContent, thumbnailUrl, sceneConfig, segmentType, segmentZIndex, bgZIndex} = v
-    let supportMusic = false
-    if (sceneConfig) {
-      const {music = {}} = JSON.parse(sceneConfig)
-      supportMusic = music.fileUrl ? true : false
-    } 
-    result.push({
-      bgUrl, 
-      sceneId, 
-      sceneName, 
-      shareContent, 
-      thumbnailUrl, 
-      sceneConfig, 
-      segmentType, 
-      segmentZIndex, 
-      bgZIndex, 
-      supportMusic})
-  })
-  return result
-}
 
 type PageStateProps = {
   global: {
@@ -122,6 +101,7 @@ class Editor extends Component {
       autoScale: 0, // 相对画框缩放比例
       fixed: false, // 是否固定
       isActive: true, // 是否激活
+      loaded: false, // 是否加载完毕
       visible: true, // 是否显示
     },
     coverList: [
@@ -150,9 +130,13 @@ class Editor extends Component {
       id: 'shareCanvas',
       ratio: 3
     },
+    loading: false,
     result: {
       show: false,
-      url: '',
+      shareImage: {
+        remoteUrl: '',
+        localUrl: '',
+      },
     }
   }
 
@@ -204,10 +188,20 @@ class Editor extends Component {
     //   console.log('uploadResult', uploadResult)    
   }
   // 公共方法
-  PageToHome = () => {
+  pageToHome = () => {
     Taro.redirectTo({
       url: '/pages/home/index'
     }) 
+  }
+  showLoading = () => {
+    this.setState({
+      loading: true
+    })
+  }
+  hideLoading = () => {
+    this.setState({
+      loading: false
+    })
   }
   setStateTarget = (key, value = {}, callback?:() => void) => {
     const target = this.state[key]
@@ -312,7 +306,7 @@ class Editor extends Component {
       globalData.themeData = res.result && res.result.result   
     }
     const themeData = globalData.themeData || {sceneList: []}
-    this.themeData.sceneList = getSceneList(themeData.sceneList || [])
+    this.themeData.sceneList = work.getSceneList(themeData.sceneList || [])
     // 去除sceneConfig属性
     const sceneList = this.themeData.sceneList.map((v:object = {}) => {
       const {sceneConfig, ...rest} = v
@@ -352,15 +346,19 @@ class Editor extends Component {
         type: -1,
         loading: true,
         showLoading: () => {
-          console.log('showLoading')
-          Taro.showLoading({
-            title: '照片变身中...',
-            mask: true,
-          })
+          // console.log('showLoading')
+          // Taro.showLoading({
+          //   title: '照片变身中...',
+          //   mask: true,
+          // })
+          this.showLoading()
         },
         hideLoading: () => {
-          console.log('hideLoading')
-          Taro.hideLoading()
+          // console.log('hideLoading')
+          // Taro.hideLoading()
+          if (this.state.foreground.loaded) {
+            this.hideLoading()
+          }
         }
       })
       const {cateImageDict = {}} = separateRes.result || {}
@@ -371,6 +369,7 @@ class Editor extends Component {
       } 
     } catch(err) {
       console.log('catch', err)
+      this.hideLoading()
       return {}
     }
     return (separateRes && separateRes.result) || {}
@@ -417,12 +416,14 @@ class Editor extends Component {
     this.setCoverListActiveStatus({type: 'all'}, false)
   }
   // 人物
-  handleForegroundLoaded = (detail:object, item?:any) => {
+  onForegroundLoaded = (detail:object, item?:any) => {
     // console.log('handleForegroundLoaded', detail, item)
+    this.hideLoading()
     const {width, height} = detail
     this.setStateTarget('foreground', {
       originWidth: width,
-      originHeight: height
+      originHeight: height,
+      loaded: true
     }, () => {
       this.foregroundAuto()
     })
@@ -502,7 +503,10 @@ class Editor extends Component {
     Taro.hideLoading()
     this.setState({
       result: {
-        url: canvasImageUrl,
+        shareImage: {
+          localUrl: canvasImageUrl,
+          remoteUrl: '',
+        },
         show: true
       }
     })
@@ -1043,7 +1047,7 @@ class Editor extends Component {
 
   render () {
     const { global } = this.props
-    const { rawImage, frame, foreground, coverList, sceneList, currentScene, result, canvas } = this.state   
+    const { loading, rawImage, frame, foreground, coverList, sceneList, currentScene, result, canvas } = this.state   
     // console.log('state sceneList', sceneList)
     return (
       <View className='page-editor'>
@@ -1051,15 +1055,15 @@ class Editor extends Component {
           top={global.system.statusBarHeight + 10}
           color="#333"
           renderLeft={
-            <CustomIcon type="back" theme="dark" onClick={this.PageToHome}/>
+            <CustomIcon type="back" theme="dark" onClick={this.pageToHome}/>
           }
         >马卡龙玩图</Title>
         <View className="main">
           <View className="pic-section">
-            <View className={`raw ${foreground.remoteUrl ? 'hidden' : ''}`}>
+            <View className={`raw ${(foreground.remoteUrl && foreground.loaded) ? 'hidden' : ''}`}>
               <Image src={rawImage.localUrl} style="width:100%;height:100%" mode="aspectFit"/>
             </View>
-            <View className={`crop ${foreground.remoteUrl ? '' : 'hidden'}`} id="crop">                
+            <View className={`crop ${(foreground.remoteUrl && foreground.loaded) ? '' : 'hidden'}`} id="crop">                
               <View className="background-image">
                 <Image 
                   src={currentScene.bgUrl} 
@@ -1074,7 +1078,7 @@ class Editor extends Component {
                 stylePrams={foreground}                
                 framePrams={frame}
                 onChangeStyle={this.handleChangeStyle}
-                onImageLoaded={this.handleForegroundLoaded}
+                onImageLoaded={this.onForegroundLoaded}
                 onTouchstart={this.handleForegroundTouchstart}
                 onTouchend={this.handleForegroundTouchend}
               />
@@ -1107,10 +1111,19 @@ class Editor extends Component {
             style={`width: ${frame.width * canvas.ratio}px; height: ${frame.height * canvas.ratio}px;`} 
             canvasId={canvas.id} />
         </View>
+        <Loading visible={loading} />    
         {result.show &&
           <ResultModal 
-            url={result.url}
-            onClick={this.handleResultClick}
+            type='image'
+            image={{
+              url: result.shareImage.localUrl,
+            }}
+            renderButton={
+              <View className="btn-wrap">
+                <Button className="custom-button pink btn-1" hoverClass="btn-hover" openType="share" >分享给好友</Button>
+                <Button className="custom-button dark btn-2" hoverClass="btn-hover"  onClick={this.pageToHome}>再玩一次</Button>            
+              </View>
+            }
           />
         }        
       </View>

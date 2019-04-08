@@ -6,6 +6,8 @@
   // transition:opacity 0.1s;
   &.hidden {
     opacity: 0;
+    z-index: -100;
+    // display: none;
   }
   &.event-through {
     pointer-events: none;//使用当前属性点击div将触发链接
@@ -25,9 +27,7 @@
   .control {    
     width:50rpx;
     height:50rpx;
-    position:absolute;
-    right:-25rpx;
-    bottom:-25rpx;
+    position:absolute;    
     background:#fff;
     border-radius:25rpx;    
     display:flex;
@@ -36,6 +36,14 @@
     opacity:0;
     &.active {
       opacity:1;
+    }
+    &.move {
+      right:-25rpx;
+      bottom:-25rpx;
+    }
+    &.close {
+      top:-25rpx;
+      left:-25rpx;
     }
   }  
 }

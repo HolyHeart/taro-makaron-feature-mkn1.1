@@ -20,7 +20,7 @@ import { appConfig } from '@/services/config'
 import { createCache } from '@/services/cache'
 import './index.less'
 
-const mock_path = 'https://static01.versa-ai.com/upload/783272fc1375/999deac02e85f3ea.png'
+// const mock_path = 'https://static01.versa-ai.com/upload/783272fc1375/999deac02e85f3ea.png'
 // const mock_segment_url = 'https://static01.versa-ai.com/images/process/segment/2019/01/14/b4cf047a-17a5-11e9-817f-00163e001583.png'
 
 type PageStateProps = {
@@ -654,16 +654,6 @@ class Filter extends Component {
       this.filterAuto() 
     })
   }
-  handleChangeStyle = (data) => {
-    const {foreground} = this.state
-    this.setState({
-      foreground: {
-        ...foreground,
-        ...data
-      }
-    }, () => {      
-    }) 
-  }
  
   // 贴纸
   onCoverLoaded = (detail:object, item?:any) => {
@@ -690,11 +680,27 @@ class Filter extends Component {
   handleCoverTouchstart = (sticker) => {
     // console.log('handleCoverTouchstart', sticker)
     this.setCoverListActiveStatus({type: 'some', ids:[sticker.id]}, true)
-    this.setForegroundActiveStatus(false)
   }
   handleCoverTouchend = (sticker) => {
     // console.log('handleCoverTouchend', sticker)
     this.storeCoverInfo(sticker)
+  }
+  handleDeleteCover = (sticker) => {
+    // console.log('handleDeleteCover', sticker)
+    const {id} = sticker
+    const {coverList} = this.state
+    coverList.forEach((v, i) => {
+      if (v.id === id) {
+        coverList[i] = {
+          ...v,
+          deleted: true,
+          visible: false
+        }
+      }
+    })
+    this.setState({
+      coverList: coverList
+    })
   }
   handleToggleMusic = (status) => {
     if (status === 'on') {
@@ -821,10 +827,6 @@ class Filter extends Component {
     })
   }
 
-  // 设置人物状态
-  setForegroundActiveStatus = (value = false, callback?:()=>void) => {
-    this.setStateTarget('foreground', {isActive: value}, callback)
-  }
   // 设置贴纸状态
   setCoverListActiveStatus = (options = {}, value = false) => {
     const {type, ids = []} = options
@@ -931,8 +933,7 @@ class Filter extends Component {
     }, () => {
       typeof callback === 'function' && callback()
     })
-  }
-  
+  }  
   // 贴纸自适应
   coverAuto = (originInfo, cover, callback?:()=>void) => {
     const size = this.calcCoverSize(originInfo, cover)    
@@ -1163,6 +1164,7 @@ class Filter extends Component {
                           onImageLoaded={this.onCoverLoaded}
                           onTouchstart={this.handleCoverTouchstart}
                           onTouchend={this.handleCoverTouchend}
+                          onDeleteSticker={this.handleDeleteCover.bind(this, item)}
                         />
                 })}
                 <Voice status={music.play ? 'on' : 'off'} onClick={this.handleToggleMusic}/>

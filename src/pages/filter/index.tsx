@@ -13,6 +13,7 @@ import Sticker from '@/components/Sticker'
 import SceneList from '@/components/SceneList'
 import ResultModal from '@/components/ResultModal'
 import Loading from '@/components/Loading'
+import AuthModal from '@/components/AuthModal'
 import globalData from '@/services/global_data'
 import Session from '@/services/session'
 import service from '@/services/service'
@@ -777,6 +778,32 @@ class Filter extends Component {
     })
     // 生成gif
     this.handleSaveGif(false)
+    // 保存图片到相册
+    work.saveSourceToPhotosAlbum({
+      location: 'remote',
+      sourceUrl: shareVideoRemoteUrl,
+      sourceType: 'video',
+      onSuccess: () => {
+        Taro.showToast({
+          title: '保存成功!',
+          icon: 'success',
+          duration: 2000
+        })    
+      },
+      onAuthFail: () => {
+        Taro.authModal({
+          open: true
+        })
+        this.setResultModalStatus(false)
+      },
+      onFail: () => {
+        Taro.showToast({
+          title: '保存失败!',
+          icon: 'success',
+          duration: 2000
+        })  
+      }
+    })
   }
   // 再玩一次
   handleResultClick = () => {
@@ -1181,7 +1208,8 @@ class Filter extends Component {
             <Button className="custom-button pink" hoverClass="btn-hover" onClick={this.handleOpenResult}>保存</Button>
           </View>        
         </View> 
-        <Loading visible={loading} />       
+        <Loading visible={loading} />
+        <AuthModal />          
         {result.show &&
           <ResultModal 
             type='video'

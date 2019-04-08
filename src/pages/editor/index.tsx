@@ -132,7 +132,6 @@ class Editor extends Component {
       ratio: 3
     },
     loading: false,
-    showAuth: false,
     result: {
       show: false,
       shareImage: {
@@ -238,16 +237,7 @@ class Editor extends Component {
       loading: false
     })
   }
-  showAuthModal = (flag = true) => {
-    this.setState({
-      showAuth: flag
-    })
-  }
-  closeAuthModal = () => {
-    this.setState({
-      showAuth: false
-    })
-  }
+  
   setStateTarget = (key, value = {}, callback?:() => void) => {
     const target = this.state[key]
     this.setState({
@@ -578,7 +568,9 @@ class Editor extends Component {
       },
       onAuthFail: () => {
         console.log('onAuthFail')
-        this.showAuthModal()
+        Taro.authModal({
+          open: true
+        })
         this.setResultModalStatus(false)
       },
       onFail: () => {
@@ -1125,16 +1117,15 @@ class Editor extends Component {
   }
 
   render () {
-    const { global } = this.props
-    const { loading, showAuth, rawImage, frame, foreground, coverList, sceneList, currentScene, result, canvas } = this.state   
+    const { loading, rawImage, frame, foreground, coverList, sceneList, currentScene, result, canvas } = this.state   
     // console.log('state sceneList', sceneList)
     return (
       <View className='page-editor'>
-        <Title 
-          top={global.system.statusBarHeight + 10}
+        <Title
           color="#333"
+          leftStyleObj={{left: Taro.pxTransform(8)}}
           renderLeft={
-            <CustomIcon type="back" theme="dark" onClick={this.pageToHome}/>
+            <CustomIcon type="back" theme="dark" onClick={work.pageToHome}/>
           }
         >马卡龙玩图</Title>
         <View className="main">
@@ -1190,8 +1181,8 @@ class Editor extends Component {
             style={`width: ${frame.width * canvas.ratio}px; height: ${frame.height * canvas.ratio}px;`} 
             canvasId={canvas.id} />
         </View>
-        <Loading visible={loading} />   
-        {showAuth && <AuthModal onClick={this.closeAuthModal}/>} 
+        <Loading visible={loading} />
+        <AuthModal />
         {result.show &&
           <ResultModal 
             type='image'

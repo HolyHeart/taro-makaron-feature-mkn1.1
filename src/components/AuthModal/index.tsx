@@ -19,15 +19,50 @@ interface AuthModal {
 }
 
 class AuthModal extends Component {
-  handleClick = () => {
-   this.props.onClick && this.props.onClick()
+  state = {
+    open: false
   }
+
+  bindListener () {
+    Taro.eventCenter.on('myAuth', (options = {}) => {
+      const { open = false } = options
+      this.setState({
+        open
+      })
+    })
+    // 绑定函数
+    Taro.authModal = Taro.eventCenter.trigger.bind(Taro.eventCenter, 'myAuth')
+  }
+
+  componentDidShow () {
+    this.bindListener()
+  }
+
+  componentDidMount () {
+    this.bindListener()
+  }
+
+  componentDidHide () {
+    Taro.eventCenter.off('myAuth')
+  }
+
+  componentWillUnmount () {
+    Taro.eventCenter.off('myAuth')
+  }
+
+  handleClick = () => {
+    this.setState({
+      open: false
+    })
+  }
+
   render() {
+    const {open} = this.state
     return (
-      <View className='auth-wrap'>
+      <View className={`auth-wrap ${open ? '' : 'hidden'}`} onClick={this.handleClick}>
         <View className="modal"></View>
         <View className="content">
-          <Button openType="openSetting" size='default' type='warn' onClick={this.handleClick}>前往授权</Button>
+          <Button openType="openSetting" size='default' type='warn' >前往授权</Button>
         </View>        
       </View>
     )

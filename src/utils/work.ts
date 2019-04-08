@@ -130,7 +130,7 @@ const saveSourceToPhotosAlbum = async (options:saveSourceOptions) => {
   let localUrl
   if (options.location === 'remote') {
     try {          
-      localUrl = await this.downloadRemoteFile(options.sourceUrl)
+      localUrl = await downloadRemoteImage(options.sourceUrl)
     } catch (err) {
       console.log('下载资源失败', err)
       return

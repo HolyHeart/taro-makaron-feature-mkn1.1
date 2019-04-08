@@ -50,7 +50,6 @@ class Home extends Component {
 
   state = {
     categoryList: [],
-    showAuth: false
   }
 
   componentWillMount () {
@@ -146,7 +145,6 @@ class Home extends Component {
   }
 
   showActionSheet = async (callback) => {
-    const _this = this
     Taro.showActionSheet({
       itemList: [
         '拍摄人像照',
@@ -177,7 +175,9 @@ class Home extends Component {
                   cancelText: "拒绝",                      
                 }).then(res => {     
                   if (res.confirm) {
-                    _this.showAuthModal(true)
+                    Taro.authModal({
+                      open: true
+                    })
                   }
                 })
               }                
@@ -195,20 +195,8 @@ class Home extends Component {
     }).catch(err => console.log(err))
   }
 
-  showAuthModal = (flag = true) => {
-    this.setState({
-      showAuth: flag
-    })
-  }
-
-  closeAuthModal = () => {
-    this.setState({
-      showAuth: false
-    })
-  }
-
   render () {
-    const { categoryList, showAuth } = this.state
+    const { categoryList } = this.state
     return (
       <View className='page-home'>
         <Title
@@ -242,7 +230,7 @@ class Home extends Component {
             }            
           </View>
         </View> 
-        {showAuth && <AuthModal onClick={this.closeAuthModal}/>}
+        <AuthModal />
       </View>
     )
   }

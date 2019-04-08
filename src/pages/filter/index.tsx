@@ -184,7 +184,7 @@ class Filter extends Component {
         remoteUrl: '',
       }
     },
-    videoRatio: 2
+    videoRatio: 1
   }
 
   // 全局主题数据
@@ -370,7 +370,7 @@ class Filter extends Component {
   createShareSource = async (saveType = 'mp4') => {
     // saveType 'mp4, all, gif'
     return new Promise(async (resolve, reject) => {
-      const {currentScene, frame, music, foreground, coverList = [], videoRatio = 2} = this.state
+      const {currentScene, frame, music, background, filter, foreground, coverList = [], videoRatio = 1} = this.state
       // 贴纸   
       const stickerList = coverList.filter(v => !v.deleted).map(v => {
         return {
@@ -384,20 +384,21 @@ class Filter extends Component {
         }
       })
       const postData = {
-        saveType,
+        saveType,        
         background:{
-          url: currentScene.bgUrl,
-          width: frame.width * videoRatio,
-          height: frame.height * videoRatio
+          url: background.remoteUrl,
+          width: background.width * videoRatio,
+          height: background.height * videoRatio
+        },
+        filter: {
+          url: filter.remoteUrl, 
+          width: filter.width * videoRatio, 
+          height: filter.height * videoRatio,
+          x: filter.x * videoRatio,
+          y: filter.y * videoRatio
         },
         foreground: {
           url: foreground.remoteUrl,
-          width: parseFloat(foreground.width) * videoRatio,
-          height: parseFloat(foreground.height) * videoRatio,
-          x: parseFloat(foreground.x) * videoRatio,
-          y: parseFloat(foreground.y) * videoRatio,
-          rotate: parseFloat(foreground.rotate),
-          zIndex: parseFloat(foreground.zIndex),
         },
         stickerList: stickerList,
         music: {
@@ -473,6 +474,15 @@ class Filter extends Component {
           if (this.state.foreground.loaded) {
             this.hideLoading()
           }
+        },
+        beforeSeparate: (remoteUrl) => {
+          const { imageHost } = appConfig
+          this.setState({
+            background: {
+              ...this.state.background,
+              remoteUrl: imageHost + remoteUrl
+            }
+          })
         }
       })
       const {cateImageDict = {}} = separateRes.result || {}
@@ -607,7 +617,7 @@ class Filter extends Component {
   // 背景图片加载
   onBackgroundLoaded = (e:object,) => {    
     const {detail= {}} = e
-    console.log('onBackgroundLoaded', detail)
+    // console.log('onBackgroundLoaded', detail)
     const {width = 0, height = 0} = detail
     this.setStateTarget('background', {
       originWidth: width,
@@ -619,7 +629,7 @@ class Filter extends Component {
   // 人物
   onForegroundLoaded = (e:object) => {
     const {detail= {}} = e
-    console.log('handleForegroundLoaded', detail)    
+    // console.log('handleForegroundLoaded', detail)    
     this.hideLoading()
     const {width, height} = detail
     this.setStateTarget('foreground', {
@@ -634,7 +644,7 @@ class Filter extends Component {
   // 滤镜
   onFilterLoaded = (e:object,) => {    
     const {detail= {}} = e
-    console.log('onFilterLoaded', detail)
+    // console.log('onFilterLoaded', detail)
     const {width = 0, height = 0} = detail
     this.setStateTarget('filter', {
       originWidth: width,
@@ -949,7 +959,7 @@ class Filter extends Component {
   }
   calcCoverSize = (originInfo, cover) => {
     const {originWidth, originHeight} = originInfo   
-    const {frame} = this.state
+    const {background} = this.state
     const coverInfo = work.getCoverInfoById(cover.id, this.themeData.rawCoverList, 'id')
 
     const imageRatio = originWidth / originHeight      
@@ -963,10 +973,10 @@ class Filter extends Component {
     } 
     if (originWidth > originHeight) {
       // 以最短边计算
-      result.autoWidth = frame.width * autoScale
+      result.autoWidth = background.width * autoScale
       result.autoHeight = result.autoWidth / imageRatio
     } else {        
-      result.autoHeight = frame.height * autoScale
+      result.autoHeight = background.height * autoScale
       result.autoWidth = result.autoHeight * imageRatio
     } 
     result.width = result.autoWidth
@@ -976,11 +986,11 @@ class Filter extends Component {
   }
   calcCoverPosition = (size = {}, cover = {}) => {
     const {width = 0, height = 0} = size
-    const {frame} = this.state
+    const {background} = this.state
     const coverInfo = work.getCoverInfoById(cover.id, this.themeData.rawCoverList, 'id')    
     const {position, rotate = 0} = coverInfo
-    const boxWidth = frame.width
-    const boxHeight = frame.height
+    const boxWidth = background.width
+    const boxHeight = background.height
 
     const type = position.place || '0'
     const result = {
@@ -1094,7 +1104,6 @@ class Filter extends Component {
   }
 
   render () {
-    // const { global } = this.props
     const { loading, rawImage, frame, background, filter, foreground, coverList, sceneList, currentScene, result, music } = this.state
     return (
       <View className='page-filter'>
@@ -1140,6 +1149,7 @@ class Filter extends Component {
                     src={foreground.remoteUrl} 
                     style="width:100%;height:100%" 
                     mode="scaleToFill"
+                    onClick={this.handleBackgroundClick}
                     onLoad={this.onForegroundLoaded}
                   />
                 </View>                

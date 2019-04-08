@@ -17,6 +17,7 @@ interface separateOptionsData {
   loading?: boolean;
   showLoading?(): void;
   hideLoading?(): void;
+  beforeSeparate?(url?): void;
 }
 
 export const base = {
@@ -193,6 +194,9 @@ export const core = {
         console.log('上传图片失败', err)
       }
     } 
+    if (typeof options.beforeSeparate === 'function') {
+      options.beforeSeparate(remoteImageUrl)
+    }
      // 最后进行人景分离
     let separateData
     try {

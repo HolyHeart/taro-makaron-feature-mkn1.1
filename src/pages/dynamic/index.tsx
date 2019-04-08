@@ -442,7 +442,7 @@ class Dynamic extends Component {
           if (this.state.foreground.loaded) {
             this.hideLoading()
           }
-        }
+        },
       })
       const {cateImageDict = {}} = separateRes.result || {}
       if (!cateImageDict['16'] && !cateImageDict['16-1']) {

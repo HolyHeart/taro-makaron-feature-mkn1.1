@@ -2,6 +2,14 @@
 import Taro from '@tarojs/taro'
 import { cacheImg } from '@/services/cache'
 import service from '@/services/service'
+interface saveSourceOptions {  
+  location: string,
+  sourceUrl: any,
+  sourceType: string,
+  onSuccess?: () => void,
+  onAuthFail?: () => void,
+  onFail?: () => void,
+}
 const pageToHome = () => {
   Taro.redirectTo({
     url: '/pages/home/index'
@@ -115,6 +123,44 @@ const downloadRemoteImage = async (remoteUrl = '') => {
   console.log('downloadRemoteImage', cacheKey, localImagePath)
   return cacheImg.set(cacheKey, localImagePath)
 }
+// 将本地或远程资源存储到相册
+const saveSourceToPhotosAlbum = async (options:saveSourceOptions) => {  
+  options.location = options.location || 'local'
+  options.sourceType = options.location || 'image'
+  let localUrl
+  if (options.location === 'remote') {
+    try {          
+      localUrl = await this.downloadRemoteFile(options.sourceUrl)
+    } catch (err) {
+      console.log('下载资源失败', err)
+      return
+    }
+  } else {
+    localUrl = options.sourceUrl
+  }  
+  // 保存到相册
+  try {
+    if (options.sourceType === 'video') {
+      await Taro.saveVideoToPhotosAlbum({filePath: localUrl})  
+    } else {
+      await Taro.saveImageToPhotosAlbum({filePath: localUrl})  
+    }  
+  //  console.log('保存成功')   
+   typeof options.onSuccess === 'function' && options.onSuccess()
+  } catch (err) {
+    Taro.getSetting({
+      success (setting) {
+        const {authSetting} = setting
+        if (!authSetting['scope.writePhotosAlbum']) { 
+          typeof options.onAuthFail === 'function' && options.onAuthFail()
+        }
+      },
+      fail () {
+        typeof options.onFail === 'function' && options.onFail()
+      }
+    })                
+  }
+}
 const calcVideoSize = (maxWidth = 306, maxHeight = 408, width, height) => {
   const frame_ratio = maxWidth / maxHeight
   const video_ratio = width / height
@@ -140,6 +186,7 @@ const work = {
   getCoverInfoById,
   formatRawCoverList,
   downloadRemoteImage,
+  saveSourceToPhotosAlbum,
   calcVideoSize
 }
 export default work

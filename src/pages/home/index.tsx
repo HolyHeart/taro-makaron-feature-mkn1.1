@@ -195,7 +195,7 @@ class Home extends Component {
     }).catch(err => console.log(err))
   }
 
-  showAuthModal = (flag = false) => {
+  showAuthModal = (flag = true) => {
     this.setState({
       showAuth: flag
     })

@@ -11,6 +11,7 @@ import CustomIcon from '@/components/Icon'
 import Sticker from '@/components/Sticker'
 import SceneList from '@/components/SceneList'
 import Loading from '@/components/Loading'
+import AuthModal from '@/components/AuthModal'
 import ResultModal from '@/components/ResultModal'
 import globalData from '@/services/global_data'
 import Session from '@/services/session'
@@ -131,6 +132,7 @@ class Editor extends Component {
       ratio: 3
     },
     loading: false,
+    showAuth: false,
     result: {
       show: false,
       shareImage: {
@@ -164,6 +166,39 @@ class Editor extends Component {
   componentWillUnmount () { }
   componentDidShow () { }
   componentDidHide () { }
+  onShareAppMessage (res) {
+    // if (res.from === 'button') {
+    //   console.log('页面按钮分享', res.target)
+    // }
+    const {currentScene, result = {}} = this.state  
+    const {shareImage = {}} = result
+    const shareContent = currentScene.shareContent || (globalData.themeData && globalData.themeData.shareContent)
+    const shareImageUrl = `${shareImage.remoteUrl}?x-oss-process=image/resize,m_pad,h_420,w_525`
+    const data = {
+      shareSource: shareImage.remoteUrl,
+      themeId: globalData.themeId || '',
+      sceneId: currentScene.sceneId || '',
+    }
+    const path = tool.formatQueryUrl('/pages/share/index', data)
+    const {userInfo = {}} = globalData 
+    const title = `@${userInfo.nickName}：${shareContent}`
+    if (!shareImage.remoteUrl) {
+      return {
+        title: title,
+        path: '/pages/home/index',
+        imageUrl: currentScene.thumbnailUrl,	
+      }
+    }
+    console.log(title, path, shareImageUrl)
+    return {
+      title: title,
+      path: path,
+      imageUrl: shareImageUrl,			
+      success: () => {
+        console.log('分享成功')
+      },
+    }
+  }
 
   _initPage = async () => {
     this.calFrameRect()
@@ -201,6 +236,16 @@ class Editor extends Component {
   hideLoading = () => {
     this.setState({
       loading: false
+    })
+  }
+  showAuthModal = (flag = true) => {
+    this.setState({
+      showAuth: flag
+    })
+  }
+  closeAuthModal = () => {
+    this.setState({
+      showAuth: false
     })
   }
   setStateTarget = (key, value = {}, callback?:() => void) => {
@@ -408,7 +453,6 @@ class Editor extends Component {
       separateMaskUrl
     })    
   }
-
  
   // 背景
   handleBackgroundClick = () => {
@@ -447,8 +491,8 @@ class Editor extends Component {
     this.storeForegroundInfo()
   }
   // 贴纸
-  handleCoverLoaded = (detail:object, item?:any) => {
-    // console.log('handleCoverLoaded', detail, item)
+  onCoverLoaded = (detail:object, item?:any) => {
+    // console.log('onCoverLoaded', detail, item)
     const {width, height} = detail
     const originInfo = {
       originWidth: width,
@@ -499,7 +543,6 @@ class Editor extends Component {
       mask: true,
     }) 
     const canvasImageUrl = await this.createCanvas()
-    console.log('canvasImageUrl', canvasImageUrl)
     Taro.hideLoading()
     this.setState({
       result: {
@@ -508,6 +551,42 @@ class Editor extends Component {
           remoteUrl: '',
         },
         show: true
+      }
+    }, async () => {
+      const {url} = await service.base.upload(canvasImageUrl)
+      this.setState({
+        result: {
+          show: true,
+          shareImage: {
+            localUrl: canvasImageUrl,
+            remoteUrl: url,
+          }
+        }
+      })
+    })
+    // 保存图片到相册
+    work.saveSourceToPhotosAlbum({
+      location: 'local',
+      sourceUrl: canvasImageUrl,
+      sourceType: 'image',
+      onSuccess: () => {
+        Taro.showToast({
+          title: '保存成功!',
+          icon: 'success',
+          duration: 2000
+        })    
+      },
+      onAuthFail: () => {
+        // console.log('onAuthFail')
+        this.showAuthModal()
+        this.setResultModalStatus(false)
+      },
+      onFail: () => {
+        Taro.showToast({
+          title: '保存失败!',
+          icon: 'success',
+          duration: 2000
+        })  
       }
     })
   }
@@ -1047,7 +1126,7 @@ class Editor extends Component {
 
   render () {
     const { global } = this.props
-    const { loading, rawImage, frame, foreground, coverList, sceneList, currentScene, result, canvas } = this.state   
+    const { loading, showAuth, rawImage, frame, foreground, coverList, sceneList, currentScene, result, canvas } = this.state   
     // console.log('state sceneList', sceneList)
     return (
       <View className='page-editor'>
@@ -1089,7 +1168,7 @@ class Editor extends Component {
                         stylePrams={item}
                         framePrams={frame}
                         onChangeStyle={this.handleChangeCoverStyle}
-                        onImageLoaded={this.handleCoverLoaded}
+                        onImageLoaded={this.onCoverLoaded}
                         onTouchstart={this.handleCoverTouchstart}
                         onTouchend={this.handleCoverTouchend}
                       />
@@ -1111,7 +1190,8 @@ class Editor extends Component {
             style={`width: ${frame.width * canvas.ratio}px; height: ${frame.height * canvas.ratio}px;`} 
             canvasId={canvas.id} />
         </View>
-        <Loading visible={loading} />    
+        <Loading visible={loading} />   
+        {showAuth && <AuthModal onClick={this.closeAuthModal}/>} 
         {result.show &&
           <ResultModal 
             type='image'

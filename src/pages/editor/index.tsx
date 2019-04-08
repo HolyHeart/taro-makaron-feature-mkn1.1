@@ -556,7 +556,7 @@ class Editor extends Component {
       const {url} = await service.base.upload(canvasImageUrl)
       this.setState({
         result: {
-          show: true,
+          show: this.state.result.show,
           shareImage: {
             localUrl: canvasImageUrl,
             remoteUrl: url,
@@ -577,7 +577,7 @@ class Editor extends Component {
         })    
       },
       onAuthFail: () => {
-        // console.log('onAuthFail')
+        console.log('onAuthFail')
         this.showAuthModal()
         this.setResultModalStatus(false)
       },

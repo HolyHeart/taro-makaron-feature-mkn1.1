@@ -19,6 +19,8 @@ import service from '@/services/service'
 import { appConfig } from '@/services/config'
 import { createCache } from '@/services/cache'
 import './index.less'
+import image_code from '@/assets/images/code.png'
+import image_versa from '@/assets/images/versa.png'
 
 const mock_path = 'https://static01.versa-ai.com/upload/783272fc1375/999deac02e85f3ea.png'
 const mock_segment_url = 'https://static01.versa-ai.com/images/process/segment/2019/01/14/b4cf047a-17a5-11e9-817f-00163e001583.png'
@@ -153,9 +155,7 @@ class Editor extends Component {
     source: createCache('source'),
   }
 
-  componentWillMount () {
-    this.initSystemInfo()    
-  }
+  componentWillMount () {}
   componentDidMount () { 
     this._initPage()
   }
@@ -314,14 +314,6 @@ class Editor extends Component {
     })
   }  
 
-  // 初始化系统信息
-  initSystemInfo = () => {
-    const {getSystemInfo, global} = this.props
-    if (!global.system.model) {
-      const systemInfo = Taro.getSystemInfoSync()
-      getSystemInfo(systemInfo)
-    }
-  }
   initRawImage = () => {
     const {rawImage} = this.state
     globalData.choosedImage = globalData.choosedImage || 'http://tmp/wxcfe56965f4d986f0.o6zAJsztn2DIgXEGteELseHpiOtU.6gRGsIZIvyytf45cffd60a62912bada466d51e03f6fa.jpg'
@@ -567,7 +559,6 @@ class Editor extends Component {
         })    
       },
       onAuthFail: () => {
-        console.log('onAuthFail')
         Taro.authModal({
           open: true
         })
@@ -600,6 +591,8 @@ class Editor extends Component {
   createCanvas = async () => {
     return new Promise(async (resolve, reject) => {
       const {currentScene, foreground, frame, canvas} = this.state
+      const sceneInfo = this.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
+      const sceneConfig = JSON.parse(sceneInfo.sceneConfig)
       const postfix = '?x-oss-process=image/resize,h_748,w_560'      
       const context = Taro.createCanvasContext(canvas.id, this)
       const { ratio = 3 } = canvas
@@ -615,7 +608,11 @@ class Editor extends Component {
       //防止锯齿，绘的图片是所需图片的3倍
       context.drawImage(localBgImagePath, 0, 0, frame.width * ratio, frame.height * ratio)
       // 绘制元素
-      await this.canvasDrawElement(context, ratio)      
+      await this.canvasDrawElement(context, ratio) 
+      // 绘制二维码
+      if (sceneConfig.watermark) {
+        this.canvasDrawLogo(context, ratio)    
+      } 
       //绘制图片
       context.draw()
       //将生成好的图片保存到本地，需要延迟一会，绘制期间耗时
@@ -694,6 +691,28 @@ class Editor extends Component {
       context.restore()
       context.stroke()
     }
+  }
+  // 绘制二维码和logo
+  canvasDrawLogo = (context, ratio) => {
+    const {frame} = this.state
+    // const localCodeImagePath = '../../assets/images/code.png'
+    const codeWidth = 67.5 * 1.5
+    const codeHeight = 67.5 * 1.5
+    const codeLeft = frame.width * ratio - codeWidth - 15
+    const codeTop = frame.height * ratio - codeHeight - 15
+    context.save()
+    context.drawImage(image_code,  codeLeft, codeTop, codeWidth, codeHeight) 
+    context.restore()
+    context.stroke()
+    // const localLogoImagePath = '../../assets/images/versa.png'
+    const logoWidth = 197 * 1.5
+    const logoHeight = 20 * 1.5
+    const logoLeft = frame.width * ratio * 0.5 - logoWidth * 0.5
+    const logoTop = frame.height * ratio - logoHeight - 8
+    context.save()
+    context.drawImage(image_versa,  logoLeft, logoTop, logoWidth, logoHeight) 
+    context.restore()
+    context.stroke()
   }
 
   // 下载照片并存储到本地
@@ -864,15 +883,16 @@ class Editor extends Component {
         result.x = result_center.x
         result.y = result_center.y
         break
-      // case '11':
-      //   faceCenterLocation ()
-      //   break
+      case '11':
+        const result_faceCenter = faceCenterLocation(position, boxWidth, boxHeight, width, height)
+        result.x = result_faceCenter.x
+        result.y = result_faceCenter.y
+        break
       default:
         result.x = (boxWidth - width) * 0.5
         result.y = (boxHeight - height) * 0.5
     }
     result.rotate = parseInt(sceneConfig.rotate)
-
     return result
 
     function location (position, boxWidth, boxHeight, width, height) {
@@ -915,25 +935,30 @@ class Editor extends Component {
       return result
     }
     // 脸部中心点设置位置
-    function faceCenterLocation () {
-      // const faceCenterPosition = (globalData.separateResult && 
-      //       globalData.separateResult.faceCenterDict && globalData.separateResult.faceCenterDict['16-1']) || [0, 0]
-      // const imageSize = (globalData.separateResult && 
-      //       globalData.separateResult.imageSizeDict && globalData.separateResult.imageSizeDict['16-1']) || [1, 1]
-      // const faceLeft = (faceCenterPosition[0] / imageSize[0]) || 0.5 // 脸部中心点距离左边比例
-      // const faceTop = (faceCenterPosition[1] / imageSize[1]) || 0.5 // 脸部中心点距离顶边比例 
-      // if (position.xAxis.derection === 'left') {
-      //   sticker.x = position.xAxis.offset * boxWidth - width * faceLeft
-      // }
-      // if (position.xAxis.derection === 'right') {
-      //   sticker.x = boxWidth * (1 - position.xAxis.offset) - width * faceLeft
-      // }
-      // if (position.yAxis.derection === 'top') {
-      //   sticker.y = position.yAxis.offset * boxHeight - height * faceTop
-      // }
-      // if (position.yAxis.derection === 'bottom') {
-      //   sticker.y = boxHeight * (1 - position.yAxis.offset) - height * faceTop
-      // }      
+    function faceCenterLocation (position, boxWidth, boxHeight, width, height) {
+      const result = {
+        x: 0,
+        y: 0
+      }
+      const faceCenterPosition = (globalData.separateResult && 
+            globalData.separateResult.faceCenterDict && globalData.separateResult.faceCenterDict['16-1']) || [0, 0]
+      const imageSize = (globalData.separateResult && 
+            globalData.separateResult.imageSizeDict && globalData.separateResult.imageSizeDict['16-1']) || [1, 1]
+      const faceLeft = (faceCenterPosition[0] / imageSize[0]) || 0.5 // 脸部中心点距离左边比例
+      const faceTop = (faceCenterPosition[1] / imageSize[1]) || 0.5 // 脸部中心点距离顶边比例 
+      if (position.xAxis.derection === 'left') {
+        result.x = position.xAxis.offset * boxWidth - width * faceLeft
+      }
+      if (position.xAxis.derection === 'right') {
+        result.x = boxWidth * (1 - position.xAxis.offset) - width * faceLeft
+      }
+      if (position.yAxis.derection === 'top') {
+        result.y = position.yAxis.offset * boxHeight - height * faceTop
+      }
+      if (position.yAxis.derection === 'bottom') {
+        result.y = boxHeight * (1 - position.yAxis.offset) - height * faceTop
+      }    
+      return result  
     }    
   }
   // 缓存人物尺寸位置
@@ -1117,8 +1142,7 @@ class Editor extends Component {
   }
 
   render () {
-    const { loading, rawImage, frame, foreground, coverList, sceneList, currentScene, result, canvas } = this.state   
-    // console.log('state sceneList', sceneList)
+    const { loading, rawImage, frame, foreground, coverList, sceneList, currentScene, result, canvas } = this.state
     return (
       <View className='page-editor'>
         <Title

@@ -371,7 +371,7 @@ class Sticker extends Component {
           func.apply(that, arguments);
           lastCalledAt = new Date().getTime();
       } else {
-        console.log('不执行')
+        // console.log('不执行')
       }
     }
   } 

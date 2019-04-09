@@ -41,7 +41,6 @@ class Share extends Component {
   }
 
   state = {
-    showAuth: false,
     isFromApp: false,
     shareSourceType: 'image', // 'video' 'image'
     shareSource: '',
@@ -191,16 +190,6 @@ class Share extends Component {
       }
     })
   }
-  showAuthModal = (flag = false) => {
-    this.setState({
-      showAuth: flag
-    })
-  }
-  closeAuthModal = () => {
-    this.setState({
-      showAuth: false
-    })
-  }
   handleRecommendClick = (data) => {
     if (!data.themeId) {
       return
@@ -219,7 +208,7 @@ class Share extends Component {
   }
 
   render () {
-    const {shareSourceType, shareSource, videoPoster, width, height, recommendList, showAuth} = this.state
+    const {shareSourceType, shareSource, videoPoster, width, height, recommendList} = this.state
     return (
       <View className='page-share'>
         <Title
@@ -272,7 +261,7 @@ class Share extends Component {
             />
           </View>      
         </View> 
-        {showAuth && <AuthModal onClick={this.closeAuthModal}/>}       
+        <AuthModal />      
       </View>
     )
   }

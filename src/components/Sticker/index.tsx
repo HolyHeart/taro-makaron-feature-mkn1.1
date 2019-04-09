@@ -92,6 +92,11 @@ class Sticker extends Component {
         framePrams: nextProps.framePrams
       })
     }
+    if (nextProps.url !== this.props.url) {
+      this.setState({
+        url: nextProps.url
+      })
+    }
   }
 
   isFixed = () => {
@@ -364,12 +369,12 @@ class Sticker extends Component {
   }
 
   throttle = (func, deltaX) => {
-    let lastCalledAt = new Date().getTime();
-    let that = this;
-    return function() {
+    let lastCalledAt = new Date().getTime()
+    let that = this
+    return function () {
       if(new Date().getTime() - lastCalledAt >= deltaX) {
-          func.apply(that, arguments);
-          lastCalledAt = new Date().getTime();
+        func.apply(that, arguments)
+        lastCalledAt = new Date().getTime()
       } else {
         // console.log('不执行')
       }
@@ -388,7 +393,7 @@ class Sticker extends Component {
   
   render() {
     const { url, stylePrams } = this.props
-    const { framePrams } = this.state
+    // const { framePrams } = this.state
     const styleObj = this.formatStyle(this.props.stylePrams)
     // console.log('sticker(this.props)', this.props)
     return (
@@ -415,7 +420,7 @@ class Sticker extends Component {
         >
           <Image src={scale} mode="widthFix" style="width:50%;height:50%"/>
         </View>
-        { stylePrams.deleteable &&
+        {stylePrams.deleteable &&
           <View className={`control close ${stylePrams.isActive ? 'active' : ''}`}
             onClick={this.handleDeleteSticker}
           >

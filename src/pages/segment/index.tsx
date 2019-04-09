@@ -184,7 +184,7 @@ class Segment extends Component {
     this.initSceneData(() => {
     })    
     const separateResult = globalData.separateResult = await this.initSegment()
-    console.log('separateResult', separateResult)
+    // console.log('separateResult', separateResult)
     await this.initSeparateData(separateResult)
   }
 
@@ -329,11 +329,12 @@ class Segment extends Component {
   }
 
   initSeparateData = async (separateResult) => {  
-    const { currentScene, foreground } = this.state 
+    const { currentScene } = this.state 
     this.changeSceneChooseSegment(currentScene, separateResult, (res = {}) => {
+      console.log('changeSceneChooseSegment', res)
       this.setState({      
         foreground: {
-          ...foreground,
+          ...this.state.foreground,
           remoteUrl: res.separateUrl
         }
       }) 

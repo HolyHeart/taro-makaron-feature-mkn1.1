@@ -14,6 +14,7 @@ type ComponentOwnProps = {
   type?: string,
   video?: object,
   image?: object,
+  layer?: boolean,
   renderButton?: any
 }
 
@@ -30,7 +31,8 @@ class ResultModal extends Component {
     type: 'image',
     image: {
       url: ''
-    },    
+    },
+    layer: false,   
     video: {
       url: '',
       width: 0,
@@ -48,7 +50,7 @@ class ResultModal extends Component {
     })
   }
   render() {
-    const { image, video, type } = this.props
+    const { layer, image, video, type } = this.props
     return (
       <View className='result-wrap'>
         <View className="modal-mask"></View>
@@ -60,8 +62,10 @@ class ResultModal extends Component {
               <CustomIcon type="home" theme="dark" onClick={this.pageToHome}/>
             }
           >马卡龙玩图</Title>
-          {type === 'image' && 
+          
+          {type === 'image' &&             
             <View class="pic-wrap">
+              {layer && <View class="layer"></View>}
               <Image class="pic" src={image.url} mode="aspectFill" />
             </View>
           }

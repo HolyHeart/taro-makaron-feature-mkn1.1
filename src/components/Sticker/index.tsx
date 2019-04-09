@@ -25,7 +25,8 @@ type ComponentState = {
     height: number,
     left: number,
     top: number,
-  }
+  },
+  url: string
 }
 
 type IProps = ComponentStateProps & ComponentOwnProps
@@ -58,14 +59,17 @@ class Sticker extends Component {
       deleteable: false, //是否可以删除
     },
   }
+
   state = {
     framePrams: {
       width: 0,
       height: 0,
       left: 0,
       top: 0,
-    },    
+    },  
+    url: this.props.url,
   }
+
   gesture = {
     startX: 0,
     startY: 0,
@@ -77,7 +81,7 @@ class Sticker extends Component {
   } 
 
   constructor (props) {
-    super(props)
+    super(props)    
     this.throttledStickerOntouchmove = this.throttle(this.stickerOntouchmove, 1000/20).bind(this)
     this.throttledArrowOntouchmove = this.throttle(this.arrowOntouchmove, 1000/20).bind(this)  
   }
@@ -93,8 +97,11 @@ class Sticker extends Component {
       })
     }
     if (nextProps.url !== this.props.url) {
+      console.log('sticker componentWillReceiveProps url', this.props, nextProps)
       this.setState({
         url: nextProps.url
+      }, () => {
+        console.log('sticker update state', this.state)
       })
     }
   }
@@ -392,10 +399,9 @@ class Sticker extends Component {
   }
   
   render() {
-    const { url, stylePrams } = this.props
-    // const { framePrams } = this.state
+    const { stylePrams } = this.props
     const styleObj = this.formatStyle(this.props.stylePrams)
-    // console.log('sticker(this.props)', this.props)
+    // console.log('sticker render', this.state.url)
     return (
       <View 
         className={`sticker-wrap ${stylePrams.fixed ? 'event-through' : ''} ${(stylePrams.visible && stylePrams.width > 0) ? '' : 'hidden' }`}
@@ -405,7 +411,7 @@ class Sticker extends Component {
         {/* <View style="position: absolute;left:0;top:20px">{stylePrams.autoWidth}</View> */}
         {/* <View style="position: absolute;left:0;top:20px">{stylePrams.width}</View>  */}
         <Image 
-          src={url} 
+          src={this.state.url} 
           mode="widthFix" 
           style="width:100%;height:100%"
           onLoad={this.handleImageLoaded}

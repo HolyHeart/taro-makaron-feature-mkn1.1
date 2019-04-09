@@ -21,9 +21,6 @@ import './index.less'
 import image_code from '@/assets/images/code.png'
 import image_versa from '@/assets/images/versa.png'
 
-// const mock_path = 'https://static01.versa-ai.com/upload/783272fc1375/999deac02e85f3ea.png'
-// const mock_segment_url = 'https://static01.versa-ai.com/images/process/segment/2019/01/14/b4cf047a-17a5-11e9-817f-00163e001583.png'
-
 type PageStateProps = {
   global: {
     system: object
@@ -331,7 +328,7 @@ class Segment extends Component {
   initSeparateData = async (separateResult) => {  
     const { currentScene } = this.state 
     this.changeSceneChooseSegment(currentScene, separateResult, (res = {}) => {
-      console.log('changeSceneChooseSegment', res)
+      // console.log('changeSceneChooseSegment', res)
       this.setState({      
         foreground: {
           ...this.state.foreground,
@@ -580,12 +577,10 @@ class Segment extends Component {
     }
     return this.cache['source'].set(cacheKey, localImagePath)
   }
-
   // 设置人物状态
   setForegroundActiveStatus = (value = false) => {
     this.setStateTarget('foreground', {isActive: value})
   }
-
   // 人物自适应
   foregroundAuto = (callback?:()=>void) => {
     // 先判断是否有缓存
@@ -794,7 +789,7 @@ class Segment extends Component {
   }
 
   render () {
-    const { loading, rawImage, frame, foreground, coverList, sceneList, currentScene, result, canvas } = this.state
+    const { loading, rawImage, frame, foreground, result, canvas } = this.state
     return (
       <View className='page-segment'>
         <Title

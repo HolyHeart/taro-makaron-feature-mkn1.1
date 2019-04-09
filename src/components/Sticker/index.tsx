@@ -58,6 +58,12 @@ class Sticker extends Component {
       visible: true, // 是否显示
       deleteable: false, //是否可以删除
     },
+    framePrams: {
+      width: 0,
+      height: 0,
+      left: 0,
+      top: 0,
+    },
   }
 
   state = {
@@ -91,17 +97,27 @@ class Sticker extends Component {
 
   componentWillReceiveProps (nextProps) {
     // console.log('sticker componentWillReceiveProps', this.props, nextProps)
-    if (nextProps.framePrams && nextProps.framePrams.width > 0) {
-      this.setState({
-        framePrams: nextProps.framePrams
-      })
+    let { framePrams, url } = this.props
+    let hasChange = false
+    if (nextProps.framePrams && nextProps.framePrams.width !== this.props.framePrams.width) {
+      framePrams = nextProps.framePrams
+      hasChange = true
+      // console.log('change framePrams', framePrams)
     }
+
     if (nextProps.url !== this.props.url) {
-      console.log('sticker componentWillReceiveProps url', this.props, nextProps)
+      url = nextProps.url
+      hasChange = true
+      // console.log('change url', url)
+    }
+
+    if (hasChange) {
+      // console.log('sticker componentWillReceiveProps', 'next-'+nextProps.url, 'last'+this.props.url)
       this.setState({
-        url: nextProps.url
+        framePrams,
+        url
       }, () => {
-        console.log('sticker update state', this.state)
+        // console.log('sticker update state', this.state)
       })
     }
   }

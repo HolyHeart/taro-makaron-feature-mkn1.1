@@ -59,8 +59,7 @@ interface Segment {
   props: IProps;
 }
 
-@connect(({ counter, global }) => ({
-  counter,
+@connect(({ global }) => ({
   global
 }), (dispatch) => ({
   getSystemInfo (data) {
@@ -241,13 +240,15 @@ class Segment extends Component {
       })
     })
   }
-  setResultModalStatus = (flag = false) => {
+  setResultModalStatus = (flag = false, callback?:()=>void) => {
     const {result} = this.state
     result.show = flag
     this.setState({
       result: {
         ...result
       }
+    }, () => {
+      typeof callback === 'function' && callback()
     })
   }  
 
@@ -334,6 +335,8 @@ class Segment extends Component {
           ...this.state.foreground,
           remoteUrl: res.separateUrl
         }
+      }, () => {
+        // console.log('initSeparateData', this.state.foreground)
       }) 
     }) 
   }
@@ -366,7 +369,6 @@ class Segment extends Component {
   }
   // 人物
   onForegroundLoaded = (detail:object, item?:any) => {
-    // console.log('handleForegroundLoaded', detail, item)
     this.hideLoading()
     const {width, height} = detail
     this.setStateTarget('foreground', {
@@ -374,6 +376,7 @@ class Segment extends Component {
       originHeight: height,
       loaded: true
     }, () => {
+      // console.log('handleForegroundLoaded', detail, item, this.state.foreground)
       this.foregroundAuto()
     })
   }
@@ -456,8 +459,9 @@ class Segment extends Component {
         console.log('tap index', index)
       },
       onSuccess: (path) => {
-        this.setResultModalStatus(false)
-        this._refreshPage(path)              
+        this.setResultModalStatus(false, () => {
+          this._refreshPage(path)  
+        })       
       }
     })
   }  
@@ -583,19 +587,6 @@ class Segment extends Component {
   }
   // 人物自适应
   foregroundAuto = (callback?:()=>void) => {
-    // 先判断是否有缓存
-    const {currentScene} = this.state
-    const sceneId = currentScene.sceneId || 'demo_scene'  
-    const cache_foreground = this.cache['foreground']
-    const scene_foreground_params = cache_foreground.get(sceneId)
-    if ( scene_foreground_params ) {
-      this.setStateTarget('foreground', {
-        ...scene_foreground_params
-      }, () => {
-        typeof callback === 'function' && callback()
-      })
-      return
-    }
     const size = this.calcForegroundSize()
     const position = this.calcForegroundPosition(size)
     this.setStateTarget('foreground', {
@@ -807,16 +798,18 @@ class Segment extends Component {
             </View>
             <View className={`crop ${(foreground.remoteUrl && foreground.loaded) ? '' : 'hidden'}`} id="crop">                
               <View className="layer-bg" onClick={this.handleBackgroundClick}></View>   
-              <Sticker
-                ref="foreground"
-                url={foreground.remoteUrl}
-                stylePrams={foreground} 
-                framePrams={frame}
-                onChangeStyle={this.handleChangeStyle}
-                onImageLoaded={this.onForegroundLoaded}
-                onTouchstart={this.handleForegroundTouchstart}
-                onTouchend={this.handleForegroundTouchend}
-              />                        
+              
+                <Sticker
+                  ref="foreground"
+                  url={foreground.remoteUrl}
+                  stylePrams={foreground} 
+                  framePrams={frame}
+                  onChangeStyle={this.handleChangeStyle}
+                  onImageLoaded={this.onForegroundLoaded}
+                  onTouchstart={this.handleForegroundTouchstart}
+                  onTouchend={this.handleForegroundTouchend}
+                />  
+                             
             </View>  
           </View>          
           <View className={`button-section ${windowHeight > 800 ? 'high' : ''}`}>

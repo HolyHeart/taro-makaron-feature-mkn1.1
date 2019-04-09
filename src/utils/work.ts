@@ -10,6 +10,10 @@ interface saveSourceOptions {
   onAuthFail?: () => void,
   onFail?: () => void,
 }
+interface chooseImageOptions {
+  onSuccess?: (path?:any) => void,
+  onTap?: (index?:any) => void,
+}
 const pageToHome = () => {
   Taro.redirectTo({
     url: '/pages/home/index'
@@ -176,6 +180,55 @@ const calcVideoSize = (maxWidth = 306, maxHeight = 408, width, height) => {
     height
   }
 }
+const chooseImage = async ({onTap, onSuccess}:chooseImageOptions) => {
+  Taro.showActionSheet({
+    itemList: [
+      '拍摄人像照',
+      '从相册选择带有人像的照片',
+    ],
+    success: function ({tapIndex}) {
+      typeof onTap === 'function' && onTap(tapIndex)
+      if (tapIndex === 0) {
+        Taro.authorize({
+          scope: "scope.camera",
+        }).then(res => {
+          Taro.chooseImage({
+            count: 1,
+            sourceType: ['camera'],
+            sizeType: ['compressed '],
+          }).then(({tempFilePaths: [path]}) => {
+            typeof onSuccess === 'function' && onSuccess(path)
+          })
+        }, err => {
+          Taro.getSetting().then(authSetting => {
+            if (authSetting['scope.camera']) {
+            } else {
+              Taro.showModal({
+                title: '拍摄图片需要授权',
+                content: '拍摄图片需要授权\n可以授权吗？',
+                confirmText: "允许",
+                cancelText: "拒绝",                      
+              }).then(res => {     
+                if (res.confirm) {
+                  Taro.authModal({
+                    open: true
+                  })
+                }
+              })
+            }                
+          })
+        })
+      } else if (tapIndex === 1) {
+        Taro.chooseImage({
+          count: 1,
+          sourceType: ['album'],
+        }).then(({tempFilePaths: [path]}) => {
+          typeof onSuccess === 'function' && onSuccess(path)
+        })
+      }		
+    }
+  }).catch(err => console.log(err))
+}
 
 const work = {
   pageToHome,
@@ -187,6 +240,7 @@ const work = {
   formatRawCoverList,
   downloadRemoteImage,
   saveSourceToPhotosAlbum,
-  calcVideoSize
+  calcVideoSize,
+  chooseImage
 }
 export default work

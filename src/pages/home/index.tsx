@@ -4,6 +4,7 @@ import { View, Image } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 
 import { getSystemInfo } from '@/model/actions/global'
+import work from '@/utils/work'
 import Title from '@/components/Title'
 import CustomIcon from '@/components/Icon'
 import CategoryItem from '@/components/CategoryItem'
@@ -128,71 +129,25 @@ class Home extends Component {
   }
 
   todo = () => {
-    this.showActionSheet((path)=>{
-      console.log('choosedImage', path, globalData)    
-      globalData.choosedImage = path
-      const { sceneType } = globalData
-      if (sceneType === 1) {
-        Taro.redirectTo({url: '/pages/filter/index'}) 
-      } else if (sceneType === 2) {
-        Taro.redirectTo({url: '/pages/dynamic/index'}) 
-      } else if (sceneType === 3) {
-        Taro.redirectTo({url: '/pages/segment/index'}) 
-      } else {
-        Taro.redirectTo({url: '/pages/editor/index'}) 
+    work.chooseImage({
+      onTap: (index) => {
+        console.log('tap index', index)
+      },
+      onSuccess: (path) => {
+        console.log('choosedImage', path, globalData)    
+        globalData.choosedImage = path
+        const { sceneType } = globalData
+        if (sceneType === 1) {
+          Taro.redirectTo({url: '/pages/filter/index'}) 
+        } else if (sceneType === 2) {
+          Taro.redirectTo({url: '/pages/dynamic/index'}) 
+        } else if (sceneType === 3) {
+          Taro.redirectTo({url: '/pages/segment/index'}) 
+        } else {
+          Taro.redirectTo({url: '/pages/editor/index'}) 
+        }        
       }
     })
-  }
-
-  showActionSheet = async (callback) => {
-    Taro.showActionSheet({
-      itemList: [
-        '拍摄人像照',
-        '从相册选择带有人像的照片',
-      ],
-      success: function ({tapIndex}) {
-        if (tapIndex === 0) {
-          Taro.authorize({
-            scope: "scope.camera",
-          }).then(res => {
-            // console.log('res', res)
-            Taro.chooseImage({
-              count: 1,
-              sourceType: ['camera'],
-              sizeType: ['compressed '],
-            }).then(({tempFilePaths: [path]}) => {
-              typeof callback === 'function' && callback(path)
-            })
-          }, err => {
-            console.log('authorize err', err)
-            Taro.getSetting().then(authSetting => {
-              if (authSetting['scope.camera']) {
-              } else {
-                Taro.showModal({
-                  title: '拍摄图片需要授权',
-                  content: '拍摄图片需要授权\n可以授权吗？',
-                  confirmText: "允许",
-                  cancelText: "拒绝",                      
-                }).then(res => {     
-                  if (res.confirm) {
-                    Taro.authModal({
-                      open: true
-                    })
-                  }
-                })
-              }                
-            })
-          })
-        } else if (tapIndex === 1) { 
-          Taro.chooseImage({
-            count: 1,
-            sourceType: ['album'],
-          }).then(({tempFilePaths: [path]}) => {
-            typeof callback === 'function' && callback(path)
-          })
-        }		
-      }
-    }).catch(err => console.log(err))
   }
 
   render () {

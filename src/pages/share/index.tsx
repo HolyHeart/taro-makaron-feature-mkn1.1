@@ -12,6 +12,7 @@ import Session from '@/services/session'
 import service from '@/services/service'
 import globalData from '@/services/global_data'
 import tool from '@/utils/tool'
+import work from '@/utils/work'
 import './index.less'
 
 // const demo = 'https://static01.versa-ai.com/upload/201bae375f8b/18e62d91-fc04-46c6-8f21-7224b53eb4b7.mp4'
@@ -166,74 +167,29 @@ class Share extends Component {
     }
   }
   todo = () => {
-    this.showActionSheet((path)=>{      
-      globalData.choosedImage = path
-      // console.log('choosedImage', path, globalData)
-      const { themeData = {}, sceneId } = globalData      
-      let url = ''
-      if (themeData.sceneType === 1) {
-        url = '/pages/filter/index'
-      } else if (themeData.sceneType === 2) {
-        url = '/pages/dynamic/index'
-      } else if (themeData.sceneType === 3) {
-        url = '/pages/segment/index'
-      } else {
-        url = '/pages/editor/index'
+    work.chooseImage({
+      onTap: (index) => {
+        console.log('tap index', index)
+      },
+      onSuccess: (path) => {
+        globalData.choosedImage = path
+        const { themeData = {}, sceneId } = globalData      
+        let url = ''
+        if (themeData.sceneType === 1) {
+          url = '/pages/filter/index'
+        } else if (themeData.sceneType === 2) {
+          url = '/pages/dynamic/index'
+        } else if (themeData.sceneType === 3) {
+          url = '/pages/segment/index'
+        } else {
+          url = '/pages/editor/index'
+        }
+        if (sceneId) {
+          url = url + '?sceneId=' + sceneId
+        }        
+        Taro.redirectTo({url})       
       }
-      if (sceneId) {
-        url = url + '?sceneId=' + sceneId
-      }        
-      Taro.redirectTo({url})         
     })
-  }
-  showActionSheet = async (callback) => {
-    const _this = this
-    Taro.showActionSheet({
-      itemList: [
-        '拍摄人像照',
-        '从相册选择带有人像的照片',
-      ],
-      success: function ({tapIndex}) {
-        if (tapIndex === 0) {
-          Taro.authorize({
-            scope: "scope.camera",
-          }).then(res => {
-            // console.log('res', res)
-            Taro.chooseImage({
-              count: 1,
-              sourceType: ['camera'],
-              sizeType: ['compressed '],
-            }).then(({tempFilePaths: [path]}) => {
-              typeof callback === 'function' && callback(path)
-            })
-          }, err => {
-            console.log('authorize err', err)
-            Taro.getSetting().then(authSetting => {
-              if (authSetting['scope.camera']) {
-              } else {
-                Taro.showModal({
-                  title: '拍摄图片需要授权',
-                  content: '拍摄图片需要授权\n可以授权吗？',
-                  confirmText: "允许",
-                  cancelText: "拒绝",                      
-                }).then(res => {     
-                  if (res.confirm) {
-                    _this.showAuthModal(true)
-                  }
-                })
-              }                
-            })
-          })
-        } else if (tapIndex === 1) { 
-          Taro.chooseImage({
-            count: 1,
-            sourceType: ['album'],
-          }).then(({tempFilePaths: [path]}) => {
-            typeof callback === 'function' && callback(path)
-          })
-        }		
-      }
-    }).catch(err => console.log(err))
   }
   showAuthModal = (flag = false) => {
     this.setState({

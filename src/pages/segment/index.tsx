@@ -9,7 +9,6 @@ import work from '@/utils/work'
 import Title from '@/components/Title'
 import CustomIcon from '@/components/Icon'
 import Sticker from '@/components/Sticker'
-import SceneList from '@/components/SceneList'
 import Loading from '@/components/Loading'
 import AuthModal from '@/components/AuthModal'
 import ResultModal from '@/components/ResultModal'
@@ -22,8 +21,8 @@ import './index.less'
 import image_code from '@/assets/images/code.png'
 import image_versa from '@/assets/images/versa.png'
 
-const mock_path = 'https://static01.versa-ai.com/upload/783272fc1375/999deac02e85f3ea.png'
-const mock_segment_url = 'https://static01.versa-ai.com/images/process/segment/2019/01/14/b4cf047a-17a5-11e9-817f-00163e001583.png'
+// const mock_path = 'https://static01.versa-ai.com/upload/783272fc1375/999deac02e85f3ea.png'
+// const mock_segment_url = 'https://static01.versa-ai.com/images/process/segment/2019/01/14/b4cf047a-17a5-11e9-817f-00163e001583.png'
 
 type PageStateProps = {
   global: {
@@ -102,31 +101,10 @@ class Segment extends Component {
       autoWidth: 0, // 自适应后的宽度
       autoHeight: 0, // 自适应后的高度
       autoScale: 0, // 相对画框缩放比例
-      fixed: false, // 是否固定
       isActive: true, // 是否激活
       loaded: false, // 是否加载完毕
       visible: true, // 是否显示
     },
-    coverList: [
-      // {
-      // id: 'cover-01',
-      // remoteUrl: 'https://static01.versa-ai.com/images/process/segment/2019/01/07/a102310e-122a-11e9-b5ef-00163e023476.png',
-      // originHeight: 2440,
-      // originWidth: 750,
-      // autoHeight: 244,
-      // autoScale: 0.1,
-      // autoWidth: 75,
-      // width: 57.378244033967235,
-      // height:186.6705539238401,      
-      // x: 185.1442062300867,
-      // y: 155.66472303807996,
-      // rotate: -25.912119928692746,
-      // zIndex: 3,
-      // fixed: false, // 是否固定
-      // isActive: false, // 是否激活
-      // visible: true, // 是否显示
-      // }
-    ],
     sceneList: [],
     currentScene: {},
     canvas: {
@@ -210,6 +188,23 @@ class Segment extends Component {
     await this.initSeparateData(separateResult)
   }
 
+  _refreshPage = async (path) => {
+    globalData.choosedImage = path  
+    this.setState({
+      foreground: {
+        ...this.state.foreground,
+        remoteUrl: '',
+        loaded: false
+      }
+    }, () => {
+      this.initRawImage(async () => {
+        const separateResult = await this.initSegment()
+        globalData.separateResult = separateResult
+        await this.initSeparateData(separateResult)        
+      })      
+    })          
+  }
+
   // 公共方法
   pageToHome = () => {
     Taro.redirectTo({
@@ -259,7 +254,7 @@ class Segment extends Component {
     })
   }  
 
-  initRawImage = () => {
+  initRawImage = (callback?:()=>void) => {
     const {rawImage} = this.state
     globalData.choosedImage = globalData.choosedImage || 'http://tmp/wxcfe56965f4d986f0.o6zAJsztn2DIgXEGteELseHpiOtU.6gRGsIZIvyytf45cffd60a62912bada466d51e03f6fa.jpg'
     this.setState({
@@ -267,6 +262,8 @@ class Segment extends Component {
         ...rawImage,
         localUrl: globalData.choosedImage
       }
+    }, () => {
+      typeof callback === 'function' && callback()
     })
   }
   // 初始化场景信息
@@ -333,7 +330,7 @@ class Segment extends Component {
 
   initSeparateData = async (separateResult) => {  
     const { currentScene, foreground } = this.state 
-    this.changeSceneChooseSegment(currentScene, separateResult, (res = {}) => {      
+    this.changeSceneChooseSegment(currentScene, separateResult, (res = {}) => {
       this.setState({      
         foreground: {
           ...foreground,
@@ -455,10 +452,17 @@ class Segment extends Component {
       }
     })
   }
-  handlePlayAgain = () => {
-    this.setResultModalStatus(false)
-  }
-  
+  handlePlayAgain = () => {    
+    work.chooseImage({
+      onTap: (index) => {
+        console.log('tap index', index)
+      },
+      onSuccess: (path) => {
+        this.setResultModalStatus(false)
+        this._refreshPage(path)              
+      }
+    })
+  }  
 
   createCanvas = async () => {
     return new Promise(async (resolve, reject) => {
@@ -805,8 +809,8 @@ class Segment extends Component {
               <Image src={rawImage.localUrl} style="width:100%;height:100%" mode="aspectFit"/>
             </View>
             <View className={`crop ${(foreground.remoteUrl && foreground.loaded) ? '' : 'hidden'}`} id="crop">                
-              <View className="layer-bg" onClick={this.handleBackgroundClick}></View>       
-              <Sticker 
+              <View className="layer-bg" onClick={this.handleBackgroundClick}></View>   
+              {foreground.remoteUrl && <Sticker
                 ref="foreground"
                 url={foreground.remoteUrl}
                 stylePrams={foreground}                
@@ -815,7 +819,7 @@ class Segment extends Component {
                 onImageLoaded={this.onForegroundLoaded}
                 onTouchstart={this.handleForegroundTouchstart}
                 onTouchend={this.handleForegroundTouchend}
-              />              
+              />}                               
             </View>  
           </View>          
           <View className="button-section">

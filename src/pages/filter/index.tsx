@@ -1133,6 +1133,7 @@ class Filter extends Component {
 
   render () {
     const { loading, rawImage, frame, background, filter, foreground, coverList, sceneList, currentScene, result, music } = this.state
+    const { global: {system: {windowHeight}} } = this.props
     return (
       <View className='page-filter'>
         <Title
@@ -1201,10 +1202,10 @@ class Filter extends Component {
           <SceneList 
             list={sceneList} 
             currentScene={currentScene}
-            styleObj={{width: '720rpx', paddingTop: '20rpx', marginRight: '-60rpx'}}
+            styleObj={{width: '720rpx', paddingTop: windowHeight > 800 ? '60rpx' : '20rpx', marginRight: '-60rpx'}}
             onClick={this.handleChooseScene}
           />
-          <View className="button-section">
+          <View className={`button-section ${windowHeight > 800 ? 'high' : ''}`}>
             <Button className="custom-button pink" hoverClass="btn-hover" onClick={this.handleOpenResult}>保存</Button>
           </View>        
         </View> 

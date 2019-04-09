@@ -32,6 +32,7 @@ page {
       height:920rpx;
       background: #ccc;  
       overflow: hidden;
+      box-shadow:0px 2px 4px 0px rgba(0,0,0,0.3);
       &.hidden {
         opacity: 0;
       }
@@ -52,7 +53,10 @@ page {
     }
   }
   .button-section {
-    margin-top: 20rpx
+    margin-top: 20px;
+    &.high {
+      margin-top: 60px
+    }
   }
   .canvas-wrap {
     position:fixed;

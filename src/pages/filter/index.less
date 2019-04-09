@@ -31,13 +31,13 @@ page {
       width:690rpx;
       height:920rpx;
       // background: #ccc; 
-      overflow: hidden;
+      // overflow: hidden;
       .play-section {
         position: absolute;
         top: 0px;
         left: 0px;
         // overflow: hidden;
-        box-shadow: 4px 4px 8px 4px rgba(0, 0, 0, 0.2);
+        box-shadow:0px 2px 4px 0px rgba(0,0,0,0.3);
         .background-image {
           position: absolute;
           top: 0px;
@@ -74,7 +74,10 @@ page {
     }
   }
   .button-section {
-    margin-top: 20rpx
+    margin-top: 20rpx;
+    &.high {
+      margin-top: 60px
+    }
   }
   .canvas-wrap {
     position:fixed;

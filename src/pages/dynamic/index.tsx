@@ -1179,9 +1179,9 @@ class Dynamic extends Component {
     this.cache['cover'].set(cacheKey, clone_cover)
   }
 
-  render () {
-    // const { global } = this.props
+  render () {    
     const { loading, rawImage, frame, foreground, coverList, sceneList, currentScene, result, music } = this.state
+    const { global: {system: {windowHeight}} } = this.props
     return (
       <View className='page-dynamic'>
         <Title
@@ -1190,7 +1190,7 @@ class Dynamic extends Component {
           renderLeft={
             <CustomIcon type="back" theme="dark" onClick={work.pageToHome}/>
           }
-        >马卡龙玩图-动态贴纸</Title>
+        >马卡龙玩图</Title>
         <View className="main">
           <View className="pic-section">
             <View className={`raw ${(foreground.remoteUrl && foreground.loaded) ? 'hidden' : ''}`}>
@@ -1234,10 +1234,10 @@ class Dynamic extends Component {
           <SceneList 
             list={sceneList} 
             currentScene={currentScene}
-            styleObj={{width: '720rpx', paddingTop: '20rpx', marginRight: '-60rpx'}}
+            styleObj={{width: '720rpx', paddingTop: windowHeight > 800 ? '60rpx' : '20rpx', marginRight: '-60rpx'}}
             onClick={this.handleChooseScene}
           />
-          <View className="button-section">
+          <View className={`button-section ${windowHeight > 800 ? 'high' : ''}`}>
             <Button className="custom-button pink" hoverClass="btn-hover" onClick={this.handleOpenResult}>保存</Button>
           </View>        
         </View> 

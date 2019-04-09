@@ -790,6 +790,7 @@ class Segment extends Component {
 
   render () {
     const { loading, rawImage, frame, foreground, result, canvas } = this.state
+    const { global: {system: {windowHeight}} } = this.props
     return (
       <View className='page-segment'>
         <Title
@@ -818,7 +819,7 @@ class Segment extends Component {
               />}                               
             </View>  
           </View>          
-          <View className="button-section">
+          <View className={`button-section ${windowHeight > 800 ? 'high' : ''}`}>
             <Button className="custom-button pink" hoverClass="btn-hover" onClick={this.handleOpenResult}>保存透明底图片(PNG)</Button>
           </View>        
         </View>

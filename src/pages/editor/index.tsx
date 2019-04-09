@@ -236,8 +236,7 @@ class Editor extends Component {
     this.setState({
       loading: false
     })
-  }
-  
+  }  
   setStateTarget = (key, value = {}, callback?:() => void) => {
     const target = this.state[key]
     this.setState({
@@ -249,21 +248,8 @@ class Editor extends Component {
       typeof callback === 'function' && callback()
     })
   }
-  getDomRect = (id:string, callback:(rect:object)=>void) => {
-    Taro.createSelectorQuery().select('#' + id).boundingClientRect(function(rect){
-      // rect.id      // 节点的ID
-      // rect.dataset // 节点的dataset
-      // rect.left    // 节点的左边界坐标
-      // rect.right   // 节点的右边界坐标
-      // rect.top     // 节点的上边界坐标
-      // rect.bottom  // 节点的下边界坐标
-      // rect.width   // 节点的宽度
-      // rect.height  // 节点的高度
-      typeof callback === 'function' && callback(rect)
-    }).exec()
-  }
   calFrameRect = () => {
-    this.getDomRect('crop', rect => {
+    work.getDomRect('crop', rect => {
       this.setState({
         frame: {
           width: rect.width,
@@ -274,45 +260,6 @@ class Editor extends Component {
       })
     })
   }
-  getSceneInfoById = (id:string, list:Array<any> = [], key:string) => {
-    return list.filter(v => {
-      return v[key] === id
-    })[0]
-  }
-  getCoverInfoById = (id:string, list:Array<any> = [], key:string) => {
-    return list.filter(v => {
-      return v[key] === id
-    })[0]
-  }
-  formatRawCoverList = (list = []) => {
-    return list.map(v => {
-      const cover_model = {
-        id: '',
-        remoteUrl: '',
-        originHeight: 0,
-        originWidth: 0,
-        autoHeight: 0,
-        autoScale: 0,
-        autoWidth: 0,
-        width: 0,
-        height: 0,      
-        x: 0,
-        y: 0,
-        rotate: 0,
-        zIndex: 0,
-        fixed: false,
-        isActive: false,
-        visible: false
-      }
-      cover_model.remoteUrl = v.imageUrl
-      cover_model.id = v.id
-      cover_model.zIndex = v.zIndex || 0
-      cover_model.fixed = v.fixed || false
-      cover_model.isActive = v.isActive || false
-      cover_model.visible = true
-      return cover_model
-    })
-  }  
 
   initRawImage = () => {
     const {rawImage} = this.state
@@ -352,12 +299,12 @@ class Editor extends Component {
   // 初始化贴纸
   initCoverData = () => {
     const {currentScene} = this.state    
-    const sceneInfo = this.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
+    const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
     const sceneConfig = JSON.parse(sceneInfo.sceneConfig)
     const {cover = {}} = sceneConfig
 
     this.themeData.rawCoverList = cover.list || []
-    const coverList = this.formatRawCoverList(this.themeData.rawCoverList)  
+    const coverList = work.formatRawCoverList(this.themeData.rawCoverList)  
 
     this.setState({      
       coverList: coverList
@@ -591,7 +538,7 @@ class Editor extends Component {
   createCanvas = async () => {
     return new Promise(async (resolve, reject) => {
       const {currentScene, foreground, frame, canvas} = this.state
-      const sceneInfo = this.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
+      const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
       const sceneConfig = JSON.parse(sceneInfo.sceneConfig)
       const postfix = '?x-oss-process=image/resize,h_748,w_560'      
       const context = Taro.createCanvasContext(canvas.id, this)
@@ -792,7 +739,7 @@ class Editor extends Component {
   calcForegroundSize = () => {
     const {currentScene, sceneList, foreground, frame} = this.state
     const {originWidth, originHeight} = foreground    
-    const sceneInfo = this.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
+    const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
 
     const imageRatio = originWidth / originHeight
     const params = JSON.parse(sceneInfo.sceneConfig)
@@ -824,7 +771,7 @@ class Editor extends Component {
     const {originWidth, originHeight} = foreground
     width = width || foreground.width
     height = height || foreground.height
-    const sceneInfo = this.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
+    const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
 
     const boxWidth = frame.width
     const boxHeight = frame.height
@@ -998,7 +945,7 @@ class Editor extends Component {
   calcCoverSize = (originInfo, cover) => {
     const {originWidth, originHeight} = originInfo   
     const {frame} = this.state
-    const coverInfo = this.getCoverInfoById(cover.id, this.themeData.rawCoverList, 'id')
+    const coverInfo = work.getCoverInfoById(cover.id, this.themeData.rawCoverList, 'id')
 
     const imageRatio = originWidth / originHeight      
     const autoScale = parseFloat(coverInfo.size.default || 0.5)
@@ -1025,7 +972,7 @@ class Editor extends Component {
   calcCoverPosition = (size = {}, cover = {}) => {
     const {width = 0, height = 0} = size
     const {frame} = this.state
-    const coverInfo = this.getCoverInfoById(cover.id, this.themeData.rawCoverList, 'id')    
+    const coverInfo = work.getCoverInfoById(cover.id, this.themeData.rawCoverList, 'id')    
     const {position, rotate = 0} = coverInfo
     const boxWidth = frame.width
     const boxHeight = frame.height
@@ -1143,6 +1090,7 @@ class Editor extends Component {
 
   render () {
     const { loading, rawImage, frame, foreground, coverList, sceneList, currentScene, result, canvas } = this.state
+    const { global: {system: {windowHeight}} } = this.props
     return (
       <View className='page-editor'>
         <Title
@@ -1193,10 +1141,10 @@ class Editor extends Component {
           <SceneList 
             list={sceneList} 
             currentScene={currentScene}
-            styleObj={{width: '720rpx', paddingTop: '20rpx', marginRight: '-60rpx'}}
+            styleObj={{width: '720rpx', paddingTop: windowHeight > 800 ? '60rpx' : '20rpx', marginRight: '-60rpx'}}
             onClick={this.handleChooseScene}
           />
-          <View className="button-section">
+          <View className={`button-section ${windowHeight > 800 ? 'high' : ''}`}>
             <Button className="custom-button pink" hoverClass="btn-hover" onClick={this.handleOpenResult}>保存</Button>
           </View>        
         </View>

@@ -13,8 +13,40 @@ import globalData from '@/services/global_data'
 import { core } from '@/services/service'
 import Session from '@/services/session'
 import bg from '@/assets/images/bg.png'
+import pic_loading from '@/assets/images/pic_loading.png'
+import pic_loading_big from '@/assets/images/pic_loading_big.png'
 import './index.less'
-
+const default_column = [      
+  {
+    columnId: "189063862158151681", 
+    columanName: "栏目1", 
+    columnNum: 1,
+    themeList: [
+      {
+        generalShowUrl: pic_loading_big
+      }
+    ]
+  },
+  {
+    columnId: "189063862158151680", 
+    columanName: "栏目2", 
+    columnNum: 2,
+    themeList: [
+      {
+        generalShowUrl: pic_loading
+      },
+      {
+        generalShowUrl: pic_loading
+      },
+      {
+        generalShowUrl: pic_loading
+      },
+      {
+        generalShowUrl: pic_loading
+      }
+    ]
+  }      
+]
 type PageStateProps = {
   global: {
     system: object
@@ -28,7 +60,8 @@ type PageDispatchProps = {
 type PageOwnProps = {}
 
 type PageState = {
-  categoryList: Array<object>
+  categoryList: Array<object>,
+  defaultThemeData: object,
 }
 
 type IProps = PageStateProps & PageDispatchProps & PageOwnProps
@@ -46,17 +79,27 @@ interface Home {
 }))
 class Home extends Component {
   config: Config = {
-    navigationBarTitleText: '马卡龙玩图'
+    navigationBarTitleText: '马卡龙玩图',
+    disableScroll: false
   }
 
   state = {
-    categoryList: [],
+    categoryList: default_column,
+    defaultThemeData: {}
   }
 
   componentWillMount () {
-    // const {getSystemInfo} = this.props
-    // const systemInfo = Taro.getSystemInfoSync()
-    // getSystemInfo(systemInfo)
+    const {getSystemInfo} = this.props
+    const systemInfo = Taro.getSystemInfoSync()    
+    if (/iphone x/i.test(systemInfo.model)) {
+      // iPhone XS Max China-exclusive<iPhone11,6>
+      // 'iPhone X' 
+      systemInfo.isIphoneX = true
+    } else {
+      systemInfo.isIphoneX = false
+    }
+    console.log('systemInfo', systemInfo)
+    getSystemInfo(systemInfo)
   }
   componentDidMount () {
     this._initPage()
@@ -70,14 +113,22 @@ class Home extends Component {
   componentDidShow () { }
 
   componentDidHide () { }
-  onShareAppMessage (res) {
-    if (res.from === 'button') {
-      // 来自页面内转发按钮
-      console.log(res.target)
+  onShareAppMessage () {   
+    const {defaultThemeData = {}} = this.state
+    // this.$wxapp.aldstat.sendEvent('首页分享', '首页分享')
+    const shareContent = defaultThemeData.shareContent || '马卡龙玩图'
+    const urls = (defaultThemeData.url||'').split(';').filter(v => v !== '')
+    const path = '/pages/home/index'
+    if (urls.length > 0) {
+       return {
+        title: shareContent,
+        path: path,
+        imageUrl: urls[0] + '?x-oss-process=image/resize,m_fill,h_420,w_525',
+      }
     }
     return {
-      title: '马卡龙玩图',
-      path: '/pages/home/index'
+      title: shareContent,
+      path: path
     }
   }
 
@@ -89,7 +140,19 @@ class Home extends Component {
     }
     this.setState({
       categoryList: globalData.columnList
+    },() => {
+      this.getDefaultTheme()
     })
+  }
+
+  getDefaultTheme = async () => {
+    const defaultTheme = globalData.columnList[0] && globalData.columnList[0].themeList[0] 
+    if (defaultTheme) {
+      const res = await await core.theme(defaultTheme.themeId)
+      this.setState({
+        defaultThemeData: res.result && res.result.result 
+      })
+    }   
   }
 
   getCategotyList (data: Array<any>) {
@@ -152,6 +215,8 @@ class Home extends Component {
 
   render () {
     const { categoryList } = this.state
+    const {global = {}} = this.props
+    const isIphoneX = global.system && global.system.isIphoneX
     return (
       <View className='page-home'>
         <Title
@@ -161,9 +226,10 @@ class Home extends Component {
         >马卡龙玩图</Title>
         <View className="main">
           <View className="main-bg">
+            {isIphoneX && <View style="width: 100%; height:100rpx; background:rgb(100,180,255)"></View>}
             <Image src={bg} mode="widthFix" style="width:100%;height:100%"/>
           </View>
-          <View className="main-container">
+          <View className={`main-container ${isIphoneX ? 'iphoneX' : ''}`}>
             {
               categoryList.map(column => {
                 return (

@@ -2,7 +2,10 @@ import { SYSTEM } from '../constants/global'
 
 const INITIAL_STATE = {
   system: {
-    statusBarHeight: 20
+    statusBarHeight: 20,
+    isIphoneX: false,
+    // screenHeight: 667,
+    windowHeight: 667
   }
 }
 

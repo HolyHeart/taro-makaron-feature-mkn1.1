@@ -257,7 +257,7 @@ class Segment extends Component {
         ...result
       }
     })
-  }
+  }  
 
   initRawImage = () => {
     const {rawImage} = this.state
@@ -455,8 +455,7 @@ class Segment extends Component {
       }
     })
   }
-  // 关闭结果弹窗
-  handleResultClick = () => {
+  handlePlayAgain = () => {
     this.setResultModalStatus(false)
   }
   
@@ -840,7 +839,7 @@ class Segment extends Component {
             renderButton={
               <View className="btn-wrap">
                 <Button className="custom-button pink btn-1" hoverClass="btn-hover" openType="share" >分享给好友</Button>
-                <Button className="custom-button dark btn-2" hoverClass="btn-hover"  onClick={this.pageToHome}>再玩一次</Button>            
+                <Button className="custom-button dark btn-2" hoverClass="btn-hover"  onClick={this.handlePlayAgain}>再玩一次</Button>            
               </View>
             }
           />

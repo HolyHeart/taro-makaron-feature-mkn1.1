@@ -208,7 +208,7 @@ class Share extends Component {
   }
 
   render () {
-    const {shareSourceType, shareSource, videoPoster, width, height, recommendList} = this.state
+    const {isFromApp, shareSourceType, shareSource, videoPoster, width, height, recommendList} = this.state
     return (
       <View className='page-share'>
         <Title
@@ -244,12 +244,19 @@ class Share extends Component {
         </View>
         <View className='sub-section'>
           <Form onSubmit={this.handleFormSubmit} reportSubmit>
-            <Button
-              className="button animation-btn" 
-              hoverClass="btnhover"
-              openType="getUserInfo" 
-              onGetUserInfo={this.handleGetUserInfo}
-              formType='submit'>限时用同款</Button>
+            {isFromApp ?
+              <Button
+                className="button animation-btn" 
+                hoverClass="btnhover"
+                onClick={this.pageToHome}
+                >限时用同款</Button> :
+              <Button
+                className="button animation-btn" 
+                hoverClass="btnhover"
+                openType="getUserInfo" 
+                onGetUserInfo={this.handleGetUserInfo}
+                formType='submit'>限时用同款</Button>
+            }
           </Form>    
           <View className='recommend-wrap'>
             <View className='recommend-title'>你还可以玩：</View>

@@ -82,8 +82,8 @@ class Sticker extends Component {
 
   constructor (props) {
     super(props)    
-    this.throttledStickerOntouchmove = this.throttle(this.stickerOntouchmove, 1000/20).bind(this)
-    this.throttledArrowOntouchmove = this.throttle(this.arrowOntouchmove, 1000/20).bind(this)  
+    this.throttledStickerOntouchmove = this.throttle(this.stickerOntouchmove, 1000/30).bind(this)
+    this.throttledArrowOntouchmove = this.throttle(this.arrowOntouchmove, 1000/30).bind(this)  
   }
 
   componentWillMount () {

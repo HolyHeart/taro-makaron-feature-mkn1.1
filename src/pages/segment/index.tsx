@@ -807,16 +807,16 @@ class Segment extends Component {
             </View>
             <View className={`crop ${(foreground.remoteUrl && foreground.loaded) ? '' : 'hidden'}`} id="crop">                
               <View className="layer-bg" onClick={this.handleBackgroundClick}></View>   
-              {foreground.remoteUrl && <Sticker
+              <Sticker
                 ref="foreground"
                 url={foreground.remoteUrl}
-                stylePrams={foreground}                
+                stylePrams={foreground} 
                 framePrams={frame}
                 onChangeStyle={this.handleChangeStyle}
                 onImageLoaded={this.onForegroundLoaded}
                 onTouchstart={this.handleForegroundTouchstart}
                 onTouchend={this.handleForegroundTouchend}
-              />}                               
+              />                        
             </View>  
           </View>          
           <View className={`button-section ${windowHeight > 800 ? 'high' : ''}`}>

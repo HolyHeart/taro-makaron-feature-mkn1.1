@@ -11,6 +11,7 @@ import CustomIcon from '@/components/Icon'
 import Sticker from '@/components/Sticker'
 import SceneList from '@/components/SceneList'
 import Loading from '@/components/Loading'
+import MarginTopWrap from '@/components/MarginTopWrap'
 import AuthModal from '@/components/AuthModal'
 import ResultModal from '@/components/ResultModal'
 import globalData from '@/services/global_data'
@@ -1090,7 +1091,6 @@ class Editor extends Component {
 
   render () {
     const { loading, rawImage, frame, foreground, coverList, sceneList, currentScene, result, canvas } = this.state
-    const { global: {system: {windowHeight}} } = this.props
     return (
       <View className='page-editor'>
         <Title
@@ -1138,15 +1138,17 @@ class Editor extends Component {
               })}
             </View>  
           </View>
-          <SceneList 
-            list={sceneList} 
-            currentScene={currentScene}
-            styleObj={{width: '720rpx', paddingTop: windowHeight > 800 ? '60rpx' : '20rpx', marginRight: '-60rpx'}}
-            onClick={this.handleChooseScene}
-          />
-          <View className={`button-section ${windowHeight > 800 ? 'high' : ''}`}>
+          <MarginTopWrap config={{large: 60, small: 40, default: 20}}>
+            <SceneList 
+              list={sceneList} 
+              currentScene={currentScene}
+              styleObj={{width: '720rpx', marginRight: '-60rpx'}}
+              onClick={this.handleChooseScene}
+            />
+          </MarginTopWrap>
+          <MarginTopWrap config={{large: 60, small: 40, default: 20}}>
             <Button className="custom-button pink" hoverClass="btn-hover" onClick={this.handleOpenResult}>保存</Button>
-          </View>        
+          </MarginTopWrap>
         </View>
         <View class="canvas-wrap">
           <Canvas 

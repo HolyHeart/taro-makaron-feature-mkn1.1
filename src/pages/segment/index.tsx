@@ -9,6 +9,7 @@ import work from '@/utils/work'
 import Title from '@/components/Title'
 import CustomIcon from '@/components/Icon'
 import Sticker from '@/components/Sticker'
+import MarginTopWrap from '@/components/MarginTopWrap'
 import Loading from '@/components/Loading'
 import AuthModal from '@/components/AuthModal'
 import ResultModal from '@/components/ResultModal'
@@ -335,8 +336,6 @@ class Segment extends Component {
           ...this.state.foreground,
           remoteUrl: res.separateUrl
         }
-      }, () => {
-        // console.log('initSeparateData', this.state.foreground)
       }) 
     }) 
   }
@@ -391,12 +390,9 @@ class Segment extends Component {
     }) 
   }
   handleForegroundTouchstart = (sticker) => {
-    // console.log('handleForegroundTouchstart', sticker)
     this.setForegroundActiveStatus(true)
   }
-  handleForegroundTouchend = () => {
-    this.storeForegroundInfo()
-  }
+  handleForegroundTouchend = () => { }
 
   // 保存
   handleOpenResult = async () => {     
@@ -769,19 +765,9 @@ class Segment extends Component {
       return result  
     }    
   }
-  // 缓存人物尺寸位置
-  storeForegroundInfo = () => {
-    const {foreground, currentScene} = this.state
-    const clone_foreground = tool.deepClone(foreground)
-    clone_foreground.isActive = false
-    const sceneId = currentScene.sceneId || 'demo_scene'    
-    this.cache['foreground'].set(sceneId, clone_foreground)
-    // console.log('this.cache.foreground', this.cache['foreground'].get(sceneId))
-  }
 
   render () {
     const { loading, rawImage, frame, foreground, result, canvas } = this.state
-    const { global: {system: {windowHeight}} } = this.props
     return (
       <View className='page-segment'>
         <Title
@@ -797,29 +783,28 @@ class Segment extends Component {
               <Image src={rawImage.localUrl} style="width:100%;height:100%" mode="aspectFit"/>
             </View>
             <View className={`crop ${(foreground.remoteUrl && foreground.loaded) ? '' : 'hidden'}`} id="crop">                
-              <View className="layer-bg" onClick={this.handleBackgroundClick}></View>   
-              
-                <Sticker
-                  ref="foreground"
-                  url={foreground.remoteUrl}
-                  stylePrams={foreground} 
-                  framePrams={frame}
-                  onChangeStyle={this.handleChangeStyle}
-                  onImageLoaded={this.onForegroundLoaded}
-                  onTouchstart={this.handleForegroundTouchstart}
-                  onTouchend={this.handleForegroundTouchend}
-                />  
-                             
-            </View>  
-          </View>          
-          <View className={`button-section ${windowHeight > 800 ? 'high' : ''}`}>
+              <View className="layer-bg" onClick={this.handleBackgroundClick}></View>
+              <Sticker
+                ref="foreground"
+                url={foreground.remoteUrl}
+                stylePrams={foreground} 
+                framePrams={frame}
+                onChangeStyle={this.handleChangeStyle}
+                onImageLoaded={this.onForegroundLoaded}
+                onTouchstart={this.handleForegroundTouchstart}
+                onTouchend={this.handleForegroundTouchend}
+              />
+            </View>
+          </View>
+          <MarginTopWrap config={{large: 80, small: 60, default: 50}}>
             <Button className="custom-button pink" hoverClass="btn-hover" onClick={this.handleOpenResult}>保存透明底图片(PNG)</Button>
-          </View>        
+          </MarginTopWrap>
         </View>
         <View class="canvas-wrap">
           <Canvas 
             style={`width: ${frame.width * canvas.ratio}px; height: ${frame.height * canvas.ratio}px;`} 
-            canvasId={canvas.id} />
+            canvasId={canvas.id} 
+          />
         </View>
         <Loading visible={loading} />
         <AuthModal />

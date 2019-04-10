@@ -426,14 +426,17 @@ class Sticker extends Component {
         {/* <View style="position: absolute;left:0;top:0">{framePrams.width}</View> */}
         {/* <View style="position: absolute;left:0;top:20px">{stylePrams.autoWidth}</View> */}
         {/* <View style="position: absolute;left:0;top:20px">{stylePrams.width}</View>  */}
-        <Image 
-          src={this.state.url} 
-          mode="widthFix" 
-          style="width:100%;height:100%"
-          onLoad={this.handleImageLoaded}
-          onTouchstart={this.stickerOntouchstart} 
-          onTouchmove={this.throttledStickerOntouchmove}
-          onTouchend={this.stickerOntouchend}/>
+        {this.state.url && 
+          <Image 
+            src={this.state.url} 
+            mode="widthFix" 
+            style="width:100%;height:100%"
+            onLoad={this.handleImageLoaded}
+            onTouchstart={this.stickerOntouchstart} 
+            onTouchmove={this.throttledStickerOntouchmove}
+            onTouchend={this.stickerOntouchend}
+          />
+        }        
         <View className={`border ${stylePrams.isActive ? 'active' : ''}`}></View>
         <View className={`control move ${stylePrams.isActive ? 'active' : ''}`}
           onTouchstart={this.arrowOntouchstart} 

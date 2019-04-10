@@ -13,6 +13,7 @@ import Sticker from '@/components/Sticker'
 import SceneList from '@/components/SceneList'
 import ResultModal from '@/components/ResultModal'
 import Loading from '@/components/Loading'
+import MarginTopWrap from '@/components/MarginTopWrap'
 import AuthModal from '@/components/AuthModal'
 import globalData from '@/services/global_data'
 import Session from '@/services/session'
@@ -1133,7 +1134,6 @@ class Filter extends Component {
 
   render () {
     const { loading, rawImage, frame, background, filter, foreground, coverList, sceneList, currentScene, result, music } = this.state
-    const { global: {system: {windowHeight}} } = this.props
     return (
       <View className='page-filter'>
         <Title
@@ -1199,15 +1199,17 @@ class Filter extends Component {
               </View> 
             </View>  
           </View>
-          <SceneList 
-            list={sceneList} 
-            currentScene={currentScene}
-            styleObj={{width: '720rpx', paddingTop: windowHeight > 800 ? '60rpx' : '20rpx', marginRight: '-60rpx'}}
-            onClick={this.handleChooseScene}
-          />
-          <View className={`button-section ${windowHeight > 800 ? 'high' : ''}`}>
+          <MarginTopWrap config={{large: 60, small: 40, default: 20}}>
+            <SceneList 
+              list={sceneList} 
+              currentScene={currentScene}
+              styleObj={{width: '720rpx', marginRight: '-60rpx'}}
+              onClick={this.handleChooseScene}
+            />
+          </MarginTopWrap>
+          <MarginTopWrap config={{large: 60, small: 40, default: 20}}>
             <Button className="custom-button pink" hoverClass="btn-hover" onClick={this.handleOpenResult}>保存</Button>
-          </View>        
+          </MarginTopWrap>
         </View> 
         <Loading visible={loading} />
         <AuthModal />          

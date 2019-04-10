@@ -23,8 +23,8 @@ import './index.less'
 import image_code from '@/assets/images/code.png'
 import image_versa from '@/assets/images/versa.png'
 
-const mock_path = 'https://static01.versa-ai.com/upload/783272fc1375/999deac02e85f3ea.png'
-const mock_segment_url = 'https://static01.versa-ai.com/images/process/segment/2019/01/14/b4cf047a-17a5-11e9-817f-00163e001583.png'
+// const mock_path = 'https://static01.versa-ai.com/upload/783272fc1375/999deac02e85f3ea.png'
+// const mock_segment_url = 'https://static01.versa-ai.com/images/process/segment/2019/01/14/b4cf047a-17a5-11e9-817f-00163e001583.png'
 
 type PageStateProps = {
   global: {
@@ -64,8 +64,7 @@ interface Editor {
   props: IProps;
 }
 
-@connect(({ counter, global }) => ({
-  counter,
+@connect(({ global }) => ({
   global
 }), (dispatch) => ({
   getSystemInfo (data) {
@@ -143,6 +142,8 @@ class Editor extends Component {
       },
     }
   }
+  
+  app = Taro.getApp()
 
   // 全局主题数据
   themeData = {
@@ -155,6 +156,8 @@ class Editor extends Component {
     cover: createCache('cover'),
     source: createCache('source'),
   }
+
+  isSaving = false // 是否正在保存
 
   componentWillMount () {}
   componentDidMount () { 
@@ -170,6 +173,7 @@ class Editor extends Component {
     // if (res.from === 'button') {
     //   console.log('页面按钮分享', res.target)
     // }
+    this.app.aldstat.sendEvent('生成页分享', {'场景名': this.state.currentScene.sceneName, '场景Id': this.state.currentScene.sceneId})
     const {currentScene, result = {}} = this.state  
     const {shareImage = {}} = result
     const shareContent = currentScene.shareContent || (globalData.themeData && globalData.themeData.shareContent)
@@ -450,6 +454,25 @@ class Editor extends Component {
   handleCoverTouchend = (sticker) => {
     // console.log('handleCoverTouchend', sticker)
     this.storeCoverInfo(sticker)
+    this.app.aldstat.sendEvent('贴纸使用', {'贴纸Id': sticker.id})
+  }
+  handleDeleteCover = (sticker) => {
+    // console.log('handleDeleteCover', sticker)
+    const {id} = sticker
+    const {coverList} = this.state
+    coverList.forEach((v, i) => {
+      if (v.id === id) {
+        coverList[i] = {
+          ...v,
+          deleted: true,
+          visible: false
+        }
+      }
+    })
+    this.setState({
+      coverList: coverList
+    })
+    this.app.aldstat.sendEvent('贴纸删除', {'贴纸Id': sticker.id})
   }
 
   // 更换场景
@@ -464,16 +487,29 @@ class Editor extends Component {
       // console.log('handleChooseScene', this.state.currentScene)
       this.foregroundAuto()
       this.initCoverData()
+      this.app.aldstat.sendEvent('选择场景', {'场景名': this.state.currentScene.sceneName, '场景Id': this.state.currentScene.sceneId})
     })
   }
   // 保存
-  handleOpenResult = async () => {     
+  handleOpenResult = async () => {  
+    if (!this.state.foreground.remoteUrl) {
+      return
+    }
+    if (!this.state.currentScene.bgUrl) {
+      return
+    }
+    if (this.isSaving) {
+      return
+    } 
+    this.app.aldstat.sendEvent('保存图片或视频', {'场景名': this.state.currentScene.sceneName, '场景Id': this.state.currentScene.sceneId})   
     Taro.showLoading({
       title: '照片生成中...',
       mask: true,
     }) 
+    this.isSaving = true
     const canvasImageUrl = await this.createCanvas()
     Taro.hideLoading()
+    this.isSaving = false
     this.setState({
       result: {
         shareImage: {
@@ -600,7 +636,7 @@ class Editor extends Component {
     // 收集人物
     elements.push(element_foreground)
     // 收集贴纸
-    coverList.forEach(v => {
+    coverList.filter(v => !v.deleted).forEach(v => {
       const element_cover = {
         type: 'cover',
         zIndex: v.zIndex,
@@ -1134,6 +1170,7 @@ class Editor extends Component {
                         onImageLoaded={this.onCoverLoaded}
                         onTouchstart={this.handleCoverTouchstart}
                         onTouchend={this.handleCoverTouchend}
+                        onDeleteSticker={this.handleDeleteCover.bind(this, item)}
                       />
               })}
             </View>  

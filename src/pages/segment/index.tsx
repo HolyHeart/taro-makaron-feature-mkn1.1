@@ -118,6 +118,8 @@ class Segment extends Component {
     }
   }
 
+  app = Taro.getApp()
+
   // 全局主题数据
   themeData = {
     sceneList: [],
@@ -129,6 +131,8 @@ class Segment extends Component {
     cover: createCache('cover'),
     source: createCache('source'),
   }
+
+  isSaving = false // 是否正在保存
 
   componentWillMount () {}
   componentDidMount () { 
@@ -144,6 +148,7 @@ class Segment extends Component {
     // if (res.from === 'button') {
     //   console.log('页面按钮分享', res.target)
     // }
+    this.app.aldstat.sendEvent('生成页分享', {'场景名': this.state.currentScene.sceneName, '场景Id': this.state.currentScene.sceneId})
     const {currentScene, result = {}} = this.state  
     const {shareImage = {}} = result
     const shareContent = currentScene.shareContent || (globalData.themeData && globalData.themeData.shareContent)
@@ -396,12 +401,21 @@ class Segment extends Component {
 
   // 保存
   handleOpenResult = async () => {     
+    if (!this.state.foreground.remoteUrl) {
+      return
+    }
+    if (this.isSaving) {
+      return
+    } 
+    this.app.aldstat.sendEvent('保存图片或视频', {'场景名': this.state.currentScene.sceneName, '场景Id': this.state.currentScene.sceneId}) 
     Taro.showLoading({
       title: '照片生成中...',
       mask: true,
     }) 
+    this.isSaving = true
     const canvasImageUrl = await this.createCanvas()
     Taro.hideLoading()
+    this.isSaving = false
     this.setState({
       result: {
         shareImage: {
@@ -449,12 +463,19 @@ class Segment extends Component {
       }
     })
   }
-  handlePlayAgain = () => {    
+  handlePlayAgain = () => {  
+    this.app.aldstat.sendEvent('一秒抠图生成页再玩一次', '再玩一次')   
     work.chooseImage({
       onTap: (index) => {
-        console.log('tap index', index)
+        // console.log('tap index', index)
+        if (index === 0) {
+          this.app.aldstat.sendEvent('一秒抠图再玩一次上传人像选择拍摄照片', '选择拍摄')
+        } else if (index === 1) {
+          this.app.aldstat.sendEvent('一秒抠图再玩一次上传人像选择相册照片', '选择相册')
+        }
       },
       onSuccess: (path) => {
+        this.app.aldstat.sendEvent('一秒抠图再玩一次上传人像成功', '上传成功')
         this.setResultModalStatus(false, () => {
           this._refreshPage(path)  
         })       

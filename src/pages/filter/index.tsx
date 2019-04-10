@@ -189,6 +189,8 @@ class Filter extends Component {
     videoRatio: 1
   }
 
+  app = Taro.getApp()
+
   // 全局主题数据
   themeData = {
     sceneList: [],
@@ -227,7 +229,8 @@ class Filter extends Component {
     // if (res.from === 'button') {
     //   console.log('页面按钮分享', res.target)
     // }
-    const {currentScene, result = {}} = this.state  
+    this.app.aldstat.sendEvent('生成页分享', {'场景名': this.state.currentScene.sceneName, '场景Id': this.state.currentScene.sceneId})
+    const {currentScene, result = {}} = this.state
     const {shareVideo = {}, shareImage = {}} = result
     const shareContent = currentScene.shareContent || (globalData.themeData && globalData.themeData.shareContent)
     const shareImageUrl = `${shareImage.remoteUrl}?x-oss-process=image/resize,m_pad,h_420,w_525`
@@ -686,6 +689,7 @@ class Filter extends Component {
   handleCoverTouchend = (sticker) => {
     // console.log('handleCoverTouchend', sticker)
     this.storeCoverInfo(sticker)
+    this.app.aldstat.sendEvent('贴纸使用', {'贴纸Id': sticker.id})
   }
   handleDeleteCover = (sticker) => {
     // console.log('handleDeleteCover', sticker)
@@ -703,12 +707,15 @@ class Filter extends Component {
     this.setState({
       coverList: coverList
     })
+    this.app.aldstat.sendEvent('贴纸删除', {'贴纸Id': sticker.id})
   }
   handleToggleMusic = (status) => {
     if (status === 'on') {
       this.setAudio('pause')
+      this.app.aldstat.sendEvent('音乐开关', '音乐打开')
     } else if (status === 'off') {
       this.setAudio('play')
+      this.app.aldstat.sendEvent('音乐开关', '音乐关闭')
     }
   }
   
@@ -726,6 +733,7 @@ class Filter extends Component {
       this.initFilterData()   
       // 初始化音乐
       this.initMusicData()
+      this.app.aldstat.sendEvent('选择场景', {'场景名': this.state.currentScene.sceneName, '场景Id': this.state.currentScene.sceneId})
     })
   }
   // 保存
@@ -739,6 +747,7 @@ class Filter extends Component {
     if (this.isSaving) {
       return
     }  
+    this.app.aldstat.sendEvent('保存图片或视频', {'场景名': this.state.currentScene.sceneName, '场景Id': this.state.currentScene.sceneId})
     this.setAudio('pause')
     Taro.showLoading({
       title: '保存中...',
@@ -828,6 +837,7 @@ class Filter extends Component {
   }
   // 显示gif
   handleShowGif =  () => {
+    this.app.aldstat.sendEvent('视频生成页打开Gif', '打开Gif')
     const { result } = this.state
     const remoteUrl = result.shareGif && result.shareGif.remoteUrl
     if (!remoteUrl) {

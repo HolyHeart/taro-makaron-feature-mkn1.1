@@ -52,6 +52,9 @@ class Share extends Component {
     sceneId: '',
     themeData: {},
   }
+
+  app = Taro.getApp()
+
   componentDidMount () { 
     this._initPage()
   }
@@ -146,6 +149,7 @@ class Share extends Component {
   }
 
   pageToHome = () => {
+    this.app.aldstat.sendEvent('分享页返回主页按钮', '分享页返回主页按钮')
     Taro.redirectTo({
       url: '/pages/home/index'
     })
@@ -168,9 +172,15 @@ class Share extends Component {
   todo = () => {
     work.chooseImage({
       onTap: (index) => {
-        console.log('tap index', index)
+        // console.log('tap index', index)
+        if (index === 0) {
+          this.app.aldstat.sendEvent('分享页上传人像选择拍摄照片', '选择拍摄')
+        } else if (index === 1) {
+          this.app.aldstat.sendEvent('分享页上传人像选择相册照片', '选择相册')
+        }
       },
       onSuccess: (path) => {
+        this.app.aldstat.sendEvent('分享页上传人像成功', '上传成功')
         globalData.choosedImage = path
         const { themeData = {}, sceneId } = globalData      
         let url = ''
@@ -198,6 +208,7 @@ class Share extends Component {
     globalData.themeId = data.themeId  
     globalData.sceneId = ''
     this.getThemeData()
+    this.app.aldstat.sendEvent('选择推荐主题', {'主题名': data.themeName, '主题Id': data.themeId})
   }
   handleFormSubmit = (e) => {
     // console.log('handleFormSubmit', e)
@@ -205,6 +216,9 @@ class Share extends Component {
     if (formId) {
       service.core.reportFormId(formId)
     }
+  }
+  handleMainButton = () => {
+    this.app.aldstat.sendEvent('分享页主按钮', '分享页主按钮')
   }
 
   render () {
@@ -255,6 +269,7 @@ class Share extends Component {
                 hoverClass="btnhover"
                 openType="getUserInfo" 
                 onGetUserInfo={this.handleGetUserInfo}
+                onClick={this.handleMainButton}
                 formType='submit'>限时用同款</Button>
             }
           </Form>    

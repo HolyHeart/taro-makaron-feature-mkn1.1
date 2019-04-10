@@ -88,6 +88,8 @@ class Home extends Component {
     defaultThemeData: {}
   }
 
+  app = Taro.getApp()
+
   componentWillMount () {
     const {getSystemInfo} = this.props
     const systemInfo = Taro.getSystemInfoSync()    
@@ -98,7 +100,6 @@ class Home extends Component {
     } else {
       systemInfo.isIphoneX = false
     }
-    console.log('systemInfo', systemInfo)
     getSystemInfo(systemInfo)
   }
   componentDidMount () {
@@ -114,13 +115,13 @@ class Home extends Component {
 
   componentDidHide () { }
   onShareAppMessage () {   
+    this.app.aldstat.sendEvent('首页分享', '首页分享')
     const {defaultThemeData = {}} = this.state
-    // this.$wxapp.aldstat.sendEvent('首页分享', '首页分享')
     const shareContent = defaultThemeData.shareContent || '马卡龙玩图'
     const urls = (defaultThemeData.url||'').split(';').filter(v => v !== '')
     const path = '/pages/home/index'
     if (urls.length > 0) {
-       return {
+      return {
         title: shareContent,
         path: path,
         imageUrl: urls[0] + '?x-oss-process=image/resize,m_fill,h_420,w_525',
@@ -166,8 +167,7 @@ class Home extends Component {
   }
 
   handleChooseTheme = async (item: object) => {
-    console.log('handleChooseTheme', item)  
-    Taro.getApp().aldstat.sendEvent('测试一下埋码')
+    // console.log('handleChooseTheme', item)
     globalData.themeId = item.themeId   
     globalData.sceneType = item.sceneType
     globalData.themeData = null    
@@ -175,6 +175,8 @@ class Home extends Component {
       const res = await core.theme(globalData.themeId)
       globalData.themeData = res.result && res.result.result 
     }
+    // 埋码
+    this.app.aldstat.sendEvent('选择主题', {'主题名': item.themeName, '主题Id': item.themeId})
   }
 
   handleGetUserInfo = (data) => {
@@ -195,10 +197,16 @@ class Home extends Component {
   todo = () => {
     work.chooseImage({
       onTap: (index) => {
-        console.log('tap index', index)
+        // console.log('tap index', index)
+        if (index === 0) {
+          this.app.aldstat.sendEvent('首页上传人像选择拍摄照片', '选择拍摄')
+        } else if (index === 1) {
+          this.app.aldstat.sendEvent('首页上传人像选择相册照片', '选择相册')
+        }
       },
       onSuccess: (path) => {
-        console.log('choosedImage', path, globalData)    
+        console.log('choosedImage', path, globalData)   
+        this.app.aldstat.sendEvent('首页上传人像成功', '上传成功')
         globalData.choosedImage = path
         const { sceneType } = globalData
         if (sceneType === 1) {

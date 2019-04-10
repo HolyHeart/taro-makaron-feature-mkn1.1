@@ -1,3 +1,4 @@
+import './utils/ald-stat'
 import '@tarojs/async-await'
 import Taro, { Component, Config } from '@tarojs/taro'
 import { Provider } from '@tarojs/redux'
@@ -14,7 +15,7 @@ import './app.less'
 // }
 
 const store = configStore()
-class App extends Component {
+class _App extends Component {
 
   /**
    * 指定config的类型声明为: Taro.Config
@@ -64,4 +65,4 @@ class App extends Component {
   }
 }
 
-Taro.render(<App />, document.getElementById('app'))
+Taro.render(<_App />, document.getElementById('app'))

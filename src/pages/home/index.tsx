@@ -167,6 +167,7 @@ class Home extends Component {
 
   handleChooseTheme = async (item: object) => {
     console.log('handleChooseTheme', item)  
+    Taro.getApp().aldstat.sendEvent('测试一下埋码')
     globalData.themeId = item.themeId   
     globalData.sceneType = item.sceneType
     globalData.themeData = null    

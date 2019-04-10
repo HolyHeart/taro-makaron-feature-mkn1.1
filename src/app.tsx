@@ -28,8 +28,7 @@ class _App extends Component {
     pages: [      
       'pages/home/index', 
       'pages/segment/index', 
-      'pages/dynamic/index', 
-      'pages/share/index',  
+      'pages/dynamic/index',
       'pages/filter/index',    
       'pages/editor/index',
       'pages/error/index', 

@@ -183,7 +183,7 @@ class Editor extends Component {
       themeId: globalData.themeId || '',
       sceneId: currentScene.sceneId || '',
     }
-    const path = tool.formatQueryUrl('/pages/share/index', data)
+    const path = tool.formatQueryUrl('/pages/index', data)
     const {userInfo = {}} = globalData 
     const title = `@${userInfo.nickName}：${shareContent}`
     if (!shareImage.remoteUrl) {
@@ -558,8 +558,9 @@ class Editor extends Component {
     })
   }
   // 再玩一次
-  handleResultClick = () => {
-    this.setResultModalStatus(false)
+  handlePlayAgain = () => {
+    this.app.aldstat.sendEvent('生成页再玩一次', '再玩一次')   
+    this.pageToHome()
   }
 
   setResultModalStatus = (flag = false) => {
@@ -1203,7 +1204,7 @@ class Editor extends Component {
             renderButton={
               <View className="btn-wrap">
                 <Button className="custom-button pink btn-1" hoverClass="btn-hover" openType="share" >分享给好友</Button>
-                <Button className="custom-button dark btn-2" hoverClass="btn-hover"  onClick={this.pageToHome}>再玩一次</Button>            
+                <Button className="custom-button dark btn-2" hoverClass="btn-hover"  onClick={this.handlePlayAgain}>再玩一次</Button>            
               </View>
             }
           />

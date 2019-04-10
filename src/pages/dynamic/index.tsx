@@ -214,7 +214,7 @@ class Dynamic extends Component {
       width: shareVideo.width,
       height: shareVideo.height
     }
-    const path = tool.formatQueryUrl('/pages/share/index', data)
+    const path = tool.formatQueryUrl('/pages/index', data)
     const {userInfo = {}} = globalData 
     const title = `@${userInfo.nickName}：${shareContent}`
     if (!shareImage.remoteUrl) {

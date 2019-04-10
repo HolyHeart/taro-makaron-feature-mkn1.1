@@ -158,7 +158,7 @@ class Segment extends Component {
       themeId: globalData.themeId || '',
       sceneId: currentScene.sceneId || '',
     }
-    const path = tool.formatQueryUrl('/pages/share/index', data)
+    const path = tool.formatQueryUrl('/pages/index', data)
     const {userInfo = {}} = globalData 
     const title = `@${userInfo.nickName}：${shareContent}`
     if (!shareImage.remoteUrl) {

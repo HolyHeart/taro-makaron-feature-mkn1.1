@@ -128,7 +128,9 @@ class Editor extends Component {
       // }
     ],
     sceneList: [],
-    currentScene: {},
+    currentScene: {
+      type: 'recommend', // 'custom' 'recommend'
+    },
     canvas: {
       id: 'shareCanvas',
       ratio: 3
@@ -296,7 +298,11 @@ class Editor extends Component {
     const currentScene = sceneList[0]
     this.setState({
       sceneList: sceneList,
-      currentScene: currentScene
+      currentScene:{
+        ...this.state.currentScene,
+        ...currentScene,
+        type: 'recommend'
+      } 
     }, () => {
       typeof callback === 'function' && callback()
     })
@@ -477,18 +483,55 @@ class Editor extends Component {
 
   // 更换场景
   handleChooseScene = (scene) => {
-    const {currentScene} = this.state
+    const { currentScene } = this.state
     if (currentScene.sceneId === scene.sceneId) {
       return
     }
     this.setState({
-      currentScene: scene
+      currentScene: {
+        ...currentScene,
+        ...scene,
+        type: 'recommend'
+      }
     }, () => {
       // console.log('handleChooseScene', this.state.currentScene)
       this.foregroundAuto()
       this.initCoverData()
       this.app.aldstat.sendEvent('选择场景', {'场景名': this.state.currentScene.sceneName, '场景Id': this.state.currentScene.sceneId})
     })
+  }
+  // 自定义场景
+  handleChooseCustom = () => {  
+    work.chooseImage({
+      onTap: (index) => {
+        // console.log('tap index', index)
+        if (index === 0) {
+          this.app.aldstat.sendEvent('自定义背景上传人像选择拍摄照片', '选择拍摄')
+        } else if (index === 1) {
+          this.app.aldstat.sendEvent('自定义背景上传人像选择相册照片', '选择相册')
+        }
+      },
+      onSuccess: (path) => {
+        console.log('choosedImage', path) 
+        const {currentScene} = this.state
+        const customScene = {
+          type: 'custom',
+          bgUrl: path,
+          sceneId: '',
+          sceneName: '',
+          shareContent: '',
+          thumbnailUrl: path,
+        }
+        this.setState({
+          currentScene: {
+            ...currentScene,
+            ...customScene
+          }
+        }, () => {
+          console.log('handleChooseCustom', this.state.currentScene)
+        })
+      }
+    })  
   }
   // 保存
   handleOpenResult = async () => {  
@@ -1179,8 +1222,10 @@ class Editor extends Component {
           <MarginTopWrap config={{large: 60, small: 40, default: 20}}>
             <SceneList 
               list={sceneList} 
+              customable={true}
               currentScene={currentScene}
               styleObj={{width: '720rpx', marginRight: '-60rpx'}}
+              onCustomClick={this.handleChooseCustom}
               onClick={this.handleChooseScene}
             />
           </MarginTopWrap>

@@ -1,11 +1,12 @@
 import { ComponentClass } from 'react'
 import Taro, { Component, Config } from '@tarojs/taro'
-import { View, Image } from '@tarojs/components'
+import { View, Image, Button } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 
 import { getSystemInfo } from '@/model/actions/global'
 import work from '@/utils/work'
 import Title from '@/components/Title'
+import Tooltip from '@/components/Tooltip'
 import CustomIcon from '@/components/Icon'
 import CategoryItem from '@/components/CategoryItem'
 import AuthModal from '@/components/AuthModal'
@@ -15,6 +16,7 @@ import Session from '@/services/session'
 import bg from '@/assets/images/bg.png'
 import pic_loading from '@/assets/images/pic_loading.png'
 import pic_loading_big from '@/assets/images/pic_loading_big.png'
+import pic_feedback from '@/assets/images/feedback.png'
 import './index.less'
 const default_column = [      
   {
@@ -194,6 +196,22 @@ class Home extends Component {
     }
   }
 
+  handleFeedback = () => {
+    this.app.aldstat.sendEvent('首页菜单', '使用反馈')
+  }
+
+  handleShowTooltip = () => {   
+    Taro.tooltip({
+      open: !Taro.getTooltipStatus()
+    })
+  }
+
+  handleClickMain = () => {
+    Taro.tooltip({
+      open: false
+    })
+  }
+
   todo = () => {
     work.chooseImage({
       onTap: (index) => {
@@ -230,7 +248,15 @@ class Home extends Component {
       <View className='page-home'>
         <Title
           renderLeft={
-            <CustomIcon type="menu" theme="light"/>
+            <View style="position: relative">
+              <CustomIcon type="menu" theme="light" onClick={this.handleShowTooltip}/>
+              <Tooltip>
+                <View className='tooltip-item'>
+                  <Image className='tooltip-icon' src={pic_feedback} mode="aspectFill" />
+                  <Button className='tooltip-button' openType="feedback" onClick={this.handleFeedback}>使用反馈</Button>
+                </View>
+              </Tooltip>
+            </View>            
           }
         >马卡龙玩图</Title>
         <View className="main">
@@ -238,7 +264,7 @@ class Home extends Component {
             {isIphoneX && <View style="width: 100%; height:100rpx; background:rgb(100,180,255)"></View>}
             <Image src={bg} mode="widthFix" style="width:100%;height:100%"/>
           </View>
-          <View className={`main-container ${isIphoneX ? 'iphoneX' : ''}`}>
+          <View className={`main-container ${isIphoneX ? 'iphoneX' : ''}`} onClick={this.handleClickMain}>
             {
               categoryList.map(column => {
                 return (

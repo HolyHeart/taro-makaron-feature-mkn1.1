@@ -184,7 +184,6 @@ class Share extends Component {
   todo = () => {
     work.chooseImage({
       onTap: (index) => {
-        // console.log('tap index', index)
         if (index === 0) {
           this.app.aldstat.sendEvent('分享页上传人像选择拍摄照片', '选择拍摄')
         } else if (index === 1) {
@@ -223,11 +222,8 @@ class Share extends Component {
     this.app.aldstat.sendEvent('选择推荐主题', {'主题名': data.themeName, '主题Id': data.themeId})
   }
   handleFormSubmit = (e) => {
-    // console.log('handleFormSubmit', e)
     const {detail: {formId}} = e
-    if (formId) {
-      service.core.reportFormId(formId)
-    }
+    formId && service.core.reportFormId(formId)
   }
   handleMainButton = () => {
     this.app.aldstat.sendEvent('分享页主按钮', '分享页主按钮')

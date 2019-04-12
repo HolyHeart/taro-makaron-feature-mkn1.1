@@ -197,7 +197,6 @@ class Home extends Component {
   }
 
   handleFormSubmit = (e) => {
-    console.log('handleFormSubmit', e)
     const {detail: {formId}} = e
     if (formId) {
       core.reportFormId(formId)

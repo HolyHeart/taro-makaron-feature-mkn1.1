@@ -31,7 +31,7 @@ class _App extends Component {
       'pages/segment/index', 
       'pages/dynamic/index',
       'pages/filter/index', 
-      'pages/error/index', 
+      'pages/error/index',
       'pages/index',
     ],
     window: {

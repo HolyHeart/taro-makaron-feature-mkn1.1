@@ -561,7 +561,6 @@ class Editor extends Component {
   handleChooseCustom = () => {  
     work.chooseImage({
       onTap: (index) => {
-        // console.log('tap index', index)
         if (index === 0) {
           this.app.aldstat.sendEvent('自定义背景上传人像选择拍摄照片', '选择拍摄')
         } else if (index === 1) {
@@ -569,7 +568,6 @@ class Editor extends Component {
         }
       },
       onSuccess: (path) => {
-        console.log('choosedImage', path) 
         const {currentScene} = this.state
         const customScene = {
           type: 'custom',
@@ -587,7 +585,8 @@ class Editor extends Component {
           customBg: {
             ...this.state.customBg,
             localUrl: path
-          }
+          },
+          coverList: []
         }, () => {
           // console.log('handleChooseCustom', this.state.currentScene)
         })

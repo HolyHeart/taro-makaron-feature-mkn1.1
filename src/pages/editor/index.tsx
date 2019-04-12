@@ -8,6 +8,7 @@ import tool from '@/utils/tool'
 import work from '@/utils/work'
 import Title from '@/components/Title'
 import CustomIcon from '@/components/Icon'
+import CustomBg from '@/components/CustomBg'
 import Sticker from '@/components/Sticker'
 import SceneList from '@/components/SceneList'
 import Loading from '@/components/Loading'
@@ -88,6 +89,20 @@ class Editor extends Component {
       left: 0,
       top: 0,
     },    
+    customBg: {
+      localUrl: '',
+      remoteUrl: '',
+      originWidth: 0,
+      originHeight: 0,
+      autoScale: 1,
+      autoWidth: 0,
+      autoHeight: 0,      
+      width: 0,
+      height: 0,
+      x: 0,
+      y: 0,
+      rotate: 0,
+    },
     foreground: {
       id: 'foreground',
       remoteUrl: '',
@@ -399,6 +414,48 @@ class Editor extends Component {
     this.setForegroundActiveStatus(false)
     this.setCoverListActiveStatus({type: 'all'}, false)
   }
+  // 自定义背景
+  onCustomBgLoaded = (detail:object) => {
+    const {width, height} = detail
+    this.setStateTarget('customBg', {
+      originWidth: width,
+      originHeight: height
+    }, () => {
+      this.customBgAuto()
+    })
+  }
+  handleChangeCustomBgStyle = (data) => {
+    // console.log('handleChangeCustomBgStyle', data)
+    const {frame} = this.state
+    if (data.x > 0) {
+      data.x = 0
+    }
+    if (data.y > 0) {
+      data.y = 0
+    }
+    if (frame.width - data.width > data.x ) {
+      data.x = frame.width - data.width
+    }
+    if (frame.height - data.height > data.y ) {
+      data.y = frame.height - data.height
+    }
+    const {customBg} = this.state
+    this.setState({
+      customBg: {
+        ...customBg,
+        ...data
+      }
+    }, () => {      
+    }) 
+  }
+  handleCustomBgTouchstart = () => {
+    // console.log('handleCustomBgTouchstart')
+    this.setForegroundActiveStatus(false)
+    this.setCoverListActiveStatus({type: 'all'}, false)
+  }
+  handleCustomBgTouchend = () => {
+    // console.log('handleCustomBgTouchend')
+  }
   // 人物
   onForegroundLoaded = (detail:object, item?:any) => {
     // console.log('handleForegroundLoaded', detail, item)
@@ -526,9 +583,13 @@ class Editor extends Component {
           currentScene: {
             ...currentScene,
             ...customScene
+          },
+          customBg: {
+            ...this.state.customBg,
+            localUrl: path
           }
         }, () => {
-          console.log('handleChooseCustom', this.state.currentScene)
+          // console.log('handleChooseCustom', this.state.currentScene)
         })
       }
     })  
@@ -618,29 +679,13 @@ class Editor extends Component {
 
   createCanvas = async () => {
     return new Promise(async (resolve, reject) => {
-      const {currentScene, foreground, frame, canvas} = this.state
-      const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
-      const sceneConfig = JSON.parse(sceneInfo.sceneConfig)
-      const postfix = '?x-oss-process=image/resize,h_748,w_560'      
+      const {currentScene, canvas} = this.state      
       const context = Taro.createCanvasContext(canvas.id, this)
-      const { ratio = 3 } = canvas
-      // 下载远程背景图片     
-      let localBgImagePath = ''
-      try {
-        const bgUrl = currentScene.bgUrl + postfix
-        localBgImagePath = await this.downloadRemoteImage(bgUrl)
-      } catch (err) {
-        console.log('下载背景图片失败', err)
-        return
+      if (currentScene.type === 'custom') {
+        await this.canvasDrawCustom(context)
+      } else if (currentScene.type === 'recommend') {
+        await this.canvasDrawRecommend(context)
       }
-      //防止锯齿，绘的图片是所需图片的3倍
-      context.drawImage(localBgImagePath, 0, 0, frame.width * ratio, frame.height * ratio)
-      // 绘制元素
-      await this.canvasDrawElement(context, ratio) 
-      // 绘制二维码
-      if (sceneConfig.watermark) {
-        this.canvasDrawLogo(context, ratio)    
-      } 
       //绘制图片
       context.draw()
       //将生成好的图片保存到本地，需要延迟一会，绘制期间耗时
@@ -660,6 +705,47 @@ class Editor extends Component {
         });
       }, 400)
     })  
+  }
+  canvasDrawRecommend = async (context) => {
+    const {currentScene, frame, canvas} = this.state      
+    const postfix = '?x-oss-process=image/resize,h_748,w_560'
+    const { ratio = 3 } = canvas 
+    const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
+    let sceneConfig = {}
+    try {
+      sceneConfig = JSON.parse(sceneInfo.sceneConfig)
+    } catch (err) {
+      console.log('canvasDrawRecommend 解析sceneConfig JSON字符串失败', err)
+    }
+    // 下载远程背景图片     
+    let localBgImagePath = ''    
+    try {
+      const bgUrl = currentScene.bgUrl + postfix
+      localBgImagePath = await this.downloadRemoteImage(bgUrl)
+    } catch (err) {
+      console.log('下载背景图片失败', err)
+      return
+    }
+    //防止锯齿，绘的图片是所需图片的3倍  
+    context.drawImage(localBgImagePath, 0, 0, frame.width * ratio, frame.height * ratio)    
+    // 绘制元素
+    await this.canvasDrawElement(context, ratio) 
+    // 绘制二维码
+    if (sceneConfig.watermark) {
+      this.canvasDrawLogo(context, ratio)    
+    }
+  }
+  canvasDrawCustom = async(context) => {
+    const {customBg, canvas} = this.state
+    const { ratio = 3 } = canvas 
+    // 自定义背景为本地图片，不需要下载
+    const localBgImagePath = customBg.localUrl
+    //防止锯齿，绘的图片是所需图片的3倍
+    context.drawImage(localBgImagePath, customBg.x * ratio, customBg.y * ratio, customBg.width * ratio, customBg.height * ratio)    
+    // 绘制元素
+    await this.canvasDrawElement(context, ratio) 
+    // 绘制二维码      
+    this.canvasDrawLogo(context, ratio)
   }
   // 绘制贴纸，文字，覆盖层所有元素
   canvasDrawElement = async (context, ratio) => {
@@ -789,7 +875,48 @@ class Editor extends Component {
       coverList
     })
   }
-  
+
+  // 自定义背景自适应
+  customBgAuto = (callback?:()=>void) => {
+    // 获取图片原始大小
+    const { customBg, frame } = this.state
+    const { originWidth = 0, originHeight = 0} = customBg || {}
+    const imageRatio = originWidth / originHeight  
+    // 计算宽高比例
+    const result = {
+      autoScale: 1,
+      autoWidth: 0,
+      autoHeight: 0,
+      width: 0,
+      height: 0,
+      x: 0,
+      y: 0,
+    }
+    if ((originWidth / originHeight) > (frame.width / frame.height) ) {  
+      // 图片宽高比大于框
+      // 将图片高度放大为与框相同，宽度超出框   
+      result.autoScale = frame.width / originWidth
+      result.autoHeight = frame.height
+      result.autoWidth = result.autoHeight * imageRatio      
+    } else {      
+      result.autoScale = frame.height / originHeight
+      result.autoWidth = frame.width
+      result.autoHeight = result.autoWidth / imageRatio
+    }      
+    // 位移使图片居中
+    result.width = result.autoWidth
+    result.height = result.autoHeight
+    result.x -= (result.width - frame.width) * 0.5
+    result.y -= (result.height - frame.height) * 0.5
+    this.setState({
+      customBg: {
+        ...this.state.customBg,
+        ...result
+      }
+    }, () => {
+      typeof callback === 'function' && callback()
+    })
+  }  
   // 人物自适应
   foregroundAuto = (callback?:()=>void) => {
     // 先判断是否有缓存
@@ -1170,7 +1297,7 @@ class Editor extends Component {
   }
 
   render () {
-    const { loading, rawImage, frame, foreground, coverList, sceneList, currentScene, result, canvas } = this.state
+    const { loading, rawImage, frame, customBg, foreground, coverList, sceneList, currentScene, result, canvas } = this.state
     return (
       <View className='page-editor'>
         <Title
@@ -1185,15 +1312,28 @@ class Editor extends Component {
             <View className={`raw ${(foreground.remoteUrl && foreground.loaded) ? 'hidden' : ''}`}>
               <Image src={rawImage.localUrl} style="width:100%;height:100%" mode="aspectFit"/>
             </View>
-            <View className={`crop ${(foreground.remoteUrl && foreground.loaded) ? '' : 'hidden'}`} id="crop">                
-              <View className="background-image">
-                <Image 
-                  src={currentScene.bgUrl} 
-                  style="width:100%;height:100%" 
-                  mode="scaleToFill"
-                  onClick={this.handleBackgroundClick}
+            <View className={`crop ${(foreground.remoteUrl && foreground.loaded) ? '' : 'hidden'}`} id="crop"> 
+              {currentScene.type === 'recommend' && 
+                <View className="background-image">
+                  <Image 
+                    src={currentScene.bgUrl} 
+                    style="width:100%;height:100%" 
+                    mode="scaleToFill"
+                    onClick={this.handleBackgroundClick}
+                  />
+                </View>
+              } 
+              {currentScene.type === 'custom' && 
+                <CustomBg 
+                  framePrams={frame}
+                  stylePrams={customBg} 
+                  url={customBg.localUrl}
+                  onImageLoaded={this.onCustomBgLoaded}
+                  onChangeStyle={this.handleChangeCustomBgStyle}
+                  onTouchstart={this.handleCustomBgTouchstart}
+                  onTouchend={this.handleCustomBgTouchend}
                 />
-              </View>           
+              }        
               <Sticker 
                 ref="foreground"
                 url={foreground.remoteUrl}

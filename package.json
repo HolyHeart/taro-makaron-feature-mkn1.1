@@ -4,6 +4,7 @@
 	"private": true,
 	"description": "马卡龙玩图",
 	"scripts": {
+		"build": "taro build --type weapp",
 		"build:weapp": "taro build --type weapp",
 		"build:swan": "taro build --type swan",
 		"build:alipay": "taro build --type alipay",

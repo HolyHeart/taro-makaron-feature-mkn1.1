@@ -44,10 +44,12 @@ class SceneItem extends Component {
         <View className="bg">
           <Image
             src={bgUrl}
+            mode='aspectFill'
             style="position:absolute;width:100%;height:100%;opacity:0"
           />              
           <Image className="thumbnai"
             src={thumbnailUrl}
+            mode='aspectFill'
             style="width:100%;height:100%"
           />                
         </View>                              

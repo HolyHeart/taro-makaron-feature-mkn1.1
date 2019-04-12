@@ -196,6 +196,14 @@ class Home extends Component {
     }
   }
 
+  handleFormSubmit = (e) => {
+    console.log('handleFormSubmit', e)
+    const {detail: {formId}} = e
+    if (formId) {
+      core.reportFormId(formId)
+    }
+  }
+
   handleFeedback = () => {
     this.app.aldstat.sendEvent('首页菜单', '使用反馈')
   }
@@ -277,6 +285,7 @@ class Home extends Component {
                           key={item.themeId} 
                           url={item.generalShowUrl || ''}
                           onClick={this.handleChooseTheme.bind(this, item)}
+                          onFormSubmit={this.handleFormSubmit}
                         />
                       })
                     }

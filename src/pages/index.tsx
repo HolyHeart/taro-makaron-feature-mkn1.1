@@ -8,6 +8,7 @@ import Title from '@/components/Title'
 import CustomIcon from '@/components/Icon'
 import RecommendList from '@/components/RecommendList'
 import AuthModal from '@/components/AuthModal'
+import BackApp from '@/components/BackApp'
 import { appConfig } from '@/services/config'
 import Session from '@/services/session'
 import service from '@/services/service'
@@ -231,6 +232,9 @@ class Share extends Component {
   handleMainButton = () => {
     this.app.aldstat.sendEvent('分享页主按钮', '分享页主按钮')
   }
+  handleOpenApp = () => {
+    this.app.aldstat.sendEvent('分享页打开app', '打开app')
+  }
 
   render () {
     const {isFromApp, shareSourceType, shareSource, videoPoster, width, height, recommendList} = this.state
@@ -292,8 +296,9 @@ class Share extends Component {
               onFormSubmit={this.handleFormSubmit}
               onClick={this.handleRecommendClick}
             />
-          </View>      
+          </View>
         </View> 
+        {isFromApp && <BackApp onClick={this.handleOpenApp}/>}
         <AuthModal />      
       </View>
     )

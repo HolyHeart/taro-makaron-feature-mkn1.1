@@ -245,9 +245,10 @@ class Editor extends Component {
   }
   // 公共方法
   pageToHome = () => {
-    Taro.redirectTo({
-      url: '/pages/home/index'
-    }) 
+    // Taro.navigateTo({
+    //   url: '/pages/home/index'
+    // }) 
+    Taro.navigateBack({ delta: 1 })
   }
   showLoading = () => {
     this.setState({
@@ -326,7 +327,7 @@ class Editor extends Component {
   initCoverData = () => {
     const {currentScene} = this.state    
     const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
-    const sceneConfig = JSON.parse(sceneInfo.sceneConfig)
+    const sceneConfig = tool.JSON_parse(sceneInfo.sceneConfig)
     const {cover = {}} = sceneConfig
 
     this.themeData.rawCoverList = cover.list || []
@@ -364,7 +365,7 @@ class Editor extends Component {
       const {cateImageDict = {}} = separateRes.result || {}
       if (!cateImageDict['16'] && !cateImageDict['16-1']) {
         console.log('技术犯规了')
-        // Taro.redirectTo({url: '/pages/home/index'})       
+        work.pageToError()
         return 
       } 
     } catch(err) {
@@ -712,7 +713,7 @@ class Editor extends Component {
     const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
     let sceneConfig = {}
     try {
-      sceneConfig = JSON.parse(sceneInfo.sceneConfig)
+      sceneConfig = tool.JSON_parse(sceneInfo.sceneConfig)
     } catch (err) {
       console.log('canvasDrawRecommend 解析sceneConfig JSON字符串失败', err)
     }
@@ -949,7 +950,7 @@ class Editor extends Component {
     const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
 
     const imageRatio = originWidth / originHeight
-    const params = JSON.parse(sceneInfo.sceneConfig)
+    const params = tool.JSON_parse(sceneInfo.sceneConfig)
     const autoScale = parseFloat(params.size.default)
 
     const result = {
@@ -982,7 +983,7 @@ class Editor extends Component {
 
     const boxWidth = frame.width
     const boxHeight = frame.height
-    const sceneConfig = JSON.parse(sceneInfo.sceneConfig)
+    const sceneConfig = tool.JSON_parse(sceneInfo.sceneConfig)
     const {position} = sceneConfig
     const type = position.place || '0'
     const result = {

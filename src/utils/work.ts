@@ -2,6 +2,7 @@
 import Taro from '@tarojs/taro'
 import { cacheImg } from '@/services/cache'
 import service from '@/services/service'
+import tool from './tool'
 interface saveSourceOptions {  
   location: string,
   sourceUrl: any,
@@ -44,7 +45,7 @@ const getSceneList = function (sceneList:Array<object> = []) {
     let supportMusic = false
     let hasIcon = false
     if (sceneConfig) {
-      const {music = {}} = JSON.parse(sceneConfig)
+      const {music = {}} = tool.JSON_parse(sceneConfig)
       supportMusic = music.fileUrl ? true : false      
     } 
     if (sceneType === 2 || sceneType === 1 ) {

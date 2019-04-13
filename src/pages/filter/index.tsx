@@ -288,9 +288,10 @@ class Filter extends Component {
   }
   // 公共方法
   pageToHome = () => {
-    Taro.redirectTo({
-      url: '/pages/home/index'
-    }) 
+    // Taro.redirectTo({
+    //   url: '/pages/home/index'
+    // }) 
+    Taro.navigateBack({ delta: 1 })
   }
   showLoading = () => {
     this.setState({
@@ -561,7 +562,7 @@ class Filter extends Component {
   initFilterData = () => {
     const { currentScene } = this.state
     const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
-    const sceneConfig = JSON.parse(sceneInfo.sceneConfig)
+    const sceneConfig = tool.JSON_parse(sceneInfo.sceneConfig)
     const {filter = {}} = sceneConfig
     const remoteUrl = filter.imageUrls[0]
     const loaded = false
@@ -583,7 +584,7 @@ class Filter extends Component {
   initCoverData = () => {
     const {currentScene} = this.state    
     const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
-    const sceneConfig = JSON.parse(sceneInfo.sceneConfig)
+    const sceneConfig = tool.JSON_parse(sceneInfo.sceneConfig)
     const {cover = {}} = sceneConfig
     this.themeData.rawCoverList = cover.list || []
     const coverList = work.formatRawCoverList(this.themeData.rawCoverList)  
@@ -596,7 +597,7 @@ class Filter extends Component {
   initMusicData () {
     const { currentScene } = this.state
     const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId') || {}
-    const sceneConfig = JSON.parse(sceneInfo.sceneConfig)
+    const sceneConfig = tool.JSON_parse(sceneInfo.sceneConfig)
     const remoteUrl = sceneConfig.music && sceneConfig.music.fileUrl
     if (remoteUrl) {
       this.createAudio(remoteUrl)  

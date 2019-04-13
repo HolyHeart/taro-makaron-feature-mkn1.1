@@ -207,7 +207,7 @@ class Share extends Component {
         if (sceneId) {
           url = url + '?sceneId=' + sceneId
         }        
-        Taro.redirectTo({url})       
+        Taro.navigateTo({url})       
       }
     })
   }

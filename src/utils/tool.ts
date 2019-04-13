@@ -178,6 +178,14 @@ const tool = {
     }
     return false
   },   
+  JSON_parse: function (str) {
+    try {
+      return JSON.parse(str)
+    } catch (err) {
+      console.log('解析JSON出错', err)
+      return {}
+    }
+  },
   getRotateAngle,
   calcCenterPosition, 
   calcSourceType,

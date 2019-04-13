@@ -45,9 +45,10 @@ class ResultModal extends Component {
    this.props.onClick && this.props.onClick()
   }
   pageToHome = () => {
-    Taro.redirectTo({
-      url: '/pages/home/index'
-    })
+    // Taro.redirectTo({
+    //   url: '/pages/home/index'
+    // })
+    Taro.navigateBack({ delta: 1 })
   }
   render() {
     const { layer, image, video, type } = this.props

@@ -260,9 +260,10 @@ class Dynamic extends Component {
   }
   // 公共方法
   pageToHome = () => {
-    Taro.redirectTo({
-      url: '/pages/home/index'
-    }) 
+    // Taro.redirectTo({
+    //   url: '/pages/home/index'
+    // }) 
+    Taro.navigateBack({ delta: 1 })
   }
   showLoading = () => {
     this.setState({
@@ -512,7 +513,7 @@ class Dynamic extends Component {
   initCoverData = () => {
     const {currentScene} = this.state    
     const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
-    const sceneConfig = JSON.parse(sceneInfo.sceneConfig)
+    const sceneConfig = tool.JSON_parse(sceneInfo.sceneConfig)
     const {cover = {}} = sceneConfig
     this.themeData.rawCoverList = cover.list || []
     const coverList = work.formatRawCoverList(this.themeData.rawCoverList)  
@@ -525,7 +526,7 @@ class Dynamic extends Component {
   initMusicData () {
     const { currentScene } = this.state
     const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
-    const sceneConfig = JSON.parse(sceneInfo.sceneConfig)
+    const sceneConfig = tool.JSON_parse(sceneInfo.sceneConfig)
     const remoteUrl = sceneConfig.music && sceneConfig.music.fileUrl
     if (remoteUrl) {
       this.createAudio(remoteUrl)  
@@ -849,7 +850,7 @@ class Dynamic extends Component {
     const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
 
     const imageRatio = originWidth / originHeight
-    const params = JSON.parse(sceneInfo.sceneConfig)
+    const params = tool.JSON_parse(sceneInfo.sceneConfig)
     const autoScale = parseFloat(params.size.default)
 
     const result = {
@@ -882,7 +883,7 @@ class Dynamic extends Component {
 
     const boxWidth = frame.width
     const boxHeight = frame.height
-    const sceneConfig = JSON.parse(sceneInfo.sceneConfig)
+    const sceneConfig = tool.JSON_parse(sceneInfo.sceneConfig)
     const {position} = sceneConfig
     const type = position.place || '0'
     const result = {

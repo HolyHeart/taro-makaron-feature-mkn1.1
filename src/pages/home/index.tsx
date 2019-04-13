@@ -235,13 +235,13 @@ class Home extends Component {
         globalData.choosedImage = path
         const { sceneType } = globalData
         if (sceneType === 1) {
-          Taro.redirectTo({url: '/pages/filter/index'}) 
+          Taro.navigateTo({url: '/pages/filter/index'}) 
         } else if (sceneType === 2) {
-          Taro.redirectTo({url: '/pages/dynamic/index'}) 
+          Taro.navigateTo({url: '/pages/dynamic/index'}) 
         } else if (sceneType === 3) {
-          Taro.redirectTo({url: '/pages/segment/index'}) 
+          Taro.navigateTo({url: '/pages/segment/index'}) 
         } else {
-          Taro.redirectTo({url: '/pages/editor/index'}) 
+          Taro.navigateTo({url: '/pages/editor/index'}) 
         }        
       }
     })

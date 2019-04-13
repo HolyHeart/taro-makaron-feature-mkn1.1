@@ -322,7 +322,7 @@ class Segment extends Component {
       const {cateImageDict = {}} = separateRes.result || {}
       if (!cateImageDict['16'] && !cateImageDict['16-1']) {
         console.log('技术犯规了')
-        // Taro.redirectTo({url: '/pages/home/index'})       
+        work.pageToError()
         return 
       } 
     } catch(err) {

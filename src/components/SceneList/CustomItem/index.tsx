@@ -47,13 +47,14 @@ class CustomItem extends Component {
             <Image 
               className="thumbnai"
               src={thumbnailUrl}
+              mode='aspectFill'
               style="width:100%;height:100%"
             />
           }              
         </View>                              
         <View className="tag">
           {active && <Text className="icon"></Text>}
-          <Text className="tag-title">自定义</Text>
+          <Text className="tag-title">自定义背景</Text>
         </View>
       </View>   
     )

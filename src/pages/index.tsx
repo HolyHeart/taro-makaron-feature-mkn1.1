@@ -171,7 +171,8 @@ class Share extends Component {
     // console.log('handleGetUserInfo', e)
     const {detail: {userInfo}} = e   
     if (userInfo) {
-      globalData.userInfo = userInfo      
+      globalData.userInfo = userInfo   
+      service.base.loginAuth(e.detail)
       this.todo()
     } else {
       Taro.showToast({

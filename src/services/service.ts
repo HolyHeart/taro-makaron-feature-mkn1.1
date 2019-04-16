@@ -2,6 +2,7 @@
 import Taro from '@tarojs/taro'
 import {commonRequest, request} from './http'
 import { api } from './api.config'
+import { appId } from './config'
 import tool from '@/utils/tool'
 import { cacheSegment, cacheImg } from './cache'
 
@@ -82,6 +83,23 @@ export const base = {
       method: 'POST',
       data: data
     })
+  },
+  // 用户授权后向后端请求auth, 上传用户信息
+  loginAuth: function (detail) {
+    const data = {}
+    data.appId = appId || ''
+    data.encryptedData = detail.encryptedData || ''
+    data.iv = detail.iv || ''
+    const reqData = {
+      url: api.base.loginAuth,
+      data: data,
+      method: 'POST',
+      dataType: 'json',
+      header: {
+        'content-type': 'application/x-www-form-urlencoded'
+      }
+    }
+    return request(reqData)
   },
   downloadFile (url) {
     return Taro.downloadFile({url: url})

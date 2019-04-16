@@ -11,7 +11,7 @@ import CustomIcon from '@/components/Icon'
 import CategoryItem from '@/components/CategoryItem'
 import AuthModal from '@/components/AuthModal'
 import globalData from '@/services/global_data'
-import { core } from '@/services/service'
+import { core, base } from '@/services/service'
 import Session from '@/services/session'
 import bg from '@/assets/images/bg.png'
 import pic_loading from '@/assets/images/pic_loading.png'
@@ -185,6 +185,7 @@ class Home extends Component {
     // console.log('handleGetUserInfo', data)
     const {detail: {userInfo}} = data   
     if (userInfo) {
+      base.loginAuth(data.detail)
       globalData.userInfo = userInfo
       this.todo()
     } else {

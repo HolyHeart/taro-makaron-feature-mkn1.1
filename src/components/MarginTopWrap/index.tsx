@@ -43,7 +43,7 @@ class MarginTopWrap extends Component {
     let calcSize = 'default'
     if (windowHeight >= 800) {
       calcSize = 'large'
-    } else if (windowHeight > 700 && windowHeight < 800) {
+    } else if (windowHeight > 750 && windowHeight < 800) {
       calcSize = 'small'
     }
     const size = this.props.size || calcSize || 'default'

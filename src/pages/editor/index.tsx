@@ -1154,9 +1154,13 @@ class Editor extends Component {
     const {originWidth, originHeight} = originInfo   
     const {frame} = this.state
     const coverInfo = work.getCoverInfoById(cover.id, this.themeData.rawCoverList, 'id')
-
-    const imageRatio = originWidth / originHeight      
-    const autoScale = parseFloat(coverInfo.size.default || 0.5)
+    const imageRatio = originWidth / originHeight  
+    let autoScale
+    if (coverInfo && coverInfo.size) {
+      autoScale = parseFloat(coverInfo.size.default || 0.5)
+    } else {
+      autoScale = 0.5
+    }
     const result = {
       autoScale,
       autoWidth: 0,

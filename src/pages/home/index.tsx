@@ -18,10 +18,10 @@ import pic_loading from '@/assets/images/pic_loading.png'
 import pic_loading_big from '@/assets/images/pic_loading_big.png'
 import pic_feedback from '@/assets/images/feedback.png'
 import './index.less'
-const default_column = [      
+const default_column = [
   {
-    columnId: "189063862158151681", 
-    columanName: "栏目1", 
+    columnId: "189063862158151681",
+    columanName: "栏目1",
     columnNum: 1,
     themeList: [
       {
@@ -30,8 +30,8 @@ const default_column = [
     ]
   },
   {
-    columnId: "189063862158151680", 
-    columanName: "栏目2", 
+    columnId: "189063862158151680",
+    columanName: "栏目2",
     columnNum: 2,
     themeList: [
       {
@@ -47,7 +47,7 @@ const default_column = [
         generalShowUrl: pic_loading
       }
     ]
-  }      
+  }
 ]
 type PageStateProps = {
   global: {
@@ -94,10 +94,10 @@ class Home extends Component {
 
   componentWillMount () {
     const {getSystemInfo} = this.props
-    const systemInfo = Taro.getSystemInfoSync()    
+    const systemInfo = Taro.getSystemInfoSync()
     if (/iphone x/i.test(systemInfo.model)) {
       // iPhone XS Max China-exclusive<iPhone11,6>
-      // 'iPhone X' 
+      // 'iPhone X'
       systemInfo.isIphoneX = true
     } else {
       systemInfo.isIphoneX = false
@@ -108,7 +108,7 @@ class Home extends Component {
     this._initPage()
   }
   componentWillReceiveProps (nextProps) {
-    // console.log(this.props, nextProps)  
+    // console.log(this.props, nextProps)
   }
 
   componentWillUnmount () { }
@@ -116,7 +116,7 @@ class Home extends Component {
   componentDidShow () { }
 
   componentDidHide () { }
-  onShareAppMessage () {   
+  onShareAppMessage () {
     this.app.aldstat.sendEvent('首页分享', '首页分享')
     const {defaultThemeData = {}} = this.state
     const shareContent = defaultThemeData.shareContent || '马卡龙玩图'
@@ -149,13 +149,13 @@ class Home extends Component {
   }
 
   getDefaultTheme = async () => {
-    const defaultTheme = globalData.columnList[0] && globalData.columnList[0].themeList[0] 
+    const defaultTheme = globalData.columnList[0] && globalData.columnList[0].themeList[0]
     if (defaultTheme) {
       const res = await await core.theme(defaultTheme.themeId)
       this.setState({
-        defaultThemeData: res.result && res.result.result 
+        defaultThemeData: res.result && res.result.result
       })
-    }   
+    }
   }
 
   getCategotyList (data: Array<any>) {
@@ -170,12 +170,12 @@ class Home extends Component {
 
   handleChooseTheme = async (item: object) => {
     // console.log('handleChooseTheme', item)
-    globalData.themeId = item.themeId   
+    globalData.themeId = item.themeId
     globalData.sceneType = item.sceneType
-    globalData.themeData = null    
+    globalData.themeData = null
     if (globalData.themeId) {
       const res = await core.theme(globalData.themeId)
-      globalData.themeData = res.result && res.result.result 
+      globalData.themeData = res.result && res.result.result
     }
     // 埋码
     this.app.aldstat.sendEvent('选择主题', {'主题名': item.themeName, '主题Id': item.themeId})
@@ -183,7 +183,7 @@ class Home extends Component {
 
   handleGetUserInfo = (data) => {
     // console.log('handleGetUserInfo', data)
-    const {detail: {userInfo}} = data   
+    const {detail: {userInfo}} = data
     if (userInfo) {
       base.loginAuth(data.detail)
       globalData.userInfo = userInfo
@@ -208,7 +208,7 @@ class Home extends Component {
     this.app.aldstat.sendEvent('首页菜单', '使用反馈')
   }
 
-  handleShowTooltip = () => {   
+  handleShowTooltip = () => {
     Taro.tooltip({
       open: !Taro.getTooltipStatus()
     })
@@ -231,19 +231,19 @@ class Home extends Component {
         }
       },
       onSuccess: (path) => {
-        console.log('choosedImage', path, globalData)   
+        console.log('choosedImage', path, globalData)
         this.app.aldstat.sendEvent('首页上传人像成功', '上传成功')
         globalData.choosedImage = path
         const { sceneType } = globalData
         if (sceneType === 1) {
-          Taro.navigateTo({url: '/pages/filter/index'}) 
+          Taro.navigateTo({url: '/pages/filter/index'})
         } else if (sceneType === 2) {
-          Taro.navigateTo({url: '/pages/dynamic/index'}) 
+          Taro.navigateTo({url: '/pages/dynamic/index'})
         } else if (sceneType === 3) {
-          Taro.navigateTo({url: '/pages/segment/index'}) 
+          Taro.navigateTo({url: '/pages/segment/index'})
         } else {
-          Taro.navigateTo({url: '/pages/editor/index'}) 
-        }        
+          Taro.navigateTo({url: '/pages/editor/index'})
+        }
       }
     })
   }
@@ -264,7 +264,7 @@ class Home extends Component {
                   <Button className='tooltip-button' openType="feedback" onClick={this.handleFeedback}>使用反馈</Button>
                 </View>
               </Tooltip>
-            </View>            
+            </View>
           }
         >马卡龙玩图</Title>
         <View className="main">
@@ -278,11 +278,11 @@ class Home extends Component {
                 return (
                   <View className='category-wrap' key={column.columnId}>
                     {
-                      (column.themeList || []).map(item => {
-                        return <CategoryItem 
+                      (column.themeList).map(item => {
+                        return <CategoryItem
                           column={column.columnNum}
                           onGetUserInfo={this.handleGetUserInfo}
-                          key={item.themeId} 
+                          key={item.themeId}
                           url={item.generalShowUrl || ''}
                           onClick={this.handleChooseTheme.bind(this, item)}
                           onFormSubmit={this.handleFormSubmit}
@@ -292,9 +292,9 @@ class Home extends Component {
                   </View>
                 )
               })
-            }            
+            }
           </View>
-        </View> 
+        </View>
         <AuthModal />
       </View>
     )

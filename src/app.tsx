@@ -27,10 +27,10 @@ class _App extends Component {
   config: Config = {
     pages: [
       'pages/home/index',
+      'pages/filter/index',
       'pages/editor/index',
-      'pages/segment/index', 
+      'pages/segment/index',
       'pages/dynamic/index',
-      'pages/filter/index', 
       'pages/error/index',
       'pages/index',
     ],

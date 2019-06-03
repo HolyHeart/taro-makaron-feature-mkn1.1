@@ -5,7 +5,7 @@ export const appId:string = '1109011670'
 export const appConfig:object = {
   imageHost: 'https://static01.versa-ai.com/',
   image_oss_postfix: '?x-oss-process=image/resize,h_748,w_560',
-  themeId: ENV === 'prod' ? '235792328017514496' : '225595811529805824', // 默认主题id
+  themeId: ENV === 'prod' ? '235792328017514496' : '189061533203746816', // 默认主题id
 }
 
 export default {

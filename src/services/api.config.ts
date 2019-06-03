@@ -40,7 +40,7 @@ export const api = {
     theme: `${getHost('qq_miniapi', ENV)}/bg/:themeId/themeData`,
     recommend: `${getHost('qq_miniapi', ENV)}/scene/recommend`,
     filterConvertVideo: `${getHost('qq_miniapi', ENV)}/video/merge`,
-    reportFormId: `${getHost('qq_miniapi', ENV)}/user/miniProgram/report`,
+    reportFormId: `${getHost('qq_miniapi', ENV)}/user/miniProgram/qq/report`,
   }
 }
 export default {

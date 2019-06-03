@@ -22,13 +22,13 @@ interface separateOptionsData {
 }
 
 export const base = {
-  uploadToken: function () {    
+  uploadToken: function () {
     return request({
       url: api.base.uploadToken,
       method: 'GET',
       dataType: 'json',
       data: {
-        clientType: 'mini-program',
+        clientType: 'qq-mini-program',
         fileType: 'image',
         filename: 'image.jpeg'
       }
@@ -108,7 +108,7 @@ export const base = {
 export const core = {
   segment: function (remoteImgUrl, segmentType?:number) {
     let postData:segmentData = {
-      clientType: 'mini-program',
+      clientType: 'qq-mini-program',
       timestamp: Date.now().toString(),
       imageUrl: remoteImgUrl,
     }
@@ -129,7 +129,7 @@ export const core = {
       data: data,
     })
   },
-  theme: function (themeId) {    
+  theme: function (themeId) {
     return request({
       url: api.core.theme,
       method: 'GET',
@@ -137,7 +137,7 @@ export const core = {
       params: {
         themeId
       }
-    })    
+    })
   },
   recommend: function () {
     // 获取推荐主题信息
@@ -145,13 +145,13 @@ export const core = {
       url: api.core.recommend,
       method: 'GET',
       data: {
-        clientType: 'mini-program'
+        clientType: 'qq-mini-program'
       },
     })
   },
   reportFormId: function (formId) {
     const postData = {
-      clientType: 'mini-program',
+      clientType: 'qq-mini-program',
       timestamp: Date.now().toString(),
       formId: formId
     }
@@ -175,7 +175,7 @@ export const core = {
   separateLocalImg:  async function (localImgPath:string = '', options:separateOptionsData = {}) {
     // 上传本地图片并分割图片
     // options = { type, loading, showLoading, hideLoading, }
-    // 判断是否在缓存里   
+    // 判断是否在缓存里
     let keyType = ''  // all表示人 head表示头 -1表示全部
     switch (options.type) {
       case -1:
@@ -211,7 +211,7 @@ export const core = {
       } catch (err) {
         console.log('上传图片失败', err)
       }
-    } 
+    }
     if (typeof options.beforeSeparate === 'function') {
       options.beforeSeparate(remoteImageUrl)
     }
@@ -220,15 +220,15 @@ export const core = {
     try {
       if (options.loading) {
         typeof options.showLoading === 'function' && options.showLoading()
-      }        
+      }
       if (options.type === 0 || options.type === 1) {
         separateData = await core.segment(remoteImageUrl, options.type)
       } else {
         separateData = await core.segment(remoteImageUrl)
-      }    
+      }
       if (options.loading) {
         typeof options.hideLoading === 'function' && options.hideLoading()
-      }    
+      }
     } catch (err) {
       console.log('人景分离失败', err)
       if (options.loading) {
@@ -239,7 +239,7 @@ export const core = {
         icon: 'fail',
         duration: 3000
       })
-      return 
+      return
     }
     // 存储分割缓存
     return cacheSegment.set(cacheKey, {
@@ -248,16 +248,16 @@ export const core = {
   },
   filterConvertVideo: function (videoParams:string = '') {
     let postData = {
-      clientType: 'mini-program',
+      clientType: 'qq-mini-program',
       timestamp: Date.now().toString(),
       videoConfig: videoParams
-    }     
+    }
     return request({
       url: api.core.filterConvertVideo,
       method: 'POST',
       header: {'content-type': 'application/x-www-form-urlencoded'},
       data: postData,
-    })    
+    })
   }
 }
 

@@ -46,7 +46,7 @@ type PageState = {
     x: number,
     y: number,
     rotate: number,
-    originWidth: number, 
+    originWidth: number,
     originHeight: number,
     autoWidth: number,
     autoHeight: number,
@@ -82,6 +82,7 @@ class Filter extends Component {
   config: Config = {
     navigationBarTitleText: '马卡龙玩图',
     disableScroll: true,
+    enablePullDownRefresh:false
   }
 
   state = {
@@ -94,9 +95,9 @@ class Filter extends Component {
       height: 0,
       left: 0,
       top: 0,
-    },    
+    },
     background: {
-      id: 'background',      
+      id: 'background',
       localUrl: '',
       remoteUrl: '',
       zIndex: 0,
@@ -124,7 +125,7 @@ class Filter extends Component {
       originHeight: 0, // 原始高度
       autoWidth: 0, // 自适应后的宽度
       autoHeight: 0, // 自适应后的高度
-      autoScale: 0, // 相对画框缩放比例      
+      autoScale: 0, // 相对画框缩放比例
       loaded: false, // 是否加载完毕
     },
     filter: {
@@ -150,7 +151,7 @@ class Filter extends Component {
       // autoScale: 0.1,
       // autoWidth: 75,
       // width: 57.378244033967235,
-      // height:186.6705539238401,      
+      // height:186.6705539238401,
       // x: 185.1442062300867,
       // y: 155.66472303807996,
       // rotate: -25.912119928692746,
@@ -170,7 +171,7 @@ class Filter extends Component {
       bgUrl: '', // ...
       shareContent: '',
       sceneId: '',
-    },  
+    },
     loading: false,
     result: {
       show: false,
@@ -195,7 +196,7 @@ class Filter extends Component {
   themeData = {
     sceneList: [],
     rawCoverList: [], // 原始贴纸数据
-  } 
+  }
 
   cache = {
     foreground: createCache('foreground'),
@@ -208,18 +209,18 @@ class Filter extends Component {
   isSaving = false // 是否正在保存
 
   componentWillMount () {
-    this.initSystemInfo()    
+    this.initSystemInfo()
   }
-  componentDidMount () { 
+  componentDidMount () {
     this._initPage()
   }
   componentWillReceiveProps (nextProps) {
-    // console.log(this.props, nextProps)  
+    // console.log(this.props, nextProps)
   }
   componentWillUnmount () {
     this.setAudio('pause')
   }
-  componentDidShow () {    
+  componentDidShow () {
     if (this.state.music.play) {
       this.setAudio('play')
     }
@@ -242,20 +243,20 @@ class Filter extends Component {
       height: shareVideo.height
     }
     const path = tool.formatQueryUrl('/pages/index', data)
-    const {userInfo = {}} = globalData 
+    const {userInfo = {}} = globalData
     const title = `@${userInfo.nickName}：${shareContent}`
     if (!shareImage.remoteUrl) {
       return {
         title: title,
         path: '/pages/home/index',
-        imageUrl: currentScene.thumbnailUrl,	
+        imageUrl: currentScene.thumbnailUrl,
       }
     }
     console.log(title, path, shareImageUrl)
     return {
       title: title,
       path: path,
-      imageUrl: shareImageUrl,			
+      imageUrl: shareImageUrl,
       success: () => {
         console.log('分享成功')
       },
@@ -270,7 +271,7 @@ class Filter extends Component {
     this.initSceneData(() => {
       this.initFilterData()
       this.initCoverData()
-    })    
+    })
     const separateResult = globalData.separateResult = await this.initSegment()
     console.log('separateResult', separateResult)
     await this.initSeparateData(separateResult)
@@ -279,18 +280,18 @@ class Filter extends Component {
   test = async () => {
     // try {
     //   const result = await service.core.column()
-    //   console.log('result', result)   
+    //   console.log('result', result)
     // } catch(err) {
     //   console.log('catch', err)
-    // } 
+    // }
     //   const uploadResult = await service.base.upload(mock_path, 'png')
-    //   console.log('uploadResult', uploadResult)    
+    //   console.log('uploadResult', uploadResult)
   }
   // 公共方法
   pageToHome = () => {
     // Taro.redirectTo({
     //   url: '/pages/home/index'
-    // }) 
+    // })
     Taro.navigateBack({ delta: 1 })
   }
   showLoading = () => {
@@ -336,7 +337,7 @@ class Filter extends Component {
       console.log('innerAudioContext error', res.errMsg)
     })
   }
-  setAudio = (type = 'play') => {    
+  setAudio = (type = 'play') => {
     this.setState({
       music: {
         ...this.state.music,
@@ -345,14 +346,14 @@ class Filter extends Component {
     })
     if (type === 'play') {
       setTimeout(()=>{
-        this.innerAudioContext.play()        
+        this.innerAudioContext.play()
       }, 50)
     } else {
       this.innerAudioContext.pause()
-    }   
-  } 
+    }
+  }
   // 根据场景决定头像 setSegmentTypeByScene
-  setSegmentTypeByScene = async (currentScene, separateResult = {}, callback) => {    
+  setSegmentTypeByScene = async (currentScene, separateResult = {}, callback) => {
     const { imageHost } = appConfig
     if (!separateResult.cateImageDict) {
       return
@@ -370,17 +371,17 @@ class Filter extends Component {
     typeof callback === 'function' && callback({
       separateUrl,
       separateMaskUrl
-    })    
+    })
   }
   // 合成视频或gif
   createShareSource = async (saveType = 'mp4') => {
     // saveType 'mp4, all, gif'
     return new Promise(async (resolve, reject) => {
       const {currentScene, frame, music, background, filter, foreground, coverList = [], videoRatio = 1} = this.state
-      // 贴纸   
+      // 贴纸
       const stickerList = coverList.filter(v => !v.deleted).map(v => {
         return {
-          url: v.remoteUrl,            
+          url: v.remoteUrl,
           width: parseFloat(v.width) * videoRatio,
           height: parseFloat(v.height) * videoRatio,
           x: parseFloat(v.x) * videoRatio,
@@ -390,15 +391,15 @@ class Filter extends Component {
         }
       })
       const postData = {
-        saveType,        
+        saveType,
         background:{
           url: background.remoteUrl,
           width: background.width * videoRatio,
           height: background.height * videoRatio
         },
         filter: {
-          url: filter.remoteUrl, 
-          width: filter.width * videoRatio, 
+          url: filter.remoteUrl,
+          width: filter.width * videoRatio,
           height: filter.height * videoRatio,
           x: filter.x * videoRatio,
           y: filter.y * videoRatio
@@ -426,15 +427,15 @@ class Filter extends Component {
   }
   // 生成gif
   createGif = async (loading = false, callback) => {
-    // 生成gif      
+    // 生成gif
     loading && Taro.showLoading({title: '生成Gif中...', mask: true})
     try {
-      const gif_result = await this.createShareSource('gif') 
+      const gif_result = await this.createShareSource('gif')
       const shareGifRemoteUrl = gif_result && gif_result.gif
-      typeof callback === 'function' && callback(shareGifRemoteUrl)   
+      typeof callback === 'function' && callback(shareGifRemoteUrl)
       loading && Taro.hideLoading()
-    } catch (err) {   
-      loading && Taro.hideLoading()       
+    } catch (err) {
+      loading && Taro.hideLoading()
     }
   }
 
@@ -446,7 +447,7 @@ class Filter extends Component {
       getSystemInfo(systemInfo)
     }
   }
-  initRawImage = () => {   
+  initRawImage = () => {
     const {rawImage, background} = this.state
     this.setState({
       rawImage: {
@@ -460,7 +461,7 @@ class Filter extends Component {
     })
   }
   // 分割图片
-  initSegment = async () => {     
+  initSegment = async () => {
     let separateRes
     try {
       separateRes = await service.core.separateLocalImg(globalData.choosedImage, {
@@ -476,7 +477,7 @@ class Filter extends Component {
         },
         hideLoading: () => {
           // console.log('hideLoading')
-          // Taro.hideLoading()          
+          // Taro.hideLoading()
           if (this.state.foreground.loaded) {
             this.hideLoading()
           }
@@ -495,8 +496,8 @@ class Filter extends Component {
       if (!cateImageDict['16'] && !cateImageDict['16-1']) {
         console.log('技术犯规了')
         work.pageToError()
-        return 
-      } 
+        return
+      }
     } catch(err) {
       console.log('catch', err)
       this.hideLoading()
@@ -505,23 +506,23 @@ class Filter extends Component {
     return (separateRes && separateRes.result) || {}
   }
   // 初始化分割图片
-  initSeparateData = async (separateResult) => {  
+  initSeparateData = async (separateResult) => {
     if (!separateResult.cateImageDict) {
       return
     }
-    const { foreground } = this.state 
+    const { foreground } = this.state
     // 判断分离的是全身还是头像
     // 16：只含人尺寸的全身
     // 16-2：全图尺寸下全身
     // 16-1：只含人头像尺寸的头像
     // 16-3：全图尺寸下的头像
-    let separateUrl = appConfig.imageHost + separateResult.cateImageDict['16-2']    
-    this.setState({      
+    let separateUrl = appConfig.imageHost + separateResult.cateImageDict['16-2']
+    this.setState({
       foreground: {
         ...foreground,
         remoteUrl: separateUrl
       }
-    }) 
+    })
   }
   // 初始化场景信息
   initSceneData = async (callback) => {
@@ -529,7 +530,7 @@ class Filter extends Component {
     if (!globalData.themeData) {
       const themeId = globalData.themeId || appConfig.themeId
       const res = await service.core.theme(themeId)
-      globalData.themeData = res.result && res.result.result   
+      globalData.themeData = res.result && res.result.result
     }
     const themeData = globalData.themeData || {sceneList: []}
     this.themeData.sceneList = work.getSceneList(themeData.sceneList || [])
@@ -543,7 +544,7 @@ class Filter extends Component {
     })
 
     const {sceneId} = this.$router.params
-    let currentScene 
+    let currentScene
     if (sceneId) {
       currentScene = sceneList.find(v => v.sceneId === sceneId) || {}
     } else {
@@ -557,7 +558,7 @@ class Filter extends Component {
       // console.log('state', this.state)
       typeof callback === 'function' && callback()
     })
-  } 
+  }
   // 初始化夹层滤镜
   initFilterData = () => {
     const { currentScene } = this.state
@@ -567,8 +568,8 @@ class Filter extends Component {
     const remoteUrl = filter.imageUrls[0]
     const loaded = false
     const axis = filter.position && filter.position.axis || 'x'
-    const size = filter.position && filter.position.size || 1  
-    this.setState({      
+    const size = filter.position && filter.position.size || 1
+    this.setState({
       filter: {
         ...this.state.filter,
         remoteUrl,
@@ -578,19 +579,19 @@ class Filter extends Component {
       }
     }, () => {
       // console.log('filter', this.state.filter)
-    }) 
+    })
   }
   // 初始化贴纸
   initCoverData = () => {
-    const {currentScene} = this.state    
+    const {currentScene} = this.state
     const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
     const sceneConfig = tool.JSON_parse(sceneInfo.sceneConfig)
     const {cover = {}} = sceneConfig
     this.themeData.rawCoverList = cover.list || []
-    const coverList = work.formatRawCoverList(this.themeData.rawCoverList)  
-    this.setState({      
+    const coverList = work.formatRawCoverList(this.themeData.rawCoverList)
+    this.setState({
       coverList: coverList
-    })    
+    })
     // console.log('initCoverData cover', cover, coverList)
   }
   // 初始化音乐
@@ -600,7 +601,7 @@ class Filter extends Component {
     const sceneConfig = tool.JSON_parse(sceneInfo.sceneConfig)
     const remoteUrl = sceneConfig.music && sceneConfig.music.fileUrl
     if (remoteUrl) {
-      this.createAudio(remoteUrl)  
+      this.createAudio(remoteUrl)
       this.setState({
         music: {
           ...this.state.music,
@@ -611,17 +612,17 @@ class Filter extends Component {
           this.setAudio('play')
         } else {
           this.setAudio('pause')
-        } 
-      })   
+        }
+      })
     }
   }
-  
+
   // 背景
-  handleBackgroundClick = () => {    
-    this.setCoverListActiveStatus({type: 'all'}, false)    
+  handleBackgroundClick = () => {
+    this.setCoverListActiveStatus({type: 'all'}, false)
   }
   // 背景图片加载
-  onBackgroundLoaded = (e:object,) => {    
+  onBackgroundLoaded = (e:object,) => {
     const {detail= {}} = e
     // console.log('onBackgroundLoaded', detail)
     const {width = 0, height = 0} = detail
@@ -629,13 +630,13 @@ class Filter extends Component {
       originWidth: width,
       originHeight: height
     }, () => {
-      this.backgroundAuto()      
+      this.backgroundAuto()
     })
   }
   // 人物
   onForegroundLoaded = (e:object) => {
     const {detail= {}} = e
-    // console.log('handleForegroundLoaded', detail)    
+    // console.log('handleForegroundLoaded', detail)
     this.hideLoading()
     const {width, height} = detail
     this.setStateTarget('foreground', {
@@ -648,7 +649,7 @@ class Filter extends Component {
     })
   }
   // 滤镜
-  onFilterLoaded = (e:object,) => {    
+  onFilterLoaded = (e:object,) => {
     const {detail= {}} = e
     // console.log('onFilterLoaded', detail)
     const {width = 0, height = 0} = detail
@@ -657,10 +658,10 @@ class Filter extends Component {
       originHeight: height,
       loaded: true
     }, () => {
-      this.filterAuto() 
+      this.filterAuto()
     })
   }
- 
+
   // 贴纸
   onCoverLoaded = (detail:object, item?:any) => {
     // console.log('handleCoverLoaded', detail, item)
@@ -671,7 +672,7 @@ class Filter extends Component {
     }
     this.coverAuto(originInfo, item)
   }
-  handleChangeCoverStyle = (data) => {    
+  handleChangeCoverStyle = (data) => {
     const {id} = data
     const {coverList} = this.state
     coverList.forEach((v, i) => {
@@ -719,7 +720,7 @@ class Filter extends Component {
       this.app.aldstat.sendEvent('音乐开关', '音乐关闭')
     }
   }
-  
+
   // 更换场景
   handleChooseScene = (scene) => {
     const {currentScene} = this.state
@@ -731,14 +732,14 @@ class Filter extends Component {
     }, () => {
       // console.log('handleChooseScene', this.state.currentScene)
       this.initCoverData()
-      this.initFilterData()   
+      this.initFilterData()
       // 初始化音乐
       this.initMusicData()
       this.app.aldstat.sendEvent('选择场景', {'场景名': this.state.currentScene.sceneName, '场景Id': this.state.currentScene.sceneId})
     })
   }
   // 保存
-  handleOpenResult = async () => {   
+  handleOpenResult = async () => {
     if (!this.state.foreground.remoteUrl) {
       return
     }
@@ -747,13 +748,13 @@ class Filter extends Component {
     }
     if (this.isSaving) {
       return
-    }  
+    }
     this.app.aldstat.sendEvent('保存图片或视频', {'场景名': this.state.currentScene.sceneName, '场景Id': this.state.currentScene.sceneId})
     this.setAudio('pause')
     Taro.showLoading({
       title: '保存中...',
       mask: true,
-    }) 
+    })
     this.isSaving = true
     let result
     try {
@@ -769,7 +770,7 @@ class Filter extends Component {
         duration: 3000
       })
       return
-    }  
+    }
     const shareVideoRemoteUrl = result.videoUrl
     const shareImageRemoteUrl = result.thumbnailUrl
     const {width = 690, height = 920} = result.videoSize || {}
@@ -799,7 +800,7 @@ class Filter extends Component {
           title: '保存成功!',
           icon: 'success',
           duration: 2000
-        })    
+        })
       },
       onAuthFail: () => {
         Taro.authModal({
@@ -812,7 +813,7 @@ class Filter extends Component {
           title: '保存失败!',
           icon: 'success',
           duration: 2000
-        })  
+        })
       }
     })
   }
@@ -823,7 +824,7 @@ class Filter extends Component {
   // 保存gif
   handleSaveGif = (loading, callback?) => {
     this.createGif(loading, (remoteUrl) => {
-      const { result } = this.state 
+      const { result } = this.state
       this.setState({
         result: {
           ...result,
@@ -833,7 +834,7 @@ class Filter extends Component {
         }
       }, () => {
         typeof callback === 'function' && callback(remoteUrl)
-      })   
+      })
     })
   }
   // 显示gif
@@ -844,7 +845,7 @@ class Filter extends Component {
     if (!remoteUrl) {
       this.handleSaveGif(true, (remoteUrl) => {
         Taro.previewImage({
-          current: remoteUrl, 
+          current: remoteUrl,
           urls: [remoteUrl]
         })
       })
@@ -853,7 +854,7 @@ class Filter extends Component {
         current: remoteUrl,
         urls: [remoteUrl]
       })
-    }        
+    }
   }
 
   setResultModalStatus = (flag = false) => {
@@ -880,7 +881,7 @@ class Filter extends Component {
           v['isActive'] = value
         } else {
           v['isActive'] = !value
-        }        
+        }
       })
     }
     this.setState({
@@ -889,7 +890,7 @@ class Filter extends Component {
   }
 
   // 背景自适应
-  backgroundAuto =(callback?:()=>void) => { 
+  backgroundAuto =(callback?:()=>void) => {
     const size = this.calcBackgroundSize()
     const position = this.calcBackgroundPosition(size)
     this.setStateTarget('background', {
@@ -898,11 +899,11 @@ class Filter extends Component {
     }, () => {
       typeof callback === 'function' && callback()
     })
-  } 
+  }
   calcBackgroundSize = () => {
     const { background, frame} = this.state
-    const { originWidth, originHeight } = background 
-    const imageRatio = originWidth / originHeight  
+    const { originWidth, originHeight } = background
+    const imageRatio = originWidth / originHeight
     // 计算宽高比例
     const result = {
       autoScale: 1,
@@ -911,24 +912,24 @@ class Filter extends Component {
       width: 0,
       height: 0
     }
-    if ((originWidth / originHeight) > (frame.width / frame.height) ) {  
+    if ((originWidth / originHeight) > (frame.width / frame.height) ) {
       // 图片宽高比大于框
-      // 将图片宽度缩放为与框相同    
+      // 将图片宽度缩放为与框相同
       result.autoScale = frame.height / originHeight
       result.autoWidth = frame.width
       result.autoHeight = result.autoWidth / imageRatio
-    } else {      
+    } else {
       result.autoScale = frame.width / originWidth
       result.autoHeight = frame.height
       result.autoWidth = result.autoHeight * imageRatio
-    }   
-    
+    }
+
     result.width = result.autoWidth
     result.height = result.autoHeight
     return result
   }
   calcBackgroundPosition = ({width, height} = {}) => {
-    const { frame } = this.state    
+    const { frame } = this.state
     let x = 0
     let y = 0
     x -= (width - frame.width) * 0.5
@@ -957,7 +958,7 @@ class Filter extends Component {
     } else {
       height = boxHeight * size
       width = height * ratio
-    }    
+    }
     // 位移使图片居中
     x -= (width - boxWidth) * 0.5
     y -= (height - boxHeight) * 0.5
@@ -972,10 +973,10 @@ class Filter extends Component {
     }, () => {
       typeof callback === 'function' && callback()
     })
-  }  
+  }
   // 贴纸自适应
   coverAuto = (originInfo, cover, callback?:()=>void) => {
-    const size = this.calcCoverSize(originInfo, cover)    
+    const size = this.calcCoverSize(originInfo, cover)
     const position = this.calcCoverPosition(size, cover)
     const {coverList, currentScene} = this.state
     coverList.forEach((v, i) => {
@@ -986,11 +987,11 @@ class Filter extends Component {
         if (cacheRes) {
           coverList[i] = cacheRes
         } else {
-          coverList[i] = {...v, ...size, ...position}          
+          coverList[i] = {...v, ...size, ...position}
         }
       }
     })
-    
+
     this.setState({
       coverList: coverList
     }, () => {
@@ -998,11 +999,11 @@ class Filter extends Component {
     })
   }
   calcCoverSize = (originInfo, cover) => {
-    const {originWidth, originHeight} = originInfo   
+    const {originWidth, originHeight} = originInfo
     const {background} = this.state
     const coverInfo = work.getCoverInfoById(cover.id, this.themeData.rawCoverList, 'id')
 
-    const imageRatio = originWidth / originHeight      
+    const imageRatio = originWidth / originHeight
     const autoScale = parseFloat(coverInfo.size.default || 0.5)
     const result = {
       autoScale,
@@ -1010,15 +1011,15 @@ class Filter extends Component {
       autoHeight: 0,
       width: 0,
       height: 0
-    } 
+    }
     if (originWidth > originHeight) {
       // 以最短边计算
       result.autoWidth = background.width * autoScale
       result.autoHeight = result.autoWidth / imageRatio
-    } else {        
+    } else {
       result.autoHeight = background.height * autoScale
       result.autoWidth = result.autoHeight * imageRatio
-    } 
+    }
     result.width = result.autoWidth
     result.height = result.autoHeight
 
@@ -1027,7 +1028,7 @@ class Filter extends Component {
   calcCoverPosition = (size = {}, cover = {}) => {
     const {width = 0, height = 0} = size
     const {background} = this.state
-    const coverInfo = work.getCoverInfoById(cover.id, this.themeData.rawCoverList, 'id')    
+    const coverInfo = work.getCoverInfoById(cover.id, this.themeData.rawCoverList, 'id')
     const {position, rotate = 0} = coverInfo
     const boxWidth = background.width
     const boxHeight = background.height
@@ -1157,46 +1158,46 @@ class Filter extends Component {
         <View className="main">
           <View className="pic-section">
             <View className={`raw ${(foreground.remoteUrl && foreground.loaded) ? 'hidden' : ''}`}>
-              <Image src={rawImage.localUrl} style="width:100%; height:100%" 
+              <Image src={rawImage.localUrl} style="width:100%; height:100%"
                 mode="aspectFit"/>
             </View>
-            <View className={`crop ${(foreground.remoteUrl && foreground.loaded) ? '' : 'hidden'}`} id="crop">                
-              <View 
-                className='play-section' 
+            <View className={`crop ${(foreground.remoteUrl && foreground.loaded) ? '' : 'hidden'}`} id="crop">
+              <View
+                className='play-section'
                 style={{width: `${background.width}px`, height: `${background.height}px`, left: `${background.x}px`, top: `${background.y}px`}}
               >
                 <View className="background-image">
-                  <Image 
-                    src={background.localUrl} 
-                    style="width:100%;height:100%" 
+                  <Image
+                    src={background.localUrl}
+                    style="width:100%;height:100%"
                     mode="scaleToFill"
                     onClick={this.handleBackgroundClick}
                     onLoad={this.onBackgroundLoaded}
                   />
-                </View> 
-                <View                   
-                  className="filter-image" 
+                </View>
+                <View
+                  className="filter-image"
                   style={{width: `${filter.width}px`, height: `${filter.height}px`, left: `${filter.x}px`, top: `${filter.y}px`}}
                 >
-                  <Image 
-                    class="bg-img {{filter.visible ? '' : 'hidden'}}" 
+                  <Image
+                    class="bg-img {{filter.visible ? '' : 'hidden'}}"
                     src={filter.remoteUrl}
-                    style="width: 100%; height:100%;" 
+                    style="width: 100%; height:100%;"
                     onLoad={this.onFilterLoaded}/>
                 </View>
                 <View className="foreground-image">
-                  <Image 
-                    src={foreground.remoteUrl} 
-                    style="width:100%;height:100%" 
+                  <Image
+                    src={foreground.remoteUrl}
+                    style="width:100%;height:100%"
                     mode="scaleToFill"
                     onClick={this.handleBackgroundClick}
                     onLoad={this.onForegroundLoaded}
                   />
-                </View>                
+                </View>
                 {coverList.map(item => {
-                  return <Sticker 
+                  return <Sticker
                           key={item.id}
-                          url={item.remoteUrl} 
+                          url={item.remoteUrl}
                           stylePrams={item}
                           framePrams={frame}
                           onChangeStyle={this.handleChangeCoverStyle}
@@ -1207,12 +1208,12 @@ class Filter extends Component {
                         />
                 })}
                 <Voice status={music.play ? 'on' : 'off'} onClick={this.handleToggleMusic}/>
-              </View> 
-            </View>  
+              </View>
+            </View>
           </View>
           <MarginTopWrap config={{large: 60, small: 40, default: 20}}>
-            <SceneList 
-              list={sceneList} 
+            <SceneList
+              list={sceneList}
               currentScene={currentScene}
               styleObj={{width: '720rpx', marginRight: '-60rpx'}}
               onClick={this.handleChooseScene}
@@ -1221,11 +1222,11 @@ class Filter extends Component {
           <MarginTopWrap config={{large: 60, small: 40, default: 20}}>
             <Button className="custom-button pink" hoverClass="btn-hover" onClick={this.handleOpenResult}>保存</Button>
           </MarginTopWrap>
-        </View> 
+        </View>
         <Loading visible={loading} />
-        <AuthModal />          
+        <AuthModal />
         {result.show &&
-          <ResultModal 
+          <ResultModal
             type='video'
             video={{
               url: result.shareVideo.remoteUrl,
@@ -1235,11 +1236,11 @@ class Filter extends Component {
             renderButton={
               <View className="btn-wrap">
                 <Button className="custom-button pink btn-1" hoverClass="btn-hover" openType="share" >分享给好友</Button>
-                <Button className="custom-button dark btn-2" hoverClass="btn-hover"  onClick={this.handleShowGif}>保存Gif</Button>            
+                <Button className="custom-button dark btn-2" hoverClass="btn-hover"  onClick={this.handleShowGif}>保存Gif</Button>
               </View>
             }
           />
-        }        
+        }
       </View>
     )
   }

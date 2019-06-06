@@ -46,7 +46,7 @@ type PageState = {
     x: number,
     y: number,
     rotate: number,
-    originWidth: number, 
+    originWidth: number,
     originHeight: number,
     autoWidth: number,
     autoHeight: number,
@@ -81,6 +81,7 @@ class Dynamic extends Component {
   config: Config = {
     navigationBarTitleText: '马卡龙玩图',
     disableScroll: true,
+    enablePullDownRefresh:false
   }
 
   state = {
@@ -93,7 +94,7 @@ class Dynamic extends Component {
       height: 0,
       left: 0,
       top: 0,
-    },    
+    },
     foreground: {
       id: 'foreground',
       remoteUrl: '',
@@ -123,7 +124,7 @@ class Dynamic extends Component {
       // autoScale: 0.1,
       // autoWidth: 75,
       // width: 57.378244033967235,
-      // height:186.6705539238401,      
+      // height:186.6705539238401,
       // x: 185.1442062300867,
       // y: 155.66472303807996,
       // rotate: -25.912119928692746,
@@ -143,7 +144,7 @@ class Dynamic extends Component {
       bgUrl: '', // ...
       shareContent: '',
       sceneId: '',
-    },  
+    },
     loading: false,
     result: {
       show: false,
@@ -168,7 +169,7 @@ class Dynamic extends Component {
   themeData = {
     sceneList: [],
     rawCoverList: [], // 原始贴纸数据
-  } 
+  }
 
   cache = {
     foreground: createCache('foreground'),
@@ -181,18 +182,18 @@ class Dynamic extends Component {
   isSaving = false // 是否正在保存
 
   componentWillMount () {
-    this.initSystemInfo()    
+    this.initSystemInfo()
   }
-  componentDidMount () { 
+  componentDidMount () {
     this._initPage()
   }
   componentWillReceiveProps (nextProps) {
-    // console.log(this.props, nextProps)  
+    // console.log(this.props, nextProps)
   }
   componentWillUnmount () {
     this.setAudio('pause')
   }
-  componentDidShow () {    
+  componentDidShow () {
     if (this.state.music.play) {
       this.setAudio('play')
     }
@@ -203,7 +204,7 @@ class Dynamic extends Component {
     //   console.log('页面按钮分享', res.target)
     // }
     this.app.aldstat.sendEvent('生成页分享', {'场景名': this.state.currentScene.sceneName, '场景Id': this.state.currentScene.sceneId})
-    const {currentScene, result = {}} = this.state  
+    const {currentScene, result = {}} = this.state
     const {shareVideo = {}, shareImage = {}} = result
     const shareContent = currentScene.shareContent || (globalData.themeData && globalData.themeData.shareContent)
     const shareImageUrl = `${shareImage.remoteUrl}?x-oss-process=image/resize,m_pad,h_420,w_525`
@@ -215,20 +216,20 @@ class Dynamic extends Component {
       height: shareVideo.height
     }
     const path = tool.formatQueryUrl('/pages/index', data)
-    const {userInfo = {}} = globalData 
+    const {userInfo = {}} = globalData
     const title = `@${userInfo.nickName}：${shareContent}`
     if (!shareImage.remoteUrl) {
       return {
         title: title,
         path: '/pages/home/index',
-        imageUrl: currentScene.thumbnailUrl,	
+        imageUrl: currentScene.thumbnailUrl,
       }
     }
     console.log(title, path, shareImageUrl)
     return {
       title: title,
       path: path,
-      imageUrl: shareImageUrl,			
+      imageUrl: shareImageUrl,
       success: () => {
         console.log('分享成功')
       },
@@ -242,7 +243,7 @@ class Dynamic extends Component {
     await Session.set()
     this.initSceneData(() => {
       this.initCoverData()
-    })    
+    })
     const separateResult = globalData.separateResult = await this.initSegment()
     console.log('separateResult', separateResult)
     await this.initSeparateData(separateResult)
@@ -251,18 +252,18 @@ class Dynamic extends Component {
   test = async () => {
     // try {
     //   const result = await service.core.column()
-    //   console.log('result', result)   
+    //   console.log('result', result)
     // } catch(err) {
     //   console.log('catch', err)
-    // } 
+    // }
     //   const uploadResult = await service.base.upload(mock_path, 'png')
-    //   console.log('uploadResult', uploadResult)    
+    //   console.log('uploadResult', uploadResult)
   }
   // 公共方法
   pageToHome = () => {
     // Taro.redirectTo({
     //   url: '/pages/home/index'
-    // }) 
+    // })
     Taro.navigateBack({ delta: 1 })
   }
   showLoading = () => {
@@ -308,7 +309,7 @@ class Dynamic extends Component {
       console.log('innerAudioContext error', res.errMsg)
     })
   }
-  setAudio = (type = 'play') => {    
+  setAudio = (type = 'play') => {
     this.setState({
       music: {
         ...this.state.music,
@@ -317,14 +318,14 @@ class Dynamic extends Component {
     })
     if (type === 'play') {
       setTimeout(()=>{
-        this.innerAudioContext.play()        
+        this.innerAudioContext.play()
       }, 50)
     } else {
       this.innerAudioContext.pause()
-    }   
-  } 
+    }
+  }
   // 根据场景决定头像 setSegmentTypeByScene
-  setSegmentTypeByScene = async (currentScene, separateResult = {}, callback) => {    
+  setSegmentTypeByScene = async (currentScene, separateResult = {}, callback) => {
     const { imageHost } = appConfig
     if (!separateResult.cateImageDict) {
       return
@@ -342,17 +343,17 @@ class Dynamic extends Component {
     typeof callback === 'function' && callback({
       separateUrl,
       separateMaskUrl
-    })    
+    })
   }
   // 合成视频或gif
   createShareSource = async (saveType = 'mp4') => {
     // saveType 'mp4, all, gif'
     return new Promise(async (resolve, reject) => {
       const {currentScene, frame, music, foreground, coverList = [], videoRatio = 2} = this.state
-      // 贴纸   
+      // 贴纸
       const stickerList = coverList.filter(v => !v.deleted).map(v => {
         return {
-          url: v.remoteUrl,            
+          url: v.remoteUrl,
           width: parseFloat(v.width) * videoRatio,
           height: parseFloat(v.height) * videoRatio,
           x: parseFloat(v.x) * videoRatio,
@@ -397,15 +398,15 @@ class Dynamic extends Component {
   }
   // 生成gif
   createGif = async (loading = false, callback) => {
-    // 生成gif      
+    // 生成gif
     loading && Taro.showLoading({title: '生成Gif中...', mask: true})
     try {
-      const gif_result = await this.createShareSource('gif') 
+      const gif_result = await this.createShareSource('gif')
       const shareGifRemoteUrl = gif_result && gif_result.gif
-      typeof callback === 'function' && callback(shareGifRemoteUrl)   
+      typeof callback === 'function' && callback(shareGifRemoteUrl)
       loading && Taro.hideLoading()
-    } catch (err) {   
-      loading && Taro.hideLoading()       
+    } catch (err) {
+      loading && Taro.hideLoading()
     }
   }
 
@@ -417,7 +418,7 @@ class Dynamic extends Component {
       getSystemInfo(systemInfo)
     }
   }
-  initRawImage = () => {   
+  initRawImage = () => {
     const {rawImage} = this.state
     this.setState({
       rawImage: {
@@ -427,7 +428,7 @@ class Dynamic extends Component {
     })
   }
   // 分割图片
-  initSegment = async () => {     
+  initSegment = async () => {
     let separateRes
     try {
       separateRes = await service.core.separateLocalImg(globalData.choosedImage, {
@@ -443,7 +444,7 @@ class Dynamic extends Component {
         },
         hideLoading: () => {
           // console.log('hideLoading')
-          // Taro.hideLoading()          
+          // Taro.hideLoading()
           if (this.state.foreground.loaded) {
             this.hideLoading()
           }
@@ -453,8 +454,8 @@ class Dynamic extends Component {
       if (!cateImageDict['16'] && !cateImageDict['16-1']) {
         console.log('技术犯规了')
         work.pageToError()
-        return 
-      } 
+        return
+      }
     } catch(err) {
       console.log('catch', err)
       this.hideLoading()
@@ -463,16 +464,16 @@ class Dynamic extends Component {
     return (separateRes && separateRes.result) || {}
   }
   // 初始化分割图片
-  initSeparateData = async (separateResult) => {  
-    const { currentScene, foreground } = this.state 
-    this.setSegmentTypeByScene(currentScene, separateResult, (res = {}) => {      
-      this.setState({      
+  initSeparateData = async (separateResult) => {
+    const { currentScene, foreground } = this.state
+    this.setSegmentTypeByScene(currentScene, separateResult, (res = {}) => {
+      this.setState({
         foreground: {
           ...foreground,
           remoteUrl: res.separateUrl
         }
-      }) 
-    }) 
+      })
+    })
   }
   // 初始化场景信息
   initSceneData = async (callback) => {
@@ -480,7 +481,7 @@ class Dynamic extends Component {
     if (!globalData.themeData) {
       const themeId = globalData.themeId || appConfig.themeId
       const res = await service.core.theme(themeId)
-      globalData.themeData = res.result && res.result.result   
+      globalData.themeData = res.result && res.result.result
     }
     const themeData = globalData.themeData || {sceneList: []}
     this.themeData.sceneList = work.getSceneList(themeData.sceneList || [])
@@ -494,7 +495,7 @@ class Dynamic extends Component {
     })
 
     const {sceneId} = this.$router.params
-    let currentScene 
+    let currentScene
     if (sceneId) {
       currentScene = sceneList.find(v => v.sceneId === sceneId) || {}
     } else {
@@ -508,18 +509,18 @@ class Dynamic extends Component {
       // console.log('state', this.state)
       typeof callback === 'function' && callback()
     })
-  } 
+  }
   // 初始化贴纸
   initCoverData = () => {
-    const {currentScene} = this.state    
+    const {currentScene} = this.state
     const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
     const sceneConfig = tool.JSON_parse(sceneInfo.sceneConfig)
     const {cover = {}} = sceneConfig
     this.themeData.rawCoverList = cover.list || []
-    const coverList = work.formatRawCoverList(this.themeData.rawCoverList)  
-    this.setState({      
+    const coverList = work.formatRawCoverList(this.themeData.rawCoverList)
+    this.setState({
       coverList: coverList
-    })    
+    })
     // console.log('initCoverData cover', cover, coverList)
   }
   // 初始化音乐
@@ -529,7 +530,7 @@ class Dynamic extends Component {
     const sceneConfig = tool.JSON_parse(sceneInfo.sceneConfig)
     const remoteUrl = sceneConfig.music && sceneConfig.music.fileUrl
     if (remoteUrl) {
-      this.createAudio(remoteUrl)  
+      this.createAudio(remoteUrl)
       this.setState({
         music: {
           ...this.state.music,
@@ -540,21 +541,21 @@ class Dynamic extends Component {
           this.setAudio('play')
         } else {
           this.setAudio('pause')
-        } 
-      })   
+        }
+      })
     }
   }
-  
+
   // 背景
   handleBackgroundClick = () => {
     this.setForegroundActiveStatus(false, () => {
       this.storeForegroundInfo()
     })
-    this.setCoverListActiveStatus({type: 'all'}, false)    
+    this.setCoverListActiveStatus({type: 'all'}, false)
   }
   // 人物
   onForegroundLoaded = (detail:object, item?:any) => {
-    // console.log('handleForegroundLoaded', detail, item)    
+    // console.log('handleForegroundLoaded', detail, item)
     this.hideLoading()
     const {width, height} = detail
     this.setStateTarget('foreground', {
@@ -574,8 +575,8 @@ class Dynamic extends Component {
         ...foreground,
         ...data
       }
-    }, () => {      
-    }) 
+    }, () => {
+    })
   }
   handleForegroundTouchstart = (sticker) => {
     // console.log('handleForegroundTouchstart', sticker)
@@ -595,7 +596,7 @@ class Dynamic extends Component {
     }
     this.coverAuto(originInfo, item)
   }
-  handleChangeCoverStyle = (data) => {    
+  handleChangeCoverStyle = (data) => {
     const {id} = data
     const {coverList} = this.state
     coverList.forEach((v, i) => {
@@ -644,7 +645,7 @@ class Dynamic extends Component {
       this.app.aldstat.sendEvent('音乐开关', '音乐关闭')
     }
   }
-  
+
   // 更换场景
   handleChooseScene = (scene) => {
     const {currentScene} = this.state
@@ -663,7 +664,7 @@ class Dynamic extends Component {
     })
   }
   // 保存
-  handleOpenResult = async () => {   
+  handleOpenResult = async () => {
     if (!this.state.foreground.remoteUrl) {
       return
     }
@@ -672,13 +673,13 @@ class Dynamic extends Component {
     }
     if (this.isSaving) {
       return
-    }  
+    }
     this.app.aldstat.sendEvent('保存图片或视频', {'场景名': this.state.currentScene.sceneName, '场景Id': this.state.currentScene.sceneId})
     this.setAudio('pause')
     Taro.showLoading({
       title: '保存中...',
       mask: true,
-    }) 
+    })
     this.isSaving = true
     let result
     try {
@@ -694,7 +695,7 @@ class Dynamic extends Component {
         duration: 3000
       })
       return
-    }  
+    }
     const shareVideoRemoteUrl = result.videoUrl
     const shareImageRemoteUrl = result.thumbnailUrl
     const {width = 690, height = 920} = result.videoSize || {}
@@ -724,7 +725,7 @@ class Dynamic extends Component {
           title: '保存成功!',
           icon: 'success',
           duration: 2000
-        })    
+        })
       },
       onAuthFail: () => {
         Taro.authModal({
@@ -737,7 +738,7 @@ class Dynamic extends Component {
           title: '保存失败!',
           icon: 'success',
           duration: 2000
-        })  
+        })
       }
     })
   }
@@ -748,7 +749,7 @@ class Dynamic extends Component {
   // 保存gif
   handleSaveGif = (loading, callback?) => {
     this.createGif(loading, (remoteUrl) => {
-      const { result } = this.state 
+      const { result } = this.state
       this.setState({
         result: {
           ...result,
@@ -758,7 +759,7 @@ class Dynamic extends Component {
         }
       }, () => {
         typeof callback === 'function' && callback(remoteUrl)
-      })   
+      })
     })
   }
   // 显示gif
@@ -769,7 +770,7 @@ class Dynamic extends Component {
     if (!remoteUrl) {
       this.handleSaveGif(true, (remoteUrl) => {
         Taro.previewImage({
-          current: remoteUrl, 
+          current: remoteUrl,
           urls: [remoteUrl]
         })
       })
@@ -778,7 +779,7 @@ class Dynamic extends Component {
         current: remoteUrl,
         urls: [remoteUrl]
       })
-    }        
+    }
   }
 
   setResultModalStatus = (flag = false) => {
@@ -809,19 +810,19 @@ class Dynamic extends Component {
           v['isActive'] = value
         } else {
           v['isActive'] = !value
-        }        
+        }
       })
     }
     this.setState({
       coverList
     })
   }
-  
+
   // 人物自适应
   foregroundAuto = (callback?:()=>void) => {
     // 先判断是否有缓存
     const {currentScene} = this.state
-    const sceneId = currentScene.sceneId || 'demo_scene'  
+    const sceneId = currentScene.sceneId || 'demo_scene'
     const cache_foreground = this.cache['foreground']
     const scene_foreground_params = cache_foreground.get(sceneId)
 
@@ -842,11 +843,11 @@ class Dynamic extends Component {
     }, () => {
       typeof callback === 'function' && callback()
     })
-  } 
+  }
   // 计算人物尺寸
   calcForegroundSize = () => {
     const {currentScene, sceneList, foreground, frame} = this.state
-    const {originWidth, originHeight} = foreground    
+    const {originWidth, originHeight} = foreground
     const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
 
     const imageRatio = originWidth / originHeight
@@ -864,10 +865,10 @@ class Dynamic extends Component {
       // 以最短边计算
       result.autoWidth = frame.width * autoScale
       result.autoHeight = result.autoWidth / imageRatio
-    } else {        
+    } else {
       result.autoHeight = frame.height * autoScale
       result.autoWidth = result.autoHeight * imageRatio
-    } 
+    }
     result.width = result.autoWidth
     result.height = result.autoHeight
 
@@ -878,7 +879,7 @@ class Dynamic extends Component {
     const {currentScene, sceneList, foreground, frame} = this.state
     const {originWidth, originHeight} = foreground
     width = width || foreground.width
-    height = height || foreground.height    
+    height = height || foreground.height
     const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
 
     const boxWidth = frame.width
@@ -990,12 +991,12 @@ class Dynamic extends Component {
     }
     // 脸部中心点设置位置
     function faceCenterLocation () {
-      // const faceCenterPosition = (globalData.separateResult && 
+      // const faceCenterPosition = (globalData.separateResult &&
       //       globalData.separateResult.faceCenterDict && globalData.separateResult.faceCenterDict['16-1']) || [0, 0]
-      // const imageSize = (globalData.separateResult && 
+      // const imageSize = (globalData.separateResult &&
       //       globalData.separateResult.imageSizeDict && globalData.separateResult.imageSizeDict['16-1']) || [1, 1]
       // const faceLeft = (faceCenterPosition[0] / imageSize[0]) || 0.5 // 脸部中心点距离左边比例
-      // const faceTop = (faceCenterPosition[1] / imageSize[1]) || 0.5 // 脸部中心点距离顶边比例 
+      // const faceTop = (faceCenterPosition[1] / imageSize[1]) || 0.5 // 脸部中心点距离顶边比例
       // if (position.xAxis.derection === 'left') {
       //   sticker.x = position.xAxis.offset * boxWidth - width * faceLeft
       // }
@@ -1007,22 +1008,22 @@ class Dynamic extends Component {
       // }
       // if (position.yAxis.derection === 'bottom') {
       //   sticker.y = boxHeight * (1 - position.yAxis.offset) - height * faceTop
-      // }      
-    }    
+      // }
+    }
   }
   // 缓存人物尺寸位置
   storeForegroundInfo = () => {
     const {foreground, currentScene} = this.state
     const clone_foreground = tool.deepClone(foreground)
     // clone_foreground.isActive = false
-    const sceneId = currentScene.sceneId || 'demo_scene'    
+    const sceneId = currentScene.sceneId || 'demo_scene'
     this.cache['foreground'].set(sceneId, clone_foreground)
     // console.log('this.cache.foreground', this.cache['foreground'].get(sceneId))
   }
 
   // 贴纸自适应
   coverAuto = (originInfo, cover, callback?:()=>void) => {
-    const size = this.calcCoverSize(originInfo, cover)    
+    const size = this.calcCoverSize(originInfo, cover)
     const position = this.calcCoverPosition(size, cover)
     const {coverList, currentScene} = this.state
     coverList.forEach((v, i) => {
@@ -1033,11 +1034,11 @@ class Dynamic extends Component {
         if (cacheRes) {
           coverList[i] = cacheRes
         } else {
-          coverList[i] = {...v, ...size, ...position}          
+          coverList[i] = {...v, ...size, ...position}
         }
       }
     })
-    
+
     this.setState({
       coverList: coverList
     }, () => {
@@ -1045,11 +1046,11 @@ class Dynamic extends Component {
     })
   }
   calcCoverSize = (originInfo, cover) => {
-    const {originWidth, originHeight} = originInfo   
+    const {originWidth, originHeight} = originInfo
     const {frame} = this.state
     const coverInfo = work.getCoverInfoById(cover.id, this.themeData.rawCoverList, 'id')
 
-    const imageRatio = originWidth / originHeight      
+    const imageRatio = originWidth / originHeight
     const autoScale = parseFloat(coverInfo.size.default || 0.5)
     const result = {
       autoScale,
@@ -1057,15 +1058,15 @@ class Dynamic extends Component {
       autoHeight: 0,
       width: 0,
       height: 0
-    } 
+    }
     if (originWidth > originHeight) {
       // 以最短边计算
       result.autoWidth = frame.width * autoScale
       result.autoHeight = result.autoWidth / imageRatio
-    } else {        
+    } else {
       result.autoHeight = frame.height * autoScale
       result.autoWidth = result.autoHeight * imageRatio
-    } 
+    }
     result.width = result.autoWidth
     result.height = result.autoHeight
 
@@ -1074,7 +1075,7 @@ class Dynamic extends Component {
   calcCoverPosition = (size = {}, cover = {}) => {
     const {width = 0, height = 0} = size
     const {frame} = this.state
-    const coverInfo = work.getCoverInfoById(cover.id, this.themeData.rawCoverList, 'id')    
+    const coverInfo = work.getCoverInfoById(cover.id, this.themeData.rawCoverList, 'id')
     const {position, rotate = 0} = coverInfo
     const boxWidth = frame.width
     const boxHeight = frame.height
@@ -1190,7 +1191,7 @@ class Dynamic extends Component {
     this.cache['cover'].set(cacheKey, clone_cover)
   }
 
-  render () {    
+  render () {
     const { loading, rawImage, frame, foreground, coverList, sceneList, currentScene, result, music } = this.state
     return (
       <View className='page-dynamic'>
@@ -1206,19 +1207,19 @@ class Dynamic extends Component {
             <View className={`raw ${(foreground.remoteUrl && foreground.loaded) ? 'hidden' : ''}`}>
               <Image src={rawImage.localUrl} style="width:100%;height:100%" mode="aspectFit"/>
             </View>
-            <View className={`crop ${(foreground.remoteUrl && foreground.loaded) ? '' : 'hidden'}`} id="crop">                
+            <View className={`crop ${(foreground.remoteUrl && foreground.loaded) ? '' : 'hidden'}`} id="crop">
               <View className="background-image">
-                <Image 
-                  src={currentScene.bgUrl} 
-                  style="width:100%;height:100%" 
+                <Image
+                  src={currentScene.bgUrl}
+                  style="width:100%;height:100%"
                   mode="scaleToFill"
                   onClick={this.handleBackgroundClick}
                 />
-              </View>           
-              <Sticker 
+              </View>
+              <Sticker
                 ref="foreground"
                 url={foreground.remoteUrl}
-                stylePrams={foreground}                
+                stylePrams={foreground}
                 framePrams={frame}
                 onChangeStyle={this.handleChangeStyle}
                 onImageLoaded={this.onForegroundLoaded}
@@ -1226,9 +1227,9 @@ class Dynamic extends Component {
                 onTouchend={this.handleForegroundTouchend}
               />
               {coverList.map(item => {
-                return <Sticker 
+                return <Sticker
                         key={item.id}
-                        url={item.remoteUrl} 
+                        url={item.remoteUrl}
                         stylePrams={item}
                         framePrams={frame}
                         onChangeStyle={this.handleChangeCoverStyle}
@@ -1239,11 +1240,11 @@ class Dynamic extends Component {
                       />
               })}
               <Voice status={music.play ? 'on' : 'off'} onClick={this.handleToggleMusic}/>
-            </View>  
+            </View>
           </View>
           <MarginTopWrap config={{large: 60, small: 40, default: 20}}>
-            <SceneList 
-              list={sceneList} 
+            <SceneList
+              list={sceneList}
               currentScene={currentScene}
               styleObj={{width: '720rpx', marginRight: '-60rpx'}}
               onClick={this.handleChooseScene}
@@ -1252,11 +1253,11 @@ class Dynamic extends Component {
           <MarginTopWrap config={{large: 60, small: 40, default: 20}}>
             <Button className="custom-button pink" hoverClass="btn-hover" onClick={this.handleOpenResult}>保存</Button>
           </MarginTopWrap>
-        </View> 
-        <Loading visible={loading} />   
-        <AuthModal />    
+        </View>
+        <Loading visible={loading} />
+        <AuthModal />
         {result.show &&
-          <ResultModal 
+          <ResultModal
             type='video'
             video={{
               url: result.shareVideo.remoteUrl,
@@ -1266,11 +1267,11 @@ class Dynamic extends Component {
             renderButton={
               <View className="btn-wrap">
                 <Button className="custom-button pink btn-1" hoverClass="btn-hover" openType="share" >分享给好友</Button>
-                <Button className="custom-button dark btn-2" hoverClass="btn-hover"  onClick={this.handleShowGif}>保存Gif</Button>            
+                <Button className="custom-button dark btn-2" hoverClass="btn-hover"  onClick={this.handleShowGif}>保存Gif</Button>
               </View>
             }
           />
-        }        
+        }
       </View>
     )
   }

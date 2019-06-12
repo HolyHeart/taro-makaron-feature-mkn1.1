@@ -1212,7 +1212,7 @@ class Dynamic extends Component {
                 <Image
                   src={currentScene.bgUrl}
                   style="width:100%;height:100%"
-                  mode="scaleToFill"
+                  mode="aspectFit"
                   onClick={this.handleBackgroundClick}
                 />
               </View>

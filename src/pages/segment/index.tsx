@@ -825,6 +825,7 @@ class Segment extends Component {
         </View>
         <View class="canvas-wrap">
           <Canvas
+            disable-scroll= {true}
             style={`width: ${frame.width * canvas.ratio}px; height: ${frame.height * canvas.ratio}px;`}
             canvasId={canvas.id}
           />

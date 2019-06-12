@@ -1322,7 +1322,7 @@ class Editor extends Component {
                   <Image 
                     src={currentScene.bgUrl} 
                     style="width:100%;height:100%" 
-                    mode="scaleToFill"
+                    mode="aspectFit"
                     onClick={this.handleBackgroundClick}
                   />
                 </View>
@@ -1404,3 +1404,5 @@ class Editor extends Component {
 }
 
 export default Editor as ComponentClass<PageOwnProps, PageState>
+
+

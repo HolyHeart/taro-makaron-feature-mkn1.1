@@ -278,7 +278,7 @@ class Home extends Component {
                 return (
                   <View className='category-wrap' key={column.columnId}>
                     {
-                      (column.themeList || []).map(item => {
+                      (column.themeList ).map(item => {
                         return <CategoryItem 
                           column={column.columnNum}
                           onGetUserInfo={this.handleGetUserInfo}

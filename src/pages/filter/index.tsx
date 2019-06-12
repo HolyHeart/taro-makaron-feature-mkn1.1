@@ -1169,7 +1169,7 @@ class Filter extends Component {
                   <Image 
                     src={background.localUrl} 
                     style="width:100%;height:100%" 
-                    mode="scaleToFill"
+                    mode="aspectFit"
                     onClick={this.handleBackgroundClick}
                     onLoad={this.onBackgroundLoaded}
                   />

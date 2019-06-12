@@ -91,4 +91,4 @@ class ResultModal extends Component {
   }
 }
 
-export default ResultModal as ComponentClass<ComponentOwnProps, ComponentState>·
+export default ResultModal as ComponentClass<ComponentOwnProps, ComponentState>

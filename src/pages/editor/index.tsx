@@ -24,6 +24,7 @@ import './index.less'
 import image_code from '@/assets/images/code.png'
 import image_versa from '@/assets/images/versa.png'
 
+
 // const mock_path = 'https://static01.versa-ai.com/upload/783272fc1375/999deac02e85f3ea.png'
 // const mock_segment_url = 'https://static01.versa-ai.com/images/process/segment/2019/01/14/b4cf047a-17a5-11e9-817f-00163e001583.png'
 
@@ -157,6 +158,10 @@ class Editor extends Component {
         remoteUrl: '',
         localUrl: '',
       },
+    },
+    drawBoard:{
+      width:'690rpx',
+      height:'920rpx'
     }
   }
   
@@ -222,7 +227,6 @@ class Editor extends Component {
   }
 
   _initPage = async () => {
-    this.calFrameRect()
     this.initRawImage()
     await Session.set()
     this.initSceneData(() => {
@@ -424,7 +428,32 @@ class Editor extends Component {
     }, () => {
       this.customBgAuto()
     })
-  }
+  } 
+  handleBgLoaded =({detail}) =>{
+    console.log(detail)
+    if ((detail.width / detail.height) >= (3/4) ) {  
+      this.setState({
+        drawBoard:{
+          width:'690rpx',
+          height:`${detail.height*345/detail.width}px`
+        }
+      },()=>{
+        this.calFrameRect()     
+      })
+    } else {   
+      this.setState({
+        drawBoard:{
+          height:'920rpx',
+          width:`${detail.width*460/detail.height}px`
+        }
+      },()=>{
+        this.calFrameRect()     
+      })   
+    }
+    // setTimeout(() => {
+    //   this.calFrameRect()      
+    // }, 500);
+  } 
   handleChangeCustomBgStyle = (data) => {
     // console.log('handleChangeCustomBgStyle', data)
     const {frame} = this.state
@@ -1313,16 +1342,17 @@ class Editor extends Component {
         >马卡龙玩图</Title>
         <View className="main">
           <View className="pic-section">
-            <View className={`raw ${(foreground.remoteUrl && foreground.loaded) ? 'hidden' : ''}`}>
+            <View className={`raw ${(foreground.remoteUrl && foreground.loaded) ? 'hidden' : ''}`} style={{width:this.state.drawBoard.width,height:this.state.drawBoard.height}}>
               <Image src={rawImage.localUrl} style="width:100%;height:100%" mode="aspectFit"/>
             </View>
-            <View className={`crop ${(foreground.remoteUrl && foreground.loaded) ? '' : 'hidden'}`} id="crop"> 
+            <View style={{width:this.state.drawBoard.width,height:this.state.drawBoard.height}} className={`crop ${(foreground.remoteUrl && foreground.loaded) ? '' : 'hidden'}`} id="crop"> 
               {currentScene.type === 'recommend' && 
                 <View className="background-image">
                   <Image 
                     src={currentScene.bgUrl} 
                     style="width:100%;height:100%" 
                     mode="scaleToFill"
+                    onLoad={this.handleBgLoaded}
                     onClick={this.handleBackgroundClick}
                   />
                 </View>
@@ -1390,6 +1420,8 @@ class Editor extends Component {
             image={{
               url: result.shareImage.localUrl,
             }}
+            cropHeight={this.state.drawBoard.height}
+            cropWidth={this.state.drawBoard.width}
             renderButton={
               <View className="btn-wrap">
                 <Button className="custom-button pink btn-1" hoverClass="btn-hover" openType="share" >分享给好友</Button>

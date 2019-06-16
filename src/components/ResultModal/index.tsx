@@ -15,7 +15,9 @@ type ComponentOwnProps = {
   video?: object,
   image?: object,
   layer?: boolean,
-  renderButton?: any
+  renderButton?: any,
+  cropWidth?:number,
+  cropHeight?:number
 }
 
 type ComponentState = {}
@@ -51,7 +53,7 @@ class ResultModal extends Component {
     Taro.navigateBack({ delta: 1 })
   }
   render() {
-    const { layer, image, video, type } = this.props
+    const { layer, image, video, type ,cropWidth ,cropHeight} = this.props
     return (
       <View className='result-wrap'>
         <View className="modal-mask"></View>
@@ -65,7 +67,7 @@ class ResultModal extends Component {
           >马卡龙玩图</Title>
           
           {type === 'image' &&             
-            <View class="pic-wrap">
+            <View class="pic-wrap" style={{width:cropWidth||'690rpx',height:cropWidth || '920rpx'}}>
               {layer && <View class="layer"></View>}
               <Image class="pic" src={image.url} mode="aspectFill" />
             </View>

@@ -34,7 +34,7 @@ class ResultModal extends Component {
     image: {
       url: ''
     },
-    layer: false,   
+    layer: false,
     video: {
       url: '',
       width: 0,
@@ -65,16 +65,16 @@ class ResultModal extends Component {
               <CustomIcon type="home" theme="dark" onClick={this.pageToHome}/>
             }
           >马卡龙玩图</Title>
-          
-          {type === 'image' &&             
-            <View class="pic-wrap" style={{width:cropWidth||'690rpx',height:cropWidth || '920rpx'}}>
+
+          {type === 'image' &&
+            <View class="pic-wrap" style={{width:cropWidth||'690rpx',height:cropHeight || '920rpx'}}>
               {layer && <View class="layer"></View>}
               <Image class="pic" src={image.url} mode="aspectFill" />
             </View>
           }
-          {type === 'video' && 
+          {type === 'video' &&
             <View class="video-wrap">
-              <Video 
+              <Video
                 className="video"
                 style={{width: Taro.pxTransform(video.width), height: Taro.pxTransform(video.height)}}
                 src={video.url}
@@ -83,11 +83,11 @@ class ResultModal extends Component {
                 autoplay
                 loop
                 objectFit='cover'
-              ></Video>     
-            </View> 
-          } 
+              ></Video>
+            </View>
+          }
           {this.props.renderButton}
-        </View>        
+        </View>
       </View>
     )
   }

@@ -10,6 +10,7 @@ import Tooltip from '@/components/Tooltip'
 import CustomIcon from '@/components/Icon'
 import CategoryItem from '@/components/CategoryItem'
 import AuthModal from '@/components/AuthModal'
+import Guide from "@/components/Guide";
 import globalData from '@/services/global_data'
 import { core, base } from '@/services/service'
 import Session from '@/services/session'
@@ -296,6 +297,7 @@ class Home extends Component {
           </View>
         </View>
         <AuthModal />
+        <Guide />
       </View>
     )
   }

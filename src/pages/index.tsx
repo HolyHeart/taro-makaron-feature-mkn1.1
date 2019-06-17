@@ -33,11 +33,11 @@ interface Share {
 }
 
 @connect(({ }) => ({
-}), (dispatch) => ({  
+}), (dispatch) => ({
 }))
 class Share extends Component {
   config: Config = {
-    navigationBarTitleText: '马卡龙玩图'
+    navigationBarTitleText: '懒人抠图'
   }
 
   state = {
@@ -55,7 +55,7 @@ class Share extends Component {
 
   app = Taro.getApp()
 
-  componentWillMount () { 
+  componentWillMount () {
     // 兼容跳转使用
     // console.log('index page willMount', this.$router.params)
     // let {from = 'app', remoteURL = ''} = this.$router.params
@@ -67,7 +67,7 @@ class Share extends Component {
     // Taro.redirectTo({url: path})
   }
 
-  componentDidMount () { 
+  componentDidMount () {
     this._initPage()
   }
   componentWillReceiveProps (nextProps) {
@@ -83,7 +83,7 @@ class Share extends Component {
     return {
       title: shareContent,
       path: '/pages/home/index',
-      imageUrl: `${url}?x-oss-process=image/resize,m_pad,h_420,w_525`,			
+      imageUrl: `${url}?x-oss-process=image/resize,m_pad,h_420,w_525`,
       success: () => {
         console.log('分享成功')
       },
@@ -111,21 +111,21 @@ class Share extends Component {
       if (remoteURL.indexOf('versa-ai.com') > -1) {
         shareSource = remoteURL
       } else {
-        shareSource = appConfig.imageHost + remoteURL 
-      }               
+        shareSource = appConfig.imageHost + remoteURL
+      }
     } else {
       isFromApp = false
       if (shareSource) {
-        shareSource = decodeURIComponent(shareSource)  
-      }       
-    }      
+        shareSource = decodeURIComponent(shareSource)
+      }
+    }
     shareSourceType = tool.calcSourceType(shareSource)
-    if (shareSourceType === 'video') {          
-      videoPoster = `${shareSource}?x-oss-process=video/snapshot,t_0,f_png,w_0,h_0,m_fast` 
+    if (shareSourceType === 'video') {
+      videoPoster = `${shareSource}?x-oss-process=video/snapshot,t_0,f_png,w_0,h_0,m_fast`
       debugger
       shareVideoInfo = tool.calcVideoSize(690, 920, width, height)
     }
-    if (!themeId) {     
+    if (!themeId) {
       themeId = appConfig.themeId
     }
     globalData.themeId = themeId
@@ -169,9 +169,9 @@ class Share extends Component {
 
   handleGetUserInfo = (e) => {
     // console.log('handleGetUserInfo', e)
-    const {detail: {userInfo}} = e   
+    const {detail: {userInfo}} = e
     if (userInfo) {
-      globalData.userInfo = userInfo   
+      globalData.userInfo = userInfo
       service.base.loginAuth(e.detail)
       this.todo()
     } else {
@@ -194,7 +194,7 @@ class Share extends Component {
       onSuccess: (path) => {
         this.app.aldstat.sendEvent('分享页上传人像成功', '上传成功')
         globalData.choosedImage = path
-        const { themeData = {}, sceneId } = globalData      
+        const { themeData = {}, sceneId } = globalData
         let url = ''
         if (themeData.sceneType === 1) {
           url = '/pages/filter/index'
@@ -207,8 +207,8 @@ class Share extends Component {
         }
         if (sceneId) {
           url = url + '?sceneId=' + sceneId
-        }        
-        Taro.navigateTo({url})       
+        }
+        Taro.navigateTo({url})
       }
     })
   }
@@ -217,7 +217,7 @@ class Share extends Component {
       return
     }
     globalData.themeData = null
-    globalData.themeId = data.themeId  
+    globalData.themeId = data.themeId
     globalData.sceneId = ''
     this.getThemeData()
     this.app.aldstat.sendEvent('选择推荐主题', {'主题名': data.themeName, '主题Id': data.themeId})
@@ -243,17 +243,17 @@ class Share extends Component {
             <CustomIcon type="home" theme="dark" onClick={this.pageToHome}/>
           }
           color='#333'
-        >马卡龙玩图</Title>
+        >懒人抠图</Title>
         <View className='main-section'>
-          {shareSourceType === 'image' && 
-            <View className='pic-wrap'>              
+          {shareSourceType === 'image' &&
+            <View className='pic-wrap'>
               {themeData.sceneType === 3 && <View class="share-bg"></View>}
               <View class="share-img">
-                <Image src={shareSource} style='width: 100%; height: 100%' mode='scaleToFill'/>      
+                <Image src={shareSource} style='width: 100%; height: 100%' mode='scaleToFill'/>
               </View>
             </View>
           }
-          {shareSourceType === 'video' && 
+          {shareSourceType === 'video' &&
             <View className='video-wrap'>
               <Video
                 className="video"
@@ -264,39 +264,39 @@ class Share extends Component {
                 poster={videoPoster}
                 objectFit='cover'
                 controls
-              ></Video>            
+              ></Video>
             </View>
-          }          
+          }
         </View>
         <View className='sub-section'>
           <Form onSubmit={this.handleFormSubmit} reportSubmit>
             {isFromApp ?
               <Button
-                className="button animation-btn" 
+                className="button animation-btn"
                 hoverClass="btnhover"
                 onClick={this.pageToHome}
                 >限时用同款</Button> :
               <Button
-                className="button animation-btn" 
+                className="button animation-btn"
                 hoverClass="btnhover"
-                openType="getUserInfo" 
+                openType="getUserInfo"
                 onGetUserInfo={this.handleGetUserInfo}
                 onClick={this.handleMainButton}
                 formType='submit'>限时用同款</Button>
             }
-          </Form>    
+          </Form>
           <View className='recommend-wrap'>
             <View className='recommend-title'>你还可以玩：</View>
-            <RecommendList 
-              list={recommendList} 
-              onGetUserInfo={this.handleGetUserInfo} 
+            <RecommendList
+              list={recommendList}
+              onGetUserInfo={this.handleGetUserInfo}
               onFormSubmit={this.handleFormSubmit}
               onClick={this.handleRecommendClick}
             />
           </View>
-        </View> 
+        </View>
         {isFromApp && <BackApp onClick={this.handleOpenApp}/>}
-        <AuthModal />      
+        <AuthModal />
       </View>
     )
   }

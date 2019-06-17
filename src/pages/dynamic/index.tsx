@@ -79,7 +79,7 @@ interface Dynamic {
 }))
 class Dynamic extends Component {
   config: Config = {
-    navigationBarTitleText: '马卡龙玩图',
+    navigationBarTitleText: '懒人抠图',
     disableScroll: true,
     enablePullDownRefresh:false
   }
@@ -1201,7 +1201,7 @@ class Dynamic extends Component {
           renderLeft={
             <CustomIcon type="back" theme="dark" onClick={work.pageToHome}/>
           }
-        >马卡龙玩图</Title>
+        >懒人抠图</Title>
         <View className="main">
           <View className="pic-section">
             <View className={`raw ${(foreground.remoteUrl && foreground.loaded) ? 'hidden' : ''}`}>

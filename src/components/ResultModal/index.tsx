@@ -64,7 +64,7 @@ class ResultModal extends Component {
             renderLeft={
               <CustomIcon type="home" theme="dark" onClick={this.pageToHome}/>
             }
-          >马卡龙玩图</Title>
+          >懒人抠图</Title>
 
           {type === 'image' &&
             <View class="pic-wrap" style={{width:cropWidth||'690rpx',height:cropHeight || '920rpx'}}>

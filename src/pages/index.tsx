@@ -249,7 +249,7 @@ class Share extends Component {
             <View className='pic-wrap'>
               {themeData.sceneType === 3 && <View class="share-bg"></View>}
               <View class="share-img">
-                <Image src={shareSource} style='width: 100%; height: 100%' mode='scaleToFill'/>
+                <Image src={shareSource} style='width: 100%; height: 100%' mode='aspectFit'/>
               </View>
             </View>
           }

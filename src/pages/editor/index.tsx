@@ -436,24 +436,25 @@ class Editor extends Component {
       this.setState({
         drawBoard:{
           width:'690rpx',
-          height:`${detail.height*345/detail.width}px`
+          height:`${detail.height*345/detail.width*2}px`
         }
       },()=>{
-        this.calFrameRect()
+        setTimeout(() => {
+          this.calFrameRect()
+        }, 250);
       })
     } else {
       this.setState({
         drawBoard:{
           height:'920rpx',
-          width:`${detail.width*460/detail.height}px`
+          width:`${detail.width*460/detail.height*2}px`
         }
       },()=>{
-        this.calFrameRect()
+        setTimeout(() => {
+          this.calFrameRect()
+        }, 250);
       })
     }
-    // setTimeout(() => {
-    //   this.calFrameRect()
-    // }, 500);
   }
   handleChangeCustomBgStyle = (data) => {
     // console.log('handleChangeCustomBgStyle', data)

@@ -1,6 +1,6 @@
 import { ComponentClass } from 'react'
 import Taro, { Component } from '@tarojs/taro'
-import { View } from '@tarojs/components'
+import { View, Button } from '@tarojs/components'
 import './index.less'
 import guideImg from '@/assets/images/guide.gif'
 
@@ -57,11 +57,12 @@ class Guide extends Component {
   render() {
     const {open} = this.state
     return (
-      <View className={`guide-wrap ${open ? '' : 'hidden'}`} onClick={this.handleClick}>
+      <View className={`guide-wrap ${open ? '' : 'hidden'}`} >
         <View className="modal"></View>
         <View className="content" style={{zIndex:1111}}>
             <Image src={guideImg} style={{width:'275px',height:'330px'}} />
-        </View>        
+            <Button className="fun-button pink" hoverClass="btn-hover" onClick={this.handleClick}>立即体验</Button>
+        </View>
       </View>
     )
   }

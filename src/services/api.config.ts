@@ -6,8 +6,8 @@ const host = {
     prod: 'https://openapi.versa-ai.com'
   },
   miniapi: {
-    dev: 'https://qq-mini-programdev.api.versa-ai.com',
-    prod: 'https://qq-mini-program.api.versa-ai.com'
+    dev: 'https://mini-programdev.api.versa-ai.com',
+    prod: 'https://mini-program.api.versa-ai.com'
   },
   upload: {
     dev: 'https://versa-static.oss-cn-shanghai.aliyuncs.com',

@@ -8,7 +8,7 @@ type ComponentStateProps = {}
 
 type ComponentOwnProps = {
   renderLeft: any,
-  children: any, 
+  children: any,
   color?: string,
   leftStyleObj?: object
 }
@@ -23,7 +23,7 @@ interface Title {
 
 class Title extends Component {
   static defaultProps = {
-    color: '#fff'
+    color: '#000'
   }
   state = {
     statusBarHeight: 20, // 状态栏高度
@@ -35,7 +35,7 @@ class Title extends Component {
   }
   clacHeight = () => {
     const systemInfo = Taro.getSystemInfoSync()
-    const statusBarHeight = systemInfo.statusBarHeight || 20   
+    const statusBarHeight = systemInfo.statusBarHeight || 20
     let totalTopHeight = 72
     if (systemInfo.model.indexOf('iPhone X') !== -1) {
       totalTopHeight = 85
@@ -63,7 +63,7 @@ class Title extends Component {
         <View className="left" style={leftStyleObj}>
           {this.props.renderLeft}
         </View>
-        <Text style={{color}}>{this.props.children}</Text>  
+        <Text style={{color}}>{this.props.children}</Text>
       </View>
     )
   }

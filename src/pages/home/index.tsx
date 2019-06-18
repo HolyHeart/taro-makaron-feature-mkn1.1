@@ -15,6 +15,7 @@ import globalData from '@/services/global_data'
 import { core, base } from '@/services/service'
 import Session from '@/services/session'
 import bg from '@/assets/images/BG@2x.png'
+import by from '@/assets/images/by@3x.png'
 import pic_loading from '@/assets/images/pic_loading.png'
 import pic_loading_big from '@/assets/images/pic_loading_big.png'
 import pic_feedback from '@/assets/images/feedback.png'
@@ -83,7 +84,7 @@ interface Home {
 class Home extends Component {
   config: Config = {
     navigationBarTitleText: '懒人抠图',
-    disableScroll: false
+    disableScroll: false,
   }
 
   state = {
@@ -258,7 +259,7 @@ class Home extends Component {
         <Title
           renderLeft={
             <View style="position: relative">
-              <CustomIcon type="menu" theme="light" onClick={this.handleShowTooltip}/>
+              <CustomIcon type="menu" theme="dark" onClick={this.handleShowTooltip}/>
               <Tooltip>
                 <View className='tooltip-item'>
                   <Image className='tooltip-icon' src={pic_feedback} mode="aspectFill" />
@@ -294,6 +295,13 @@ class Home extends Component {
                 )
               })
             }
+
+            <View className="bottomInfo">
+               —— 到底了哦 ——
+            </View>
+            <View className="bottomInfo">
+               <Image src={by} mode="widthFix" style="width:266rpx;"/>
+              </View>
           </View>
         </View>
         <AuthModal />

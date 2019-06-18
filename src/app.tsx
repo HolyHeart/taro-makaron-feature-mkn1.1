@@ -38,7 +38,6 @@ class _App extends Component {
       backgroundTextStyle: 'light',
       navigationBarBackgroundColor: '#fff',
       navigationBarTitleText: 'QQ',
-      navigationBarTextStyle: 'black',
       navigationStyle: 'custom'
     }
   }

@@ -67,9 +67,11 @@ class ResultModal extends Component {
           >懒人抠图</Title>
 
           {type === 'image' &&
+           <View className="pic-section">
             <View class="pic-wrap" style={{width:cropWidth||'690rpx',height:cropHeight || '920rpx'}}>
               {layer && <View class="layer"></View>}
               <Image class="pic" src={image.url} mode="aspectFill" />
+            </View>
             </View>
           }
           {type === 'video' &&

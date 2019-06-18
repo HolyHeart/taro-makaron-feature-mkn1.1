@@ -436,7 +436,7 @@ class Editor extends Component {
       this.setState({
         drawBoard:{
           width:'690rpx',
-          height:`${detail.height*345/detail.width*2}px`
+          height:`${detail.height*345/detail.width*2}rpx`
         }
       },()=>{
         setTimeout(() => {
@@ -447,7 +447,7 @@ class Editor extends Component {
       this.setState({
         drawBoard:{
           height:'920rpx',
-          width:`${detail.width*460/detail.height*2}px`
+          width:`${detail.width*460/detail.height*2}rpx`
         }
       },()=>{
         setTimeout(() => {

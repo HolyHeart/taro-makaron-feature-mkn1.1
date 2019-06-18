@@ -3,7 +3,7 @@ import Taro, { Component, Config } from '@tarojs/taro'
 import { View, Text, Button, Image } from '@tarojs/components'
 
 import globalData from '@/services/global_data'
-import bg from '@/assets/images/bg.png'
+import bg from '@/assets/images/BG@2x.png'
 import './index.less'
 
 type PageStateProps = {}

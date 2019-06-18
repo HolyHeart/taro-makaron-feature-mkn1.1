@@ -14,7 +14,7 @@ import Guide from "@/components/Guide";
 import globalData from '@/services/global_data'
 import { core, base } from '@/services/service'
 import Session from '@/services/session'
-import bg from '@/assets/images/bg.png'
+import bg from '@/assets/images/BG@2x.png'
 import pic_loading from '@/assets/images/pic_loading.png'
 import pic_loading_big from '@/assets/images/pic_loading_big.png'
 import pic_feedback from '@/assets/images/feedback.png'
@@ -270,7 +270,7 @@ class Home extends Component {
         >懒人抠图</Title>
         <View className="main">
           <View className="main-bg">
-            {isIphoneX && <View style="width: 100%; height:100rpx; background:rgb(100,180,255)"></View>}
+            {/* {isIphoneX && <View style="width: 100%; height:100rpx; background:rgb(100,180,255)"></View>} */}
             <Image src={bg} mode="widthFix" style="width:100%;height:100%"/>
           </View>
           <View className={`main-container ${isIphoneX ? 'iphoneX' : ''}`} onClick={this.handleClickMain}>

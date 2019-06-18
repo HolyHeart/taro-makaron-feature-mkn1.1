@@ -16,6 +16,7 @@ import { core, base } from '@/services/service'
 import Session from '@/services/session'
 import bg from '@/assets/images/BG@2x.png'
 import by from '@/assets/images/by@3x.png'
+import toApp from '@/assets/images/app@2x.png'
 import pic_loading from '@/assets/images/pic_loading.png'
 import pic_loading_big from '@/assets/images/pic_loading_big.png'
 import pic_feedback from '@/assets/images/feedback.png'
@@ -296,8 +297,8 @@ class Home extends Component {
               })
             }
 
-            <View className="bottomInfo">
-               - 去马卡龙玩图发现更多 -
+            <View className="bottomInfo" style='margin-top:60rpx'>
+              <Image src={toApp} mode="widthFix" style="width:268rpx"/>
             </View>
             <View className="bottomInfo">
                <Image src={by} mode="widthFix" style="width:266rpx;"/>

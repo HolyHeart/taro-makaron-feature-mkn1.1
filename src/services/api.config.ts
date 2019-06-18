@@ -31,8 +31,8 @@ export const api = {
   base: {
     uploadToken: `${getHost('miniapi', ENV)}/upload/uploadPolicy`,
     upload: `${getHost('miniapi', ENV)}/upload`,
-    auth: `${getHost('miniapi', ENV)}/user/auth/session/qq/mini`,
-    loginAuth: `${getHost('miniapi', ENV)}/user/auth/qqMiniProgram`,
+    auth: `${getHost('miniapi', ENV)}/user/auth/wechat/mini`,
+    loginAuth: `${getHost('miniapi', ENV)}/user/auth/miniProgram`,
   },
   core: {
     segment: `${getHost('miniapi', ENV)}/segment/instance/original`,

@@ -63,7 +63,7 @@ class Title extends Component {
         <View className="left" style={leftStyleObj}>
           {this.props.renderLeft}
         </View>
-        <Text style={{color}}>{this.props.children}</Text>
+        <Text style={{color,fontWeight:'bolder'}}>{this.props.children}</Text>
       </View>
     )
   }

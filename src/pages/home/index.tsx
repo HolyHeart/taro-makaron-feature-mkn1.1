@@ -297,7 +297,7 @@ class Home extends Component {
             }
 
             <View className="bottomInfo">
-               —— 到底了哦 ——
+               - 去马卡龙玩图发现更多 -
             </View>
             <View className="bottomInfo">
                <Image src={by} mode="widthFix" style="width:266rpx;"/>

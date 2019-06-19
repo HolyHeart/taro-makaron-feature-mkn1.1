@@ -29,17 +29,17 @@ function getHost(type = 'miniapi', ENV = 'dev') {
 }
 export const api = {
   base: {
-    uploadToken: `${getHost('miniapi', ENV)}/upload/uploadPolicy`,
-    upload: `${getHost('miniapi', ENV)}/upload`,
-    auth: `${getHost('miniapi', ENV)}/user/auth/wechat/mini`,
-    loginAuth: `${getHost('miniapi', ENV)}/user/auth/miniProgram`,
+    uploadToken: `${getHost('qq_miniapi', ENV)}/upload/uploadPolicy`,
+    upload: `${getHost('qq_miniapi', ENV)}/upload`,
+    auth: `${getHost('qq_miniapi', ENV)}/user/auth/wechat/mini`,
+    loginAuth: `${getHost('qq_miniapi', ENV)}/user/auth/miniProgram`,
   },
   core: {
-    segment: `${getHost('miniapi', ENV)}/segment/instance/original`,
-    column: `${getHost('miniapi', ENV)}/bg/column/theme/list`,
-    theme: `${getHost('miniapi', ENV)}/bg/:themeId/themeData`,
-    recommend: `${getHost('miniapi', ENV)}/scene/recommend`,
-    filterConvertVideo: `${getHost('miniapi', ENV)}/video/merge`,
+    segment: `${getHost('qq_miniapi', ENV)}/segment/instance/original`,
+    column: `${getHost('qq_miniapi', ENV)}/bg/column/theme/list`,
+    theme: `${getHost('qq_miniapi', ENV)}/bg/:themeId/themeData`,
+    recommend: `${getHost('qq_miniapi', ENV)}/scene/recommend`,
+    filterConvertVideo: `${getHost('qq_miniapi', ENV)}/video/merge`,
     reportFormId: `${getHost('miniapi', ENV)}/user/miniProgram/report`,
   }
 }

@@ -6,8 +6,8 @@ const host = {
     prod: 'https://openapi.versa-ai.com'
   },
   miniapi: {
-    dev: 'https://mini-programdev.api.versa-ai.com',
-    prod: 'https://mini-program.api.versa-ai.com'
+    dev: 'https://qq-mini-programdev.api.versa-ai.com',
+    prod: 'https://qq-mini-program.api.versa-ai.com'
   },
   upload: {
     dev: 'https://versa-static.oss-cn-shanghai.aliyuncs.com',
@@ -31,8 +31,8 @@ export const api = {
   base: {
     uploadToken: `${getHost('qq_miniapi', ENV)}/upload/uploadPolicy`,
     upload: `${getHost('qq_miniapi', ENV)}/upload`,
-    auth: `${getHost('qq_miniapi', ENV)}/user/auth/wechat/mini`,
-    loginAuth: `${getHost('qq_miniapi', ENV)}/user/auth/miniProgram`,
+    auth: `${getHost('qq_miniapi', ENV)}/user/auth/session/qq/mini`,
+    loginAuth: `${getHost('qq_miniapi', ENV)}/user/auth/qqMiniProgram`,
   },
   core: {
     segment: `${getHost('qq_miniapi', ENV)}/segment/instance/original`,
@@ -40,7 +40,7 @@ export const api = {
     theme: `${getHost('qq_miniapi', ENV)}/bg/:themeId/themeData`,
     recommend: `${getHost('qq_miniapi', ENV)}/scene/recommend`,
     filterConvertVideo: `${getHost('qq_miniapi', ENV)}/video/merge`,
-    reportFormId: `${getHost('miniapi', ENV)}/user/miniProgram/report`,
+    reportFormId: `${getHost('qq_miniapi', ENV)}/user/miniProgram/qq/report`,
   }
 }
 export default {

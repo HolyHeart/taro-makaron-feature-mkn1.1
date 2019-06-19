@@ -10,7 +10,8 @@ type ComponentOwnProps = {
   renderLeft: any,
   children: any,
   color?: string,
-  leftStyleObj?: object
+  leftStyleObj?: object,
+  isScrollToTop?:boolean
 }
 
 type ComponentState = {}
@@ -23,7 +24,8 @@ interface Title {
 
 class Title extends Component {
   static defaultProps = {
-    color: '#000'
+    color: '#000',
+
   }
   state = {
     statusBarHeight: 20, // 状态栏高度
@@ -51,19 +53,20 @@ class Title extends Component {
   calcStyle = () => {
     const {statusBarHeight, titleBarHeight} = this.state
     const style = {
-      top: statusBarHeight + 'px',
+      paddingTop: statusBarHeight + 'px',
       height: titleBarHeight + 'px',
     }
     return style
   }
   render() {
-    const { color, leftStyleObj } = this.props
+    const { color, leftStyleObj,isScrollToTop } = this.props
+    const {statusBarHeight, titleBarHeight} = this.state
     return (
-      <View className='title-wrap' style={this.calcStyle()}>
-        <View className="left" style={leftStyleObj}>
+      <View className='title-wrap' style={{backgroundColor:isScrollToTop?'rgba(255,255,255,0)':'rgba(255,255,255,0.9)',...this.calcStyle()}}>
+        <View className="left" style={{top:`${statusBarHeight+titleBarHeight/2}px`,...leftStyleObj}}>
           {this.props.renderLeft}
         </View>
-        <Text style={{color,fontWeight:'bolder'}}>{this.props.children}</Text>
+        <Text style={{color}}>{this.props.children}</Text>
       </View>
     )
   }

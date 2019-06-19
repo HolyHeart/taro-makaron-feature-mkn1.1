@@ -1339,7 +1339,7 @@ class Editor extends Component {
           color="#333"
           leftStyleObj={{left: Taro.pxTransform(8)}}
           renderLeft={
-            <CustomIcon type="back" theme="dark" onClick={work.pageToHome}/>
+            <CustomIcon type="back" theme="dark" onClick={this.pageToHome}/>
           }
         >懒人抠图</Title>
         <View className="main">

@@ -99,11 +99,13 @@ class Home extends Component {
   config: Config = {
     navigationBarTitleText: '懒人抠图',
     disableScroll: false,
+
   }
 
   state = {
     categoryList: default_column,
-    defaultThemeData: {}
+    defaultThemeData: {},
+    isScrollToTop:true
   }
 
   app = Taro.getApp()
@@ -132,6 +134,20 @@ class Home extends Component {
   componentDidShow () { }
 
   componentDidHide () { }
+  onPageScroll(e) {
+    if(e.scrollTop>0){
+      // 滚动操作
+      this.setState({
+        isScrollToTop:false
+      })
+    }else{
+      // 滚到顶部
+      this.setState({
+        isScrollToTop:true
+      })
+    }
+    // Do something when page scroll
+  }
   onShareAppMessage () {
     this.app.aldstat.sendEvent('首页分享', '首页分享')
     const {defaultThemeData = {}} = this.state
@@ -271,6 +287,7 @@ class Home extends Component {
     return (
       <View className='page-home'>
         <Title
+          isScrollToTop ={this.state.isScrollToTop}
           renderLeft={
             <View style="position: relative">
               <CustomIcon type="menu" theme="dark" onClick={this.handleShowTooltip}/>

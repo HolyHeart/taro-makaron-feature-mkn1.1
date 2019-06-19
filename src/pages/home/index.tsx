@@ -17,9 +17,16 @@ import Session from '@/services/session'
 import bg from '@/assets/images/BG@2x.png'
 import by from '@/assets/images/by@3x.png'
 import toApp from '@/assets/images/app@2x.png'
-import pic_loading from '@/assets/images/pic_loading.png'
-import pic_loading_big from '@/assets/images/pic_loading_big.png'
+// import pic_loading from '@/assets/images/pic_loading.png'
+import pic_loading_big from '@/assets/images/0@2x.png'
 import pic_feedback from '@/assets/images/feedback.png'
+
+import pic_loading_1 from '@/assets/images/1@2x.png'
+import pic_loading_2 from '@/assets/images/2@2x.png'
+import pic_loading_3 from '@/assets/images/3@2x.png'
+import pic_loading_4 from '@/assets/images/4@2x.png'
+import pic_loading_5 from '@/assets/images/5@2x.png'
+import pic_loading_6 from '@/assets/images/6@2x.png'
 import './index.less'
 const default_column = [
   {
@@ -38,17 +45,23 @@ const default_column = [
     columnNum: 2,
     themeList: [
       {
-        generalShowUrl: pic_loading
+        generalShowUrl: pic_loading_1
       },
       {
-        generalShowUrl: pic_loading
+        generalShowUrl: pic_loading_2
       },
       {
-        generalShowUrl: pic_loading
+        generalShowUrl: pic_loading_3
       },
       {
-        generalShowUrl: pic_loading
-      }
+        generalShowUrl: pic_loading_4
+      },
+      {
+        generalShowUrl: pic_loading_5
+      },
+      {
+        generalShowUrl: pic_loading_6
+      },
     ]
   }
 ]

@@ -42,20 +42,20 @@ class CategotyItem extends Component {
   render() {
     const { onClick, url, column } = this.props
     return (
-      <View className={`category-box ${column === 2 ? 'two' : 'one'}`} onClick={onClick}>  
-        <Form onSubmit={this.handleFormSubmit} reportSubmit>                           
-          <Button 
+      <View className={`category-box ${column === 2 ? 'two' : 'one'}`} onClick={onClick}>
+        <Form onSubmit={this.handleFormSubmit} reportSubmit>
+          <Button
             className="category-box-button"
-            hoverClass="btn-hover" 
-            openType="getUserInfo" 
+            hoverClass="btn-hover"
+            openType="getUserInfo"
             onGetUserInfo={this.handleGgetUserInfo}
             formType="submit">
-            <Image 
+            <Image
               className="category-box-image"
               src={url}
               mode="scaleToFill"/>
           </Button>
-        </Form> 
+        </Form>
       </View>
     )
   }

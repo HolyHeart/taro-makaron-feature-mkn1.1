@@ -47,11 +47,13 @@ class Guide extends Component {
 
   handleClick = () => {
     console.log(this)
-    this.setState({
-      open: false
-    },()=>{
-      Taro.setStorageSync('firstView','no')
-    })
+    setTimeout(() => {
+      this.setState({
+        open: false
+      },()=>{
+        Taro.setStorageSync('firstView','no')
+      })
+    }, 400);
   }
 
   render() {
@@ -60,7 +62,7 @@ class Guide extends Component {
       <View className={`guide-wrap ${open ? '' : 'hidden'}`} >
         <View className="modal"></View>
         <View className="content" style={{zIndex:1111}}>
-            <Image src={guideImg} style={{width:'275px',height:'330px'}} />
+            <Image src={guideImg} className="guide_gif" style={{width:'275px',height:'330px'}} />
             <Button className="fun-button pink" hoverClass="btn-hover" onClick={this.handleClick}>立即体验</Button>
         </View>
       </View>

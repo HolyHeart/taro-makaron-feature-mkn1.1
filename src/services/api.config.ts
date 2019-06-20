@@ -6,8 +6,8 @@ const host = {
     prod: 'https://openapi.versa-ai.com'
   },
   miniapi: {
-    dev: 'https://qq-mini-programdev.api.versa-ai.com',
-    prod: 'https://qq-mini-program.api.versa-ai.com'
+    dev: 'https://mini-programdev.api.versa-ai.com',
+    prod: 'https://mini-program.api.versa-ai.com'
   },
   upload: {
     dev: 'https://versa-static.oss-cn-shanghai.aliyuncs.com',
@@ -29,18 +29,18 @@ function getHost(type = 'miniapi', ENV = 'dev') {
 }
 export const api = {
   base: {
-    uploadToken: `${getHost('qq_miniapi', ENV)}/upload/uploadPolicy`,
-    upload: `${getHost('qq_miniapi', ENV)}/upload`,
-    auth: `${getHost('qq_miniapi', ENV)}/user/auth/session/qq/mini`,
-    loginAuth: `${getHost('qq_miniapi', ENV)}/user/auth/qqMiniProgram`,
+    uploadToken: `${getHost('miniapi', ENV)}/upload/uploadPolicy`,
+    upload: `${getHost('miniapi', ENV)}/upload`,
+    auth: `${getHost('miniapi', ENV)}/user/auth/wechat/mini`,
+    loginAuth: `${getHost('miniapi', ENV)}/user/auth/miniProgram`,
   },
   core: {
-    segment: `${getHost('qq_miniapi', ENV)}/segment/instance/original`,
-    column: `${getHost('qq_miniapi', ENV)}/bg/column/theme/list`,
-    theme: `${getHost('qq_miniapi', ENV)}/bg/:themeId/themeData`,
-    recommend: `${getHost('qq_miniapi', ENV)}/scene/recommend`,
-    filterConvertVideo: `${getHost('qq_miniapi', ENV)}/video/merge`,
-    reportFormId: `${getHost('qq_miniapi', ENV)}/user/miniProgram/qq/report`,
+    segment: `${getHost('miniapi', ENV)}/segment/instance/original`,
+    column: `${getHost('miniapi', ENV)}/bg/column/theme/list`,
+    theme: `${getHost('miniapi', ENV)}/bg/:themeId/themeData`,
+    recommend: `${getHost('miniapi', ENV)}/scene/recommend`,
+    filterConvertVideo: `${getHost('miniapi', ENV)}/video/merge`,
+    reportFormId: `${getHost('miniapi', ENV)}/user/miniProgram/report`,
   }
 }
 export default {

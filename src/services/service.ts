@@ -28,7 +28,7 @@ export const base = {
       method: 'GET',
       dataType: 'json',
       data: {
-        clientType: 'qq-mini-program',
+        clientType: 'mini-program',
         fileType: 'image',
         filename: 'image.jpeg'
       }
@@ -108,7 +108,7 @@ export const base = {
 export const core = {
   segment: function (remoteImgUrl, segmentType?:number) {
     let postData:segmentData = {
-      clientType: 'qq-mini-program',
+      clientType: 'mini-program',
       timestamp: Date.now().toString(),
       imageUrl: remoteImgUrl,
     }
@@ -145,13 +145,13 @@ export const core = {
       url: api.core.recommend,
       method: 'GET',
       data: {
-        clientType: 'qq-mini-program'
+        clientType: 'mini-program'
       },
     })
   },
   reportFormId: function (formId) {
     const postData = {
-      clientType: 'qq-mini-program',
+      clientType: 'mini-program',
       timestamp: Date.now().toString(),
       formId: formId
     }
@@ -248,7 +248,7 @@ export const core = {
   },
   filterConvertVideo: function (videoParams:string = '') {
     let postData = {
-      clientType: 'qq-mini-program',
+      clientType: 'mini-program',
       timestamp: Date.now().toString(),
       videoConfig: videoParams
     }

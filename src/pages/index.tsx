@@ -37,7 +37,7 @@ interface Share {
 }))
 class Share extends Component {
   config: Config = {
-    navigationBarTitleText: '懒人抠图'
+    navigationBarTitleText: '马卡龙玩图'
   }
 
   state = {
@@ -243,7 +243,7 @@ class Share extends Component {
             <CustomIcon type="home" theme="dark" onClick={this.pageToHome}/>
           }
           color='#333'
-        >懒人抠图</Title>
+        >马卡龙玩图</Title>
         <View className='main-section'>
           {shareSourceType === 'image' &&
             <View className='pic-wrap'>

@@ -47,11 +47,13 @@ class Guide extends Component {
 
   handleClick = () => {
     console.log(this)
-    this.setState({
-      open: false
-    },()=>{
-      Taro.setStorageSync('firstView','no')
-    })
+    setTimeout(() => {
+      this.setState({
+        open: false
+      },()=>{
+        Taro.setStorageSync('firstView','no')
+      })
+    }, 400);
   }
 
   render() {

@@ -327,11 +327,11 @@ class Home extends Component {
               })
             }
 
-            <View className="bottomInfo" style='margin-top:25px;font-size:10px'>
+          <View className="bottomInfo" style='margin-top:50rpx;font-size:10px'>
               - 到底了哦 -
             </View>
-            <View className="bottomInfo">
-               <Image src={by} mode="widthFix" style="width:266rpx;margin-top:15px"/>
+            <View className="bottomInfo" style='margin-top:30rpx;'>
+               <Image src={by} mode="widthFix" style="width:266rpx"/>
               </View>
           </View>
         </View>

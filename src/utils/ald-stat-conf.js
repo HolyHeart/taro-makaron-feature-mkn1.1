@@ -1,4 +1,4 @@
-exports.app_key = '6786457bde055d1d4dc72b881d5d0f0c' // 请在此行填写从阿拉丁后台获取的appkey
+exports.app_key = '5a64b4344496b95323c15818abfc26df' // 请在此行填写从阿拉丁后台获取的appkey
 exports.getLocation = false // 默认不获取用户坐标位置
 exports.appid = 'wxcfe56965f4d986f0' // 用于用户登录、微信转发群信息、二维码等微信官方功能
 exports.appsecret = '' // 用于用户登录、微信转发群信息、二维码等微信官方功能

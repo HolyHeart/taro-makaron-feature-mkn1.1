@@ -724,6 +724,8 @@ class Editor extends Component {
         Taro.canvasToTempFilePath({
           canvasId: canvas.id,
           fileType: 'jpg',
+          // 解决vivo手机模糊bug，强制图片质量为原图
+          quality: 1,
           success: function (res) {
             let tempFilePath = res.tempFilePath
             resolve(tempFilePath)

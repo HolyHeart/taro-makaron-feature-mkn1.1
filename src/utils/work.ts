@@ -3,7 +3,7 @@ import Taro from '@tarojs/taro'
 import { cacheImg } from '@/services/cache'
 import service from '@/services/service'
 import tool from './tool'
-interface saveSourceOptions {  
+interface saveSourceOptions {
   location: string,
   sourceUrl: any,
   sourceType: string,
@@ -18,12 +18,12 @@ interface chooseImageOptions {
 const pageToHome = () => {
   Taro.redirectTo({
     url: '/pages/home/index'
-  }) 
+  })
 }
 const pageToError = () => {
   Taro.redirectTo({
     url: '/pages/error/index'
-  }) 
+  })
 }
 const getDomRect = (id:string, callback?:(rect:object)=>void) => {
   Taro.createSelectorQuery().select('#' + id).boundingClientRect(function(rect){
@@ -46,22 +46,22 @@ const getSceneList = function (sceneList:Array<object> = []) {
     let hasIcon = false
     if (sceneConfig) {
       const {music = {}} = tool.JSON_parse(sceneConfig)
-      supportMusic = music.fileUrl ? true : false      
-    } 
+      supportMusic = music.fileUrl ? true : false
+    }
     if (sceneType === 2 || sceneType === 1 ) {
       hasIcon = true
     }
     result.push({
       sceneType,
-      bgUrl, 
-      sceneId, 
-      sceneName, 
-      shareContent, 
-      thumbnailUrl, 
-      sceneConfig, 
-      segmentType, 
-      segmentZIndex, 
-      bgZIndex, 
+      bgUrl,
+      sceneId,
+      sceneName,
+      shareContent,
+      thumbnailUrl,
+      sceneConfig,
+      segmentType,
+      segmentZIndex,
+      bgZIndex,
       supportMusic,
       hasIcon})
   })
@@ -88,7 +88,7 @@ const formatRawCoverList = (list:Array<any> = []) => {
       autoScale: 0,
       autoWidth: 0,
       width: 0,
-      height: 0,      
+      height: 0,
       x: 0,
       y: 0,
       rotate: 0,
@@ -115,7 +115,7 @@ const downloadRemoteImage = async (remoteUrl = '') => {
   // 判断是否在缓存里
   const cacheKey = `remoteUrl_${remoteUrl}_localPath`
   let localImagePath = ''
-  if (cacheImg.get(cacheKey)) {    
+  if (cacheImg.get(cacheKey)) {
     return cacheImg.get(cacheKey)
   } else {
     try {
@@ -129,12 +129,12 @@ const downloadRemoteImage = async (remoteUrl = '') => {
   return cacheImg.set(cacheKey, localImagePath)
 }
 // 将本地或远程资源存储到相册
-const saveSourceToPhotosAlbum = async (options:saveSourceOptions) => {  
+const saveSourceToPhotosAlbum = async (options:saveSourceOptions) => {
   options.location = options.location || 'local'
   options.sourceType = options.location || 'image'
   let localUrl
   if (options.location === 'remote') {
-    try {          
+    try {
       localUrl = await downloadRemoteImage(options.sourceUrl)
     } catch (err) {
       console.log('下载资源失败', err)
@@ -142,28 +142,28 @@ const saveSourceToPhotosAlbum = async (options:saveSourceOptions) => {
     }
   } else {
     localUrl = options.sourceUrl
-  }  
+  }
   // 保存到相册
   try {
     if (options.sourceType === 'video') {
-      await Taro.saveVideoToPhotosAlbum({filePath: localUrl})  
+      await Taro.saveVideoToPhotosAlbum({filePath: localUrl})
     } else {
-      await Taro.saveImageToPhotosAlbum({filePath: localUrl})  
-    }  
-  //  console.log('保存成功')   
+      await Taro.saveImageToPhotosAlbum({filePath: localUrl})
+    }
+  //  console.log('保存成功')
    typeof options.onSuccess === 'function' && options.onSuccess()
   } catch (err) {
     Taro.getSetting({
       success (setting) {
         const {authSetting} = setting
-        if (!authSetting['scope.writePhotosAlbum']) { 
+        if (!authSetting['scope.writePhotosAlbum']) {
           typeof options.onAuthFail === 'function' && options.onAuthFail()
         }
       },
       fail () {
         typeof options.onFail === 'function' && options.onFail()
       }
-    })                
+    })
   }
 }
 const calcVideoSize = (maxWidth = 306, maxHeight = 408, width, height) => {
@@ -196,7 +196,7 @@ const chooseImage = async ({onTap, onSuccess}:chooseImageOptions) => {
           Taro.chooseImage({
             count: 1,
             sourceType: ['camera'],
-            sizeType: ['compressed '],
+            sizeType: ['compressed'],
           }).then(({tempFilePaths: [path]}) => {
             typeof onSuccess === 'function' && onSuccess(path)
           })
@@ -208,15 +208,15 @@ const chooseImage = async ({onTap, onSuccess}:chooseImageOptions) => {
                 title: '拍摄图片需要授权',
                 content: '拍摄图片需要授权\n可以授权吗？',
                 confirmText: "允许",
-                cancelText: "拒绝",                      
-              }).then(res => {     
+                cancelText: "拒绝",
+              }).then(res => {
                 if (res.confirm) {
                   Taro.authModal({
                     open: true
                   })
                 }
               })
-            }                
+            }
           })
         })
       } else if (tapIndex === 1) {
@@ -226,7 +226,7 @@ const chooseImage = async ({onTap, onSuccess}:chooseImageOptions) => {
         }).then(({tempFilePaths: [path]}) => {
           typeof onSuccess === 'function' && onSuccess(path)
         })
-      }		
+      }
     }
   }).catch(err => console.log(err))
 }

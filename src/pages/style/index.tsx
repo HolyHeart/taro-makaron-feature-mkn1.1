@@ -111,6 +111,14 @@ class Style extends Component {
     Taro.navigateBack({ delta: 1 })
   }
 
+  // 保存键按钮
+  save () {
+    console.log('按下保存键')
+    this.setState({
+      saved: !this.state.saved
+    })
+  }
+
 
   // 引入风格列表
   async getTagList() {
@@ -126,10 +134,12 @@ class Style extends Component {
   }
 
   async getStyleList() {
+    
     try {
       const styleList = await styleTransfer.styleList()
-      console.log('Hey bro, check out this style list')
-      console.log(styleList.result.result)
+      //console.log('Hey bro, check out this style list')
+
+      //console.log(styleList.result.result[0].name)
       // TODO
 
       return styleList.result.result
@@ -161,7 +171,9 @@ class Style extends Component {
     let bottomBtns
 
 
-    this.getStyleList()
+    //this.getStyleList()
+
+    console.log(this.getStyleList())
 
 
 
@@ -224,7 +236,7 @@ class Style extends Component {
     if (renderStatus !== 'fail'){
       bottomBtns = (
         <View className ='share-wrap'>
-          <Button id='save' className='button black'>保存至相册</Button>
+          <Button id='save' className='button black' onClick={this.save}>保存至相册</Button>
           <Button id='share' className='button red' style='margin-left: 20rpx' openType='share'>分享</Button>
         </View>
       )
@@ -246,8 +258,8 @@ class Style extends Component {
             <Text className='text'>保存成功</Text>  
           </View>
           <View className='back-wrap'>
-            <Button className='button black'>返回</Button>
-            <Button className='button red' style='margin-left: 20rpx'>换张试试</Button>
+            <Button className='button black' onClick={this.pageToHome}>返回</Button>
+            <Button className='button red' style='margin-left: 20rpx' onClick={this.pageToHome}>换张试试</Button>
           </View>
         </View>
       )

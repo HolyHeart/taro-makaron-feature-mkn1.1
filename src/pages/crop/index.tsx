@@ -116,15 +116,18 @@ class Crop extends Component {
 
   imageLoad (e) {
     const {detail} = e
+    const {img} = this.state
     // this.state.img.originWidth = detail.width
     // this.state.img.originHeight = detail.height
     this.setState({
       img: {
+        ...img,
         originWidth: detail.width,
-        originHeight: detail.height,
-        ...this.state.img
-
+        originHeight: detail.height
       }
+    }, () => {
+      console.log(this.state.img)
+      this.autoScale()
     })
     console.log('image load', detail)
     // 图片自适应
@@ -387,7 +390,7 @@ class Crop extends Component {
         </View>
         <View className="footer">
           <View className="word">调整画面位置</View>
-          <View className="button red generate" onClick={this.generateImage}>生成</View>
+          <View className="button red generate" onClick={this.test}>生成</View>
           <View className="button black" onClick={this.back}>重选</View>
         </View>
       </View>

@@ -384,5 +384,6 @@ export const styleTransfer = {
 
 export default {
   base,
-  core
+  core,
+  styleTransfer
 }

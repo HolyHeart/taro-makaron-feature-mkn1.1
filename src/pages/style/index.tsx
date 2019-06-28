@@ -5,26 +5,17 @@
 import { ComponentClass } from 'react'
 import Taro, { Component, Config } from '@tarojs/taro'
 import { View, Text, Button, Image, ScrollView } from '@tarojs/components'
-
 import globalData from '@/services/global_data'
-
 import './index.less'
-
 import Title from '@/components/Title'
 import CustomIcon from '@/components/Icon'
-
 import testImg from '@/assets/images/Test.png'
-
-
-
 import segmantIcon from '@/assets/images/segment-icon.png'
 import unsegmantIcon from '@/assets/images/unsegment-icon.png'
 import colorIcon from '@/assets/images/color-icon.png'
 import rawcolorIcon from '@/assets/images/rawcolor-icon.png'
 import randomBg from '@/assets/images/random-bg.png'
 import randomIcon from '@/assets/images/random-icon.png'
-
-
 import { styleTransfer } from '@/services/service'
 
 
@@ -56,19 +47,12 @@ class Style extends Component {
 
   state = {
     choosedImage: '',
-    
     saved: false, // 是否显示结果
-
     hasSegmentButton: true, // 是否呈现人像分割按钮，根据处理图片中是否包括人像来断定
     colorType: false, // 原色or风格色
     segmentType: true, // 是否人像分离
     renderStatus: 'init', // 渲染结果 'success' 'fail' 'init' 'loading'
-
     styleShuffle: '智能风格推荐', // 随机按钮文字，点击前为'随机风格'，点击后为风格名字
-    
-
-
-
   }
 
 
@@ -83,8 +67,6 @@ class Style extends Component {
   componentWillUnmount () { }
   componentDidShow () { }
   componentDidHide () { }
-
-
 
   // Functions
   // 人像分离按钮
@@ -105,7 +87,6 @@ class Style extends Component {
     })
   }
 
-
   // 返回键按钮
   pageToHome = () => {
     Taro.navigateBack({ delta: 1 })
@@ -118,7 +99,6 @@ class Style extends Component {
       saved: !this.state.saved
     })
   }
-
 
   // 引入风格列表
   async getTagList() {
@@ -134,50 +114,27 @@ class Style extends Component {
   }
 
   async getStyleList() {
-    
     try {
       const styleList = await styleTransfer.styleList()
       //console.log('Hey bro, check out this style list')
-
-      //console.log(styleList.result.result[0].name)
+      console.log(styleList.result.result)
       // TODO
-
       return styleList.result.result
-
-
     } catch (err) {
       console.log('Oops, failed to get style list', err)
     }
   }
 
-
-
-
-
-
-
-
-
-
-
-
   render () {
     const { saved, colorType, segmentType, hasSegmentButton, renderStatus, styleShuffle} = this.state
-
 
     let content
     let segBtn
     let colorBtn
     let bottomBtns
 
-
-    //this.getStyleList()
-
-    console.log(this.getStyleList())
-
-
-
-
+    // TODO to be deleted
+    this.getStyleList()
 
     // 判断是否需要”人景分离“按钮
     if (hasSegmentButton) {
@@ -206,8 +163,6 @@ class Style extends Component {
       }
     } 
 
-
-
     if (colorType) {
       colorBtn = (
         <View className='type-button' style='margin-left: 20rpx' onClick={this.colorTypeToggle}>
@@ -232,7 +187,6 @@ class Style extends Component {
       )
     }
 
-
     if (renderStatus !== 'fail'){
       bottomBtns = (
         <View className ='share-wrap'>
@@ -247,7 +201,6 @@ class Style extends Component {
         </View>
       )
     }
-
 
     if (saved) {
       // 如果图片被保存，显示内容则为【保存界面】
@@ -289,11 +242,7 @@ class Style extends Component {
                 </View>
               </View>
 
-
-              
-  
-              
-
+              {/* TODO to be replaced */}
               <View className='random-component' style='background: #111111'>
               </View>
               <View className='random-component' style='background: #222222'>
@@ -311,12 +260,9 @@ class Style extends Component {
               <View className='random-component' style='background: #888888'>
               </View>
 
-
-
             </ScrollView>
 
           </View>
-
 
           {/* 保存及分享按钮组及出错提示 */}
           <View style='margin-top:35rpx'>
@@ -325,17 +271,11 @@ class Style extends Component {
 
         </View>
       )
-
     }
 
 
-
-
-
-
-
     return (
-    
+  
       <View>
         {/* 标题栏 */}
         <Title color="#333" leftStyleObj={{left: Taro.pxTransform(8)}}
@@ -357,13 +297,8 @@ class Style extends Component {
           {/* 操作部分 */}
           {content}
 
-
-
         </View>  
       </View>  
-
-
-    
 
     )
   }

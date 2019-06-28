@@ -5,6 +5,7 @@ import { api } from './api.config'
 import { appId } from './config'
 import tool from '@/utils/tool'
 import { cacheSegment, cacheImg } from './cache'
+import http from './http'
 
 interface segmentData {
   clientType: string;
@@ -19,6 +20,28 @@ interface separateOptionsData {
   showLoading?(): void;
   hideLoading?(): void;
   beforeSeparate?(url?): void;
+}
+
+// 域名
+// const ENV = 'dev'  // 'dev' 测试
+const ENV = 'dev'  // 'prod' 生产
+const host = {
+  openapi: {
+    dev: 'https://openapi.dev.versa-ai.com',
+    prod: 'https://openapi.versa-ai.com'
+  },
+  upload: {
+    dev: 'https://versa-static.oss-cn-shanghai.aliyuncs.com',
+    prod: 'https://versa-static.oss-cn-shanghai.aliyuncs.com'
+  },
+  download: {
+    dev: 'https://static01.versa-ai.com',
+    prod: 'https://static01.versa-ai.com'
+  }
+}
+// 获取域名
+function getHost (type = 'openapi') {
+  return host[type][ENV]
 }
 
 export const base = {
@@ -103,6 +126,19 @@ export const base = {
   },
   downloadFile (url) {
     return Taro.downloadFile({url: url})
+  },
+  timeout: function (interval, toReject) {
+    // isReject为true时reject
+    // 默认resolve
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        if (toReject) {
+          reject('timeout fail !')
+        } else {
+          resolve('timeout success !')
+        }
+      }, interval)
+    })
   }
 }
 export const core = {
@@ -260,8 +296,87 @@ export const core = {
     })
   }
 }
+export const styleTransfer = {
+  demo: function (option) {
+    const {query = {}, data = {}} = option || {}
+    // url = getUrl(url,params)
+    // return http.httpGet(url)
+    const map = ['MA==', 'MQo=', 'Mg==', 'Mw==', 'NA==', 'NQ==', 'Ng==', 'Nw==', 'OA==', 'OQ==']
+    const queryData = Object.assign({
+      time: 1,
+      t: 'css',
+      c: map[3],
+      i: 3
+    }, query)
+    const url = tool.formatQueryUrl('https://www.madcoder.cn/tests/sleep.php', queryData)
+    const reqData = {
+      url,
+      method: 'POST',
+      data: data,
+      responseType: 'text'
+    }
+    return http.request(reqData)
+  },
+  segment: function (remoteImgUrl, styleId, originalColors) {
+    // remoteImgUrl 远程静态服务器图片地址
+    // styleId 渲染风格Id
+    // originalColors 原色 ,不传默认为风格色
+    const reqData = {
+      method: 'POST',
+      url: `${getHost()}/web/image/render/segment`,
+      header: {'content-type': 'application/x-www-form-urlencoded'},
+      data: {
+        clientType: 'mini-program',
+        timestamp: Date.parse(new Date()),
+        imageUrl: remoteImgUrl,
+        styleId
+        /*originalColors*/
+      }
+    }
+    if (originalColors) {
+      reqData.data.originalColors = 'Y'
+    }
+    return http.request(reqData)
+  },
+  allSegment: function (remoteImgUrl, styleId) {
+    // 风格和原色两种渲染
+    let colorSegment = this.segment(remoteImgUrl, styleId)
+    let rawSegment = this.segment(remoteImgUrl, styleId, true)
+    return Promise.all([colorSegment, rawSegment])
+  },
+  allSegmentTimeout: function (remoteImgUrl, styleId, interval) {
+    let allSegment = this.allSegment(remoteImgUrl, styleId)
+    let timeout = base.timeout(interval, true)
+    return Promise.race([allSegment, timeout])
+  },
+  tagList: function () {
+    // 获取风格标签列表
+    const reqData = {
+      method: 'GET',
+      url: `${getHost()}/web/feature/featureTagOrder`,
+      dataType: 'json',
+      data: {
+        clientType: 'mini-program'
+      }
+    }
+    return http.request(reqData)
+  },
+  styleList: function () {
+    const reqData = {
+      method: 'GET',
+      url: `${getHost()}/web/feature/featureDetail`,
+      dataType: 'json',
+      data: {
+        renderType: 'transfer-image',
+        clientType: 'mini-program'
+      }
+    }
+    return http.request(reqData)
+  }
+}
 
 export default {
   base,
-  core
+  core,
+  styleTransfer
 }

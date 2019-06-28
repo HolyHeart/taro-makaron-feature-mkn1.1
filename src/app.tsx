@@ -32,7 +32,8 @@ class _App extends Component {
       'pages/segment/index',
       'pages/dynamic/index',
       'pages/error/index',
-      'pages/index',
+      'pages/crop/index',
+      'pages/index'
     ],
     window: {
       backgroundTextStyle: 'light',

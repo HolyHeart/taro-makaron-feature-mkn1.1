@@ -280,6 +280,10 @@ class Home extends Component {
     })
   }
 
+  goToCrop () {
+    Taro.navigateTo({url: '/pages/crop/index'})
+  }
+
   render () {
     const { categoryList } = this.state
     const {global = {}} = this.props
@@ -326,7 +330,7 @@ class Home extends Component {
                 )
               })
             }
-
+            <View><Button onClick={this.goToCrop}>crop</Button></View>
             <View className="bottomInfo" style='margin-top:25px;font-size:10px'>
               - 到底了哦 -
             </View>

@@ -25,6 +25,8 @@ import randomBg from '@/assets/images/random-bg.png'
 import randomIcon from '@/assets/images/random-icon.png'
 
 
+import { styleTransfer } from '@/services/service'
+
 
 
 
@@ -47,25 +49,29 @@ interface Style {
 
 class Style extends Component {
   config: Config = {
-    navigationBarTitleText: '马卡龙玩图'
+    navigationBarTitleText: '马卡龙玩图',
+    disableScroll: true,
+    enablePullDownRefresh:false
   }
 
   state = {
     choosedImage: '',
-    // 是否显示结果
-    saved: false,
+    
+    saved: false, // 是否显示结果
 
-    hasSegmentButton: true,
-    colorType: false,
-    segmentType: true,
+    hasSegmentButton: true, // 是否呈现人像分割按钮，根据处理图片中是否包括人像来断定
+    colorType: false, // 原色or风格色
+    segmentType: true, // 是否人像分离
     renderStatus: 'init', // 渲染结果 'success' 'fail' 'init' 'loading'
 
-    styleShuffle: '随机风格', // 随机按钮文字，点击前为'随机风格'，点击后为风格名字
+    styleShuffle: '智能风格推荐', // 随机按钮文字，点击前为'随机风格'，点击后为风格名字
     
 
 
 
   }
+
+
   componentDidMount () {
     this.setState({
       choosedImage: globalData.choosedImage
@@ -80,8 +86,58 @@ class Style extends Component {
 
 
 
+  // Functions
+  // 人像分离按钮
+  // TODO 
+  segmentTypeToggle () {
+    console.log('按下人像分离按钮')
+    this.setState({
+      segmentType: !this.state.segmentType
+    })
+  }
+
+  // 风格色按钮
+  // TODO 
+  colorTypeToggle () {
+    console.log('按下风格色按钮')
+    this.setState({
+      colorType: !this.state.colorType
+    })
+  }
+
+
+  // 返回键按钮
   pageToHome = () => {
     Taro.navigateBack({ delta: 1 })
+  }
+
+
+  // 引入风格列表
+  async getTagList() {
+    try {
+      const tagList = await styleTransfer.tagList()
+      console.log('Hey bro, check out this tag list')
+      console.log(tagList.result)
+      // TODO
+      return tagList.result.featureTagVoList
+    } catch (err) {
+      console.log('Oops, failed to get tag list', err)
+    }
+  }
+
+  async getStyleList() {
+    try {
+      const styleList = await styleTransfer.styleList()
+      console.log('Hey bro, check out this style list')
+      console.log(styleList.result.result)
+      // TODO
+
+      return styleList.result.result
+
+
+    } catch (err) {
+      console.log('Oops, failed to get style list', err)
+    }
   }
 
 
@@ -96,7 +152,7 @@ class Style extends Component {
 
 
   render () {
-    const { saved, colorType, segmentType, hasSegmentButton, renderStatus, styleShuffle } = this.state
+    const { saved, colorType, segmentType, hasSegmentButton, renderStatus, styleShuffle} = this.state
 
 
     let content
@@ -105,12 +161,17 @@ class Style extends Component {
     let bottomBtns
 
 
+    this.getStyleList()
+
+
+
+
 
     // 判断是否需要”人景分离“按钮
     if (hasSegmentButton) {
       if (segmentType) {
         segBtn = (
-          <View className='type-button bg'>
+          <View className='type-button bg' onClick={this.segmentTypeToggle}>
             <View className='icon-wrap'>
               <Image mode='scaleToFill' src={unsegmantIcon} style='width:48rpx; height:48rpx'></Image>
             </View>
@@ -121,7 +182,7 @@ class Style extends Component {
         ) 
       } else if (!segmentType) {
         segBtn = (
-          <View className='type-button'>
+          <View className='type-button' onClick={this.segmentTypeToggle}>
             <View className='icon-wrap'>
               <Image mode='scaleToFill' src={segmantIcon} style='width:48rpx; height:48rpx'></Image>
             </View>
@@ -137,7 +198,7 @@ class Style extends Component {
 
     if (colorType) {
       colorBtn = (
-        <View className='type-button' style='margin-left: 20rpx'>
+        <View className='type-button' style='margin-left: 20rpx' onClick={this.colorTypeToggle}>
           <View className='icon-wrap'>
             <Image src={colorIcon} style='width:48rpx; height:48rpx'></Image>
           </View>
@@ -148,7 +209,7 @@ class Style extends Component {
       )
     } else if (!colorType) {
       colorBtn = (
-        <View className='type-button bg' style='margin-left: 20rpx'>
+        <View className='type-button bg' style='margin-left: 20rpx' onClick={this.colorTypeToggle}>
           <View className='icon-wrap'>
             <Image src={rawcolorIcon} style='width:48rpx; height:48rpx'></Image>
           </View>
@@ -218,7 +279,8 @@ class Style extends Component {
 
 
               
-
+  
+              
 
               <View className='random-component' style='background: #111111'>
               </View>
@@ -273,8 +335,7 @@ class Style extends Component {
           {/* 图片部分 */}
           <View className='header'>
             <View className='image-wrap'>
-              {/* <Image className='origin-image' src='https://camo.githubusercontent.com/3e1b76e514b895760055987f164ce6c95935a3aa/687474703a2f2f73746f726167652e333630627579696d672e636f6d2f6d74642f686f6d652f6c6f676f2d3278313531333833373932363730372e706e67'></Image> */}
-              <Image className='origin-image' src={testImg}></Image>
+             <Image className='origin-image' src={testImg}></Image>
 
               {/* TODO */}
 

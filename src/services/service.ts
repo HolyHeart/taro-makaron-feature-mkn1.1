@@ -103,8 +103,28 @@ export const base = {
   },
   downloadFile (url) {
     return Taro.downloadFile({url: url})
+  },
+  // Immigrated from StyleTransfer MiniApp
+  timeout: function (interval, toReject) {
+    // isReject为true时reject
+    // 默认resolve
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        if (toReject) {
+          reject('timeout fail !')
+        } else {
+          resolve('timeout success !')
+        }
+      }, interval)
+    })
   }
 }
+
+
+
+
+
+
 export const core = {
   segment: function (remoteImgUrl, segmentType?:number) {
     let postData:segmentData = {
@@ -260,6 +280,107 @@ export const core = {
     })
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//  风格迁移
+export const styleTransfer = {
+  demo: function (option) {
+    const {query = {}, data = {}} = option || {}
+      // url = getUrl(url,params)
+      // return http.httpGet(url)
+    const map = ['MA==', 'MQo=', 'Mg==', 'Mw==', 'NA==', 'NQ==', 'Ng==', 'Nw==', 'OA==', 'OQ==']
+    const queryData = Object.assign({
+      time: 1,
+      t: 'css',
+      c: map[3],
+      i: 3
+    }, query)
+    const url = tool.formatQueryUrl('https://www.madcoder.cn/tests/sleep.php', queryData)
+    const reqData = {
+      url,
+      method: 'POST',
+      data: data,
+      responseType: 'text'
+    }
+    return request(reqData)
+  },
+  segment: function (remoteImgUrl, styleId, originalColors) {
+    // remoteImgUrl 远程静态服务器图片地址
+    // styleId 渲染风格Id
+    // originalColors 原色 ,不传默认为风格色
+    const reqData = {
+      method: 'POST',
+      // url: `${getHost()}/image/render/segment`,
+      url: api.style.segment,
+      header: {'content-type': 'application/x-www-form-urlencoded'},
+      data: {
+        clientType: 'mini-program',
+        timestamp: Date.parse(new Date().toString()),
+        imageUrl: remoteImgUrl,
+        styleId,
+        originalColors
+      }
+    }
+    if (originalColors) {
+      reqData.data.originalColors = 'Y'
+    }
+    return request(reqData)
+  },
+  allSegment: function (remoteImgUrl, styleId) {
+    // 风格和原色两种渲染
+    let colorSegment = this.segment(remoteImgUrl, styleId)
+    let rawSegment = this.segment(remoteImgUrl, styleId, true)
+    return Promise.all([colorSegment, rawSegment])
+  },
+  allSegmentTimeout: function (remoteImgUrl, styleId, interval) {
+    let allSegment = this.allSegment(remoteImgUrl, styleId)
+    let timeout = base.timeout(interval, true)
+    return Promise.race([allSegment, timeout])
+  },
+  tagList: function () {
+    // 获取风格标签列表
+    const reqData = {
+      method: 'GET',
+      url: api.style.featureTagOrder,
+      dataType: 'json',
+      data: {
+        clientType: 'mini-program'
+      }
+    }
+    return request(reqData)
+  },
+  styleList: function () {
+    const reqData = {
+      method: 'GET',
+      url: api.style.featureDetail,
+      dataType: 'json',
+      data: {
+        renderType: 'transfer-image',
+        clientType: 'mini-program'
+      }
+    }
+    return request(reqData)
+  }
+}
+
+
+
+
+
 
 export default {
   base,

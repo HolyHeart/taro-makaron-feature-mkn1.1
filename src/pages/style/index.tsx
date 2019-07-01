@@ -53,6 +53,8 @@ class Style extends Component {
     segmentType: true, // 是否人像分离
     renderStatus: 'init', // 渲染结果 'success' 'fail' 'init' 'loading'
     styleShuffle: '智能风格推荐', // 随机按钮文字，点击前为'随机风格'，点击后为风格名字
+
+    styleList:[]
   }
 
 
@@ -100,7 +102,7 @@ class Style extends Component {
     })
   }
 
-  // 引入风格列表
+  // 引入标签列表
   async getTagList() {
     try {
       const tagList = await styleTransfer.tagList()
@@ -113,28 +115,33 @@ class Style extends Component {
     }
   }
 
-  async getStyleList() {
+  // 引入风格列表
+  getStyleList = async () =>  {
     try {
       const styleList = await styleTransfer.styleList()
-      //console.log('Hey bro, check out this style list')
-      console.log(styleList.result.result)
-      // TODO
-      return styleList.result.result
+      styleList.result.result.forEach(element => {
+        this.state.styleList.push(element)
+      });
     } catch (err) {
       console.log('Oops, failed to get style list', err)
     }
   }
 
   render () {
-    const { saved, colorType, segmentType, hasSegmentButton, renderStatus, styleShuffle} = this.state
+    const { saved, colorType, segmentType, hasSegmentButton, renderStatus, styleShuffle, styleList} = this.state
 
     let content
     let segBtn
     let colorBtn
     let bottomBtns
 
+
+
+
     // TODO to be deleted
     this.getStyleList()
+    console.log(styleList)
+
 
     // 判断是否需要”人景分离“按钮
     if (hasSegmentButton) {

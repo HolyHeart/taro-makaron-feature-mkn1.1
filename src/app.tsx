@@ -33,6 +33,7 @@ class _App extends Component {
       'pages/dynamic/index',
       'pages/error/index',
       'pages/crop/index',
+      'pages/waiting/index',
       'pages/index'
     ],
     window: {

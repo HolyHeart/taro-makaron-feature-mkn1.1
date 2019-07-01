@@ -1,14 +1,16 @@
 import { ComponentClass } from 'react'
 import Taro, { Component, Config } from '@tarojs/taro'
-import { View, Image, Button } from '@tarojs/components'
+import { View, Image, Button, Text} from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 
 import tool from '@/utils/tool'
 import {styleTransfer, base} from '@/services/service'
-import {cacheStyle} from '../../services/cache'
-// import loading from '../components/transfer/loading/index'
+import {cacheStyle} from '@/services/cache'
+import loading from '@/components/transfer/loading/index'
 
 import './index.less'
+import globalData from "@/services/global_data"
+import {getSystemInfo} from "@/model/actions/global";
 // 计算风格标签数组
 const calFilterTagList = function (tagCanUseList = [], originTagList = [], originStyleList = []) {
   originTagList = tool.deepClone(originTagList)
@@ -34,15 +36,43 @@ const calFilterTagList = function (tagCanUseList = [], originTagList = [], origi
   })
   return newTagList
 }
+
+type PageStateProps = {
+  global: {
+    system: object
+  }
+}
+
+type PageDispatchProps = {
+  getSystemInfo: (data:object) => void
+}
+
+type PageOwnProps = {}
+
+type PageState = {}
+
+type IProps = PageStateProps & PageDispatchProps & PageOwnProps
+
+interface Waiting {
+  props: IProps;
+}
+
+@connect(({ global }) => ({
+  global
+}), (dispatch) => ({
+  getSystemInfo (data) {
+    dispatch(getSystemInfo(data))
+  }
+}))
+
 class Waiting extends Component {
   config = {
     disableScroll: true
   }
-  /**
+
   components = {
     loading: loading
   }
-   */
 
   mixins = []
 
@@ -56,45 +86,51 @@ class Waiting extends Component {
     renderStatus: 'init'
   }
 
-  computed = {
-    // now () {
-    //   return +new Date()
-    // }
+  app = Taro.getApp()
+
+  componentWillMount(): void {
   }
 
-  methods = {
-    back () {
-      // console.log('back')
-      if (this.loading) {
-        // console.log('图片渲染中不能重选')
-        wx.showToast({
-          title: '图片渲染中不能重选',
-          icon: 'success',
-          duration: 3000
-        })
-        return
-      }
-      wx.navigateBack({url: `/pages/versa`})
-    },
-    show () {
-      this.onShowLoading()
-    },
-    hide () {
-      this.onHideLoading()
+  componentDidMount(): void {
+  }
+
+  componentWillReceiveProps(nextProps: Readonly<P>, nextContext: any): void {
+  }
+
+  componentWillUnmount(): void {
+  }
+
+  componentDidShow(): void {
+    this.onShowLoading()
+  }
+
+  componentDidHide(): void {
+    this.onHideLoading()
+  }
+
+  back () {
+    // console.log('back')
+    if (this.state.loading) {
+      // console.log('图片渲染中不能重选')
+      Taro.showToast({
+        title: '图片渲染中不能重选',
+        icon: 'success',
+        duration: 3000
+      })
+      return
     }
+    Taro.navigateTo({url: '/pages/versa/index'})
   }
-
-  events = {
-
-  }
-
   async onLoad() {
-    const {globalData} = this.$parent
     const demo = [
       'http://tmp/wx21630a5d4651096a.o6zAJsztn2DIgXEGteELseHpiOtU.1pt6jtQ6MgIb779bd49c491911729629c3064e1cb5f0.png'
     ]
-    this.iamgePath = globalData.cropedImagePath || demo[0]
+    //this.state.iamgePath = globalData.cropedImagePath || demo[0]
     // this.iamgePath =  demo[0]
+    let temp = globalData.cropedImagePath || demo[0]
+    this.setState({
+      iamgePath: temp
+    })
     console.log('globalData', globalData)
     // this.segment(this.iamgePath, 64)
     this.wait()
@@ -106,23 +142,29 @@ class Waiting extends Component {
     await this.randomRender()
     this.onHideLoading()
     // 如果卸载页面,不能跳转到下一页
-    if (!this.isUnload) {
-      wx.redirectTo({url: '/pages/style'})
+    if (!this.state.isUnload) {
+      Taro.redirectTo({url: '/pages/style/index'})
     }
   }
 
   onShowLoading () {
-    this.loading = true
-    this.$invoke('loading', 'onShow');
+    this.setState({
+      loading: true
+    })
+    // this.state.loading = true
+    // 调用loading组件中的onShow方法
+    // this.$invoke('loading', 'onShow');
   }
   onHideLoading () {
-    this.loading = false
-    this.$invoke('loading', 'onHide');
+    this.setState({
+      loading: false
+    })
+    //this.state.loading = false
+    // this.$invoke('loading', 'onHide');
   }
 
 
   async getTagList () {
-    const {globalData} = this.$parent
     if (!globalData.styleList) {
       try {
         const styleList = await styleTransfer.styleList()
@@ -139,13 +181,12 @@ class Waiting extends Component {
         console.log('catch-error: get tagList fail', err)
       }
     }
-    globalData.filterTagList = calFilterTagList(this.tagCanUseList, globalData.tagList, globalData.styleList) || []
+    globalData.filterTagList = calFilterTagList(this.state.tagCanUseList, globalData.tagList, globalData.styleList) || []
   }
 
   // 随机处理
   async randomRender () {
     // console.log('randomRender')
-    const {globalData} = this.$parent
     const {filterTagList = [], cropedImagePath = ''} = globalData
     // 获取图片
     const randomTagIndex = tool.createRandom(0, filterTagList.length -1)
@@ -183,11 +224,17 @@ class Waiting extends Component {
     // 最后进行风格迁移
     let allSegmentData = []
     try {
-      this.renderStatus = 'loading'
+      // this.state.renderStatus = 'loading'
+      this.setState({
+        renderStatus: 'loading'
+      })
       allSegmentData = await styleTransfer.allSegment(remoteImageUrl, styleId)
     } catch (err) {
       console.log('风格迁移失败', err)
-      this.renderStatus = 'fail'
+      // this.renderStatus = 'fail'
+      this.setState({
+        renderStatus: 'fail'
+      })
       return
     }
 
@@ -203,9 +250,37 @@ class Waiting extends Component {
   }
 
   onUnload () {
-    this.isUnload = true
-    console.log('isUnload', this.isUnload)
+    // this.state.isUnload = true
+    this.setState({
+      isUnload: true
+    })
+    console.log('isUnload', this.state.isUnload)
   }
 
+  render () {
+    const {iamgePath, loading} = this.state
+    return(
+      <View className="page-waiting">
+        <View className="main">
+          <Image className={`image ${loading? 'blur': ''}`} src={iamgePath} />
+          {loading?
+            <View className="loading-wrap">
+              <View className="bg">
+                <View className="loading">
+                  <loading></loading>
+                  <Text className="loading-text">正在渲染中</Text>
+                </View>
+              </View>
+            </View>
+            : <View></View>
+          }
+        <View className="footer">
+          <View className="button red rechoose" onClick={this.back}>重选照片</View>
+        </View>
+      </View>
+    </View>
+    )
+  }
 }
 
+export default Waiting as ComponentClass<PageOwnProps, PageState>

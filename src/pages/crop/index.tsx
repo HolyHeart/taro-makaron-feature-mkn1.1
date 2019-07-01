@@ -3,6 +3,7 @@ import Taro, { Component, Config } from '@tarojs/taro'
 import { View, Image, Button, Canvas} from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 import {getSystemInfo} from "@/model/actions/global"
+import globalData from "@/services/global_data";
 
 import './index.less'
 
@@ -84,7 +85,7 @@ class Crop extends Component {
 
   componentWillMount(): void {
     this.initPage()
-    /**
+    /*
     const {getSystemInfo} = this.props
     const systemInfo = Taro.getSystemInfoSync()
     if (/iphone x/i.test(systemInfo.model)) {
@@ -116,9 +117,10 @@ class Crop extends Component {
 
   imageLoad (e) {
     const {detail} = e
-    const {img} = this.state
+    let {img} = this.state
     // this.state.img.originWidth = detail.width
     // this.state.img.originHeight = detail.height
+    // console.log('image load', detail)
     this.setState({
       img: {
         ...img,
@@ -126,15 +128,16 @@ class Crop extends Component {
         originHeight: detail.height
       }
     }, () => {
-      console.log(this.state.img)
       this.autoScale()
+      console.log('imageLoad', this.state.img)
     })
-    console.log('image load', detail)
     // 图片自适应
     // this.autoScale()
+
   }
   ontouchstart (e) {
     // console.log('ontouchstart', e)
+    const {transitionDuration, gesture} = this.state
     this.state.transitionDuration = '0s'
     if (e.touches.length === 1) {
       let { clientX, clientY } = e.touches[0]
@@ -151,6 +154,14 @@ class Crop extends Component {
       this.state.gesture.zoom = true
       // console.log('gesture-two', this.gesture);
     }
+    this.setState({
+      transitionDuration: '0s',
+      gesture: {
+        ...gesture
+      }
+    }, () => {
+      console.log('ontouchstart', this.state.gesture, this.state.transitionDuration)
+    })
   }
   ontouchmove () {
     this.throttle(this.touchmove, 1000/500).bind(this)
@@ -197,8 +208,16 @@ class Crop extends Component {
       //重置缩放状态
       this.state.transitionDuration = '0.15s'
       gesture.zoom = false
+      this.setState({
+        transitionDuration: '0s',
+        gesture: {
+          ...gesture
+        }
+      }, () => {
+        console.log('ontouchend', this.state.gesture, this.state.transitionDuration)
+      })
     }
-    console.log('end', this.state.img)
+    // console.log('end', this.state.img)
   }
   generateImage () {
     Taro.showLoading({
@@ -214,7 +233,7 @@ class Crop extends Component {
   }
 
   initPage () {
-    const {globalData} = this.app
+    /// const {globalData} = this.app
     const demo = [
       "http://tmp/wx21630a5d4651096a.o6zAJsztn2DIgXEGteELseHpiOtU.NKidKasfEbMa5fa447cdf99ebe9bdfaff42b8dee3019.jpg",
     ]
@@ -240,9 +259,9 @@ class Crop extends Component {
       console.log('catch-error: chooseImage-fail', error)
       return
     }
-    const {globalData} = this.app
+    // const {globalData} = this.app
     globalData.choosedImagePath = choosedImagePath
-    console.log('globalData', this.app.globalData)
+    console.log('globalData', globalData)
   }
 
   // 自适应图片
@@ -263,7 +282,10 @@ class Crop extends Component {
     this.state.img.autoY = this.state.img.y
     this.state.img.offsetX = this.state.img.x
     this.state.img.offsetY = this.state.img.y
+    //用于更新this.state.img，不可删去
+    this.setState({})
   }
+
   touchmove (e) {
     // console.log('ontouchmove', e)
     if (e.touches.length === 1) {
@@ -325,20 +347,20 @@ class Crop extends Component {
   }
   // 生成canvas
   createCanvas () {
-    const _this = this;
+    // const _this = this;
     const {img, box, canvas} = this.state;
     const choosedImagePath = this.state.iamgePath;
     const context = Taro.createCanvasContext('mycanvas');
     const { ratio } = canvas
     const {width, height, offsetX, offsetY, userScale} = img
-
     //防止锯齿，绘的图片是所需图片的两倍
-    context.drawImage(choosedImagePath, offsetX * ratio, offsetY * ratio, width * userScale * ratio, height * userScale * ratio);
-
+    context.drawImage(choosedImagePath, offsetX * ratio, offsetY * ratio, width * userScale * ratio, height * userScale * ratio)
+    // context.drawImage(choosedImagePath, 0, 0, 0, 0, offsetX * ratio, offsetY * ratio, width * userScale * ratio, height * userScale * ratio)
 
     //绘制图片
     context.draw();
 
+    const that = this
     //将生成好的图片保存到本地，需要延迟一会，绘制期间耗时
     setTimeout(function () {
       Taro.canvasToTempFilePath({
@@ -346,16 +368,16 @@ class Crop extends Component {
         success: function (res) {
           let tempFilePath = res.tempFilePath;
           console.log('tempFilePath', tempFilePath);
-          const {globalData} = _this.app
+          // const {globalData} = _this.app
           globalData.cropedImagePath = tempFilePath
-          console.log('globalData', _this.app.globalData)
+          console.log('globalData', globalData)
           // 跳转裁剪后页面
           Taro.hideLoading()
           // wx.navigateTo({url: `/pages/waiting`})
           Taro.redirectTo({url: '/pages/waiting/index'})
         },
         fail: function (res) {
-          console.log(res);
+          console.log(res)
         },
         complete:function(){
           // wx.hideLoading();
@@ -371,10 +393,6 @@ class Crop extends Component {
 
   render () {
     const {iamgePath, box, img, gesture, transitionDuration, canvas} = this.state
-    console.log(img)
-    console.log(box)
-    console.log(transitionDuration)
-    console.log('render')
     return(
       <View className="page-crop">
         <View className="header"></View>
@@ -390,8 +408,11 @@ class Crop extends Component {
         </View>
         <View className="footer">
           <View className="word">调整画面位置</View>
-          <View className="button red generate" onClick={this.test}>生成</View>
+          <View className="button red generate" onClick={this.generateImage}>生成</View>
           <View className="button black" onClick={this.back}>重选</View>
+        </View>
+        <View className="canvas-wrap">
+          <Canvas style={`width: ${canvas.width}px; height: ${canvas.height}px;border: 1px solid #000`} canvasId="mycanvas"/>
         </View>
       </View>
     )

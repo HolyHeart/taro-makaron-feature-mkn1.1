@@ -16,7 +16,7 @@ import colorIcon from '@/assets/images/color-icon.png'
 import rawcolorIcon from '@/assets/images/rawcolor-icon.png'
 import randomBg from '@/assets/images/random-bg.png'
 import randomIcon from '@/assets/images/random-icon.png'
-import { styleTransfer } from '@/services/service'
+import { styleTransfer, base } from '@/services/service'
 
 
 
@@ -54,7 +54,10 @@ class Style extends Component {
     renderStatus: 'init', // 渲染结果 'success' 'fail' 'init' 'loading'
     styleShuffle: '智能风格推荐', // 随机按钮文字，点击前为'随机风格'，点击后为风格名字
 
-    styleList:[]
+    imgUrl: testImg,
+
+    styleList:[],
+ 
   }
 
 
@@ -128,25 +131,39 @@ class Style extends Component {
     }
   }
 
+  // 跟换图片风格
+  changeStyle = async (id, e) => {
+    console.log(id + '号风格按钮被按下')
+    const remoteImgUrl = await base.upload(testImg)
+    console.log(remoteImgUrl)
+    const processedPic = await styleTransfer.segment(remoteImgUrl.url, id, this.state.colorType)
+    console.log(processedPic)
 
+    this.setState({
+      imgUrl: processedPic.result.result.renderUrl
+    })
+
+  }
+
+  // TODO 初始化，上传本地图片到云端
+  initImage = async () => {
+    const remoteImgUrl = await base.upload(testImg)
+    this.state.imgUrl = remoteImgUrl.url
+  }
 
   render () {
-    const { saved, colorType, segmentType, hasSegmentButton, renderStatus, styleShuffle, styleList} = this.state
+    const { saved, colorType, segmentType, hasSegmentButton, renderStatus, styleShuffle, styleList, imgUrl} = this.state
 
     let content
     let segBtn
     let colorBtn
     let bottomBtns
-    // let styleListComponent
 
 
-
+    // 初始化部分
+    // TODO
     this.getStyleList()
-    // styleList.forEach(element => {
-    //   console.log(element.name)
-    // });
-
-
+    this.initImage()
 
 
 
@@ -255,20 +272,18 @@ class Style extends Component {
                   <Text>{styleShuffle}</Text>
                 </View>
               </View>
-
+              {/* 风格列表 */}
               {styleList.map(item=>{
                 console.log(item)
                 return <View className='random-component' style='margin-left:20rpx'>
-                  <Image src={item.stylePicUrl} className='bg' style="width:100%;height:100%"></Image>
+                  <Image src={item.stylePicUrl} className='bg' style="width:100%;height:100%" onClick={this.changeStyle.bind(this, item.detailId)}></Image>
                   <View className='title-bg'>
                     <Text>{item.name}</Text>
                   </View>
                 </View>
                 })
               }
-  
             </ScrollView>
-
           </View>
 
           {/* 保存及分享按钮组及出错提示 */}
@@ -294,7 +309,7 @@ class Style extends Component {
           {/* 图片部分 */}
           <View className='header'>
             <View className='image-wrap'>
-             <Image className='origin-image' src={testImg}></Image>
+             <Image className='origin-image' src={imgUrl}></Image>
 
               {/* TODO */}
 

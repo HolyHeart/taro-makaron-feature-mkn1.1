@@ -318,6 +318,9 @@ export const styleTransfer = {
     }
     return request(reqData)
   },
+
+
+  
   segment: function (remoteImgUrl, styleId, originalColors) {
     // remoteImgUrl 远程静态服务器图片地址
     // styleId 渲染风格Id
@@ -351,6 +354,9 @@ export const styleTransfer = {
     let timeout = base.timeout(interval, true)
     return Promise.race([allSegment, timeout])
   },
+
+
+
   tagList: function () {
     // 获取风格标签列表
     const reqData = {

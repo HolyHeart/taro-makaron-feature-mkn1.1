@@ -117,6 +117,7 @@ class Style extends Component {
 
   // 引入风格列表
   getStyleList = async () =>  {
+    this.state.styleList = []
     try {
       const styleList = await styleTransfer.styleList()
       styleList.result.result.forEach(element => {
@@ -127,6 +128,8 @@ class Style extends Component {
     }
   }
 
+
+
   render () {
     const { saved, colorType, segmentType, hasSegmentButton, renderStatus, styleShuffle, styleList} = this.state
 
@@ -134,13 +137,17 @@ class Style extends Component {
     let segBtn
     let colorBtn
     let bottomBtns
+    // let styleListComponent
 
 
 
-
-    // TODO to be deleted
     this.getStyleList()
-    console.log(styleList)
+    // styleList.forEach(element => {
+    //   console.log(element.name)
+    // });
+
+
+
 
 
     // 判断是否需要”人景分离“按钮
@@ -249,24 +256,17 @@ class Style extends Component {
                 </View>
               </View>
 
-              {/* TODO to be replaced */}
-              <View className='random-component' style='background: #111111'>
-              </View>
-              <View className='random-component' style='background: #222222'>
-              </View>
-              <View className='random-component' style='background: #333333'>
-              </View>
-              <View className='random-component' style='background: #444444'>
-              </View>
-              <View className='random-component' style='background: #555555'>
-              </View>
-              <View className='random-component' style='background: #666666'>
-              </View>
-              <View className='random-component' style='background: #777777'>
-              </View>
-              <View className='random-component' style='background: #888888'>
-              </View>
-
+              {styleList.map(item=>{
+                console.log(item)
+                return <View className='random-component' style='margin-left:20rpx'>
+                  <Image src={item.stylePicUrl} className='bg' style="width:100%;height:100%"></Image>
+                  <View className='title-bg'>
+                    <Text>{item.name}</Text>
+                  </View>
+                </View>
+                })
+              }
+  
             </ScrollView>
 
           </View>

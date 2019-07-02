@@ -122,6 +122,7 @@ class Style extends Component {
       colorType: !this.state.colorType,
     })
     this.changeStyle(this.state.currentID,!this.state.colorType,this)
+    console.log('风格色切换成功')
   }
 
   // 返回键按钮
@@ -129,13 +130,35 @@ class Style extends Component {
     Taro.navigateBack({ delta: 1 })
   }
 
+
+
+
+
+
   // 保存键按钮
   save () {
     console.log('按下保存键')
-    this.setState({
-      saved: !this.state.saved
+    Taro.downloadFile({
+      url: this.state.imgUrl,
+    }).then(res=>{
+      if (res.statusCode === 200){
+        Taro.saveImageToPhotosAlbum({
+          filePath: res.tempFilePath
+        }).then(res2=>{
+          console.log(res2)
+          this.setState({
+            saved: !this.state.saved
+          })
+        })
+      }
     })
   }
+
+
+
+
+
+
 
   // 引入标签列表
   async getTagList() {

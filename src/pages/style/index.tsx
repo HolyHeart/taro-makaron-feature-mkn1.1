@@ -4,7 +4,6 @@
 import { ComponentClass } from 'react'
 import Taro, { Component, Config } from '@tarojs/taro'
 import { View, Text, Button, Image, ScrollView } from '@tarojs/components'
-import globalData from '@/services/global_data'
 import './index.less'
 import Title from '@/components/Title'
 import CustomIcon from '@/components/Icon'
@@ -16,6 +15,7 @@ import rawcolorIcon from '@/assets/images/rawcolor-icon.png'
 import randomBg from '@/assets/images/random-bg.png'
 import randomIcon from '@/assets/images/random-icon.png'
 import { styleTransfer, base } from '@/services/service'
+import Loading from '@/components/Loading'
 
 // TODO to be deleted
 import testImg2 from '@/assets/images/Test2.png'
@@ -58,6 +58,7 @@ class Style extends Component {
     imgUrlTargetOriColor: '', // 实现人像分离的原色图片
     styleList:[],
     currentID: '',
+    loading: false,
   }
 
   // Constructor
@@ -67,9 +68,22 @@ class Style extends Component {
     this.initImage()
   }
 
+  // 显示与隐藏Loading
+  showLoading = () => {
+    this.setState({
+      loading: true
+    })
+  }
+  hideLoading = () => {
+    this.setState({
+      loading: false
+    })
+  }
+
   // Functions
   // 人像分离按钮
   segmentTypeToggle = async () => {
+    this.showLoading()
     console.log('按下人像分离按钮')
     this.setState({
       segmentType: !this.state.segmentType
@@ -83,6 +97,7 @@ class Style extends Component {
         imgUrl: this.state.imgUrlTarget,
       })
     }
+    this.hideLoading()
   }
 
   // 风格色按钮
@@ -176,6 +191,7 @@ class Style extends Component {
 
   // 更换图片风格
   changeStyle = async (id, colorType, e) => {
+    this.showLoading()
     console.log(id + '号风格按钮被按下')
     const processedPic = await styleTransfer.segment(this.state.imgOrigin, id, colorType)
     console.log(processedPic)
@@ -194,6 +210,7 @@ class Style extends Component {
         currentID: id
       })
     }
+    this.hideLoading()
   }
 
   // 主动选择其他风格后清除随机框内的内容
@@ -207,6 +224,7 @@ class Style extends Component {
 
   // 初始化，上传本地图片到云端，讲图片渲染成43号阿波利奈尔风格，并判断是否可以进行人像分割
   initImage = async () => {
+    this.showLoading()
     const remoteImgUrl = await base.upload(testImg)
     const processedPic = await styleTransfer.segment(remoteImgUrl.url, 43, this.state.colorType)
     const renderUrl = processedPic.result.result.renderUrl
@@ -223,6 +241,7 @@ class Style extends Component {
         hasSegmentButton: true
       })
     }
+    this.hideLoading()
   }
 
   render () {
@@ -329,7 +348,6 @@ class Style extends Component {
             <ScrollView className='scroll' scrollX={true}>
               <View className='random-component' onClick={this.shuffleStyle}>
                 {/* 随机按钮 */}
-                {/* TODO 背景图片也要改变 */}
                 <Image src={this.state.styleShuffleBg} className='bg' style="width:100%;height:100%"></Image>
                 <Image src={randomIcon} className='icon'></Image>
                 <View className='title'>
@@ -338,7 +356,6 @@ class Style extends Component {
               </View>
               {/* 风格列表 */}
               {styleList.map(item=>{
-                // TODO
                 console.log(item)
                 return <View className='random-component' style='margin-left:20rpx' onClick={this.clearShuffleBlock.bind(this, item.detailId, this.state.colorType)}>
                   <Image src={item.stylePicUrl} className='bg' style="width:100%;height:100%"></Image>
@@ -360,16 +377,21 @@ class Style extends Component {
 
     return (
       <View>
+
         {/* 标题栏 */}
         <Title color="#333" leftStyleObj={{left: Taro.pxTransform(8)}}
           renderLeft={
             <CustomIcon type="back" theme="dark" onClick={this.pageToHome}/>
           }>马卡龙玩图</Title>
+
+        {/* 加入loading */}
+        <Loading visible={this.state.loading} />
+
         <View className='page-style'>
           {/* 图片部分 */}
           <View className='header'>
             <View className='image-wrap'>
-             <Image className='origin-image' src={imgUrl}></Image>
+              <Image className='origin-image' src={imgUrl}></Image>
             </View>
           </View>
           {/* 操作部分 */}

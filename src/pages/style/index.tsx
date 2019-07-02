@@ -67,6 +67,8 @@ class Style extends Component {
 
     styleList:[],
 
+    currntID: 43,
+
  
   }
 
@@ -94,21 +96,29 @@ class Style extends Component {
   // Functions
   // 人像分离按钮
   // TODO 
-  segmentTypeToggle () {
+  segmentTypeToggle = async () => {
     console.log('按下人像分离按钮')
+    console.log(this.state.segmentType)
+
+    // TODO bug:没有更新
     this.setState({
       segmentType: !this.state.segmentType
     })
-
+    
+    // TODO 两个setState?
     if (this.state.segmentType) {
       this.setState({
-        imgUrl: this.state.imgUrlTarget
+        imgUrl: this.state.imgUrlRender,
       })
+      console.log(this.state.segmentType)
     } else {
       this.setState({
-        imgUrl: this.state.imgUrlRender
+        imgUrl: this.state.imgUrlTarget,
       })
+      console.log(this.state.segmentType)
     }
+
+    
 
 
   }
@@ -177,12 +187,14 @@ class Style extends Component {
 
     if (this.state.segmentType) {
       this.setState({
+        currentID: id,
         imgUrlRender: processedPic.result.result.renderUrl,
         imgUrlTarget: processedPic.result.result.targetUrl,
         imgUrl: processedPic.result.result.targetUrl
       })
     } else {
       this.setState({
+        currentID: id,
         imgUrlRender: processedPic.result.result.renderUrl,
         imgUrlTarget: processedPic.result.result.targetUrl,
         imgUrl: processedPic.result.result.renderUrl

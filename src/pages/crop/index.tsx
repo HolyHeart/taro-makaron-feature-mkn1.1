@@ -35,6 +35,10 @@ interface Crop {
   }
 }))
 class Crop extends Component {
+  constructor (props) {
+    super(props)
+    this.throttledStickerOntouchmove = this.throttle(this.touchmove, 1000/30).bind(this)
+  }
   config = {
     disableScroll: true
   }
@@ -84,23 +88,22 @@ class Crop extends Component {
   app = Taro.getApp()
 
   componentWillMount(): void {
-    this.initPage()
-    /*
-    const {getSystemInfo} = this.props
-    const systemInfo = Taro.getSystemInfoSync()
-    if (/iphone x/i.test(systemInfo.model)) {
-      // iPhone XS Max China-exclusive<iPhone11,6>
-      // 'iPhone X'
-      systemInfo.isIphoneX = true
-    } else {
-      systemInfo.isIphoneX = false
-    }
-    getSystemInfo(systemInfo)
-     */
   }
 
+  throttle = (func, deltaX) => {
+    let lastCalledAt = new Date().getTime()
+    let that = this
+    return function () {
+      if(new Date().getTime() - lastCalledAt >= deltaX) {
+        func.apply(that, arguments)
+        lastCalledAt = new Date().getTime()
+      } else {
+        // console.log('不执行')
+      }
+    }
+  }
   componentDidMount(): void {
-    // this.initPage()
+    this.initPage()
   }
 
   componentWillReceiveProps(nextProps: Readonly<P>, nextContext: any): void {
@@ -118,9 +121,6 @@ class Crop extends Component {
   imageLoad (e) {
     const {detail} = e
     let {img} = this.state
-    // this.state.img.originWidth = detail.width
-    // this.state.img.originHeight = detail.height
-    // console.log('image load', detail)
     this.setState({
       img: {
         ...img,
@@ -136,82 +136,104 @@ class Crop extends Component {
 
   }
   ontouchstart (e) {
-    // console.log('ontouchstart', e)
-    const {transitionDuration, gesture} = this.state
-    this.state.transitionDuration = '0s'
+    console.log('ontouchstart', e)
+    const { gesture } = this.state
     if (e.touches.length === 1) {
       let { clientX, clientY } = e.touches[0]
-      this.state.gesture.startX = clientX
-      this.state.gesture.startY = clientY
+      this.setState({
+        gesture: {
+          ...gesture,
+          startX:clientX,
+          startY:clientY
+        }
+      }, () => {
+        console.log('ontouchstart', this.state.gesture, this.state.transitionDuration)
+      })
       // this.touchStartEvent = e.touches;
       // console.log('gesture-one', this.gesture);
     } else {
       let xMove = e.touches[1].clientX - e.touches[0].clientX
       let yMove = e.touches[1].clientY - e.touches[0].clientY
       let distance = Math.sqrt(xMove * xMove + yMove * yMove)
-
-      this.state.gesture.distance = distance
-      this.state.gesture.zoom = true
-      // console.log('gesture-two', this.gesture);
+      this.setState({
+        gesture: {
+          ...gesture,
+          distance:distance,
+          zoom:true
+        }
+      }, () => {
+        console.log('ontouchstart', this.state.gesture, this.state.transitionDuration)
+      })
     }
-    this.setState({
-      transitionDuration: '0s',
-      gesture: {
-        ...gesture
-      }
-    }, () => {
-      console.log('ontouchstart', this.state.gesture, this.state.transitionDuration)
-    })
   }
-  ontouchmove () {
-    this.throttle(this.touchmove, 1000/500).bind(this)
-    // ontouchmove: this.touchmove,
+  throttledStickerOntouchmove (e) {
+    this.touchmove(e)
   }
 
   ontouchend (e) {
     // console.log('ontouchend', e)
     if (e.touches.length === 0) {
       const {gesture, img, box} = this.state
-      const scale = img.scale
+
+      // const scale = img.scale
       // 如果小于自动缩放时，则还原
       if (img.userScale < 1) {
-        // img.scale = img.autoScale
-        // let diffScale = img.autoScale - scale
-        // img.width = img.scale * img.originWidth
-        // img.height = img.scale * img.originHeight
+        // img.userScale = 1
         // img.x = img.autoX
         // img.y = img.autoY
-        img.userScale = 1
-        // 位移使图片居中
-        img.x = img.autoX
-        img.y = img.autoY
+        this.setState({
+          img:{
+            ...img,
+            userScale:1,
+            x:img.autoX,
+            y:img.autoY
+          }
+        })
       }
       // 如果移动超出边界 则还原
       if(!gesture.zoom){
         if (img.offsetX > 0) {
-          img.x = 0 - (1 - img.userScale) * img.width * 0.5
-          img.offsetX = 0
+          this.setState({
+             img:{
+               ...img,
+               x:0 - (1 - img.userScale) * img.width * 0.5,
+               offsetX:0
+             }
+          })
         }
         if (img.offsetY > 0) {
-          img.y = 0 - (1 - img.userScale) * img.height * 0.5
-          img.offsetY = 0
+          this.setState({
+            img:{
+              ...img,
+              y:0 - (1 - img.userScale) * img.height * 0.5,
+              offsetY:0
+            }
+          })
         }
         if (box.width - img.width * img.userScale > img.offsetX ) {
-          img.x = (box.width - img.width * img.userScale) - (1 - img.userScale) * img.width * 0.5
-          img.offsetX = (box.width - img.width  * img.userScale)
+          this.setState({
+            img:{
+              ...img,
+              x:(box.width - img.width * img.userScale) - (1 - img.userScale) * img.width * 0.5,
+              offsetX :(box.width - img.width * img.userScale)
+            }
+          })
         }
         if (box.height - img.height * img.userScale > img.offsetY ) {
-          img.y = (box.width - img.height * img.userScale) - (1 - img.userScale) * img.height * 0.5
-          img.offsetY = (box.width - img.height  * img.userScale)
+          this.setState({
+            img:{
+              ...img,
+              y:(box.width - img.width * img.userScale) - (1 - img.userScale) * img.height * 0.5,
+              offsetY :(box.width - img.height * img.userScale)
+            }
+          })
         }
       }
-      //重置缩放状态
-      this.state.transitionDuration = '0.15s'
-      gesture.zoom = false
       this.setState({
-        transitionDuration: '0s',
+        transitionDuration: '0.15s',
         gesture: {
-          ...gesture
+          ...gesture,
+          zoom:false
         }
       }, () => {
         console.log('ontouchend', this.state.gesture, this.state.transitionDuration)
@@ -237,16 +259,24 @@ class Crop extends Component {
     const demo = [
       "http://tmp/wx21630a5d4651096a.o6zAJsztn2DIgXEGteELseHpiOtU.NKidKasfEbMa5fa447cdf99ebe9bdfaff42b8dee3019.jpg",
     ]
-    const demo1 = ["https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1561701969834&di=d5b1269d072f0124f4a72910695efc92&imgtype=0&src=http%3A%2F%2Fpic37.nipic.com%2F20140113%2F8800276_184927469000_2.png"]
+    const demo1 = ["https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1561701969834&di=d5b1269d072f0124f4a72910695efc92&imgtype=0&src=http%3A%2F%2Fpic37.nipic.com%2F20140113%2F8800276_184927469000_2.png"] //test img
     // this.state.iamgePath = globalData.choosedImagePath || demo[0]
-    this.state.iamgePath = demo1[0]
+    // this.state.iamgePath = demo1[0]
     // console.log('wx.getSystemInfoSync().windowWidth', wx.getSystemInfoSync())
     // 计算canvas尺寸
     const { pixelRatio = 2 } = Taro.getSystemInfoSync() || {}
-    const {img, box, canvas} = this.state
-    canvas.ratio = pixelRatio
-    canvas.width = pixelRatio * box.width
-    canvas.height = pixelRatio * box.height
+    const { box, canvas } = this.state
+    const CanvasW = pixelRatio * box.width
+    const CanvasH = pixelRatio * box.height
+    this.setState({
+      iamgePath:demo1[0],
+      canvas:{
+        ...canvas,
+        width:CanvasW,
+        height:CanvasH,
+        ratio:pixelRatio,
+      }
+    })
   }
 
   // 重选照片
@@ -272,18 +302,27 @@ class Crop extends Component {
     const minSize = Math.min(originWidth, originHeight)
     const autoScale = boxWidth / minSize
     console.log('auto-scale', autoScale)
-    this.state.img.width = this.state.img.autoWidth = originWidth * autoScale
-    this.state.img.height = this.state.img.autoHeight = originHeight * autoScale
-    this.state.img.scale = this.state.img.autoScale = autoScale
-    // 位移使图片居中
-    this.state.img.x -= (originWidth*autoScale - boxWidth) * 0.5
-    this.state.img.y -= (originHeight*autoScale - boxWidth) * 0.5
-    this.state.img.autoX = this.state.img.x
-    this.state.img.autoY = this.state.img.y
-    this.state.img.offsetX = this.state.img.x
-    this.state.img.offsetY = this.state.img.y
-    //用于更新this.state.img，不可删去
-    this.setState({})
+    // auto const size
+    const justWidth = originWidth * autoScale
+    const justHeight = originHeight * autoScale
+    const justX = this.state.img.x -((originWidth*autoScale - boxWidth) * 0.5)
+    const justY = this.state.img.y -((originHeight*autoScale - boxWidth) * 0.5)
+    // const justX =
+    this.setState({
+      transitionDuration : '0s',
+      img:{
+        ...this.state.img,
+        width:justWidth,
+        height:justHeight,
+        scale:autoScale,
+        x:justX,
+        y:justY,
+        autoX:justX,
+        autoY:justY,
+        offsetX:justX,
+        offsetY:justY,
+      }
+    })
   }
 
   touchmove (e) {
@@ -300,11 +339,19 @@ class Crop extends Component {
       let offsetY = clientY - gesture.startY;
       gesture.startX = clientX;
       gesture.startY = clientY;
-
       img.x += offsetX
       img.y += offsetY
       img.offsetX += offsetX
       img.offsetY += offsetY
+      this.setState({
+        img:{
+          ...img,
+          x:img.x+offsetX,
+          y:img.y+offsetY,
+          offsetX:img.offsetX+offsetX,
+          offsetY:img.offsetY+offsetY
+        }
+      })
     } else {
       //双指缩放
       const {gesture, img} = this.state
@@ -319,19 +366,19 @@ class Crop extends Component {
       if (newScale * img.width < 100) {
         return
       }
-      // let newWidth = newScale * img.originWidth;
-      // let newHeight = newScale * img.originHeight;
-      // console.log('newWidth', newWidth, 'newHeight', newHeight)
-
       gesture.distance = distance
       img.userScale = newScale
-      // img.width = newWidth
-      // img.height = newHeight
-      // 位移变化。使放大中心为图片中心
-      // img.x = img.x - diffScale * img.originWidth *0.5
-      // img.y = img.y - diffScale * img.originHeight *0.5
       img.offsetX = img.width * (1 - img.userScale) * 0.5 + img.x
       img.offsetY = img.height * (1 - img.userScale) * 0.5 + img.y
+
+      this.setState({
+          img:{
+            ...img,
+            userScale:newScale,
+            offsetX:img.width * (1 - newScale) * 0.5 + img.x,
+            offsetY:img.height * (1 - newScale) * 0.5 + img.y
+          }
+      })
     }
   }
   // 函数截留
@@ -340,6 +387,7 @@ class Crop extends Component {
     let that = this;
     return function(e) {
       if(new Date().getTime() - lastCalledAt >= deltaX) {
+        console.log('go back')
         func.apply(that, arguments);
         lastCalledAt = new Date().getTime();
       }
@@ -400,7 +448,7 @@ class Crop extends Component {
           className="main"
           style={`width:${box.width}px; height:${box.height}px`}
           onTouchStart={this.ontouchstart}
-          onTouchMove={this.ontouchmove}
+          onTouchMove={this.throttledStickerOntouchmove}
           onTouchEnd={this.ontouchend}>
           <View className="image-wrap" style={`transform: translate(${img.x}px, ${img.y}px) scale(${img.userScale});transition-duration: ${transitionDuration};`}>
             <Image src={iamgePath} style={`width:${img.width}px;height:${img.height}px`} onLoad={this.imageLoad} />

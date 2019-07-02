@@ -1,6 +1,5 @@
 // added by Shichao.Ma
 // 灵魂画手移植程序的Style页面
-// TODO 功能化按键
 
 import { ComponentClass } from 'react'
 import Taro, { Component, Config } from '@tarojs/taro'
@@ -20,9 +19,6 @@ import { styleTransfer, base } from '@/services/service'
 
 // TODO to be deleted
 import testImg2 from '@/assets/images/Test2.png'
-
-
-
 
 
 type PageStateProps = {}
@@ -48,29 +44,20 @@ class Style extends Component {
 
   state = {
     saved: false, // 是否显示结果
-
     hasSegmentButton: false, // 是否呈现人像分割按钮，根据处理图片中是否包括人像来断定
-    
     colorType: false, // 是否为原色，初始值为否
     segmentType: false, // 是否人像分离，初始值为不分离
-
     renderStatus: 'init', // 渲染结果 'success' 'fail' 'init' 'loading'
     styleShuffle: '智能风格推荐', // 随机按钮文字，点击前为'随机风格'，点击后为风格名字
-
-
+    styleShuffleBg: randomBg,
     imgUrl: '', // 用于展示的图片
-
     imgOrigin: '', // 原始图片
     imgUrlRender: '', // 未实现人像分离的图片
     imgUrlTarget: '', // 实现人像分离的图片
     imgUrlRenderOriColor: '', // 未实现人像分离的原色图片
     imgUrlTargetOriColor: '', // 实现人像分离的原色图片
-
     styleList:[],
-
     currentID: '',
-
- 
   }
 
   // Constructor
@@ -166,21 +153,32 @@ class Style extends Component {
     }
   }
 
-
   // 随机选择风格
   shuffleStyle () {
-    console.log(this.state.styleList)
+    var min = 0
+    var max = this.state.styleList.length-1
+    var ran = this.getRandomNum(min, max)
+    var theStyle = this.state.styleList[ran]
+    var id = theStyle.detailId
+    this.changeStyle (id, this.state.colorType, this)
+    this.setState({
+      styleShuffle: theStyle.name,
+      styleShuffleBg: theStyle.stylePicUrl
+    })
   }
 
-
+  // 生成随机数
+  getRandomNum (min, max) {
+    var range = max - min
+    var rand = Math.random()
+    return (min + Math.round(rand * range))
+  }
 
   // 更换图片风格
   changeStyle = async (id, colorType, e) => {
     console.log(id + '号风格按钮被按下')
-
     const processedPic = await styleTransfer.segment(this.state.imgOrigin, id, colorType)
     console.log(processedPic)
-
     if (this.state.segmentType) {
       this.setState({
         imgUrlRender: processedPic.result.result.renderUrl,
@@ -196,6 +194,15 @@ class Style extends Component {
         currentID: id
       })
     }
+  }
+
+  // 主动选择其他风格后清除随机框内的内容
+  clearShuffleBlock (id, colorType, e) {
+    this.setState({
+      styleShuffle: '智能风格推荐',
+      styleShuffleBg: randomBg
+    })
+    this.changeStyle(id, colorType, e)
   }
 
   // 初始化，上传本地图片到云端，讲图片渲染成43号阿波利奈尔风格，并判断是否可以进行人像分割
@@ -225,7 +232,6 @@ class Style extends Component {
     let segBtn
     let colorBtn
     let bottomBtns
-
 
     // 判断是否需要”人景分离“按钮
     if (hasSegmentButton) {
@@ -321,10 +327,10 @@ class Style extends Component {
           {/* 风格选择区域 */}
           <View className='style-wrap' style='margin-top:30rpx'>
             <ScrollView className='scroll' scrollX={true}>
-              <View className='random-component'>
+              <View className='random-component' onClick={this.shuffleStyle}>
                 {/* 随机按钮 */}
                 {/* TODO 背景图片也要改变 */}
-                <Image src={randomBg} className='bg' style="width:100%;height:100%" onClick={this.shuffleStyle}></Image>
+                <Image src={this.state.styleShuffleBg} className='bg' style="width:100%;height:100%"></Image>
                 <Image src={randomIcon} className='icon'></Image>
                 <View className='title'>
                   <Text>{styleShuffle}</Text>
@@ -334,8 +340,8 @@ class Style extends Component {
               {styleList.map(item=>{
                 // TODO
                 console.log(item)
-                return <View className='random-component' style='margin-left:20rpx'>
-                  <Image src={item.stylePicUrl} className='bg' style="width:100%;height:100%" onClick={this.changeStyle.bind(this, item.detailId, this.state.colorType)}></Image>
+                return <View className='random-component' style='margin-left:20rpx' onClick={this.clearShuffleBlock.bind(this, item.detailId, this.state.colorType)}>
+                  <Image src={item.stylePicUrl} className='bg' style="width:100%;height:100%"></Image>
                   <View className='title-bg'>
                     <Text>{item.name}</Text>
                   </View>

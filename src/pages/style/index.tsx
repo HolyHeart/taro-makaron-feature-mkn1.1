@@ -54,20 +54,24 @@ class Style extends Component {
 
     hasSegmentButton: false, // 是否呈现人像分割按钮，根据处理图片中是否包括人像来断定
     
-    colorType: true, // 原色or风格色，初始值为风格色
+    colorType: false, // 是否为原色，初始值为否
     segmentType: false, // 是否人像分离，初始值为不分离
 
     renderStatus: 'init', // 渲染结果 'success' 'fail' 'init' 'loading'
     styleShuffle: '智能风格推荐', // 随机按钮文字，点击前为'随机风格'，点击后为风格名字
 
+
     imgUrl: '', // 用于展示的图片
+
     imgOrigin: '', // 原始图片
     imgUrlRender: '', // 未实现人像分离的图片
     imgUrlTarget: '', // 实现人像分离的图片
+    imgUrlRenderOriColor: '', // 未实现人像分离的原色图片
+    imgUrlTargetOriColor: '', // 实现人像分离的原色图片
 
     styleList:[],
 
-    currntID: 43,
+    currentID: '',
 
  
   }
@@ -95,41 +99,29 @@ class Style extends Component {
 
   // Functions
   // 人像分离按钮
-  // TODO 
   segmentTypeToggle = async () => {
     console.log('按下人像分离按钮')
-    console.log(this.state.segmentType)
-
-    // TODO bug:没有更新
     this.setState({
       segmentType: !this.state.segmentType
     })
-    
-    // TODO 两个setState?
     if (this.state.segmentType) {
       this.setState({
         imgUrl: this.state.imgUrlRender,
       })
-      console.log(this.state.segmentType)
     } else {
       this.setState({
         imgUrl: this.state.imgUrlTarget,
       })
-      console.log(this.state.segmentType)
     }
-
-    
-
-
   }
 
   // 风格色按钮
-  // TODO 
   colorTypeToggle () {
     console.log('按下风格色按钮')
     this.setState({
-      colorType: !this.state.colorType
+      colorType: !this.state.colorType,
     })
+    this.changeStyle(this.state.currentID,!this.state.colorType,this)
   }
 
   // 返回键按钮
@@ -151,7 +143,6 @@ class Style extends Component {
       const tagList = await styleTransfer.tagList()
       console.log('Hey bro, check out this tag list')
       console.log(tagList.result)
-      // TODO
       return tagList.result.featureTagVoList
     } catch (err) {
       console.log('Oops, failed to get tag list', err)
@@ -177,27 +168,26 @@ class Style extends Component {
 
 
   // 跟换图片风格
-  changeStyle = async (id, e) => {
+  changeStyle = async (id, colorType, e) => {
     console.log(id + '号风格按钮被按下')
 
     // TODO
-    const processedPic = await styleTransfer.segment(this.state.imgOrigin, id, this.state.colorType)
+    const processedPic = await styleTransfer.segment(this.state.imgOrigin, id, colorType)
     console.log(processedPic)
-
 
     if (this.state.segmentType) {
       this.setState({
-        currentID: id,
         imgUrlRender: processedPic.result.result.renderUrl,
         imgUrlTarget: processedPic.result.result.targetUrl,
-        imgUrl: processedPic.result.result.targetUrl
+        imgUrl: processedPic.result.result.targetUrl,
+        currentID: id
       })
     } else {
       this.setState({
-        currentID: id,
         imgUrlRender: processedPic.result.result.renderUrl,
         imgUrlTarget: processedPic.result.result.targetUrl,
-        imgUrl: processedPic.result.result.renderUrl
+        imgUrl: processedPic.result.result.renderUrl,
+        currentID: id
       })
     }
 
@@ -230,6 +220,7 @@ class Style extends Component {
       imgOrigin: remoteImgUrl.url,
       imgUrlRender: renderUrl,
       imgUrlTarget: processedPic.result.result.targetUrl,
+      currentID: 43,
     })
     // 判断是否可以人像分离
     if (renderUrl !== processedPic.result.result.targetUrl){
@@ -276,7 +267,7 @@ class Style extends Component {
       }
     } 
 
-    if (colorType) {
+    if (!colorType) {
       colorBtn = (
         <View className='type-button' style='margin-left: 20rpx' onClick={this.colorTypeToggle}>
           <View className='icon-wrap'>
@@ -287,7 +278,7 @@ class Style extends Component {
           </View>
         </View>
       )
-    } else if (!colorType) {
+    } else if (colorType) {
       colorBtn = (
         <View className='type-button bg' style='margin-left: 20rpx' onClick={this.colorTypeToggle}>
           <View className='icon-wrap'>
@@ -359,7 +350,7 @@ class Style extends Component {
                 // TODO
                 console.log(item)
                 return <View className='random-component' style='margin-left:20rpx'>
-                  <Image src={item.stylePicUrl} className='bg' style="width:100%;height:100%" onClick={this.changeStyle.bind(this, item.detailId)}></Image>
+                  <Image src={item.stylePicUrl} className='bg' style="width:100%;height:100%" onClick={this.changeStyle.bind(this, item.detailId, this.state.colorType)}></Image>
                   <View className='title-bg'>
                     <Text>{item.name}</Text>
                   </View>

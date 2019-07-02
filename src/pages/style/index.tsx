@@ -356,7 +356,6 @@ class Style extends Component {
               </View>
               {/* 风格列表 */}
               {styleList.map(item=>{
-                console.log(item)
                 return <View className='random-component' style='margin-left:20rpx' onClick={this.clearShuffleBlock.bind(this, item.detailId, this.state.colorType)}>
                   <Image src={item.stylePicUrl} className='bg' style="width:100%;height:100%"></Image>
                   <View className='title-bg'>

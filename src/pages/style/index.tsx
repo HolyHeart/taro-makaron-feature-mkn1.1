@@ -31,9 +31,7 @@ type PageDispatchProps = {}
 
 type PageOwnProps = {}
 
-type PageState = {
-  choosedImage: string
-}
+type PageState = {}
 
 type IProps = PageStateProps & PageDispatchProps & PageOwnProps
 
@@ -49,7 +47,6 @@ class Style extends Component {
   }
 
   state = {
-    choosedImage: '',
     saved: false, // 是否显示结果
 
     hasSegmentButton: false, // 是否呈现人像分割按钮，根据处理图片中是否包括人像来断定
@@ -82,20 +79,6 @@ class Style extends Component {
     this.getStyleList()
     this.initImage()
   }
-
-
-
-  componentDidMount () {
-    this.setState({
-      choosedImage: globalData.choosedImage
-    })
-  }
-  componentWillReceiveProps (nextProps) {
-    // console.log(this.props, nextProps)
-  }
-  componentWillUnmount () { }
-  componentDidShow () { }
-  componentDidHide () { }
 
   // Functions
   // 人像分离按钮
@@ -130,11 +113,6 @@ class Style extends Component {
     Taro.navigateBack({ delta: 1 })
   }
 
-
-
-
-
-
   // 保存键按钮
   save () {
     console.log('按下保存键')
@@ -162,13 +140,8 @@ class Style extends Component {
     })
   }
 
-
-
-
-
-
-
   // 引入标签列表
+  // TODO 暂时无用
   async getTagList() {
     try {
       const tagList = await styleTransfer.tagList()
@@ -194,15 +167,17 @@ class Style extends Component {
   }
 
 
+  // 随机选择风格
+  shuffleStyle () {
+    console.log(this.state.styleList)
+  }
 
 
 
-
-  // 跟换图片风格
+  // 更换图片风格
   changeStyle = async (id, colorType, e) => {
     console.log(id + '号风格按钮被按下')
 
-    // TODO
     const processedPic = await styleTransfer.segment(this.state.imgOrigin, id, colorType)
     console.log(processedPic)
 
@@ -221,27 +196,9 @@ class Style extends Component {
         currentID: id
       })
     }
-
-
-    // this.setState({
-    //   imgUrl: processedPic.result.result.renderUrl
-    // })
   }
 
-  // TODO
-  changeStyleBasedOnSegment (processedPic) {
-    if (this.state.segmentType) {
-      return processedPic.result.result.renderUrl
-    } else {
-      return processedPic.result.result.targetUrl
-    }
-  }
-
-
-
-
-
-  // TODO 初始化，上传本地图片到云端，讲图片渲染成43号阿波利奈尔风格，并判断是否可以进行人像分割
+  // 初始化，上传本地图片到云端，讲图片渲染成43号阿波利奈尔风格，并判断是否可以进行人像分割
   initImage = async () => {
     const remoteImgUrl = await base.upload(testImg)
     const processedPic = await styleTransfer.segment(remoteImgUrl.url, 43, this.state.colorType)
@@ -259,7 +216,6 @@ class Style extends Component {
         hasSegmentButton: true
       })
     }
-
   }
 
   render () {
@@ -341,7 +297,7 @@ class Style extends Component {
       // 如果图片被保存，显示内容则为【保存界面】
       content = (
         <View className='footer'>
-          <View className='result-wrap'>
+          <View className='result-wrap' style='margin-top:30rpx'>
             {/* <Image className='icon' src={savedTitle}></Image> */}
             <Text className='text'>保存成功</Text>  
           </View>
@@ -356,21 +312,19 @@ class Style extends Component {
       content = (
         <View className='main'>
           <View className='style-bg'>
-            {/* TODO: Brush component */}
           </View>
-
           {/* 人景分离及风格色按钮组 */}
           <View className='type-wrap' style='margin-top:20rpx'>
             {segBtn} 
             {colorBtn}
           </View>
-
           {/* 风格选择区域 */}
           <View className='style-wrap' style='margin-top:30rpx'>
             <ScrollView className='scroll' scrollX={true}>
               <View className='random-component'>
                 {/* 随机按钮 */}
-                <Image src={randomBg} className='bg' style="width:100%;height:100%"></Image>
+                {/* TODO 背景图片也要改变 */}
+                <Image src={randomBg} className='bg' style="width:100%;height:100%" onClick={this.shuffleStyle}></Image>
                 <Image src={randomIcon} className='icon'></Image>
                 <View className='title'>
                   <Text>{styleShuffle}</Text>
@@ -390,43 +344,32 @@ class Style extends Component {
               }
             </ScrollView>
           </View>
-
           {/* 保存及分享按钮组及出错提示 */}
           <View style='margin-top:35rpx'>
             {bottomBtns}
           </View>
-
         </View>
       )
     }
 
-
     return (
-  
       <View>
         {/* 标题栏 */}
         <Title color="#333" leftStyleObj={{left: Taro.pxTransform(8)}}
           renderLeft={
             <CustomIcon type="back" theme="dark" onClick={this.pageToHome}/>
           }>马卡龙玩图</Title>
-
         <View className='page-style'>
           {/* 图片部分 */}
           <View className='header'>
             <View className='image-wrap'>
              <Image className='origin-image' src={imgUrl}></Image>
-
-              {/* TODO */}
-
             </View>
           </View>
-
           {/* 操作部分 */}
           {content}
-
         </View>  
       </View>  
-
     )
   }
 }

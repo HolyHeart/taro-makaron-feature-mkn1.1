@@ -18,6 +18,9 @@ import randomBg from '@/assets/images/random-bg.png'
 import randomIcon from '@/assets/images/random-icon.png'
 import { styleTransfer, base } from '@/services/service'
 
+// TODO to be deleted
+import testImg2 from '@/assets/images/Test2.png'
+
 
 
 
@@ -48,17 +51,32 @@ class Style extends Component {
   state = {
     choosedImage: '',
     saved: false, // 是否显示结果
-    hasSegmentButton: true, // 是否呈现人像分割按钮，根据处理图片中是否包括人像来断定
-    colorType: false, // 原色or风格色
-    segmentType: true, // 是否人像分离
+
+    hasSegmentButton: false, // 是否呈现人像分割按钮，根据处理图片中是否包括人像来断定
+    
+    colorType: true, // 原色or风格色，初始值为风格色
+    segmentType: false, // 是否人像分离，初始值为不分离
+
     renderStatus: 'init', // 渲染结果 'success' 'fail' 'init' 'loading'
     styleShuffle: '智能风格推荐', // 随机按钮文字，点击前为'随机风格'，点击后为风格名字
 
-    imgUrl: testImg,
+    imgUrl: '', // 用于展示的图片
+    imgOrigin: '', // 原始图片
+    imgUrlRender: '', // 未实现人像分离的图片
+    imgUrlTarget: '', // 实现人像分离的图片
 
     styleList:[],
+
  
   }
+
+  // Constructor
+  constructor() {
+    super();
+    this.getStyleList()
+    this.initImage()
+  }
+
 
 
   componentDidMount () {
@@ -81,6 +99,18 @@ class Style extends Component {
     this.setState({
       segmentType: !this.state.segmentType
     })
+
+    if (this.state.segmentType) {
+      this.setState({
+        imgUrl: this.state.imgUrlTarget
+      })
+    } else {
+      this.setState({
+        imgUrl: this.state.imgUrlRender
+      })
+    }
+
+
   }
 
   // 风格色按钮
@@ -131,24 +161,71 @@ class Style extends Component {
     }
   }
 
+
+
+
+
+
   // 跟换图片风格
   changeStyle = async (id, e) => {
     console.log(id + '号风格按钮被按下')
-    const remoteImgUrl = await base.upload(testImg)
-    console.log(remoteImgUrl)
-    const processedPic = await styleTransfer.segment(remoteImgUrl.url, id, this.state.colorType)
+
+    // TODO
+    const processedPic = await styleTransfer.segment(this.state.imgOrigin, id, this.state.colorType)
     console.log(processedPic)
 
-    this.setState({
-      imgUrl: processedPic.result.result.renderUrl
-    })
 
+    if (this.state.segmentType) {
+      this.setState({
+        imgUrlRender: processedPic.result.result.renderUrl,
+        imgUrlTarget: processedPic.result.result.targetUrl,
+        imgUrl: processedPic.result.result.targetUrl
+      })
+    } else {
+      this.setState({
+        imgUrlRender: processedPic.result.result.renderUrl,
+        imgUrlTarget: processedPic.result.result.targetUrl,
+        imgUrl: processedPic.result.result.renderUrl
+      })
+    }
+
+
+    // this.setState({
+    //   imgUrl: processedPic.result.result.renderUrl
+    // })
   }
 
-  // TODO 初始化，上传本地图片到云端
+  // TODO
+  changeStyleBasedOnSegment (processedPic) {
+    if (this.state.segmentType) {
+      return processedPic.result.result.renderUrl
+    } else {
+      return processedPic.result.result.targetUrl
+    }
+  }
+
+
+
+
+
+  // TODO 初始化，上传本地图片到云端，讲图片渲染成43号阿波利奈尔风格，并判断是否可以进行人像分割
   initImage = async () => {
     const remoteImgUrl = await base.upload(testImg)
-    this.state.imgUrl = remoteImgUrl.url
+    const processedPic = await styleTransfer.segment(remoteImgUrl.url, 43, this.state.colorType)
+    const renderUrl = processedPic.result.result.renderUrl
+    this.setState({
+      imgUrl: renderUrl,
+      imgOrigin: remoteImgUrl.url,
+      imgUrlRender: renderUrl,
+      imgUrlTarget: processedPic.result.result.targetUrl,
+    })
+    // 判断是否可以人像分离
+    if (renderUrl !== processedPic.result.result.targetUrl){
+      this.setState({
+        hasSegmentButton: true
+      })
+    }
+
   }
 
   render () {
@@ -158,13 +235,6 @@ class Style extends Component {
     let segBtn
     let colorBtn
     let bottomBtns
-
-
-    // 初始化部分
-    // TODO
-    this.getStyleList()
-    this.initImage()
-
 
 
     // 判断是否需要”人景分离“按钮
@@ -274,6 +344,7 @@ class Style extends Component {
               </View>
               {/* 风格列表 */}
               {styleList.map(item=>{
+                // TODO
                 console.log(item)
                 return <View className='random-component' style='margin-left:20rpx'>
                   <Image src={item.stylePicUrl} className='bg' style="width:100%;height:100%" onClick={this.changeStyle.bind(this, item.detailId)}></Image>

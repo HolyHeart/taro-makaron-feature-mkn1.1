@@ -180,22 +180,17 @@ class Crop extends Component {
   }
 
   initPage() {
-    /// const {globalData} = this.app
+    // const {globalData} = this.app
     const demo = [
       "http://tmp/wx21630a5d4651096a.o6zAJsztn2DIgXEGteELseHpiOtU.NKidKasfEbMa5fa447cdf99ebe9bdfaff42b8dee3019.jpg",
     ]
-    const demo1 = ["https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1561701969834&di=d5b1269d072f0124f4a72910695efc92&imgtype=0&src=http%3A%2F%2Fpic37.nipic.com%2F20140113%2F8800276_184927469000_2.png"] //test img
     const pic = globalData.choosedImage || demo[0]
-    // this.state.iamgePath = globalData.choosedImagePath || demo[0]
-    // this.state.iamgePath = demo1[0]
-    // console.log('wx.getSystemInfoSync().windowWidth', wx.getSystemInfoSync())
-    // 计算canvas尺寸
     const { pixelRatio = 2 } = Taro.getSystemInfoSync() || {}
     const { box, canvas } = this.state
     const CanvasW = pixelRatio * box.width
     const CanvasH = pixelRatio * box.height
     this.setState({
-      iamgePath: demo1[0],
+      iamgePath: pic,
       canvas: {
         ...canvas,
         width: CanvasW,

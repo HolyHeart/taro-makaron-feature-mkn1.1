@@ -252,11 +252,12 @@ class Style extends Component {
   initImage = async () => {
     this.showLoading()
     // 让图片渲染加载期间先展示原图
-
+    this.setState({
+      imgUrl: globalData.cropedImagePath
+    })
     console.log('11')
     const remoteImgUrl = await base.upload(globalData.cropedImagePath)
     this.setState({
-      imgUrl: globalData.cropedImagePath,
       imgOrigin: remoteImgUrl.url,
     })
     //console.log(remoteImgUrl.url)

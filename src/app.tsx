@@ -33,6 +33,7 @@ class _App extends Component {
       'pages/dynamic/index',
       'pages/error/index',
       'pages/index',
+      'pages/style/index',
     ],
     window: {
       backgroundTextStyle: 'light',

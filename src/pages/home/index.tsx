@@ -252,6 +252,12 @@ class Home extends Component {
     })
   }
 
+  // added by Shichao.Ma
+  turnToStyle = () => {
+    console.log('hohoho!')
+    Taro.navigateTo({url: '/pages/style/index'})
+  }
+
   todo = () => {
     work.chooseImage({
       onTap: (index) => {
@@ -326,6 +332,12 @@ class Home extends Component {
                 )
               })
             }
+
+
+            {/* added by Shichao.Ma */}
+            {/* 灵魂画手临时接口 */}
+            <Button style='margin-top: 25px; font-size:30px' onClick={this.turnToStyle}>灵魂画手临时接口</Button>
+
 
             <View className="bottomInfo" style='margin-top:25px;font-size:10px'>
               - 到底了哦 -

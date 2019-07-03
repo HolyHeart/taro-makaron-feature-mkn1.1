@@ -41,6 +41,12 @@ export const api = {
     recommend: `${getHost('miniapi', ENV)}/scene/recommend`,
     filterConvertVideo: `${getHost('miniapi', ENV)}/video/merge`,
     reportFormId: `${getHost('miniapi', ENV)}/user/miniProgram/report`,
+  },
+  // Style Transfer 
+  style: {
+    segment: `${getHost('miniapi', ENV)}/image/render/segment`,
+    featureTagOrder: `${getHost('miniapi', ENV)}/feature/featureTagOrder`,
+    featureDetail: `${getHost('miniapi', ENV)}/feature/featureDetail`,
   }
 }
 export default {

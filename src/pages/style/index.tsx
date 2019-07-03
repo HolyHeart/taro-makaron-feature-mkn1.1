@@ -226,6 +226,11 @@ class Style extends Component {
   // 初始化，上传本地图片到云端，讲图片渲染成43号阿波利奈尔风格，并判断是否可以进行人像分割
   initImage = async () => {
     this.showLoading()
+    // 让图片渲染加载期间先展示原图
+    this.setState({
+      imgUrl: globalData.cropedImagePath
+    })
+
     const remoteImgUrl = await base.upload(globalData.cropedImagePath)
     //console.log(remoteImgUrl.url)
     //console.log('croped image', globalData.cropedImagePath)

@@ -40,7 +40,13 @@ export const api = {
     theme: `${getHost('qq_miniapi', ENV)}/bg/:themeId/themeData`,
     recommend: `${getHost('qq_miniapi', ENV)}/scene/recommend`,
     filterConvertVideo: `${getHost('qq_miniapi', ENV)}/video/merge`,
-    reportFormId: `${getHost('qq_miniapi', ENV)}/user/miniProgram/qq/report`,
+    reportFormId: `${getHost('qq_miniapi', ENV)}/user/miniProgram/report`,
+  },
+  // Style Transfer
+  style: {
+    segment: `${getHost('qq_miniapi', ENV)}/image/render/segment`,
+    featureTagOrder: `${getHost('qq_miniapi', ENV)}/feature/featureTagOrder`,
+    featureDetail: `${getHost('qq_miniapi', ENV)}/feature/featureDetail`,
   }
 }
 export default {

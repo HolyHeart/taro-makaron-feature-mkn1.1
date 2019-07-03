@@ -1,13 +1,17 @@
 {
-  "miniprogramRoot": "./dist",
-  "projectname": "taro-makaron",
-  "description": "懒人抠图",
-  "appid": "1109011670",
-  "setting": {
-    "urlCheck": true,
-    "es6": false,
-    "postcss": false,
-    "minified": false
-  },
-  "compileType": "miniprogram"
+	"miniprogramRoot": "dist/",
+	"projectname": "taro-makaron",
+	"description": "懒人抠图",
+	"appid": "1109011670",
+	"setting": {
+		"urlCheck": true,
+		"es6": false,
+		"postcss": false,
+		"minified": false
+	},
+	"compileType": "miniprogram",
+	"simulatorType": "wechat",
+	"simulatorPluginLibVersion": {},
+	"libVersion": "2.7.2",
+	"condition": {}
 }

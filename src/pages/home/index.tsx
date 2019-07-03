@@ -252,6 +252,12 @@ class Home extends Component {
     })
   }
 
+  // added by Shichao.Ma
+  turnToStyle = () => {
+    console.log('hohoho!')
+    Taro.navigateTo({url: '/pages/style/index'})
+  }
+
   todo = () => {
     work.chooseImage({
       onTap: (index) => {
@@ -273,6 +279,8 @@ class Home extends Component {
           Taro.navigateTo({url: '/pages/dynamic/index'})
         } else if (sceneType === 3) {
           Taro.navigateTo({url: '/pages/segment/index'})
+        } else if (sceneType === 4){
+          Taro.navigateTo({url: '/pages/crop/index'})
         } else {
           Taro.navigateTo({url: '/pages/editor/index'})
         }

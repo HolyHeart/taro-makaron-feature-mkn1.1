@@ -62,10 +62,9 @@ class Style extends Component {
   }
 
   // Constructor
-  constructor() {
-    super();
-    this.getStyleList()
-    this.initImage()
+  constructor(props) {
+    super(props);
+    
   }
 
   // 显示与隐藏Loading
@@ -79,7 +78,10 @@ class Style extends Component {
       loading: false
     })
   }
-
+  componentDidMount(){
+    this.getStyleList()
+    this.initImage()
+  }
   // Functions
   // 人像分离按钮
   segmentTypeToggle = async () => {
@@ -156,7 +158,8 @@ class Style extends Component {
   }
 
   // 引入风格列表
-  getStyleList = async () =>  {
+  async getStyleList ()  {
+    console.log('get')
     this.state.styleList = []
     try {
       const styleList = await styleTransfer.styleList()
@@ -230,7 +233,7 @@ class Style extends Component {
     this.setState({
       imgUrl: globalData.cropedImagePath
     })
-
+    console.log('11')
     const remoteImgUrl = await base.upload(globalData.cropedImagePath)
     //console.log(remoteImgUrl.url)
     //console.log('croped image', globalData.cropedImagePath)
@@ -289,7 +292,7 @@ class Style extends Component {
     } else {
       segBtn = (
         <View style='margin-top: 30rpx; margin-bottom: 25rpx'></View>
-      ) 
+      )
     }
 
     // if (!colorType) {

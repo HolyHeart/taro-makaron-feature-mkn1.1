@@ -288,14 +288,6 @@ class Home extends Component {
     })
   }
 
-  goToCrop () {
-    Taro.navigateTo({url: '/pages/crop/index'})
-  }
-
-  goToWaiting () {
-    Taro.navigateTo({url: '/pages/waiting/index'})
-  }
-
   render () {
     const { categoryList } = this.state
     const {global = {}} = this.props

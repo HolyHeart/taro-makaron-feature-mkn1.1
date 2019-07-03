@@ -25,9 +25,11 @@ export const createCache = (name:string) => {
 export const cacheCover = new Cache('cover')
 export const cacheSegment = new Cache('segment')
 export const cacheImg = new Cache('image')
+export const cacheStyle = new Cache('style')
 export default {
   createCache,
   cacheCover,
   cacheSegment,
-  cacheImg
+  cacheImg,
+  cacheStyle
 }

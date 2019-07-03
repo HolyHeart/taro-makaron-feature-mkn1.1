@@ -32,6 +32,8 @@ class _App extends Component {
       'pages/segment/index',
       'pages/dynamic/index',
       'pages/error/index',
+      'pages/crop/index',
+      'pages/waiting/index',
       'pages/index',
       'pages/style/index',
     ],

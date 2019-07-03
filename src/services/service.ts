@@ -119,12 +119,6 @@ export const base = {
     })
   }
 }
-
-
-
-
-
-
 export const core = {
   segment: function (remoteImgUrl, segmentType?:number) {
     let postData:segmentData = {
@@ -320,7 +314,7 @@ export const styleTransfer = {
   },
 
 
-  
+
   segment: function (remoteImgUrl, styleId, originalColors) {
     // remoteImgUrl 远程静态服务器图片地址
     // styleId 渲染风格Id

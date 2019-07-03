@@ -279,6 +279,8 @@ class Home extends Component {
           Taro.navigateTo({url: '/pages/dynamic/index'})
         } else if (sceneType === 3) {
           Taro.navigateTo({url: '/pages/segment/index'})
+        } else if (sceneType === 4){
+          Taro.navigateTo({url: '/pages/crop/index'})
         } else {
           Taro.navigateTo({url: '/pages/editor/index'})
         }
@@ -340,15 +342,6 @@ class Home extends Component {
                 )
               })
             }
-            <View><Button onClick={this.goToCrop}>crop</Button></View>
-            <View><Button onClick={this.goToWaiting}>waiting</Button></View>
-
-
-            {/* added by Shichao.Ma */}
-            {/* 灵魂画手临时接口 */}
-            <Button style='margin-top: 25px; font-size:30px' onClick={this.turnToStyle}>灵魂画手临时接口</Button>
-
-
             <View className="bottomInfo" style='margin-top:25px;font-size:10px'>
               - 到底了哦 -
             </View>

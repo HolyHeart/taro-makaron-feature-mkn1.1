@@ -17,6 +17,7 @@ import randomBg from '@/assets/images/random-bg.png'
 import randomIcon from '@/assets/images/random-icon.png'
 import { styleTransfer, base } from '@/services/service'
 import Loading from '@/components/Loading'
+import globalData from "@/services/global_data"
 
 import globalData from "@/services/global_data";
 
@@ -235,12 +236,15 @@ class Style extends Component {
     const processedPic = await styleTransfer.segment(remoteImgUrl.url, 43, this.state.colorType)
     //console.log(processedPic)
     const renderUrl = processedPic.result.result.renderUrl
+    console.log('renderUrl', renderUrl)
+    console.log('remoteImgUrl', remoteImgUrl.url)
+    console.log('horse', horse)
     this.setState({
       imgUrl: renderUrl,
       imgOrigin: remoteImgUrl.url,
       imgUrlRender: renderUrl,
       imgUrlTarget: processedPic.result.result.targetUrl,
-      currentID: 43,
+      currentID: 45,
     })
     // 判断是否可以人像分离
     if (renderUrl !== processedPic.result.result.targetUrl){
@@ -271,7 +275,7 @@ class Style extends Component {
               人景-分离-
             </View>
           </View>
-        ) 
+        )
       } else if (!segmentType) {
         segBtn = (
           <View className='type-button' onClick={this.segmentTypeToggle}>
@@ -282,7 +286,7 @@ class Style extends Component {
               人景分离
             </View>
           </View>
-        ) 
+        )
       }
     } else {
       segBtn = (
@@ -335,7 +339,7 @@ class Style extends Component {
         <View className='footer'>
           <View className='result-wrap' style='margin-top:30rpx'>
             {/* <Image className='icon' src={savedTitle}></Image> */}
-            <Text className='text'>保存成功</Text>  
+            <Text className='text'>保存成功</Text>
           </View>
           <View className='back-wrap'>
             <Button className='button black' onClick={this.returnAfterSave}>返回</Button>
@@ -351,7 +355,7 @@ class Style extends Component {
           </View>
           {/* 人景分离及风格色按钮组 */}
           <View className='type-wrap' style='margin-top:20rpx'>
-            {segBtn} 
+            {segBtn}
             {colorBtn}
           </View>
           {/* 风格选择区域 */}
@@ -406,8 +410,8 @@ class Style extends Component {
           </View>
           {/* 操作部分 */}
           {content}
-        </View>  
-      </View>  
+        </View>
+      </View>
     )
   }
 }

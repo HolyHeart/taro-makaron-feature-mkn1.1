@@ -17,6 +17,7 @@ import randomIcon from '@/assets/images/random-icon.png'
 import { styleTransfer, base } from '@/services/service'
 import Loading from '@/components/Loading'
 import globalData from "@/services/global_data"
+import { reject } from 'dist/npm/promise-polyfill/lib';
 
 
 
@@ -191,7 +192,7 @@ class Style extends Component {
     var max = this.state.styleList.length-1
     var ran = this.getRandomNum(min, max)
     var theStyle = this.state.styleList[ran]
-    var id = theStyle.detailId
+    var id = theStyle.styleId
     this.changeStyle (id, this.state.colorType, this)
     this.setState({
       styleShuffle: theStyle.name,
@@ -211,24 +212,31 @@ class Style extends Component {
     this.showLoading()
     console.log(id + '号风格按钮被按下')
     //const processedPic = await styleTransfer.segment(this.state.imgOrigin, id, colorType)
-    const processedPic = await styleTransfer.segment(this.state.imgOrigin, id)
-    console.log(processedPic)
-    if (this.state.segmentType) {
+    try {
+      const processedPic = await styleTransfer.segment(this.state.imgOrigin, id)
+      console.log(processedPic)
+      if (this.state.segmentType) {
+        this.setState({
+          imgUrlRender: processedPic.result.result.renderUrl,
+          imgUrlTarget: processedPic.result.result.targetUrl,
+          imgUrl: processedPic.result.result.targetUrl,
+          currentID: id
+        })
+      } else {
+        this.setState({
+          imgUrlRender: processedPic.result.result.renderUrl,
+          imgUrlTarget: processedPic.result.result.targetUrl,
+          imgUrl: processedPic.result.result.renderUrl,
+          currentID: id
+        })
+      }
+      this.hideLoading()
+    } catch (error) {
       this.setState({
-        imgUrlRender: processedPic.result.result.renderUrl,
-        imgUrlTarget: processedPic.result.result.targetUrl,
-        imgUrl: processedPic.result.result.targetUrl,
-        currentID: id
+        renderStatus:'fail'
       })
-    } else {
-      this.setState({
-        imgUrlRender: processedPic.result.result.renderUrl,
-        imgUrlTarget: processedPic.result.result.targetUrl,
-        imgUrl: processedPic.result.result.renderUrl,
-        currentID: id
-      })
+      this.hideLoading()
     }
-    this.hideLoading()
   }
 
   // 主动选择其他风格后清除随机框内的内容
@@ -244,30 +252,39 @@ class Style extends Component {
   initImage = async () => {
     this.showLoading()
     // 让图片渲染加载期间先展示原图
-    this.setState({
-      imgUrl: globalData.cropedImagePath
-    })
+
     console.log('11')
     const remoteImgUrl = await base.upload(globalData.cropedImagePath)
+    this.setState({
+      imgUrl: globalData.cropedImagePath,
+      imgOrigin: remoteImgUrl.url,
+    })
     //console.log(remoteImgUrl.url)
     //console.log('croped image', globalData.cropedImagePath)
-    const processedPic = await styleTransfer.segment(remoteImgUrl.url, globalData.themeData.styleInfoList[0].styleId, this.state.colorType)
-    //console.log(processedPic)
-    const renderUrl = processedPic.result.result.renderUrl
-    this.setState({
-      imgUrl: renderUrl,
-      imgOrigin: remoteImgUrl.url,
-      imgUrlRender: renderUrl,
-      imgUrlTarget: processedPic.result.result.targetUrl,
-      currentID: globalData.themeData.styleInfoList[0].styleId,
-    })
-    // 判断是否可以人像分离
-    if (renderUrl !== processedPic.result.result.targetUrl){
+    try {
+      const processedPic = await styleTransfer.segment(remoteImgUrl.url, globalData.themeData.styleInfoList[0].styleId, this.state.colorType)
+      const renderUrl = processedPic.result.result.renderUrl
       this.setState({
-        hasSegmentButton: true
+        imgUrl: renderUrl,
+        imgOrigin: remoteImgUrl.url,
+        imgUrlRender: renderUrl,
+        imgUrlTarget: processedPic.result.result.targetUrl,
+        currentID: globalData.themeData.styleInfoList[0].styleId,
       })
+    // 判断是否可以人像分离
+      if (renderUrl !== processedPic.result.result.targetUrl){
+        this.setState({
+          hasSegmentButton: true
+        })
+      }
+      this.hideLoading()
+    } catch (error) {
+      this.setState({
+        renderStatus:'fail'
+      })
+      this.hideLoading()
     }
-    this.hideLoading()
+
   }
 
   render () {
@@ -393,7 +410,7 @@ class Style extends Component {
               </View>
               {/* 风格列表 */}
               {styleList.map(item=>{
-                return <View className='random-component' style='margin-left:20rpx' onClick={this.clearShuffleBlock.bind(this, item.detailId, this.state.colorType)}>
+                return <View className='random-component' style='margin-left:20rpx' onClick={this.clearShuffleBlock.bind(this, item.styleId, this.state.colorType)}>
                   <Image src={item.stylePicUrl} className='bg' style="width:100%;height:100%"></Image>
                   <View className='title-bg'>
                     <Text>{item.name}</Text>

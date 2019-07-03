@@ -174,15 +174,15 @@ class Style extends Component {
   // 引入风格列表
   async getStyleList ()  {
     console.log('get')
-    this.state.styleList = []
-    try {
-      const styleList = await styleTransfer.styleList()
-      styleList.result.result.forEach(element => {
-        this.state.styleList.push(element)
-      });
-    } catch (err) {
-      console.log('Oops, failed to get style list', err)
-    }
+    this.state.styleList = globalData.themeData.styleInfoList
+    // try {
+    //   const styleList = await styleTransfer.styleList()
+    //   styleList.result.result.forEach(element => {
+    //     this.state.styleList.push(element)
+    //   });
+    // } catch (err) {
+    //   console.log('Oops, failed to get style list', err)
+    // }
   }
 
   // 随机选择风格
@@ -251,7 +251,7 @@ class Style extends Component {
     const remoteImgUrl = await base.upload(globalData.cropedImagePath)
     //console.log(remoteImgUrl.url)
     //console.log('croped image', globalData.cropedImagePath)
-    const processedPic = await styleTransfer.segment(remoteImgUrl.url, 45, this.state.colorType)
+    const processedPic = await styleTransfer.segment(remoteImgUrl.url, globalData.themeData.styleInfoList[0].styleId, this.state.colorType)
     //console.log(processedPic)
     const renderUrl = processedPic.result.result.renderUrl
     this.setState({
@@ -259,7 +259,7 @@ class Style extends Component {
       imgOrigin: remoteImgUrl.url,
       imgUrlRender: renderUrl,
       imgUrlTarget: processedPic.result.result.targetUrl,
-      currentID: 45,
+      currentID: globalData.themeData.styleInfoList[0].styleId,
     })
     // 判断是否可以人像分离
     if (renderUrl !== processedPic.result.result.targetUrl){

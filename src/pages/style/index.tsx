@@ -8,21 +8,17 @@ import { View, Text, Button, Image, ScrollView } from '@tarojs/components'
 import './index.less'
 import Title from '@/components/Title'
 import CustomIcon from '@/components/Icon'
-import testImg from '@/assets/images/Test.png'
 import segmantIcon from '@/assets/images/segment-icon.png'
 import unsegmantIcon from '@/assets/images/unsegment-icon.png'
-import colorIcon from '@/assets/images/color-icon.png'
-import rawcolorIcon from '@/assets/images/rawcolor-icon.png'
+//import colorIcon from '@/assets/images/color-icon.png'
+//import rawcolorIcon from '@/assets/images/rawcolor-icon.png'
 import randomBg from '@/assets/images/random-bg.png'
 import randomIcon from '@/assets/images/random-icon.png'
 import { styleTransfer, base } from '@/services/service'
 import Loading from '@/components/Loading'
 import globalData from "@/services/global_data"
 
-import globalData from "@/services/global_data";
 
-// TODO to be deleted
-import testImg2 from '@/assets/images/Test2.png'
 
 
 type PageStateProps = {}
@@ -230,15 +226,12 @@ class Style extends Component {
   // 初始化，上传本地图片到云端，讲图片渲染成43号阿波利奈尔风格，并判断是否可以进行人像分割
   initImage = async () => {
     this.showLoading()
-    const remoteImgUrl = await base.upload(testImg2)
+    const remoteImgUrl = await base.upload(globalData.cropedImagePath)
     //console.log(remoteImgUrl.url)
     //console.log('croped image', globalData.cropedImagePath)
-    const processedPic = await styleTransfer.segment(remoteImgUrl.url, 43, this.state.colorType)
+    const processedPic = await styleTransfer.segment(remoteImgUrl.url, 45, this.state.colorType)
     //console.log(processedPic)
     const renderUrl = processedPic.result.result.renderUrl
-    console.log('renderUrl', renderUrl)
-    console.log('remoteImgUrl', remoteImgUrl.url)
-    console.log('horse', horse)
     this.setState({
       imgUrl: renderUrl,
       imgOrigin: remoteImgUrl.url,

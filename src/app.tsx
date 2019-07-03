@@ -34,8 +34,8 @@ class _App extends Component {
       'pages/error/index',
       'pages/crop/index',
       'pages/waiting/index',
-      'pages/index',
       'pages/style/index',
+      'pages/index',
     ],
     window: {
       backgroundTextStyle: 'light',

@@ -16,6 +16,7 @@ import randomBg from '@/assets/images/random-bg.png'
 import randomIcon from '@/assets/images/random-icon.png'
 import { styleTransfer, base } from '@/services/service'
 import Loading from '@/components/Loading'
+import globalData from "@/services/global_data"
 
 // TODO to be deleted
 import testImg2 from '@/assets/images/Test2.png'
@@ -226,8 +227,12 @@ class Style extends Component {
   initImage = async () => {
     this.showLoading()
     const remoteImgUrl = await base.upload(testImg)
+    const horse = "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1561701969834&di=d5b1269d072f0124f4a72910695efc92&imgtype=0&src=http%3A%2F%2Fpic37.nipic.com%2F20140113%2F8800276_184927469000_2.png"
     const processedPic = await styleTransfer.segment(remoteImgUrl.url, 43, this.state.colorType)
     const renderUrl = processedPic.result.result.renderUrl
+    console.log('renderUrl', renderUrl)
+    console.log('remoteImgUrl', remoteImgUrl.url)
+    console.log('horse', horse)
     this.setState({
       imgUrl: renderUrl,
       imgOrigin: remoteImgUrl.url,
@@ -396,7 +401,7 @@ class Style extends Component {
           {/* 操作部分 */}
           {content}
         </View>  
-      </View>  
+      </View>
     )
   }
 }

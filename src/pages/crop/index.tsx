@@ -430,7 +430,6 @@ class Crop extends Component {
           }
         >马卡龙玩图</Title>
         <View className="header"></View>
-        <Text>\n \n</Text>
         <View
           className="main"
           style={`width:${box.width}px; height:${box.height}px`}

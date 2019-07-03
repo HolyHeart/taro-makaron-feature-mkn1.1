@@ -81,8 +81,22 @@ class Style extends Component {
   componentDidMount(){
     this.getStyleList()
     this.initImage()
+    this.isIpx()
   }
   // Functions
+  isIpx(){
+    Taro.getSystemInfo({
+      success: function(res) {
+        if(res.model.search('iPhone X') != -1){
+          console.log('iPhone X')
+          globalData.isIPX=true
+        }else{
+          globalData.isIPX=false
+        }
+      }
+    })
+  }
+
   // 人像分离按钮
   segmentTypeToggle = async () => {
     this.showLoading()
@@ -263,6 +277,13 @@ class Style extends Component {
     let segBtn
     let colorBtn
     let bottomBtns
+    let iPXblank
+
+    if (globalData.isIPX) {
+      iPXblank=(
+        <View style='margin-top:50rpx'></View>
+      )
+    }
 
     // 判断是否需要”人景分离“按钮
     if (hasSegmentButton) {
@@ -398,6 +419,8 @@ class Style extends Component {
           renderLeft={
             <CustomIcon type="back" theme="dark" onClick={this.pageToHome}/>
           }>马卡龙玩图</Title>
+
+        {iPXblank}
 
         {/* 加入loading */}
         <Loading visible={this.state.loading} />

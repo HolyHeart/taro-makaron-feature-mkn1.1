@@ -20,7 +20,7 @@ import globalData from "@/services/global_data"
 import { reject } from 'dist/npm/promise-polyfill/lib';
 import tool from '@/utils/tool'
 
-
+import AuthModal from '@/components/AuthModal'
 
 
 type PageStateProps = {}
@@ -61,6 +61,7 @@ class Style extends Component {
     styleList:[],
     currentID: '',
     loading: false,
+    isIpx:false
   }
 
   // Constructor
@@ -74,28 +75,20 @@ class Style extends Component {
     // this.app.aldstat.sendEvent('生成页分享', {'场景名': this.state.currentScene.sceneName, '场景Id': this.state.currentScene.sceneId})
     // const {currentScene, result = {}} = this.state
     // const {shareImage = {}} = result
-    // const shareContent = currentScene.shareContent || (globalData.themeData && globalData.themeData.shareContent)
-    // const shareImageUrl = `${shareImage.remoteUrl}?x-oss-process=image/resize,m_pad,h_420,w_525`
+    const shareContent = globalData.themeData && globalData.themeData.shareContent
+    const shareImageUrl = `${this.state.imgUrl}?x-oss-process=image/resize,m_pad,h_420,w_525`
     const data = {
       shareSource: this.state.imgUrl,
-      themeId: 4,
-      sceneId: '',
+      themeId: globalData.themeId ,
     }
     const path = tool.formatQueryUrl('/pages/index', data)
-    // const {userInfo = {}} = globalData
-    // const title = `@${userInfo.nickName}：${shareContent}`
-    // if (!shareImage.remoteUrl) {
-    //   return {
-    //     title: title,
-    //     path: '/pages/home/index',
-    //     imageUrl: currentScene.thumbnailUrl,
-    //   }
-    // }
-    // console.log(title, path, shareImageUrl)
+    const {userInfo = {}} = globalData
+    const title = `@${userInfo.nickName}：${shareContent}`
+
     return {
-      title: 'Test!',
+      title: title,
       path: path,
-      imageUrl: this.state.imgUrl,
+      imageUrl: shareImageUrl,
       success: () => {
         console.log('分享成功')
       },
@@ -121,12 +114,15 @@ class Style extends Component {
   // Functions
   isIpx(){
     Taro.getSystemInfo({
-      success: function(res) {
+      success: (res)=> {
         if(res.model.search('iPhone X') != -1){
-          console.log('iPhone X')
-          globalData.isIPX=true
+          this.setState({
+            isIpx:true
+          })
         }else{
-          globalData.isIPX=false
+          this.setState({
+            isIpx:false
+          })
         }
       }
     })
@@ -173,12 +169,34 @@ class Style extends Component {
       url: this.state.imgUrl,
     }).then(res=>{
       if (res.statusCode === 200){
-        Taro.saveImageToPhotosAlbum({
-          filePath: res.tempFilePath
-        }).then(res2=>{
-          console.log(res2)
-          this.setState({
-            saved: !this.state.saved
+        Taro.authorize({
+          scope: "scope.writePhotosAlbum",
+        }).then(res1 => {
+          Taro.saveImageToPhotosAlbum({
+            filePath: res.tempFilePath
+          }).then(res2=>{
+            console.log(res2)
+            this.setState({
+              saved: !this.state.saved
+            })
+          })
+        }, err => {
+          Taro.getSetting().then(authSetting => {
+            if (authSetting['scope.writePhotosAlbum']) {
+            } else {
+              Taro.showModal({
+                title: '保存图片需要授权',
+                content: '保存图片需要授权\n可以授权吗？',
+                confirmText: "允许",
+                cancelText: "拒绝",
+              }).then(res => {
+                if (res.confirm) {
+                  Taro.authModal({
+                    open: true
+                  })
+                }
+              })
+            }
           })
         })
       }
@@ -349,7 +367,7 @@ class Style extends Component {
     let bottomBtns
     let iPXblank
 
-    if (globalData.isIPX) {
+    if (this.state.isIpx) {
       iPXblank=(
         <View style='margin-top:50rpx'></View>
       )
@@ -490,7 +508,6 @@ class Style extends Component {
           renderLeft={
             <CustomIcon type="back" theme="dark" onClick={this.pageToHome}/>
           }>懒人抠图</Title>
-
         {iPXblank}
 
         {/* 加入loading */}
@@ -506,6 +523,7 @@ class Style extends Component {
           {/* 操作部分 */}
           {content}
         </View>
+        <AuthModal />
       </View>
     )
   }

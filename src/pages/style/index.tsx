@@ -49,7 +49,7 @@ class Style extends Component {
     colorType: false, // 是否为原色，初始值为否
     segmentType: false, // 是否人像分离，初始值为不分离
     renderStatus: 'init', // 渲染结果 'success' 'fail' 'init' 'loading'
-    styleShuffle: '智能风格推荐', // 随机按钮文字，点击前为'随机风格'，点击后为风格名字
+    styleShuffle: '随机风格', // 随机按钮文字，点击前为'随机风格'，点击后为风格名字
     styleShuffleBg: randomBg,
     imgUrl: '', // 用于展示的图片
     imgOrigin: '', // 原始图片
@@ -204,32 +204,48 @@ class Style extends Component {
   getRandomNum (min, max) {
     var range = max - min
     var rand = Math.random()
-    return (min + Math.round(rand * range))
+    var index = min + Math.round(rand * range)
+    // 写了个递归来实现不会随机到重复的风格
+    if (this.state.styleList[index].styleId === this.state.currentID) {
+      console.log('Oops，随机到了同一个风格，那就再随机一次~')
+      return this.getRandomNum (min, max)
+    } else {
+      return (index)
+    }
   }
 
   // 更换图片风格
   changeStyle = async (id, colorType, e) => {
     this.showLoading()
     console.log(id + '号风格按钮被按下')
-    //const processedPic = await styleTransfer.segment(this.state.imgOrigin, id, colorType)
     try {
-      const processedPic = await styleTransfer.segment(this.state.imgOrigin, id)
+      const processedPic = await styleTransfer.segment(this.state.imgOrigin, id, 'N')
       console.log(processedPic)
       if (this.state.segmentType) {
         this.setState({
           imgUrlRender: processedPic.result.result.renderUrl,
           imgUrlTarget: processedPic.result.result.targetUrl,
           imgUrl: processedPic.result.result.targetUrl,
-          currentID: id
+          currentID: id,
+          renderStatus:'success'
         })
       } else {
         this.setState({
           imgUrlRender: processedPic.result.result.renderUrl,
           imgUrlTarget: processedPic.result.result.targetUrl,
           imgUrl: processedPic.result.result.renderUrl,
-          currentID: id
+          currentID: id,
+          renderStatus:'success'
         })
       }
+
+      // 如果初次渲染失败，后面的尝试识别人物成功的话依然会显示人景分离按钮
+      if (processedPic.result.result.renderUrl !== processedPic.result.result.targetUrl){
+        this.setState({
+          hasSegmentButton: true
+        })
+      }
+
       this.hideLoading()
     } catch (error) {
       this.setState({
@@ -242,7 +258,7 @@ class Style extends Component {
   // 主动选择其他风格后清除随机框内的内容
   clearShuffleBlock (id, colorType, e) {
     this.setState({
-      styleShuffle: '智能风格推荐',
+      styleShuffle: '随机风格',
       styleShuffleBg: randomBg
     })
     this.changeStyle(id, colorType, e)
@@ -263,7 +279,7 @@ class Style extends Component {
     //console.log(remoteImgUrl.url)
     //console.log('croped image', globalData.cropedImagePath)
     try {
-      const processedPic = await styleTransfer.segment(remoteImgUrl.url, globalData.themeData.styleInfoList[0].styleId, this.state.colorType)
+      const processedPic = await styleTransfer.segment(remoteImgUrl.url, globalData.themeData.styleInfoList[0].styleId, 'N')
       const renderUrl = processedPic.result.result.renderUrl
       this.setState({
         imgUrl: renderUrl,

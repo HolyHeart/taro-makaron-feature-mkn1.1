@@ -18,6 +18,7 @@ import { styleTransfer, base } from '@/services/service'
 import Loading from '@/components/Loading'
 import globalData from "@/services/global_data"
 import { reject } from 'dist/npm/promise-polyfill/lib';
+import tool from '@/utils/tool'
 
 
 
@@ -66,6 +67,39 @@ class Style extends Component {
   constructor(props) {
     super(props);
 
+  }
+
+  onShareAppMessage (res) {
+
+    // this.app.aldstat.sendEvent('生成页分享', {'场景名': this.state.currentScene.sceneName, '场景Id': this.state.currentScene.sceneId})
+    // const {currentScene, result = {}} = this.state
+    // const {shareImage = {}} = result
+    // const shareContent = currentScene.shareContent || (globalData.themeData && globalData.themeData.shareContent)
+    // const shareImageUrl = `${shareImage.remoteUrl}?x-oss-process=image/resize,m_pad,h_420,w_525`
+    const data = {
+      shareSource: this.state.imgUrl,
+      themeId: 4,
+      sceneId: '',
+    }
+    const path = tool.formatQueryUrl('/pages/index', data)
+    // const {userInfo = {}} = globalData
+    // const title = `@${userInfo.nickName}：${shareContent}`
+    // if (!shareImage.remoteUrl) {
+    //   return {
+    //     title: title,
+    //     path: '/pages/home/index',
+    //     imageUrl: currentScene.thumbnailUrl,
+    //   }
+    // }
+    // console.log(title, path, shareImageUrl)
+    return {
+      title: 'Test!',
+      path: path,
+      imageUrl: this.state.imgUrl,
+      success: () => {
+        console.log('分享成功')
+      },
+    }
   }
 
   // 显示与隐藏Loading

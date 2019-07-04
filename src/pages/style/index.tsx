@@ -410,12 +410,12 @@ class Style extends Component {
           <View className='style-bg'>
           </View>
           {/* 人景分离及风格色按钮组 */}
-          <View className='type-wrap' style='margin-top:20rpx'>
+          <View className='type-wrap' style='margin-top:4%'>
             {segBtn}
             {colorBtn}
           </View>
           {/* 风格选择区域 */}
-          <View className='style-wrap' style='margin-top:30rpx'>
+          <View className='style-wrap' style='margin-top:5%'>
             <ScrollView className='scroll' scrollX={true}>
               <View className='random-component' onClick={this.shuffleStyle}>
                 {/* 随机按钮 */}
@@ -438,7 +438,7 @@ class Style extends Component {
             </ScrollView>
           </View>
           {/* 保存及分享按钮组及出错提示 */}
-          <View style='margin-top:35rpx'>
+          <View style='margin-top:5%'>
             {bottomBtns}
           </View>
         </View>

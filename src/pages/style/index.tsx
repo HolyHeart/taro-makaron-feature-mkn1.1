@@ -70,8 +70,10 @@ class Style extends Component {
 
   }
 
+  app = Taro.getApp()
+  
   onShareAppMessage (res) {
-
+    this.app.aldstat.sendEvent('风格渲染编辑页分享', '风格渲染编辑页分享')
     // this.app.aldstat.sendEvent('生成页分享', {'场景名': this.state.currentScene.sceneName, '场景Id': this.state.currentScene.sceneId})
     // const {currentScene, result = {}} = this.state
     // const {shareImage = {}} = result
@@ -136,10 +138,14 @@ class Style extends Component {
       segmentType: !this.state.segmentType
     })
     if (this.state.segmentType) {
+      this.app.aldstat.sendEvent('风格渲染编辑页人景分离', '风格渲染编辑页人景分离')
+      console.log('合并')
       this.setState({
         imgUrl: this.state.imgUrlRender,
       })
     } else {
+      this.app.aldstat.sendEvent('风格渲染编辑页人景-分离-', '风格渲染编辑页人景-分离-')
+      console.log('分离')
       this.setState({
         imgUrl: this.state.imgUrlTarget,
       })
@@ -159,11 +165,13 @@ class Style extends Component {
 
   // 返回键按钮
   pageToHome = () => {
+    this.app.aldstat.sendEvent('风格渲染完成页换张试试', '风格渲染完成页换张试试')
     Taro.navigateBack({ delta: 1 })
   }
 
   // 保存键按钮
   save () {
+    this.app.aldstat.sendEvent('风格渲染编辑页保存', '风格渲染编辑页保存')
     console.log('按下保存键')
     Taro.downloadFile({
       url: this.state.imgUrl,

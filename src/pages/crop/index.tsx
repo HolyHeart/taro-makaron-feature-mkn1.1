@@ -167,6 +167,7 @@ class Crop extends Component {
     // console.log('end', this.state.img)
   }
   generateImage() {
+    this.app.aldstat.sendEvent('风格渲染裁剪页生成按钮', '风格渲染裁剪页生成按钮')
     Taro.showLoading({
       title: "正在生成图片",
       mask: true,

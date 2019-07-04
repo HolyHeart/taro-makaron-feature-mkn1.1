@@ -333,7 +333,7 @@ export const styleTransfer = {
       }
     }
     if (originalColors) {
-      reqData.data.originalColors = 'Y'
+      reqData.data.originalColors = 'N'
     }
     return request(reqData)
   },

@@ -227,16 +227,26 @@ class Style extends Component {
           imgUrlRender: processedPic.result.result.renderUrl,
           imgUrlTarget: processedPic.result.result.targetUrl,
           imgUrl: processedPic.result.result.targetUrl,
-          currentID: id
+          currentID: id,
+          renderStatus:'success'
         })
       } else {
         this.setState({
           imgUrlRender: processedPic.result.result.renderUrl,
           imgUrlTarget: processedPic.result.result.targetUrl,
           imgUrl: processedPic.result.result.renderUrl,
-          currentID: id
+          currentID: id,
+          renderStatus:'success'
         })
       }
+
+      // 如果初次渲染失败，后面的尝试识别人物成功的话依然会显示人景分离按钮
+      if (processedPic.result.result.renderUrl !== processedPic.result.result.targetUrl){
+        this.setState({
+          hasSegmentButton: true
+        })
+      }
+
       this.hideLoading()
     } catch (error) {
       this.setState({

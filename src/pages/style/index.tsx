@@ -218,9 +218,8 @@ class Style extends Component {
   changeStyle = async (id, colorType, e) => {
     this.showLoading()
     console.log(id + '号风格按钮被按下')
-    //const processedPic = await styleTransfer.segment(this.state.imgOrigin, id, colorType)
     try {
-      const processedPic = await styleTransfer.segment(this.state.imgOrigin, id)
+      const processedPic = await styleTransfer.segment(this.state.imgOrigin, id, 'N')
       console.log(processedPic)
       if (this.state.segmentType) {
         this.setState({
@@ -280,7 +279,7 @@ class Style extends Component {
     //console.log(remoteImgUrl.url)
     //console.log('croped image', globalData.cropedImagePath)
     try {
-      const processedPic = await styleTransfer.segment(remoteImgUrl.url, globalData.themeData.styleInfoList[0].styleId, this.state.colorType)
+      const processedPic = await styleTransfer.segment(remoteImgUrl.url, globalData.themeData.styleInfoList[0].styleId, 'N')
       const renderUrl = processedPic.result.result.renderUrl
       this.setState({
         imgUrl: renderUrl,

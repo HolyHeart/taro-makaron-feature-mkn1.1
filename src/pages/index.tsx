@@ -203,8 +203,11 @@ class Share extends Component {
         } else if (themeData.sceneType === 3) {
           url = '/pages/segment/index'
         } else {
-          url = '/pages/editor/index'
+          url = '/pages/crop/index'
         }
+        // } else {
+        //   url = '/pages/editor/index'
+        // }
         if (sceneId) {
           url = url + '?sceneId=' + sceneId
         }

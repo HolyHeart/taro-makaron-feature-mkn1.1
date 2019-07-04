@@ -205,7 +205,7 @@ class Home extends Component {
     globalData.themeId = item.themeId
     globalData.sceneType = item.sceneType
     console.log(globalData)
-    console.log(item.styleInfoList)
+    // console.log(item.styleInfoList)
     globalData.themeData = null
     if (globalData.themeId) {
       const res = await core.theme(globalData.themeId)

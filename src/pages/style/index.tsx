@@ -49,7 +49,7 @@ class Style extends Component {
     colorType: false, // 是否为原色，初始值为否
     segmentType: false, // 是否人像分离，初始值为不分离
     renderStatus: 'init', // 渲染结果 'success' 'fail' 'init' 'loading'
-    styleShuffle: '智能风格推荐', // 随机按钮文字，点击前为'随机风格'，点击后为风格名字
+    styleShuffle: '随机风格', // 随机按钮文字，点击前为'随机风格'，点击后为风格名字
     styleShuffleBg: randomBg,
     imgUrl: '', // 用于展示的图片
     imgOrigin: '', // 原始图片
@@ -207,7 +207,7 @@ class Style extends Component {
     var index = min + Math.round(rand * range)
     // 写了个递归来实现不会随机到重复的风格
     if (this.state.styleList[index].styleId === this.state.currentID) {
-      console.log('Oops，随机到了同一个风格')
+      console.log('Oops，随机到了同一个风格，那就再随机一次~')
       return this.getRandomNum (min, max)
     } else {
       return (index)
@@ -249,7 +249,7 @@ class Style extends Component {
   // 主动选择其他风格后清除随机框内的内容
   clearShuffleBlock (id, colorType, e) {
     this.setState({
-      styleShuffle: '智能风格推荐',
+      styleShuffle: '随机风格',
       styleShuffleBg: randomBg
     })
     this.changeStyle(id, colorType, e)

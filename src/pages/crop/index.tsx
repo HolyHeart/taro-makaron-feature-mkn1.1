@@ -438,7 +438,7 @@ class Crop extends Component {
         <View className="footer">
           <View className="word">调整画面位置</View>
           <View className="button red generate" onClick={this.generateImage}>生成</View>
-          <View className="button black" onClick={this.back}>重选</View>
+          {/* <View className="button black" onClick={this.back}>重选</View> */}
         </View>
         <View className="canvas-wrap">
           <Canvas style={`width: ${canvas.width}px; height: ${canvas.height}px;border: 1px solid #000`} canvasId="mycanvas" />

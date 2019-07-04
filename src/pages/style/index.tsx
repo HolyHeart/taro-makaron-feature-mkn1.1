@@ -398,8 +398,8 @@ class Style extends Component {
             <Text className='text'>保存成功</Text>
           </View>
           <View className='back-wrap'>
-            <Button className='button black' onClick={this.returnAfterSave}>返回</Button>
-            <Button className='button red' style='margin-left: 20rpx' onClick={this.pageToHome}>换张试试</Button>
+            {/* <Button className='button black' onClick={this.returnAfterSave}>返回</Button> */}
+            <Button className='button red' onClick={this.pageToHome}>换张试试</Button>
           </View>
         </View>
       )

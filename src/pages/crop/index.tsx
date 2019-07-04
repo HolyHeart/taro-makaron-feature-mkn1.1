@@ -256,6 +256,9 @@ class Crop extends Component {
       userScale = 1
       x = autoX
       y = autoY
+      offsetX = autoX,
+      offsetY = autoY
+
     }
     // 如果移动超出边界 则还原
     if (!gesture.zoom) {

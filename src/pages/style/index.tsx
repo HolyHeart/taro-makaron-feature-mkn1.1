@@ -32,7 +32,7 @@ type PageState = {}
 
 type IProps = PageStateProps & PageDispatchProps & PageOwnProps
 
-interface Style {
+ interface Style {
   props: IProps;
 }
 
@@ -218,6 +218,9 @@ class Style extends Component {
   changeStyle = async (id, colorType, e) => {
     this.showLoading()
     console.log(id + '号风格按钮被按下')
+    this.setState({
+      currentID: id
+    })
     try {
       const processedPic = await styleTransfer.segment(this.state.imgOrigin, id, 'N')
       console.log(processedPic)
@@ -245,7 +248,6 @@ class Style extends Component {
           hasSegmentButton: true
         })
       }
-
       this.hideLoading()
     } catch (error) {
       this.setState({
@@ -431,6 +433,7 @@ class Style extends Component {
                   <Image src={item.stylePicUrl} className='bg' style="width:100%;height:100%"></Image>
                   <View className='title-bg'>
                     <Text>{item.name}</Text>
+                    {this.state.currentID === item.styleId ?<Text class="iconRed"></Text>:''}
                   </View>
                 </View>
                 })

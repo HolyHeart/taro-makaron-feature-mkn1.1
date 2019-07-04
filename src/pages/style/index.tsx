@@ -204,7 +204,14 @@ class Style extends Component {
   getRandomNum (min, max) {
     var range = max - min
     var rand = Math.random()
-    return (min + Math.round(rand * range))
+    var index = min + Math.round(rand * range)
+    // 写了个递归来实现不会随机到重复的风格
+    if (this.state.styleList[index].styleId === this.state.currentID) {
+      console.log('Oops，随机到了同一个风格')
+      return this.getRandomNum (min, max)
+    } else {
+      return (index)
+    }
   }
 
   // 更换图片风格

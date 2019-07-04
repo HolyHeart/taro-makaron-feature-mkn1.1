@@ -477,7 +477,7 @@ class Style extends Component {
             {colorBtn}
           </View>
           {/* 风格选择区域 */}
-          <View className='style-wrap' style='margin-top:5%'>
+          <View className='style-wrap' style='margin-top:4%'>
             <ScrollView className='scroll' scrollX={true}>
               <View className='random-component' onClick={this.shuffleStyle}>
                 {/* 随机按钮 */}
@@ -501,7 +501,7 @@ class Style extends Component {
             </ScrollView>
           </View>
           {/* 保存及分享按钮组及出错提示 */}
-          <View style='margin-top:5%'>
+          <View style='margin-top:4%'>
             {bottomBtns}
           </View>
         </View>
@@ -517,6 +517,8 @@ class Style extends Component {
             <CustomIcon type="back" theme="dark" onClick={this.pageToHome}/>
           }>懒人抠图</Title>
         {iPXblank}
+        <View style='margin-top:3%'>
+        </View>
 
         {/* 加入loading */}
         <Loading visible={this.state.loading} />

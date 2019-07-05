@@ -97,7 +97,7 @@ interface Home {
 }))
 class Home extends Component {
   config: Config = {
-    navigationBarTitleText: '懒人抠图',
+    navigationBarTitleText: '马卡龙玩图',
     disableScroll: false,
 
   }
@@ -151,7 +151,7 @@ class Home extends Component {
   onShareAppMessage () {
     this.app.aldstat.sendEvent('首页分享', '首页分享')
     const {defaultThemeData = {}} = this.state
-    const shareContent = defaultThemeData.shareContent || '懒人抠图'
+    const shareContent = defaultThemeData.shareContent || '马卡龙玩图'
     const urls = (defaultThemeData.url||'').split(';').filter(v => v !== '')
     const path = '/pages/home/index'
     if (urls.length > 0) {
@@ -309,7 +309,7 @@ class Home extends Component {
               </Tooltip>
             </View>
           }
-        >懒人抠图</Title>
+        >马卡龙玩图</Title>
         <View className="main">
           <View className="main-bg">
             {/* {isIphoneX && <View style="width: 100%; height:100rpx; background:rgb(100,180,255)"></View>} */}

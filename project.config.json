@@ -1,7 +1,7 @@
 {
 	"miniprogramRoot": "dist/",
 	"projectname": "taro-makaron",
-	"description": "懒人抠图",
+	"description": "马卡龙玩图",
 	"appid": "1109011670",
 	"setting": {
 		"urlCheck": true,

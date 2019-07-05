@@ -69,7 +69,7 @@ interface Segment {
 }))
 class Segment extends Component {
   config: Config = {
-    navigationBarTitleText: '懒人抠图',
+    navigationBarTitleText: '马卡龙玩图',
     disableScroll: true,
     enablePullDownRefresh:false
   }
@@ -799,7 +799,7 @@ class Segment extends Component {
           renderLeft={
             <CustomIcon type="back" theme="dark" onClick={work.pageToHome}/>
           }
-        >懒人抠图</Title>
+        >马卡龙玩图</Title>
         <View className="main">
           <View className="pic-section">
             <View className={`raw ${(foreground.remoteUrl && foreground.loaded) ? 'hidden' : ''}`}>

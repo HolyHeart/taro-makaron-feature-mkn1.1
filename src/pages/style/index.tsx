@@ -71,7 +71,7 @@ class Style extends Component {
   }
 
   app = Taro.getApp()
-  
+
   onShareAppMessage (res) {
     this.app.aldstat.sendEvent('风格渲染编辑页分享', '风格渲染编辑页分享')
     // this.app.aldstat.sendEvent('生成页分享', {'场景名': this.state.currentScene.sceneName, '场景Id': this.state.currentScene.sceneId})
@@ -335,6 +335,8 @@ class Style extends Component {
     })
     console.log('11')
     const remoteImgUrl = await base.upload(globalData.cropedImagePath)
+    console.log(remoteImgUrl)
+
     this.setState({
       imgOrigin: remoteImgUrl.url,
     })

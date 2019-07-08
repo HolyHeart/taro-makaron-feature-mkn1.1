@@ -46,13 +46,8 @@ class Browser extends Component {
         </View>
         
         <View className='btnGrp'>
-          {/* <View className='at-row'>
-            <View className='at-col'><Button className="custom-button pink" hoverClass="btn-hover">分享给好友</Button></View>
-            <View className='at-col'><Button className="custom-button pink" hoverClass="btn-hover">我要创作</Button></View>
-          </View> */}
-
-          <Button className="custom-button pink" hoverClass="btn-hover">分享给好友</Button>
-          <Button className="custom-button pink" hoverClass="btn-hover">我要创作</Button>
+          <Button className="button white" hoverClass="btn-hover">分享给好友</Button>
+          <Button className="button pink" hoverClass="btn-hover">我要创作</Button>
         </View>  
 
       </View>

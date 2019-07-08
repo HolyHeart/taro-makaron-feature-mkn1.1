@@ -257,7 +257,7 @@ class Home extends Component {
   // added by Shichao.Ma
   turnToStyle = () => {
     console.log('hohoho!')
-    Taro.navigateTo({url: '/pages/style/index'})
+    Taro.navigateTo({url: '/pages/browser/index'})
   }
 
   todo = () => {
@@ -315,6 +315,8 @@ class Home extends Component {
             {/* {isIphoneX && <View style="width: 100%; height:100rpx; background:rgb(100,180,255)"></View>} */}
             <Image src={bg} mode="widthFix" style="width:100%;height:100%"/>
           </View>
+
+          
           <View className={`main-container ${isIphoneX ? 'iphoneX' : ''}`} onClick={this.handleClickMain}>
             {
               categoryList.map(column => {
@@ -337,7 +339,14 @@ class Home extends Component {
               })
             }
 
-          <View className="bottomInfo" style='margin-top:50rpx;font-size:10px'>
+
+            {/* added by Shichao.Ma */}
+            {/* 灵魂画手临时接口 */}
+            <Button style='margin-top: 25px; font-size:30px' onClick={this.turnToStyle}>这图我能P</Button>
+
+
+
+            <View className="bottomInfo" style='margin-top:50rpx;font-size:10px'>
               - 到底了哦 -
             </View>
             <View className="bottomInfo" style='margin-top:30rpx;'>

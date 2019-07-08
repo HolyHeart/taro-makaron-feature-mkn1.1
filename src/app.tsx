@@ -35,6 +35,7 @@ class _App extends Component {
       'pages/crop/index',
       'pages/waiting/index',
       'pages/style/index',
+      'pages/browser/index',
       'pages/index',
     ],
     window: {

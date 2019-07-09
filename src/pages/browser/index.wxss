@@ -14,6 +14,10 @@ page {
   align-items: center;
   justify-content: center;
 }
+.browser .title {
+  margin-top: 90rpx;
+  background-color: aquamarine;
+}
 .browser .navBar {
   width: 100%;
   background-color: #222f5b;
@@ -36,8 +40,15 @@ page {
 .browser .waterfall {
   width: 100%;
   height: 6000rpx;
-  background-color: #008080;
+  background-color: #854442;
   top: 0;
+}
+.browser .waterfall .div {
+  width: 48%;
+  height: 6000rpx;
+  position: relative;
+  background-color: aqua;
+  display: inline-block;
 }
 .browser .divider {
   align-items: center;

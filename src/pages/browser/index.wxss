@@ -23,12 +23,14 @@ page {
   background-color: #222f5b;
   position: fixed;
   top: 0;
+  transition: all 0.2s;
 }
 .browser .navBar .scroll {
   background-color: #b9cc98;
   white-space: nowrap;
   display: flex;
   width: 100%;
+  transition: all 0.2s;
 }
 .browser .navBar .scroll .item {
   display: inline-block;
@@ -36,6 +38,7 @@ page {
   position: relative;
   box-shadow: 4rpx 4rpx 8rpx rgba(0, 0, 0, 0.5);
   margin-left: 1.5%;
+  transition: all 0.2s;
 }
 .browser .waterfall {
   width: 100%;

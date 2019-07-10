@@ -36,6 +36,7 @@ class _App extends Component {
       'pages/waiting/index',
       'pages/style/index',
       'pages/index',
+      'pages/psChallenge/index'
     ],
     window: {
       backgroundTextStyle: 'light',

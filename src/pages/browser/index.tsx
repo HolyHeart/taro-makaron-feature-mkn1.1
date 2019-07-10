@@ -26,6 +26,10 @@ class Browser extends Component {
 
   componentDidMount () {
     this.getScreenHeight()
+    // Taro.getSystemInfo({
+    //   success : res =>
+    //   console.log('状态栏高度', res.statusBarHeight)
+    // })
   }
 
   getScreenHeight () {
@@ -46,25 +50,41 @@ class Browser extends Component {
 
   onPageScroll (e) {
     var topDistance = e.scrollTop
+
+
+    // TODO
+
     var minHeight = globalData.sysHeight * 0.40
-    var curHeight = (globalData.sysHeight - topDistance) * 0.60
+    var maxHeight = globalData.sysHeight * 0.60
     var navHeight = ''
     var navScrollHeight = ''
-
-    if (curHeight <= minHeight) {
+    if (topDistance!==0) {
       navHeight = minHeight + 'rpx'
       navScrollHeight = minHeight/2 + 'rpx'
     } else {
-      navHeight = curHeight + 'rpx'
-      navScrollHeight = curHeight/2 + 'rpx'
+      navHeight = maxHeight + 'rpx'
+      navScrollHeight = maxHeight/2 + 'rpx'
     }
+
+    // var minHeight = globalData.sysHeight * 0.40
+    // var curHeight = (globalData.sysHeight - topDistance) * 0.60
+    // var navHeight = ''
+    // var navScrollHeight = ''
+
+    // if (curHeight <= minHeight) {
+    //   navHeight = minHeight + 'rpx'
+    //   navScrollHeight = minHeight/2 + 'rpx'
+    // } else {
+    //   navHeight = curHeight + 'rpx'
+    //   navScrollHeight = curHeight/2 + 'rpx'
+    // }
 
     this.setState({
       navHeight: navHeight,
       navScrollHeight: navScrollHeight
     })
 
-    console.log('curHei', curHeight, '|||', 'sysHei', globalData.sysHeight, '|||', 'topDis', topDistance, '|||', 'navHei', navHeight)
+    // console.log('curHei', curHeight, '|||', 'sysHei', globalData.sysHeight, '|||', 'topDis', topDistance, '|||', 'navHei', navHeight)
   }
 
 
@@ -106,6 +126,8 @@ class Browser extends Component {
         </View>
 
         <ScrollView className='waterfall'>
+          <View className='left-div'></View>
+          <View className='right-div'></View>
         </ScrollView>
 
         <View className='divider'>-底部-</View>

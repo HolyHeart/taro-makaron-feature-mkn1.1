@@ -23,20 +23,21 @@ page {
     background-color: #222f5b;
     position: fixed;
     top: 0;
-    transition:all 0.2s;
+    transition:all 0.3s;
+    z-index: 1;
     .scroll {
       background-color: #b9cc98;
       white-space: nowrap;
       display: flex;
       width: 100%;
-      transition:all 0.2s;
+      transition:all 0.3s;
       .item {
         display: inline-block;
         background: #f36b2c;
         position: relative;
         box-shadow:4rpx 4rpx 8rpx rgba(0,0,0,0.5);
         margin-left: 1.5%;
-        transition:all 0.2s;
+        transition:all 0.3s;
       }
     }
   }
@@ -45,12 +46,22 @@ page {
     height: 6000rpx;
     background-color: #854442;
     top: 0;
-    .div {
-      width: 48%;
+    flex-direction: row;
+    .left-div {
+      display: inline-block;
+      width: 50%;
       height: 6000rpx;
       position: relative;
-      background-color: aqua;
+      background-color: green;
+      z-index: 0;
+    }
+    .right-div {
       display: inline-block;
+      width: 50%;
+      height: 6000rpx;
+      position: relative;
+      background-color: red;
+      z-index: 0;
     }
   }
   .divider {

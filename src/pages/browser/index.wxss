@@ -14,32 +14,35 @@ page {
   align-items: center;
   justify-content: center;
 }
-.browser .title {
-  margin-top: 90rpx;
-  background-color: aquamarine;
-}
 .browser .navBar {
+  height: auto;
   width: 100%;
-  background-color: #222f5b;
+  background-color: white;
   position: fixed;
-  top: 0;
-  transition: all 0.3s;
+  transition: all 0.2s;
   z-index: 1;
 }
 .browser .navBar .scroll {
-  background-color: #b9cc98;
   white-space: nowrap;
   display: flex;
-  width: 100%;
-  transition: all 0.3s;
+  width: auto;
+  transition: all 0.2s;
+  padding-top: 3%;
+  padding-bottom: 3%;
+  padding-left: 3%;
+  padding-right: 3%;
 }
 .browser .navBar .scroll .item {
   display: inline-block;
   background: #f36b2c;
   position: relative;
   box-shadow: 4rpx 4rpx 8rpx rgba(0, 0, 0, 0.5);
-  margin-left: 1.5%;
-  transition: all 0.3s;
+  margin-left: 0.5%;
+  margin-right: 0.5%;
+  transition: all 0.2s;
+}
+.browser .navBar .scroll .item.item-hover {
+  transform: scale(0.95);
 }
 .browser .waterfall {
   width: 100%;
@@ -47,6 +50,7 @@ page {
   background-color: #854442;
   top: 0;
   flex-direction: row;
+  position: relative;
 }
 .browser .waterfall .left-div {
   display: inline-block;

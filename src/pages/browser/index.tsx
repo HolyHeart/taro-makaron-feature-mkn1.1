@@ -26,10 +26,7 @@ class Browser extends Component {
 
   componentDidMount () {
     this.getScreenHeight()
-    // Taro.getSystemInfo({
-    //   success : res =>
-    //   console.log('状态栏高度', res.statusBarHeight)
-    // })
+    globalData.totalTopHeight = globalData.totalTopHeight * 2 + 'rpx'
   }
 
   getScreenHeight () {
@@ -66,25 +63,10 @@ class Browser extends Component {
       navScrollHeight = maxHeight/2 + 'rpx'
     }
 
-    // var minHeight = globalData.sysHeight * 0.40
-    // var curHeight = (globalData.sysHeight - topDistance) * 0.60
-    // var navHeight = ''
-    // var navScrollHeight = ''
-
-    // if (curHeight <= minHeight) {
-    //   navHeight = minHeight + 'rpx'
-    //   navScrollHeight = minHeight/2 + 'rpx'
-    // } else {
-    //   navHeight = curHeight + 'rpx'
-    //   navScrollHeight = curHeight/2 + 'rpx'
-    // }
-
     this.setState({
       navHeight: navHeight,
       navScrollHeight: navScrollHeight
     })
-
-    // console.log('curHei', curHeight, '|||', 'sysHei', globalData.sysHeight, '|||', 'topDis', topDistance, '|||', 'navHei', navHeight)
   }
 
 
@@ -102,33 +84,47 @@ class Browser extends Component {
           >这图我能P</Title>
         </View>
 
-        <View className='navBar' style={{height: this.state.navHeight}}>
-          <ScrollView className='scroll' scrollX={true} style={{height: this.state.navScrollHeight, marginTop: this.state.navScrollHeight}}>
-            <View className='item' style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}}> 
+
+
+        <View className='navBar' style={{top: globalData.totalTopHeight}}>
+          <ScrollView className='scroll' scrollX={true} style={{height: this.state.navScrollHeight}}>
+            <View className='item' hoverClass="item-hover" style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}}> 
             </View>
-            <View className='item' style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}}> 
+            <View className='item' hoverClass="item-hover" style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}}> 
             </View>
-            <View className='item' style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}}> 
+            <View className='item' hoverClass="item-hover" style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}}> 
             </View>
-            <View className='item' style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}}> 
+            <View className='item' hoverClass="item-hover" style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}}> 
             </View>
-            <View className='item' style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}}> 
+            <View className='item' hoverClass="item-hover" style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}}> 
             </View>
-            <View className='item' style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}}> 
+            <View className='item' hoverClass="item-hover" style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}}> 
             </View>
-            <View className='item' style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}}> 
+            <View className='item' hoverClass="item-hover" style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}}> 
             </View>
-            <View className='item' style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}}> 
+            <View className='item' hoverClass="item-hover" style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}}> 
             </View>
-            <View className='item' style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}}> 
+            <View className='item' hoverClass="item-hover" style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}}> 
             </View>
           </ScrollView>
         </View>
 
+
+
+
+
+
         <ScrollView className='waterfall'>
-          <View className='left-div'></View>
-          <View className='right-div'></View>
+          <View className='left-div'>
+          </View>
+          <View className='right-div'>
+          </View>
         </ScrollView>
+
+
+
+
+
 
         <View className='divider'>-底部-</View>
 

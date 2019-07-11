@@ -38,15 +38,15 @@ page {
         margin-right: 0.5%;
         transition:all 0.2s;
         &.item-hover {
-          transform: scale(0.95)
+          transform: scale(0.85)
         }  
       }
     }
   }
   .waterfall {
     width: 100%;
-    height: 6000rpx;
-    background-color: #854442;
+    height: auto;
+    //background-color: #854442;
     top: 0;
     flex-direction: row;
     position: relative;
@@ -55,7 +55,7 @@ page {
       width: 50%;
       height: 6000rpx;
       position: relative;
-      background-color: green;
+      background: -webkit-linear-gradient(top, #ffffff 0%, green 100%);
       z-index: 0;
     }
     .right-div {
@@ -63,7 +63,7 @@ page {
       width: 50%;
       height: 6000rpx;
       position: relative;
-      background-color: red;
+      background: -webkit-linear-gradient(top, #ffffff 0%, red 100%);
       z-index: 0;
     }
   }

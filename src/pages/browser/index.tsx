@@ -6,6 +6,8 @@ import CustomIcon from '@/components/Icon'
 import './index.less'
 import globalData from "@/services/global_data"
 
+import testImg from '@/assets/images/Test.png'
+
 
 type PageOwnProps = {}
 
@@ -15,7 +17,7 @@ class Browser extends Component {
   
   config: Config = {
     navigationBarTitleText: '这图我能P',
-    disableScroll: true,
+    disableScroll: false,
     enablePullDownRefresh:false
   }
   

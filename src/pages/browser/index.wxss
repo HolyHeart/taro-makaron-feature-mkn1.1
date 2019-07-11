@@ -48,25 +48,46 @@ page {
   width: 100%;
   top: 0;
   display: flex;
-  background-color: red;
 }
 .browser .waterfall .left-div {
   display: flex;
   flex-direction: column;
   width: 50%;
-  height: 6000rpx;
+  height: auto;
   position: relative;
-  background-color: green;
   z-index: 0;
+  align-items: center;
+}
+.browser .waterfall .left-div .card {
+  background-color: black;
+  width: 90%;
+  height: auto;
+  box-shadow: 4rpx 4rpx 8rpx rgba(0, 0, 0, 0.5);
+  margin-top: 5%;
+  margin-left: 3.5%;
+}
+.browser .waterfall .left-div .card.card-hover {
+  transform: scale(0.95);
 }
 .browser .waterfall .right-div {
   display: flex;
   flex-direction: column;
   width: 50%;
-  height: 5500rpx;
+  height: auto;
   position: relative;
-  background-color: yellow;
   z-index: 0;
+  align-items: center;
+}
+.browser .waterfall .right-div .card {
+  background-color: black;
+  width: 90%;
+  height: auto;
+  box-shadow: 4rpx 4rpx 8rpx rgba(0, 0, 0, 0.5);
+  margin-top: 5%;
+  margin-right: 3.5%;
+}
+.browser .waterfall .right-div .card.card-hover {
+  transform: scale(0.95);
 }
 .browser .divider {
   align-items: center;

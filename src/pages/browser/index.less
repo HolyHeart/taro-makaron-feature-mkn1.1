@@ -50,24 +50,48 @@ page {
     // height: auto;
     top: 0;
     display: flex;
-    background-color: red;
+    //background-color: red;
     .left-div {
       display: flex;
       flex-direction: column;
       width: 50%;
-      height: 6000rpx;
+      height: auto;
       position: relative;
-      background-color: green;
+      //background-color: green;
       z-index: 0;
+      align-items:center;
+      .card {
+        background-color:black;
+        width: 90%;
+        height: auto;
+        box-shadow:4rpx 4rpx 8rpx rgba(0,0,0,0.5);
+        margin-top: 5%;
+        margin-left: 3.5%;
+        &.card-hover {
+          transform: scale(0.95)
+        }  
+      }
     }
     .right-div {
       display: flex;
       flex-direction: column;
       width:50%;
-      height: 5500rpx;
+      height: auto;
       position: relative;
-      background-color: yellow;
+      //background-color: yellow;
       z-index: 0;
+      align-items:center;
+      .card {
+        background-color:black;
+        width: 90%;
+        height: auto;
+        box-shadow:4rpx 4rpx 8rpx rgba(0,0,0,0.5);
+        margin-top: 5%;
+        margin-right: 3.5%;
+        &.card-hover {
+          transform: scale(0.95)
+        }  
+      }
     }
   }
 

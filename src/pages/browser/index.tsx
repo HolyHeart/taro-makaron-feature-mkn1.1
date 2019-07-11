@@ -108,9 +108,32 @@ class Browser extends Component {
 
         <View className='waterfall'>
           <View className='left-div' style={{marginTop: globalData.windowTop}}>
-            {/* <View style="background-color:#000">1111</View> */}
+            <View className='card' hoverClass="card-hover" style='height:300rpx'>
+            </View>
+            <View className='card' hoverClass="card-hover" style='height:350rpx'>
+            </View>
+            <View className='card' hoverClass="card-hover" style='height:330rpx'>
+            </View>
+            <View className='card' hoverClass="card-hover" style='height:400rpx'>
+            </View>
+            <View className='card' hoverClass="card-hover" style='height:300rpx'>
+            </View>
+            <View className='card' hoverClass="card-hover" style='height:350rpx'>
+            </View>
           </View> 
           <View className='right-div' style={{marginTop: globalData.windowTop}}>
+            <View className='card' hoverClass="card-hover" style='height:400rpx'>
+            </View>
+            <View className='card' hoverClass="card-hover" style='height:300rpx'>
+            </View>
+            <View className='card' hoverClass="card-hover" style='height:350rpx'>
+            </View>
+            <View className='card' hoverClass="card-hover" style='height:300rpx'>
+            </View>
+            <View className='card' hoverClass="card-hover" style='height:350rpx'>
+            </View>
+            <View className='card' hoverClass="card-hover" style='height:330rpx'>
+            </View>
           </View>
 
         </View>

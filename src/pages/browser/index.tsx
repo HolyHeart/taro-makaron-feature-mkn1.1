@@ -22,13 +22,15 @@ class Browser extends Component {
   }
   
   state = {
-    navHeight: '',
     navScrollHeight: '',
   }
 
   componentDidMount () {
     this.getScreenHeight()
+    //待用
+    globalData.windowTop = globalData.totalTopHeight * 2 + globalData.sysHeight * 0.36 + 'rpx'
     globalData.totalTopHeight = globalData.totalTopHeight * 2 + 'rpx'
+    //console.log(globalData.sysHeight * 0.3)
   }
 
   getScreenHeight () {
@@ -38,7 +40,6 @@ class Browser extends Component {
     })
 
     this.setState({
-      navHeight: globalData.sysHeight * 0.6 + 'rpx',
       navScrollHeight: globalData.sysHeight * 0.3 + 'rpx',
     })
   }
@@ -51,22 +52,17 @@ class Browser extends Component {
     var topDistance = e.scrollTop
 
 
-    // TODO
-
-    var minHeight = globalData.sysHeight * 0.40
-    var maxHeight = globalData.sysHeight * 0.60
-    var navHeight = ''
+    var minHeight = globalData.sysHeight * 0.20
+    var maxHeight = globalData.sysHeight * 0.30
     var navScrollHeight = ''
     if (topDistance!==0) {
-      navHeight = minHeight + 'rpx'
-      navScrollHeight = minHeight/2 + 'rpx'
+      navScrollHeight = minHeight + 'rpx'
     } else {
-      navHeight = maxHeight + 'rpx'
-      navScrollHeight = maxHeight/2 + 'rpx'
+      // 当没有滚动的时候，navbar高度为最大值
+      navScrollHeight = maxHeight + 'rpx'
     }
 
     this.setState({
-      navHeight: navHeight,
       navScrollHeight: navScrollHeight
     })
   }
@@ -85,8 +81,6 @@ class Browser extends Component {
             }
           >这图我能P</Title>
         </View>
-
-
 
         <View className='navBar' style={{top: globalData.totalTopHeight}}>
           <ScrollView className='scroll' scrollX={true} style={{height: this.state.navScrollHeight}}>
@@ -110,25 +104,25 @@ class Browser extends Component {
             </View>
           </ScrollView>
         </View>
+        
 
-
-
-
-
-
-        <ScrollView className='waterfall'>
-          <View className='left-div'>
+        <View className='waterfall'>
+          <View className='left-div' style={{marginTop: globalData.windowTop}}>
+            {/* <View style="background-color:#000">1111</View> */}
+          </View> 
+          <View className='right-div' style={{marginTop: globalData.windowTop}}>
           </View>
-          <View className='right-div'>
-          </View>
-        </ScrollView>
 
-
+        </View>
 
 
 
 
         <View className='divider'>-底部-</View>
+
+
+
+
 
         <View className='btnGrp'>
           <Button className="button white" hoverClass="btn-hover">分享给好友</Button>

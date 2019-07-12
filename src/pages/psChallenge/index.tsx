@@ -1406,7 +1406,7 @@ class Editor extends Component {
             />
           </MarginTopWrap>
           <MarginTopWrap config={{ large: 60, small: 40, default: 20 }}>
-            <Button className="custom-button pink" hoverClass="btn-hover" onClick={this.handleOpenResult}>保存</Button>
+            <Button className="custom-button pink" hoverClass="btn-hover" onClick={this.handleOpenResult}>完成</Button>
           </MarginTopWrap>
         </View>
         <View class="canvas-wrap">

@@ -72,7 +72,7 @@ class Sticker extends Component {
       height: 0,
       left: 0,
       top: 0,
-    },  
+    },
     url: this.props.url,
   }
 
@@ -84,12 +84,12 @@ class Sticker extends Component {
     preV: {x:null, y:null},
     center: {x:0, y:0}, // 中心点y坐标
     scale: 1
-  } 
+  }
 
   constructor (props) {
-    super(props)    
-    this.throttledStickerOntouchmove = this.throttle(this.stickerOntouchmove, 1000/30).bind(this)
-    this.throttledArrowOntouchmove = this.throttle(this.arrowOntouchmove, 1000/30).bind(this)  
+    super(props)
+    this.throttledStickerOntouchmove = this.throttle(this.stickerOntouchmove, 16.7).bind(this)
+    this.throttledArrowOntouchmove = this.throttle(this.arrowOntouchmove, 16.7).bind(this)
   }
 
   componentWillMount () {
@@ -102,7 +102,7 @@ class Sticker extends Component {
     if (nextProps.framePrams && nextProps.framePrams.width !== this.props.framePrams.width) {
       framePrams = nextProps.framePrams
       hasChange = true
-      // console.log('change framePrams', framePrams)
+      // console.log('change framePrams', framePrams)·
     }
 
     if (nextProps.url !== this.props.url) {
@@ -137,22 +137,22 @@ class Sticker extends Component {
     typeof onTouchend === 'function' && onTouchend(stylePrams)
   }
 
-  stickerOntouchstart = (e) => {    
+  stickerOntouchstart = (e) => {
     if (this.isFixed()) {
       // 若固定则不能移动
       return
-    } 
+    }
     // console.log('stickerOntouchstart', e)
     const {gesture} = this
     const {framePrams} = this.state
     const frameOffsetX = framePrams.left
-    const frameOffsetY = framePrams.top    
+    const frameOffsetY = framePrams.top
     if (e.touches.length === 1) {
       let { clientX, clientY } = e.touches[0]
       gesture.startX = clientX - frameOffsetX
       gesture.startY = clientY - frameOffsetY
       // console.log('gesture-one', gesture)
-    } else {        
+    } else {
       let xMove = e.touches[1].clientX - e.touches[0].clientX
       let yMove = e.touches[1].clientY - e.touches[0].clientY
       let distance = Math.sqrt(xMove * xMove + yMove * yMove)
@@ -170,13 +170,13 @@ class Sticker extends Component {
     if (this.isFixed()) {
       // 若固定则不能移动
       return
-    } 
+    }
     // console.log('stickerOntouchmove', e)
     const {gesture} = this
     const {stylePrams} = this.props
     const {framePrams} = this.state
     const frameOffsetX = framePrams.left
-    const frameOffsetY = framePrams.top  
+    const frameOffsetY = framePrams.top
 
     if (e.touches.length === 1) {
       //单指移动
@@ -201,7 +201,7 @@ class Sticker extends Component {
       let xMove = e.touches[1].clientX - e.touches[0].clientX;
       let yMove = e.touches[1].clientY - e.touches[0].clientY;
       let distance = Math.sqrt(xMove * xMove + yMove * yMove);
-      
+
       // 计算缩放
       let distanceDiff = distance - gesture.distance;
       let newScale = gesture.scale + 0.005 * distanceDiff;
@@ -225,7 +225,7 @@ class Sticker extends Component {
         y: yMove
       }
       if (preV.x !== null) {
-        let angle = tool.getRotateAngle(v, preV)          
+        let angle = tool.getRotateAngle(v, preV)
         newRotate = parseFloat(stylePrams.rotate) + angle
       }
       // 更新数据
@@ -238,8 +238,8 @@ class Sticker extends Component {
         height: newHeight,
         x : newX,
         y : newY,
-        rotate: newRotate 
-      })           
+        rotate: newRotate
+      })
     }
   }
 
@@ -247,7 +247,7 @@ class Sticker extends Component {
     if (this.isFixed()) {
       // 若固定则不能移动
       return
-    } 
+    }
     // console.log('stickerOntouchend', e)
     if (e.touches.length === 0) {
       //重置缩放状态
@@ -260,7 +260,7 @@ class Sticker extends Component {
     if (this.isFixed()) {
       // 若固定则不能移动
       return
-    } 
+    }
     const {gesture} = this
     const {stylePrams} = this.props
     const {framePrams} = this.state
@@ -275,32 +275,32 @@ class Sticker extends Component {
       let xMove = clientX - frameOffsetX - center.x;
       let yMove = clientY - frameOffsetY -center.y;
       let distance = Math.sqrt(xMove * xMove + yMove * yMove);
-      // 记录旋转            
-      let v = { x: xMove, y: yMove }      
+      // 记录旋转
+      let v = { x: xMove, y: yMove }
       gesture.distance = distance
       gesture.zoom = true
       gesture.preV = v
       gesture.center = center
-    }  
-    this.emitTouchstart()  
+    }
+    this.emitTouchstart()
   }
 
   arrowOntouchmove = (e) => {
     if (this.isFixed()) {
       // 若固定则不能移动
       return
-    } 
-    // console.log('arrowOntouchmove', e)  
+    }
+    // console.log('arrowOntouchmove', e)
     const {gesture} = this
     const {stylePrams} = this.props
     const {center} = gesture
     const {framePrams} = this.state
     const frameOffsetX = framePrams.left
-    const frameOffsetY = framePrams.top    
+    const frameOffsetY = framePrams.top
     if (e.touches.length === 1) {
       let xMove = e.touches[0].clientX - frameOffsetX - center.x
       let yMove = e.touches[0].clientY - frameOffsetY - center.y
-      let distance = Math.sqrt(xMove * xMove + yMove * yMove)      
+      let distance = Math.sqrt(xMove * xMove + yMove * yMove)
       // 计算缩放
       let distanceDiff = distance - gesture.distance;
       let newScale = gesture.scale + 0.005 * distanceDiff;
@@ -323,7 +323,7 @@ class Sticker extends Component {
         y: yMove
       }
       if (preV.x !== null) {
-        let angle = tool.getRotateAngle(v, preV)          
+        let angle = tool.getRotateAngle(v, preV)
         newRotate = parseFloat(stylePrams.rotate) + angle
       }
       // 更新数据
@@ -343,24 +343,24 @@ class Sticker extends Component {
         height: newHeight,
         x : newX,
         y : newY,
-        rotate: newRotate 
-      })  
-    }        
+        rotate: newRotate
+      })
+    }
   }
 
   arrowOntouchend = (e) => {
     if (this.isFixed()) {
       // 若固定则不能移动
       return
-    } 
-    // console.log('arrowOntouchend', e)  
+    }
+    // console.log('arrowOntouchend', e)
     if (e.touches.length === 0) {
       //重置缩放状态
       this.gesture.zoom = false
-    } 
+    }
     this.emitTouchend()
   }
-   
+
   handleImageLoaded = (e) => {
     const { onImageLoaded, stylePrams } = this.props
     onImageLoaded && onImageLoaded(e.detail, stylePrams)
@@ -376,7 +376,7 @@ class Sticker extends Component {
     const {onChangeStyle} = this.props
     let newStylePrams:any = null
     if (type === 'offset') {
-      const {offsetX, offsetY} = obj      
+      const {offsetX, offsetY} = obj
       newStylePrams = {
         ...stylePrams,
         x: stylePrams.x + offsetX,
@@ -402,8 +402,8 @@ class Sticker extends Component {
         // console.log('不执行')
       }
     }
-  } 
-  
+  }
+
   formatStyle = (style) => {
     const {zIndex, width, height, x, y, rotate} = style
     return {
@@ -413,33 +413,33 @@ class Sticker extends Component {
       transform: `translate(${x}px, ${y}px) rotate(${rotate}deg)`
     }
   }
-  
+
   render() {
     const { stylePrams } = this.props
     const styleObj = this.formatStyle(this.props.stylePrams)
     // console.log('sticker render', this.state.url)
     return (
-      <View 
+      <View
         className={`sticker-wrap ${stylePrams.fixed ? 'event-through' : ''} ${(stylePrams.visible && stylePrams.width > 0) ? '' : 'hidden' }`}
         style={styleObj}
-      > 
+      >
         {/* <View style="position: absolute;left:0;top:0">{framePrams.width}</View> */}
         {/* <View style="position: absolute;left:0;top:20px">{stylePrams.autoWidth}</View> */}
         {/* <View style="position: absolute;left:0;top:20px">{stylePrams.width}</View>  */}
-        {this.state.url && 
-          <Image 
-            src={this.state.url} 
-            mode="widthFix" 
+        {this.state.url &&
+          <Image
+            src={this.state.url}
+            mode="widthFix"
             style="width:100%;height:100%"
             onLoad={this.handleImageLoaded}
-            onTouchstart={this.stickerOntouchstart} 
+            onTouchstart={this.stickerOntouchstart}
             onTouchmove={this.throttledStickerOntouchmove}
             onTouchend={this.stickerOntouchend}
           />
-        }        
+        }
         <View className={`border ${stylePrams.isActive ? 'active' : ''}`}></View>
         <View className={`control move ${stylePrams.isActive ? 'active' : ''}`}
-          onTouchstart={this.arrowOntouchstart} 
+          onTouchstart={this.arrowOntouchstart}
           onTouchmove={this.throttledArrowOntouchmove}
           onTouchend={this.arrowOntouchend}
         >
@@ -451,7 +451,7 @@ class Sticker extends Component {
           >
             <Image src={close} mode="widthFix" style="width:80%;height:80%" />
           </View>
-        }        
+        }
       </View>
     )
   }

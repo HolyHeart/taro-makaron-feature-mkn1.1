@@ -26,6 +26,11 @@ class Browser extends Component {
   state = {
     navScrollHeight: '',
     currentThemeID: 0,
+
+    leftList: [],
+    leftHeight: 0,
+    rightList: [],
+    rightHeight: 0,
   }
 
   componentDidMount () {
@@ -33,10 +38,10 @@ class Browser extends Component {
     //待用
     globalData.windowTop = globalData.totalTopHeight * 2 + globalData.sysHeight * 0.36 + 'rpx'
     globalData.totalTopHeight = globalData.totalTopHeight * 2 + 'rpx'
-
     this.initThemeList()
-    console.log(globalData.themeData.originalImageList[0].activityId)
+    //console.log(globalData.themeData.originalImageList[0].activityId)
     this.initWorkList()
+
   }
 
   initThemeList () {
@@ -47,12 +52,17 @@ class Browser extends Component {
 
   async initWorkList () {
     try {
-      const workList = await browser.psWorkList('293060964369879040', '1')
-      console.log('Hey bro, check out this work list!')
-      console.log(workList)
+      const result = await browser.psWorkList('293060964369879040', '1')
+      const workList = result.result.result.workList
+
+      globalData.browserWorkList = workList
+
     } catch (err) {
       console.log('Oops, failed to get work list', err)
     }
+
+    //console.log('browserWorkList', globalData.browserWorkList)
+    this.getList(globalData.browserWorkList)
   }
 
 
@@ -93,6 +103,59 @@ class Browser extends Component {
     })
     console.log(activityID)
   }
+
+
+  // TODO: divide the original list into 2 sublists
+  getList (list) {
+    var counter = 0
+    list.forEach(element => {
+      var picUrl = element.url
+      Taro.getImageInfo({
+        src: picUrl,
+        success: function (res) {
+          console.log(res)
+        }
+      })
+    });
+    //this.divideList(globalData.picSizeList)
+  }
+
+
+  divideList (result) {
+    console.log(result)
+  }
+
+
+
+
+
+            //  if (counter === 0) {
+          //    var temList = this.state.leftList
+          //    var temHeight = this.state.leftHeight
+          //    this.setState({
+          //      leftList: temList.push(element),
+          //      leftHeight: temHeight + (res.height / res.width)
+          //    })
+          //  } else {
+          //    if (this.state.leftHeight > this.state.rightHeight) {
+          //     var temList = this.state.rightList
+          //     var temHeight = this.state.rightHeight
+          //     this.setState({
+          //       rightList: temList.push(element),
+          //       rightHeight: temHeight + (res.height / res.width)
+          //     })
+          //    } else {
+          //     var temList = this.state.leftList
+          //     var temHeight = this.state.leftHeight
+          //     this.setState({
+          //       leftList: temList.push(element),
+          //       leftHeight: temHeight + (res.height / res.width)
+          //     })
+          //    }
+          //  }
+
+
+
 
 
   render () {

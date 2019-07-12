@@ -118,7 +118,7 @@ class Browser extends Component {
             </View>
             <View className='card' hoverClass="card-hover" style='height:300rpx'>
             </View>
-            <View className='card' hoverClass="card-hover" style='height:350rpx'>
+            <View className='card' hoverClass="card-hover" style='height:300rpx'>
             </View>
           </View> 
           <View className='right-div' style={{marginTop: globalData.windowTop}}>
@@ -134,6 +134,7 @@ class Browser extends Component {
             </View>
             <View className='card' hoverClass="card-hover" style='height:330rpx'>
             </View>
+
           </View>
 
         </View>
@@ -141,7 +142,7 @@ class Browser extends Component {
 
 
 
-        <View className='divider'>-底部-</View>
+        <View className='divider'>-没有更多啦-</View>
 
 
 

@@ -23,6 +23,7 @@ class Browser extends Component {
   
   state = {
     navScrollHeight: '',
+    currentThemeID: 0,
   }
 
   componentDidMount () {
@@ -31,12 +32,13 @@ class Browser extends Component {
     globalData.windowTop = globalData.totalTopHeight * 2 + globalData.sysHeight * 0.36 + 'rpx'
     globalData.totalTopHeight = globalData.totalTopHeight * 2 + 'rpx'
 
-    //console.log('heyheyhey, check this out!', globalData.themeData.originalImageList)
-    globalData.testImgUrl= globalData.themeData.originalImageList[0].originalImageUrl
-    console.log('heyheyhey, check this out!', globalData.testImgUrl)
+    this.initWorkList()
+  }
 
-
-
+  initWorkList () {
+    this.setState({
+      currentThemeID: globalData.themeData.originalImageList[0].activityId
+    })
   }
 
   getScreenHeight () {
@@ -56,8 +58,6 @@ class Browser extends Component {
 
   onPageScroll (e) {
     var topDistance = e.scrollTop
-
-
     var minHeight = globalData.sysHeight * 0.20
     var maxHeight = globalData.sysHeight * 0.30
     var navScrollHeight = ''
@@ -67,9 +67,14 @@ class Browser extends Component {
       // 当没有滚动的时候，navbar高度为最大值
       navScrollHeight = maxHeight + 'rpx'
     }
-
     this.setState({
       navScrollHeight: navScrollHeight
+    })
+  }
+
+  clickThemeIcon (activityID, e) {
+    this.setState({
+      currentThemeID: activityID
     })
   }
 
@@ -91,15 +96,11 @@ class Browser extends Component {
         <View className='navBar' style={{top: globalData.totalTopHeight}}>
           <ScrollView className='scroll' scrollX={true} style={{height: this.state.navScrollHeight}}>
             {globalData.themeData.originalImageList.map(item=>{
-                return <View className='item' hoverClass="item-hover" style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}}> 
+                return <View className='item' hoverClass="item-hover" style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}} onClick={this.clickThemeIcon.bind(this, item.activityId)}> 
                         <Image className='itemImg' src={item.originalImageUrl} style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}}></Image>
                       </View>
                 })
             }
-            {/* <View className='item' hoverClass="item-hover" style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}}> 
-            </View>
-            <View className='item' hoverClass="item-hover" style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}}> 
-            </View> */}
           </ScrollView>
         </View>
         

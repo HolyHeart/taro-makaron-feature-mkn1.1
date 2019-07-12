@@ -30,7 +30,13 @@ class Browser extends Component {
     //待用
     globalData.windowTop = globalData.totalTopHeight * 2 + globalData.sysHeight * 0.36 + 'rpx'
     globalData.totalTopHeight = globalData.totalTopHeight * 2 + 'rpx'
-    //console.log(globalData.sysHeight * 0.3)
+
+    //console.log('heyheyhey, check this out!', globalData.themeData.originalImageList)
+    globalData.testImgUrl= globalData.themeData.originalImageList[0].originalImageUrl
+    console.log('heyheyhey, check this out!', globalData.testImgUrl)
+
+
+
   }
 
   getScreenHeight () {
@@ -84,24 +90,16 @@ class Browser extends Component {
 
         <View className='navBar' style={{top: globalData.totalTopHeight}}>
           <ScrollView className='scroll' scrollX={true} style={{height: this.state.navScrollHeight}}>
-            <View className='item' hoverClass="item-hover" style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}}> 
+            {globalData.themeData.originalImageList.map(item=>{
+                return <View className='item' hoverClass="item-hover" style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}}> 
+                        <Image className='itemImg' src={item.originalImageUrl} style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}}></Image>
+                      </View>
+                })
+            }
+            {/* <View className='item' hoverClass="item-hover" style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}}> 
             </View>
             <View className='item' hoverClass="item-hover" style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}}> 
-            </View>
-            <View className='item' hoverClass="item-hover" style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}}> 
-            </View>
-            <View className='item' hoverClass="item-hover" style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}}> 
-            </View>
-            <View className='item' hoverClass="item-hover" style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}}> 
-            </View>
-            <View className='item' hoverClass="item-hover" style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}}> 
-            </View>
-            <View className='item' hoverClass="item-hover" style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}}> 
-            </View>
-            <View className='item' hoverClass="item-hover" style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}}> 
-            </View>
-            <View className='item' hoverClass="item-hover" style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}}> 
-            </View>
+            </View> */}
           </ScrollView>
         </View>
         

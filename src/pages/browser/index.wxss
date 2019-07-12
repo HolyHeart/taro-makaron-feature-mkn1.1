@@ -34,12 +34,14 @@ page {
 }
 .browser .navBar .scroll .item {
   display: inline-block;
-  background: #FF3366;
   position: relative;
-  box-shadow: 4rpx 4rpx 8rpx rgba(0, 0, 0, 0.5);
-  margin-left: 0.5%;
-  margin-right: 0.5%;
+  margin-left: 1%;
+  margin-right: 1%;
   transition: all 0.2s;
+}
+.browser .navBar .scroll .item .itemImg {
+  transition: all 0.2s;
+  border-radius: 4%;
 }
 .browser .navBar .scroll .item.item-hover {
   transform: scale(0.95);
@@ -62,9 +64,9 @@ page {
   background-color: black;
   width: 90%;
   height: auto;
-  box-shadow: 4rpx 4rpx 8rpx rgba(0, 0, 0, 0.5);
   margin-top: 5%;
   margin-left: 3.5%;
+  border-radius: 4%;
 }
 .browser .waterfall .left-div .card.card-hover {
   transform: scale(0.95);
@@ -82,9 +84,9 @@ page {
   background-color: black;
   width: 90%;
   height: auto;
-  box-shadow: 4rpx 4rpx 8rpx rgba(0, 0, 0, 0.5);
   margin-top: 5%;
   margin-right: 3.5%;
+  border-radius: 4%;
 }
 .browser .waterfall .right-div .card.card-hover {
   transform: scale(0.95);

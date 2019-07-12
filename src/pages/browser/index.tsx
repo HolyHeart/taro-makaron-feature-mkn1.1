@@ -8,6 +8,8 @@ import globalData from "@/services/global_data"
 
 import testImg from '@/assets/images/Test.png'
 
+import { browser } from '@/services/service'
+
 
 type PageOwnProps = {}
 
@@ -32,14 +34,27 @@ class Browser extends Component {
     globalData.windowTop = globalData.totalTopHeight * 2 + globalData.sysHeight * 0.36 + 'rpx'
     globalData.totalTopHeight = globalData.totalTopHeight * 2 + 'rpx'
 
+    this.initThemeList()
+    console.log(globalData.themeData.originalImageList[0].activityId)
     this.initWorkList()
   }
 
-  initWorkList () {
+  initThemeList () {
     this.setState({
       currentThemeID: globalData.themeData.originalImageList[0].activityId
     })
   }
+
+  async initWorkList () {
+    try {
+      const workList = await browser.psWorkList('293060964369879040', '1')
+      console.log('Hey bro, check out this work list!')
+      console.log(workList)
+    } catch (err) {
+      console.log('Oops, failed to get work list', err)
+    }
+  }
+
 
   getScreenHeight () {
     Taro.getSystemInfo({
@@ -76,6 +91,7 @@ class Browser extends Component {
     this.setState({
       currentThemeID: activityID
     })
+    console.log(activityID)
   }
 
 

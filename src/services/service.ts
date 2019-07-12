@@ -379,11 +379,27 @@ export const styleTransfer = {
 
 
 
+export const browser = {
+  psWorkList: function (activityID, page) {
+    const reqData = {
+      method: 'GET',
+      url: api.browser.psWorkList,
+      header: {"Accept": "*/*"},
+      data: {
+        activityId: activityID,
+        page: page,
+      }
+    }
+    return request(reqData)
+  },
+}
+
 
 
 
 export default {
   base,
   core,
-  styleTransfer
+  styleTransfer,
+  browser,
 }

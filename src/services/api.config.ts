@@ -47,6 +47,9 @@ export const api = {
     segment: `${getHost('qq_miniapi', ENV)}/image/render/segment`,
     featureTagOrder: `${getHost('qq_miniapi', ENV)}/feature/featureTagOrder`,
     featureDetail: `${getHost('qq_miniapi', ENV)}/feature/featureDetail`,
+  },
+  browser: {
+    psWorkList: `${getHost('qq_miniapi', ENV)}/activity/works/top/likes`,
   }
 }
 export default {

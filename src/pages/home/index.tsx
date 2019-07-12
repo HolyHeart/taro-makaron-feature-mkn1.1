@@ -261,36 +261,38 @@ class Home extends Component {
   }
 
   todo = () => {
-    work.chooseImage({
-      onTap: (index) => {
-        // console.log('tap index', index)
-        if (index === 0) {
-          this.app.aldstat.sendEvent('首页上传人像选择拍摄照片', '选择拍摄')
-        } else if (index === 1) {
-          this.app.aldstat.sendEvent('首页上传人像选择相册照片', '选择相册')
+    const { sceneType } = globalData
+    if (sceneType === 5){
+      Taro.navigateTo({url: '/pages/browser/index'})
+    } else {
+      work.chooseImage({
+        onTap: (index) => {
+          // console.log('tap index', index)
+          if (index === 0) {
+            this.app.aldstat.sendEvent('首页上传人像选择拍摄照片', '选择拍摄')
+          } else if (index === 1) {
+            this.app.aldstat.sendEvent('首页上传人像选择相册照片', '选择相册')
+          }
+        },
+        onSuccess: (path) => {
+          console.log('choosedImage', path, globalData)
+          this.app.aldstat.sendEvent('首页上传人像成功', '上传成功')
+          globalData.choosedImage = path
+          const { sceneType } = globalData
+          if (sceneType === 1) {
+            Taro.navigateTo({url: '/pages/filter/index'})
+          } else if (sceneType === 2) {
+            Taro.navigateTo({url: '/pages/dynamic/index'})
+          } else if (sceneType === 3) {
+            Taro.navigateTo({url: '/pages/segment/index'})
+          } else if (sceneType === 4){
+            Taro.navigateTo({url: '/pages/crop/index'})
+          } else {
+            Taro.navigateTo({url: '/pages/editor/index'})
+          } 
         }
-      },
-      onSuccess: (path) => {
-        console.log('choosedImage', path, globalData)
-        this.app.aldstat.sendEvent('首页上传人像成功', '上传成功')
-        globalData.choosedImage = path
-        const { sceneType } = globalData
-        if (sceneType === 1) {
-          Taro.navigateTo({url: '/pages/filter/index'})
-        } else if (sceneType === 2) {
-          Taro.navigateTo({url: '/pages/dynamic/index'})
-        } else if (sceneType === 3) {
-          Taro.navigateTo({url: '/pages/segment/index'})
-        } else if (sceneType === 4){
-          Taro.navigateTo({url: '/pages/crop/index'})
-        } else if (sceneType === 5){
-          Taro.navigateTo({url: '/pages/browser/index'})
-        } else {
-          Taro.navigateTo({url: '/pages/editor/index'})
-        }
-        
-      }
-    })
+      })
+    } 
   }
 
   render () {

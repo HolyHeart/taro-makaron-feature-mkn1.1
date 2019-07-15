@@ -27,10 +27,10 @@ class Browser extends Component {
     navScrollHeight: '',
     currentThemeID: 0,
 
-    leftList: [],
-    leftHeight: 0,
-    rightList: [],
-    rightHeight: 0,
+    //leftList: [],
+    //leftHeight: 0,
+    //rightList: [],
+    //rightHeight: 0,
   }
 
   componentDidMount () {
@@ -42,6 +42,10 @@ class Browser extends Component {
     //console.log(globalData.themeData.originalImageList[0].activityId)
     this.initWorkList()
 
+    globalData.waterfallLeftHeight = 0
+    globalData.waterfallRightHeight = 0
+    globalData.waterfallLeftList = []
+    globalData.waterfallRightList = []
   }
 
   initThemeList () {
@@ -112,54 +116,46 @@ class Browser extends Component {
       var picUrl = element.url
       Taro.getImageInfo({
         src: picUrl,
-        success: function (res) {
-          console.log(res)
-        }
+      }).then((res)=>{
+        this.divideList(res, counter)
+        counter = counter + 1
+        // Do we need it ?
+        // this.setState({
+        //   leftList: globalData.waterfallLeftList,
+        //   rightList: globalData.waterfallRightHeight
+        // })
+        //console.log(globalData.waterfallLeftList[0].path)
+        //console.log(res)
       })
     });
-    //this.divideList(globalData.picSizeList)
+    
   }
 
 
-  divideList (result) {
-    console.log(result)
+  divideList (result, counter) {
+    if (counter===0 || globalData.waterfallLeftHeight <= globalData.waterfallRightHeight) {
+      globalData.waterfallLeftHeight = globalData.waterfallLeftHeight + (result.height / result.width)
+      globalData.waterfallLeftList.push(result)
+      // console.log('放左边', globalData.waterfallLeftHeight)
+      //console.log('放左边', result.path)
+    } else {
+      globalData.waterfallRightHeight = globalData.waterfallRightHeight + (result.height / result.width)
+      globalData.waterfallRightList.push(result)
+      // console.log('放右边', globalData.waterfallRightHeight)
+      //console.log('放右边', result.path) 
+    }
   }
-
-
-
-
-
-            //  if (counter === 0) {
-          //    var temList = this.state.leftList
-          //    var temHeight = this.state.leftHeight
-          //    this.setState({
-          //      leftList: temList.push(element),
-          //      leftHeight: temHeight + (res.height / res.width)
-          //    })
-          //  } else {
-          //    if (this.state.leftHeight > this.state.rightHeight) {
-          //     var temList = this.state.rightList
-          //     var temHeight = this.state.rightHeight
-          //     this.setState({
-          //       rightList: temList.push(element),
-          //       rightHeight: temHeight + (res.height / res.width)
-          //     })
-          //    } else {
-          //     var temList = this.state.leftList
-          //     var temHeight = this.state.leftHeight
-          //     this.setState({
-          //       leftList: temList.push(element),
-          //       leftHeight: temHeight + (res.height / res.width)
-          //     })
-          //    }
-          //  }
-
 
 
 
 
   render () {
     
+
+    console.log('left: ',globalData.waterfallLeftList)
+    console.log('right: ',globalData.waterfallRightList)
+
+
     return (
       <View className='browser'>
         <View className='title'>
@@ -186,9 +182,24 @@ class Browser extends Component {
 
         <View className='waterfall'>
           <View className='left-div' style={{marginTop: globalData.windowTop}}>
-            <View className='card' hoverClass="card-hover" style='height:300rpx'>
+
+
+
+
+          {/* {globalData.waterfallLeftList.map(item=>{
+                return <View className='card' hoverClass="card-hover" key={item.path}> 
+                        <Image className='cardImg' src={item.path}></Image>
+                      </View>
+                })
+          } */}
+
+
+
+            <View className='card' hoverClass="card-hover">
+              <Image className='cardImg' src={globalData.waterfallLeftList[0].path}></Image>
             </View>
-            <View className='card' hoverClass="card-hover" style='height:350rpx'>
+
+            {/* <View className='card' hoverClass="card-hover" style='height:350rpx'>
             </View>
             <View className='card' hoverClass="card-hover" style='height:330rpx'>
             </View>
@@ -197,8 +208,14 @@ class Browser extends Component {
             <View className='card' hoverClass="card-hover" style='height:300rpx'>
             </View>
             <View className='card' hoverClass="card-hover" style='height:300rpx'>
-            </View>
+            </View> */}
+
+
+
           </View> 
+
+
+
           <View className='right-div' style={{marginTop: globalData.windowTop}}>
             <View className='card' hoverClass="card-hover" style='height:400rpx'>
             </View>

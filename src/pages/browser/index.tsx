@@ -148,17 +148,13 @@ class Browser extends Component {
   render () {
     
 
-    let waterfall
+    let waterfallLeft
+    let leftList
+    let rightList
 
     if (this.state.waterfallLoaded) {
-
-      const a = globalData.waterfallLeftList[0]
-
-      waterfall = (
-        <View className='card' hoverClass="card-hover">
-          <Image className='cardImg' src={a}></Image>
-        </View>
-      )
+      leftList = globalData.waterfallLeftList
+      rightList = globalData.waterfallRightList
     }
 
 
@@ -189,54 +185,22 @@ class Browser extends Component {
 
         <View className='waterfall'>
           <View className='left-div' style={{marginTop: globalData.windowTop}}>
-
-
-
-
-          {/* {globalData.waterfallLeftList.map(item=>{
-                return <View className='card' hoverClass="card-hover" key={item.path}> 
-                        <Image className='cardImg' src={item.path}></Image>
+          {leftList.map(item=>{
+                return <View className='card' hoverClass="card-hover" key={item}> 
+                        <Image className='cardImg' src={item} mode='widthFix'></Image>
                       </View>
                 })
-          } */}
-
-
-            {waterfall}
-
-            
-
-            {/* <View className='card' hoverClass="card-hover" style='height:350rpx'>
-            </View>
-            <View className='card' hoverClass="card-hover" style='height:330rpx'>
-            </View>
-            <View className='card' hoverClass="card-hover" style='height:400rpx'>
-            </View>
-            <View className='card' hoverClass="card-hover" style='height:300rpx'>
-            </View>
-            <View className='card' hoverClass="card-hover" style='height:300rpx'>
-            </View> */}
-
-
-
+          }
           </View> 
 
-
-
           <View className='right-div' style={{marginTop: globalData.windowTop}}>
-            <View className='card' hoverClass="card-hover" style='height:400rpx'>
-            </View>
-            <View className='card' hoverClass="card-hover" style='height:300rpx'>
-            </View>
-            <View className='card' hoverClass="card-hover" style='height:350rpx'>
-            </View>
-            <View className='card' hoverClass="card-hover" style='height:300rpx'>
-            </View>
-            <View className='card' hoverClass="card-hover" style='height:350rpx'>
-            </View>
-            <View className='card' hoverClass="card-hover" style='height:330rpx'>
-            </View>
-
-          </View>
+          {rightList.map(item=>{
+                return <View className='card' hoverClass="card-hover" key={item}> 
+                        <Image className='cardImg' src={item} mode='widthFix'></Image>
+                      </View>
+                })
+          }
+          </View> 
 
         </View>
 

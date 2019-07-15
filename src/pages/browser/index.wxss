@@ -65,13 +65,13 @@ page {
 .browser .waterfall .left-div .card {
   background-color: black;
   width: 90%;
-  height: auto;
   margin-top: 5%;
   margin-left: 3.5%;
   border-radius: 4%;
 }
 .browser .waterfall .left-div .card .cardImg {
   border-radius: 4%;
+  width: 100%;
 }
 .browser .waterfall .left-div .card.card-hover {
   transform: scale(0.95);
@@ -88,13 +88,13 @@ page {
 .browser .waterfall .right-div .card {
   background-color: black;
   width: 90%;
-  height: auto;
   margin-top: 5%;
   margin-right: 3.5%;
   border-radius: 4%;
 }
 .browser .waterfall .right-div .card .cardImg {
   border-radius: 4%;
+  width: 100%;
 }
 .browser .waterfall .right-div .card.card-hover {
   transform: scale(0.95);

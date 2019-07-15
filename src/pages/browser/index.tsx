@@ -8,7 +8,7 @@ import globalData from "@/services/global_data"
 
 import testImg from '@/assets/images/Test.png'
 
-import { browser } from '@/services/service'
+import { browser, base } from '@/services/service'
 
 
 type PageOwnProps = {}
@@ -26,22 +26,15 @@ class Browser extends Component {
   state = {
     navScrollHeight: '',
     currentThemeID: 0,
-
-    //leftList: [],
-    //leftHeight: 0,
-    //rightList: [],
-    //rightHeight: 0,
+    waterfallLoaded: false,
   }
 
   componentDidMount () {
     this.getScreenHeight()
-    //待用
     globalData.windowTop = globalData.totalTopHeight * 2 + globalData.sysHeight * 0.36 + 'rpx'
     globalData.totalTopHeight = globalData.totalTopHeight * 2 + 'rpx'
     this.initThemeList()
-    //console.log(globalData.themeData.originalImageList[0].activityId)
     this.initWorkList()
-
     globalData.waterfallLeftHeight = 0
     globalData.waterfallRightHeight = 0
     globalData.waterfallLeftList = []
@@ -64,8 +57,6 @@ class Browser extends Component {
     } catch (err) {
       console.log('Oops, failed to get work list', err)
     }
-
-    //console.log('browserWorkList', globalData.browserWorkList)
     this.getList(globalData.browserWorkList)
   }
 
@@ -75,7 +66,6 @@ class Browser extends Component {
       success : res => 
       globalData.sysHeight = res.screenHeight
     })
-
     this.setState({
       navScrollHeight: globalData.sysHeight * 0.3 + 'rpx',
     })
@@ -108,8 +98,6 @@ class Browser extends Component {
     console.log(activityID)
   }
 
-
-  // TODO: divide the original list into 2 sublists
   getList (list) {
     var counter = 0
     list.forEach(element => {
@@ -117,33 +105,41 @@ class Browser extends Component {
       Taro.getImageInfo({
         src: picUrl,
       }).then((res)=>{
-        this.divideList(res, counter)
+        this.divideList(res, picUrl, counter)
         counter = counter + 1
-        // Do we need it ?
-        // this.setState({
-        //   leftList: globalData.waterfallLeftList,
-        //   rightList: globalData.waterfallRightHeight
-        // })
-        //console.log(globalData.waterfallLeftList[0].path)
-        //console.log(res)
+        this.formWaterfall()
       })
     });
     
   }
 
-
-  divideList (result, counter) {
+  divideList (result, url, counter) {
     if (counter===0 || globalData.waterfallLeftHeight <= globalData.waterfallRightHeight) {
       globalData.waterfallLeftHeight = globalData.waterfallLeftHeight + (result.height / result.width)
-      globalData.waterfallLeftList.push(result)
-      // console.log('放左边', globalData.waterfallLeftHeight)
-      //console.log('放左边', result.path)
+      globalData.waterfallLeftList.push(url)
+      console.log(url)
     } else {
       globalData.waterfallRightHeight = globalData.waterfallRightHeight + (result.height / result.width)
-      globalData.waterfallRightList.push(result)
-      // console.log('放右边', globalData.waterfallRightHeight)
-      //console.log('放右边', result.path) 
+      globalData.waterfallRightList.push(url)
+      console.log(url)
     }
+  }
+
+
+  // async uploadImage (local) {
+  //   const remote = await base.upload(local)
+  //   return remote.url
+  // }
+
+  async formWaterfall () {
+    if (globalData.browserWorkList.length === globalData.waterfallLeftList.length + globalData.waterfallRightList.length) {
+      this.setState({
+        waterfallLoaded: true
+      })
+    }
+
+    // console.log('left: ',globalData.waterfallLeftListComplete)
+    // console.log('right: ',globalData.waterfallRightListComplete)
   }
 
 
@@ -152,8 +148,19 @@ class Browser extends Component {
   render () {
     
 
-    console.log('left: ',globalData.waterfallLeftList)
-    console.log('right: ',globalData.waterfallRightList)
+    let waterfall
+
+    if (this.state.waterfallLoaded) {
+
+      const a = globalData.waterfallLeftList[0]
+
+      waterfall = (
+        <View className='card' hoverClass="card-hover">
+          <Image className='cardImg' src={a}></Image>
+        </View>
+      )
+    }
+
 
 
     return (
@@ -194,10 +201,9 @@ class Browser extends Component {
           } */}
 
 
+            {waterfall}
 
-            <View className='card' hoverClass="card-hover">
-              <Image className='cardImg' src={globalData.waterfallLeftList[0].path}></Image>
-            </View>
+            
 
             {/* <View className='card' hoverClass="card-hover" style='height:350rpx'>
             </View>

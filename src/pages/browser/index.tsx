@@ -27,6 +27,7 @@ class Browser extends Component {
     navScrollHeight: '',
     currentThemeID: 0,
     waterfallLoaded: false,
+    showPic: false,
   }
 
   componentDidMount () {
@@ -143,6 +144,17 @@ class Browser extends Component {
   }
 
 
+  openPicMaskContent () {
+    this.setState({
+      showPic: !this.state.showPic
+    })
+  }
+
+  closePicMaskContent () {
+    this.setState({
+      showPic: !this.state.showPic
+    })
+  }
 
 
   render () {
@@ -151,10 +163,17 @@ class Browser extends Component {
     let waterfallLeft
     let leftList
     let rightList
+    let picMaskContent
 
     if (this.state.waterfallLoaded) {
       leftList = globalData.waterfallLeftList
       rightList = globalData.waterfallRightList
+    }
+
+    if (this.state.showPic) {
+      picMaskContent = (
+        <View className='showPicMask' style={{top: globalData.totalTopHeight}} onClick={this.closePicMaskContent}></View>
+      )
     }
 
 
@@ -170,6 +189,11 @@ class Browser extends Component {
             }
           >这图我能P</Title>
         </View>
+
+
+        {picMaskContent}
+
+
 
         <View className='navBar' style={{top: globalData.totalTopHeight}}>
           <ScrollView className='scroll' scrollX={true} style={{height: this.state.navScrollHeight}}>
@@ -188,7 +212,7 @@ class Browser extends Component {
         <View className='waterfall'>
           <View className='left-div' style={{marginTop: globalData.windowTop}}>
           {leftList.map(item=>{
-                return <View className='card' hoverClass="card-hover" key={item}> 
+                return <View className='card' hoverClass="card-hover" key={item} onClick={this.openPicMaskContent}> 
                         <Image className='cardImg' src={item} mode='widthFix'></Image>
                       </View>
                 })
@@ -197,7 +221,7 @@ class Browser extends Component {
 
           <View className='right-div' style={{marginTop: globalData.windowTop}}>
           {rightList.map(item=>{
-                return <View className='card' hoverClass="card-hover" key={item}> 
+                return <View className='card' hoverClass="card-hover" key={item} onClick={this.openPicMaskContent}> 
                         <Image className='cardImg' src={item} mode='widthFix'></Image>
                       </View>
                 })

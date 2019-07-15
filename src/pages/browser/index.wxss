@@ -14,6 +14,14 @@ page {
   align-items: center;
   justify-content: center;
 }
+.browser .showPicMask {
+  z-index: 8;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  background: rgba(255, 255, 255, 0.425);
+  filter: blur(80px) brightness(50%);
+}
 .browser .navBar {
   height: auto;
   width: 100%;

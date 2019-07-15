@@ -63,9 +63,8 @@ page {
   align-items: center;
 }
 .browser .waterfall .left-div .card {
-  background-color: black;
   width: 90%;
-  margin-top: 5%;
+  margin-top: 3%;
   margin-left: 3.5%;
   border-radius: 4%;
 }
@@ -86,9 +85,8 @@ page {
   align-items: center;
 }
 .browser .waterfall .right-div .card {
-  background-color: black;
   width: 90%;
-  margin-top: 5%;
+  margin-top: 3%;
   margin-right: 3.5%;
   border-radius: 4%;
 }

@@ -26,11 +26,13 @@ page {
   white-space: nowrap;
   display: flex;
   width: auto;
+  height: auto;
   transition: all 0.2s;
   padding-top: 3%;
   padding-bottom: 3%;
   padding-left: 3%;
   padding-right: 3%;
+  z-index: 2;
 }
 .browser .navBar .scroll .item {
   display: inline-block;
@@ -40,10 +42,23 @@ page {
   transition: all 0.2s;
   height: auto;
   width: auto;
+  z-index: 3;
 }
 .browser .navBar .scroll .item .itemImg {
   transition: all 0.2s;
   border-radius: 4%;
+  z-index: 4;
+  position: relative;
+}
+.browser .navBar .scroll .item .itemImg .itemImgBorder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 15px solid #FF3366;
+  z-index: 9999;
+  transition: all 0.2s;
 }
 .browser .navBar .scroll .item.item-hover {
   transform: scale(0.95);

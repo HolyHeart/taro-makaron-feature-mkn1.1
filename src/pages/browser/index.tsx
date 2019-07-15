@@ -175,7 +175,9 @@ class Browser extends Component {
           <ScrollView className='scroll' scrollX={true} style={{height: this.state.navScrollHeight}}>
             {globalData.themeData.originalImageList.map(item=>{
                 return <View className='item' hoverClass="item-hover" onClick={this.clickThemeIcon.bind(this, item.activityId)} key={item.activityId}> 
-                        <Image className='itemImg' src={item.originalImageUrl} style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}}></Image>
+                        <Image className='itemImg' src={item.originalImageUrl} style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}}>
+                          {/* <View className='itemImgBorder' style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}}></View> */}
+                        </Image> 
                       </View>
                 })
             }

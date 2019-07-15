@@ -24,11 +24,13 @@ page {
       white-space: nowrap;
       display: flex;
       width: auto;
+      height: auto;
       transition:all 0.2s;
       padding-top: 3%;
       padding-bottom: 3%;
       padding-left: 3%;
       padding-right: 3%;
+      z-index: 2;
       .item {
         display: inline-block;
         //background: #FF3366;
@@ -39,9 +41,23 @@ page {
         transition:all 0.2s;
         height: auto;
         width: auto;
+        z-index: 3;
         .itemImg {
           transition:all 0.2s;
           border-radius: 4%;
+          z-index: 4;
+          position: relative;
+          // TODO
+          .itemImgBorder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border: 15px solid #FF3366;
+            z-index: 9999;
+            transition:all 0.2s;
+          }
         }
         &.item-hover {
           transform: scale(0.95)

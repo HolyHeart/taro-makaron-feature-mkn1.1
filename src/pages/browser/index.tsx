@@ -127,20 +127,12 @@ class Browser extends Component {
   }
 
 
-  // async uploadImage (local) {
-  //   const remote = await base.upload(local)
-  //   return remote.url
-  // }
-
   async formWaterfall () {
     if (globalData.browserWorkList.length === globalData.waterfallLeftList.length + globalData.waterfallRightList.length) {
       this.setState({
         waterfallLoaded: true
       })
     }
-
-    // console.log('left: ',globalData.waterfallLeftListComplete)
-    // console.log('right: ',globalData.waterfallRightListComplete)
   }
 
 
@@ -172,7 +164,9 @@ class Browser extends Component {
 
     if (this.state.showPic) {
       picMaskContent = (
-        <View className='showPicMask' style={{top: globalData.totalTopHeight}} onClick={this.closePicMaskContent}></View>
+        <View className='showPicMask' style={{top: globalData.totalTopHeight}} onClick={this.closePicMaskContent}>
+          <View className='maskContent'></View>
+        </View>
       )
     }
 

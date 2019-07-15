@@ -38,6 +38,28 @@ const getDomRect = (id:string, callback?:(rect:object)=>void) => {
     typeof callback === 'function' && callback(rect)
   }).exec()
 }
+const getPreBgList = function (preBgList:Array<object> =[]){
+  const result = []
+  preBgList.forEach(v => {
+    const {backgroundImageName, thumbnailUrl, config, backgroundUrl} = v
+    // let supportMusic = false
+    // let hasIcon = false
+    // if (config) {
+    //   const {music = {}} = tool.JSON_parse(config)
+    //   supportMusic = music.fileUrl ? true : false
+    // }
+    // if (sceneType === 2 || sceneType === 1 ) {
+    //   hasIcon = true
+    // }
+    result.push({
+      bgUrl:backgroundUrl,
+      sceneName:backgroundImageName,
+      thumbnailUrl,
+      sceneConfig:config,
+      })
+  })
+  return result
+}
 const getSceneList = function (sceneList:Array<object> = []) {
   const result = []
   sceneList.forEach(v => {
@@ -242,6 +264,7 @@ const work = {
   downloadRemoteImage,
   saveSourceToPhotosAlbum,
   calcVideoSize,
-  chooseImage
+  chooseImage,
+  getPreBgList
 }
 export default work

@@ -284,7 +284,7 @@ class Home extends Component {
         } else if (sceneType === 4) {
           Taro.navigateTo({url: '/pages/crop/index'})
         } else {
-          Taro.navigateTo({url: '/pages/psChallenge/index'})
+          Taro.navigateTo({url: '/pages/psChallenge/index?imageId=301689056969674752'})
         }
       }
     })

@@ -125,26 +125,8 @@ class Editor extends Component {
       visible: true, // 是否显示
     },
     coverList: [
-      // {
-      // id: 'cover-01',
-      // remoteUrl: 'https://static01.versa-ai.com/images/process/segment/2019/01/07/a102310e-122a-11e9-b5ef-00163e023476.png',
-      // originHeight: 2440,
-      // originWidth: 750,
-      // autoHeight: 244,
-      // autoScale: 0.1,
-      // autoWidth: 75,
-      // width: 57.378244033967235,
-      // height:186.6705539238401,
-      // x: 185.1442062300867,
-      // y: 155.66472303807996,
-      // rotate: -25.912119928692746,
-      // zIndex: 3,
-      // fixed: false, // 是否固定
-      // isActive: false, // 是否激活
-      // visible: true, // 是否显示
-      // }
     ],
-    sceneList: [],
+    preBackGroundList: [],
     currentScene: {
       type: 'recommend', // 'custom' 'recommend'
     },
@@ -170,8 +152,11 @@ class Editor extends Component {
 
   // 全局主题数据
   themeData = {
-    sceneList: [],
+    originalImageList:[],
     rawCoverList: [], // 原始贴纸数据
+    currentOriginalImageId:'',
+    imageLayer:[],
+    originalImage:{}
   }
 
   cache = {
@@ -184,6 +169,9 @@ class Editor extends Component {
 
   componentDidMount() {
     this._initPage()
+  }
+  componentWillMount(){
+    this.themeData.currentOriginalImageId = this.$router.params.imageId
   }
   onShareAppMessage(res) {
     // if (res.from === 'button') {
@@ -221,14 +209,25 @@ class Editor extends Component {
   }
 
   _initPage = async () => {
-    this.initRawImage()
+    // this.initRawImage()
     await Session.set()
     this.initSceneData(() => {
-      this.initCoverData()
+      // this.initCoverData()
+      this.initImageLayer()
     })
-    const separateResult = globalData.separateResult = await this.initSegment()
-    console.log('separateResult', separateResult)
-    await this.initSeparateData(separateResult)
+    // const separateResult = globalData.separateResult = await this.initSegment()
+    // console.log('separateResult', separateResult)
+    // await this.initSeparateData(separateResult)
+  }
+  initImageLayer(){
+    console.log(this.themeData.imageLayer)
+    const { foreground} =  this.state
+    this.setState({
+      foreground:{
+        ...foreground,
+        remoteUrl:this.themeData.imageLayer[0].imageUrl
+      }
+    })
   }
 
   test = async () => {
@@ -300,18 +299,17 @@ class Editor extends Component {
       const res = await service.core.theme(themeId)
       globalData.themeData = res.result && res.result.result
     }
-    const themeData = globalData.themeData || { sceneList: [] }
-    this.themeData.sceneList = work.getSceneList(themeData.sceneList || [])
-    // 去除sceneConfig属性
-    const sceneList = this.themeData.sceneList.map((v: object = {}) => {
-      const { sceneConfig, ...rest } = v
-      return {
-        ...rest
-      }
-    })
-    const currentScene = sceneList[0]
+    const themeData = globalData.themeData || { originalImageList: [], }
+    this.themeData.originalImage = themeData.originalImageList.filter((item)=>{
+        return item.imageId === this.themeData.currentOriginalImageId
+    })[0]
+    console.log(this.themeData.originalImage)
+    this.themeData.imageLayer = JSON.parse(this.themeData.originalImage.imageLayer)
+    // this.themeData.imageLayer =
+    this.themeData.preBackGroundList = work.getPreBgList(this.themeData.originalImage.preBackGroundList)
+    const currentScene = this.themeData.preBackGroundList[0]
     this.setState({
-      sceneList: sceneList,
+      preBackGroundList: this.themeData.preBackGroundList,
       currentScene: {
         ...this.state.currentScene,
         ...currentScene,
@@ -578,7 +576,7 @@ class Editor extends Component {
     }, () => {
       // console.log('handleChooseScene', this.state.currentScene)
       this.foregroundAuto()
-      this.initCoverData()
+      // this.initCoverData()
       this.app.aldstat.sendEvent('选择场景', { '场景名': this.state.currentScene.sceneName, '场景Id': this.state.currentScene.sceneId })
     })
   }
@@ -971,7 +969,7 @@ class Editor extends Component {
   }
   // 计算人物尺寸
   calcForegroundSize = () => {
-    const { currentScene, sceneList, foreground, frame } = this.state
+    const { currentScene, preBackGroundList, foreground, frame } = this.state
     const { originWidth, originHeight } = foreground
     const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
 
@@ -1327,7 +1325,7 @@ class Editor extends Component {
   }
 
   render() {
-    const { loading, rawImage, frame, customBg, foreground, coverList, sceneList, currentScene, result, canvas } = this.state
+    const { loading, rawImage, frame, customBg, foreground, coverList, preBackGroundList, currentScene, result, canvas } = this.state
     return (
       <View className='page-editor'>
         <Title
@@ -1339,9 +1337,9 @@ class Editor extends Component {
         >马卡龙玩图</Title>
         <View className="main">
           <View className="pic-section">
-            <View className={`raw ${(foreground.remoteUrl && foreground.loaded) ? 'hidden' : ''}`} style={{ width: this.state.drawBoard.width, height: this.state.drawBoard.height }}>
+            {/* <View className={`raw ${(foreground.remoteUrl && foreground.loaded) ? 'hidden' : ''}`} style={{ width: this.state.drawBoard.width, height: this.state.drawBoard.height }}>
               <Image src={rawImage.localUrl} style="width:100%;height:100%" mode="aspectFit" />
-            </View>
+            </View> */}
             <View style={{ width: this.state.drawBoard.width, height: this.state.drawBoard.height }} className={`crop ${(foreground.remoteUrl && foreground.loaded) ? '' : 'hidden'}`} id="crop">
               {currentScene.type === 'recommend' &&
                 <View className="background-image">
@@ -1397,7 +1395,7 @@ class Editor extends Component {
           </View>
           <MarginTopWrap config={{ large: 60, small: 40, default: 20 }}>
             <SceneList
-              list={sceneList}
+              list={preBackGroundList}
               customable={true}
               currentScene={currentScene}
               styleObj={{ width: '720rpx', marginRight: '-60rpx' }}

@@ -41,7 +41,7 @@ const getDomRect = (id:string, callback?:(rect:object)=>void) => {
 const getPreBgList = function (preBgList:Array<object> =[]){
   const result = []
   preBgList.forEach(v => {
-    const {backgroundImageName, thumbnailUrl, config, backgroundUrl} = v
+    const {backgroundImageName, thumbnailUrl, config, backgroundUrl,preBackgroundId} = v
     // let supportMusic = false
     // let hasIcon = false
     // if (config) {
@@ -56,6 +56,7 @@ const getPreBgList = function (preBgList:Array<object> =[]){
       sceneName:backgroundImageName,
       thumbnailUrl,
       sceneConfig:config,
+      sceneId:preBackgroundId
       })
   })
   return result

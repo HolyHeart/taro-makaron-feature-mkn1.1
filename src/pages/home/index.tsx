@@ -283,8 +283,10 @@ class Home extends Component {
           Taro.navigateTo({url: '/pages/segment/index'})
         } else if (sceneType === 4) {
           Taro.navigateTo({url: '/pages/crop/index'})
-        } else {
+        } else if(sceneType ===5) {
           Taro.navigateTo({url: '/pages/psChallenge/index?imageId=301689056969674752'})
+        } else {
+          Taro.navigateTo({url: '/pages/editor/index'})
         }
       }
     })

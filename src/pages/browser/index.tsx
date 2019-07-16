@@ -1,12 +1,14 @@
 import { ComponentClass } from 'react'
 import Taro, { Component, Config, navigateBackMiniProgram } from '@tarojs/taro'
-import { View, Button, Image, ScrollView} from '@tarojs/components'
+import { View, Button, Image, ScrollView, Text} from '@tarojs/components'
 import Title from '@/components/Title'
 import CustomIcon from '@/components/Icon'
 import './index.less'
 import globalData from "@/services/global_data"
 
 import testImg from '@/assets/images/Test.png'
+import likeBtn from '@/assets/images/likeBtn.png'
+import shareBtn from '@/assets/images/shareBtn.png'
 
 import { browser, base } from '@/services/service'
 
@@ -28,6 +30,7 @@ class Browser extends Component {
     currentThemeID: 0,
     waterfallLoaded: false,
     showPic: false,
+    currentPicOnMask: '',
   }
 
   componentDidMount () {
@@ -136,9 +139,10 @@ class Browser extends Component {
   }
 
 
-  openPicMaskContent () {
+  openPicMaskContent (path, e) {
     this.setState({
-      showPic: !this.state.showPic
+      showPic: !this.state.showPic,
+      currentPicOnMask: path
     })
   }
 
@@ -148,6 +152,13 @@ class Browser extends Component {
     })
   }
 
+  clickLikeBtn () {
+    console.log('I like it!!!')
+  }
+
+  clickShareBtn () {
+    console.log('I Share it!!!')
+  }
 
   render () {
     
@@ -164,8 +175,22 @@ class Browser extends Component {
 
     if (this.state.showPic) {
       picMaskContent = (
-        <View className='showPicMask' style={{top: globalData.totalTopHeight}} onClick={this.closePicMaskContent}>
-          <View className='maskContent'></View>
+        <View className='showPicMask' style={{top: globalData.totalTopHeight}}>
+          <View className='maskContent'>
+
+            <Image src={this.state.currentPicOnMask} mode='widthFix' className='maskImg' onClick={this.closePicMaskContent}></Image>
+
+            <View className='maskBtnGrp'>
+              <View className='maskBtn' hoverClass='maskBtn-hover'>
+                <Image src={likeBtn} className='maskBtnImg' onClick={this.clickLikeBtn}></Image>
+                <Text className='maskBtnText'>喜欢</Text>
+              </View>
+              <View className='maskBtn' hoverClass='maskBtn-hover'>
+                <Image src={shareBtn} className='maskBtnImg' onClick={this.clickShareBtn}></Image>
+                <Text className='maskBtnText'>分享</Text>
+              </View>
+            </View>
+          </View>
         </View>
       )
     }
@@ -206,7 +231,7 @@ class Browser extends Component {
         <View className='waterfall'>
           <View className='left-div' style={{marginTop: globalData.windowTop}}>
           {leftList.map(item=>{
-                return <View className='card' hoverClass="card-hover" key={item} onClick={this.openPicMaskContent}> 
+                return <View className='card' hoverClass="card-hover" key={item} onClick={this.openPicMaskContent.bind(this, item)}> 
                         <Image className='cardImg' src={item} mode='widthFix'></Image>
                       </View>
                 })
@@ -215,7 +240,7 @@ class Browser extends Component {
 
           <View className='right-div' style={{marginTop: globalData.windowTop}}>
           {rightList.map(item=>{
-                return <View className='card' hoverClass="card-hover" key={item} onClick={this.openPicMaskContent}> 
+                return <View className='card' hoverClass="card-hover" key={item} onClick={this.openPicMaskContent.bind(this, item)}> 
                         <Image className='cardImg' src={item} mode='widthFix'></Image>
                       </View>
                 })

@@ -39,26 +39,27 @@ class Browser extends Component {
     globalData.windowTop = globalData.totalTopHeight * 2 + globalData.sysHeight * 0.36 + 'rpx'
     globalData.totalTopHeight = globalData.totalTopHeight * 2 + 'rpx'
     this.initThemeList()
-    this.initWorkList()
-    globalData.waterfallLeftHeight = 0
-    globalData.waterfallRightHeight = 0
-    globalData.waterfallLeftList = []
-    globalData.waterfallRightList = []
+    this.changeWorkList(this.state.currentThemeID)
   }
 
   initThemeList () {
     this.setState({
       currentThemeID: globalData.themeData.originalImageList[0].activityId
     })
+    console.log(globalData.themeData.originalImageList[0].activityId)
   }
 
-  async initWorkList () {
+  async changeWorkList (themeID) {
+
+    globalData.waterfallLeftHeight = 0
+    globalData.waterfallRightHeight = 0
+    globalData.waterfallLeftList = []
+    globalData.waterfallRightList = []
+
     try {
-      const result = await browser.psWorkList('293060964369879040', '1')
+      const result = await browser.psWorkList(themeID, '1')
       const workList = result.result.result.workList
-
       globalData.browserWorkList = workList
-
     } catch (err) {
       console.log('Oops, failed to get work list', err)
     }
@@ -106,6 +107,7 @@ class Browser extends Component {
       currentThemeID: activityID
     })
     console.log(activityID)
+    this.changeWorkList(activityID)
   }
 
   getList (list) {
@@ -127,11 +129,11 @@ class Browser extends Component {
     if (counter===0 || globalData.waterfallLeftHeight <= globalData.waterfallRightHeight) {
       globalData.waterfallLeftHeight = globalData.waterfallLeftHeight + (result.height / result.width)
       globalData.waterfallLeftList.push(url)
-      console.log(url)
+      //console.log(url)
     } else {
       globalData.waterfallRightHeight = globalData.waterfallRightHeight + (result.height / result.width)
       globalData.waterfallRightList.push(url)
-      console.log(url)
+      //console.log(url)
     }
   }
 
@@ -227,10 +229,17 @@ class Browser extends Component {
                         <Image className='itemImg' src={item.originalImageUrl} style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}}>
 
 
+                          {this.state.currentThemeID === item.activityId ?
                           <View className='itemImgBorder' style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}}>
                             <View className='itemImgBorderText'>原图</View>
                             <View className='itemImgBorderTri'></View>
                           </View>
+                          :''}
+
+                          {/* <View className='itemImgBorder' style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}}>
+                            <View className='itemImgBorderText'>原图</View>
+                            <View className='itemImgBorderTri'></View>
+                          </View> */}
 
 
                         </Image> 

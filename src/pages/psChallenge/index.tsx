@@ -156,7 +156,8 @@ class Editor extends Component {
     rawCoverList: [], // 原始贴纸数据
     currentOriginalImageId:'',
     imageLayer:[],
-    originalImage:{}
+    originalImage:{},
+    activityId:''
   }
 
   cache = {
@@ -172,6 +173,7 @@ class Editor extends Component {
   }
   componentWillMount(){
     this.themeData.currentOriginalImageId = this.$router.params.imageId
+    this.themeData.activityId= this.$router.params.activityId
   }
   onShareAppMessage(res) {
     // if (res.from === 'button') {
@@ -483,6 +485,7 @@ class Editor extends Component {
       }
     }, async () => {
       const { url } = await service.base.upload(canvasImageUrl)
+      await service.browser.postNewWork(this.state.foreground.remoteUrl,url,'pic','这图我能p',20,this.themeData.activityId,tool.uuid())
       this.setState({
         result: {
           show: this.state.result.show,
@@ -494,6 +497,7 @@ class Editor extends Component {
       })
     })
     // 保存图片到相册
+
     work.saveSourceToPhotosAlbum({
       location: 'local',
       sourceUrl: canvasImageUrl,

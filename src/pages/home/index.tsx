@@ -72,7 +72,7 @@ type PageStateProps = {
 }
 
 type PageDispatchProps = {
-  getSystemInfo: (data:object) => void
+  getSystemInfo: (data: object) => void
 }
 
 type PageOwnProps = {}
@@ -91,7 +91,7 @@ interface Home {
 @connect(({ global }) => ({
   global
 }), (dispatch) => ({
-  getSystemInfo (data) {
+  getSystemInfo(data) {
     dispatch(getSystemInfo(data))
   }
 }))
@@ -105,13 +105,13 @@ class Home extends Component {
   state = {
     categoryList: default_column,
     defaultThemeData: {},
-    isScrollToTop:true
+    isScrollToTop: true
   }
 
   app = Taro.getApp()
 
-  componentWillMount () {
-    const {getSystemInfo} = this.props
+  componentWillMount() {
+    const { getSystemInfo } = this.props
     const systemInfo = Taro.getSystemInfoSync()
     if (/iphone x/i.test(systemInfo.model)) {
       // iPhone XS Max China-exclusive<iPhone11,6>
@@ -122,37 +122,37 @@ class Home extends Component {
     }
     getSystemInfo(systemInfo)
   }
-  componentDidMount () {
+  componentDidMount() {
     this._initPage()
   }
-  componentWillReceiveProps (nextProps) {
+  componentWillReceiveProps(nextProps) {
     // console.log(this.props, nextProps)
   }
 
-  componentWillUnmount () { }
+  componentWillUnmount() { }
 
-  componentDidShow () { }
+  componentDidShow() { }
 
-  componentDidHide () { }
+  componentDidHide() { }
   onPageScroll(e) {
-    if(e.scrollTop>0){
+    if (e.scrollTop > 0) {
       // 滚动操作
       this.setState({
-        isScrollToTop:false
+        isScrollToTop: false
       })
-    }else{
+    } else {
       // 滚到顶部
       this.setState({
-        isScrollToTop:true
+        isScrollToTop: true
       })
     }
     // Do something when page scroll
   }
-  onShareAppMessage () {
+  onShareAppMessage() {
     this.app.aldstat.sendEvent('首页分享', '首页分享')
-    const {defaultThemeData = {}} = this.state
+    const { defaultThemeData = {} } = this.state
     const shareContent = defaultThemeData.shareContent || '马卡龙玩图'
-    const urls = (defaultThemeData.url||'').split(';').filter(v => v !== '')
+    const urls = (defaultThemeData.url || '').split(';').filter(v => v !== '')
     const path = '/pages/home/index'
     if (urls.length > 0) {
       return {
@@ -175,7 +175,7 @@ class Home extends Component {
     }
     this.setState({
       categoryList: globalData.columnList
-    },() => {
+    }, () => {
       this.getDefaultTheme()
     })
   }
@@ -190,10 +190,10 @@ class Home extends Component {
     }
   }
 
-  getCategotyList (data: Array<any>) {
+  getCategotyList(data: Array<any>) {
     const list = []
     data.forEach(item => {
-      (item.themeList || [] ).forEach(theme => {
+      (item.themeList || []).forEach(theme => {
         list.push(theme)
       })
     })
@@ -212,15 +212,18 @@ class Home extends Component {
       globalData.themeData = res.result && res.result.result
     }
     // 埋码
-    this.app.aldstat.sendEvent('选择主题', {'主题名': item.themeName, '主题Id': item.themeId})
+    this.app.aldstat.sendEvent('选择主题', { '主题名': item.themeName, '主题Id': item.themeId })
   }
 
   handleGetUserInfo = (data) => {
     // console.log('handleGetUserInfo', data)
-    const {detail: {userInfo}} = data
+    const { detail: { userInfo } } = data
     if (userInfo) {
-      base.loginAuth(data.detail)
+      base.loginAuth(data.detail).then(res=> {
+        globalData.totalUserInfo = res.result.result
+      })
       globalData.userInfo = userInfo
+      console.log(globalData.userInfo)
       this.todo()
     } else {
       Taro.showToast({
@@ -232,7 +235,7 @@ class Home extends Component {
   }
 
   handleFormSubmit = (e) => {
-    const {detail: {formId}} = e
+    const { detail: { formId } } = e
     if (formId) {
       core.reportFormId(formId)
     }
@@ -257,13 +260,13 @@ class Home extends Component {
   // added by Shichao.Ma
   turnToStyle = () => {
     console.log('hohoho!')
-    Taro.navigateTo({url: '/pages/browser/index'})
+    Taro.navigateTo({ url: '/pages/browser/index' })
   }
 
   todo = () => {
     const { sceneType } = globalData
-    if (sceneType === 5){
-      Taro.navigateTo({url: '/pages/browser/index'})
+    if (sceneType === 5) {
+      Taro.navigateTo({ url: '/pages/browser/index' })
     } else {
       work.chooseImage({
         onTap: (index) => {
@@ -280,32 +283,32 @@ class Home extends Component {
           globalData.choosedImage = path
           const { sceneType } = globalData
           if (sceneType === 1) {
-            Taro.navigateTo({url: '/pages/filter/index'})
+            Taro.navigateTo({ url: '/pages/filter/index' })
           } else if (sceneType === 2) {
-            Taro.navigateTo({url: '/pages/dynamic/index'})
+            Taro.navigateTo({ url: '/pages/dynamic/index' })
           } else if (sceneType === 3) {
-            Taro.navigateTo({url: '/pages/segment/index'})
-          } else if (sceneType === 4){
-            Taro.navigateTo({url: '/pages/crop/index'})
+            Taro.navigateTo({ url: '/pages/segment/index' })
+          } else if (sceneType === 4) {
+            Taro.navigateTo({ url: '/pages/crop/index' })
           } else {
-            Taro.navigateTo({url: '/pages/editor/index'})
+            Taro.navigateTo({ url: '/pages/editor/index' })
           }
         }
       })
     }
   }
 
-  render () {
+  render() {
     const { categoryList } = this.state
-    const {global = {}} = this.props
+    const { global = {} } = this.props
     const isIphoneX = global.system && global.system.isIphoneX
     return (
       <View className='page-home'>
         <Title
-          isScrollToTop ={this.state.isScrollToTop}
+          isScrollToTop={this.state.isScrollToTop}
           renderLeft={
             <View style="position: relative">
-              <CustomIcon type="menu" theme="dark" onClick={this.handleShowTooltip}/>
+              <CustomIcon type="menu" theme="dark" onClick={this.handleShowTooltip} />
               <Tooltip>
                 <View className='tooltip-item'>
                   <Image className='tooltip-icon' src={pic_feedback} mode="aspectFill" />
@@ -318,7 +321,7 @@ class Home extends Component {
         <View className="main">
           <View className="main-bg">
             {/* {isIphoneX && <View style="width: 100%; height:100rpx; background:rgb(100,180,255)"></View>} */}
-            <Image src={bg} mode="widthFix" style="width:100%;height:100%"/>
+            <Image src={bg} mode="widthFix" style="width:100%;height:100%" />
           </View>
 
 
@@ -348,8 +351,8 @@ class Home extends Component {
               - 到底了哦 -
             </View>
             <View className="bottomInfo" style='margin-top:30rpx;'>
-               <Image src={by} mode="widthFix" style="width:266rpx"/>
-              </View>
+              <Image src={by} mode="widthFix" style="width:266rpx" />
+            </View>
           </View>
         </View>
         <AuthModal />

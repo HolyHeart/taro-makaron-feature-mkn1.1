@@ -53,6 +53,7 @@ export const api = {
   },
   browser: {
     psWorkList: `${getHost('miniapi', ENV)}/activity/works/top/likes`,
+    postNewWork:`${getHost('miniapi',ENV)}/community/works`
   }
 }
 export default {

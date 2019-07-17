@@ -392,6 +392,35 @@ export const browser = {
     }
     return request(reqData)
   },
+
+  /**
+   *
+   * @param originPicture 原图
+   * @param renderPicture  渲染图
+   * @param worksType  作品类型 pic  video
+   * @param worksDesc 发布作品说的话
+   * @param status 20 公开作品
+   * @param activityIds  挑战id
+   * @param renderSessionId 唯一id
+   */
+  postNewWork:function(originPicture,renderPicture,worksType='pic',worksDesc='这图我能p',status=20,activityIds,renderSessionId){
+    const reqData = {
+      method: 'POST',
+      // url: `${getHost()}/image/render/segment`,
+      url: api.browser.postNewWork,
+      header: {'content-type': 'application/x-www-form-urlencoded'},
+      data: {
+        originPicture: originPicture,
+        renderPicture: renderPicture,
+        worksType,
+        worksDesc,
+        status,
+        activityIds,
+        renderSessionId
+      }
+    }
+    return request(reqData)
+  }
 }
 
 

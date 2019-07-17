@@ -37,7 +37,14 @@ class Browser extends Component {
     showPic: false,
     currentPicOnMask: '',
     loading: false,
+    likeOrNot: false,
     likeBtnUrl: likeBtn,
+
+
+    //loadMoreWorks: false,
+
+    currentPage: 1,
+    bottomTip: '-加载中-',
   }
 
   // TODO
@@ -65,6 +72,12 @@ class Browser extends Component {
   }
 
   componentDidMount () {
+
+    Taro.getUserInfo({
+      success : res =>
+      console.log(res)
+    })
+
     //this.showLoading()
     this.getScreenHeight()
     globalData.windowTop = globalData.totalTopHeight * 2 + globalData.sysHeight * 0.36 + 40 + 'rpx'
@@ -82,8 +95,15 @@ class Browser extends Component {
     })
   }
 
+  resetPage () {
+    this.setState({
+      currentPage:1
+    })
+  }
+
   async changeWorkList (themeID) {
-    //this.showLoading()
+    this.showLoading()
+    this.resetPage()
     globalData.waterfallLeftHeight = 0
     globalData.waterfallRightHeight = 0
     globalData.waterfallLeftList = []
@@ -94,15 +114,49 @@ class Browser extends Component {
     this.activityId = currentTheme[0].activityId
 
     try {
-      const result = await browser.psWorkList(this.activityId, '1')
+      const result = await browser.psWorkList(this.activityId, 1)
       const workList = result.result.result.workList
       globalData.browserWorkList = workList
+      //如果没有第二页
+      const resultAdvance = await browser.psWorkList(this.activityId, 2)
+      if (resultAdvance.result.result.workList.length===0) {
+        this.setState({
+          bottomTip: '-没有更多啦-',
+        })
+      } else {
+        this.setState({
+          bottomTip: '-加载中-',
+        })
+      }
+
     } catch (err) {
       console.log('Oops, failed to get work list', err)
     }
     this.getList(globalData.browserWorkList)
-    //this.hideLoading()
   }
+
+
+  async loadMoreWorks () {
+    try {
+      console.log(this.state.currentPage)
+      const result = await browser.psWorkList(this.activityId, this.state.currentPage + 1)
+      const workList = result.result.result.workList
+      if (workList.length!=0) {
+        this.getList(workList)
+        this.setState({
+          currentPage: this.state.currentPage + 1
+        })
+      } else {
+        this.setState({
+          bottomTip: '-没有更多啦-',
+        })
+      }
+    } catch (err) {
+      console.log('Oops, failed to get work list', err)
+    }
+  }
+
+
 
   getScreenHeight () {
     Taro.getSystemInfo({
@@ -139,6 +193,11 @@ class Browser extends Component {
     })
   }
 
+  onReachBottom () {
+    console.log('触底了')
+    this.loadMoreWorks()
+  }
+
   clickThemeIcon (imageId, e) {
     this.setState({
       currentThemeID: imageId
@@ -149,6 +208,10 @@ class Browser extends Component {
 
   getList (list) {
     var counter = 0
+    if (list.length===0) {
+      console.log('列表为空')
+      this.hideLoading()
+    }
     list.forEach(element => {
       var picUrl = element.url
       Taro.getImageInfo({
@@ -165,11 +228,9 @@ class Browser extends Component {
     if (counter===0 || globalData.waterfallLeftHeight <= globalData.waterfallRightHeight) {
       globalData.waterfallLeftHeight = globalData.waterfallLeftHeight + (result.height / result.width)
       globalData.waterfallLeftList.push(url)
-      //console.log(url)
     } else {
       globalData.waterfallRightHeight = globalData.waterfallRightHeight + (result.height / result.width)
       globalData.waterfallRightList.push(url)
-      //console.log(url)
     }
   }
 
@@ -179,37 +240,49 @@ class Browser extends Component {
         waterfallLoaded: true
       })
     }
+    this.hideLoading()
   }
 
   openPicMaskContent (path, e) {
     this.setState({
-      showPic: !this.state.showPic,
+      showPic: true,
       currentPicOnMask: path
     })
   }
 
   closePicMaskContent () {
     this.setState({
-      showPic: !this.state.showPic
+      showPic: false,
     })
   }
 
   clickLikeBtn () {
-    if (this.state.likeBtnUrl===likeBtn) {
+    if (this.state.likeOrNot===false) {
       console.log('I like it :)')
       this.setState({
-        likeBtnUrl: likedBtn
+        likeBtnUrl: likedBtn,
+        likeOrNot: true,
+        showPic: true,
       })
     } else {
       console.log('I dislike it :(')
       this.setState({
-        likeBtnUrl: likeBtn
+        likeBtnUrl: likeBtn,
+        likeOrNot: false,
+        showPic: true,
       })
     }
   }
 
   clickShareBtn () {
     console.log('I Share it!!!')
+    this.setState({
+      showPic: true,
+    })
+  }
+
+  addWork () {
+    console.log('我要创作')
   }
   goEditor = ()=>{
     Taro.navigateTo({url: `/pages/psChallenge/index?imageId=${this.state.currentThemeID}&activityId=${this.activityId}`})
@@ -227,11 +300,12 @@ class Browser extends Component {
 
     if (this.state.showPic) {
       picMaskContent = (
-        <View className='showPicMask' style={{top: globalData.totalTopHeight}}>
+        <View className='showPicMask' style={{top: globalData.totalTopHeight}} onClick={this.closePicMaskContent}>
           <View className='maskContent'>
-            <Image src={this.state.currentPicOnMask} mode='widthFix' className='maskImg' onClick={this.closePicMaskContent}></Image>
+            <Image src={this.state.currentPicOnMask} mode='widthFix' className='maskImg'></Image>
             <View className='maskBtnGrp'>
               <View className='maskBtn' hoverClass='maskBtn-hover'>
+                {/* TODO 判断是否喜欢 */}
                 <Image src={this.state.likeBtnUrl} className='maskBtnImg' onClick={this.clickLikeBtn}></Image>
                 <Text className='maskBtnText'>喜欢</Text>
               </View>

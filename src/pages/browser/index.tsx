@@ -215,14 +215,22 @@ class Browser extends Component {
 
 
         <View className='navBar' style={{top: globalData.totalTopHeight}}>
-          <ScrollView className='scroll' scrollX={true} style={{height: this.state.navScrollHeight}}>
+          <ScrollView className='scroll' scrollX={true}>
             {globalData.themeData.originalImageList.map(item=>{
                 return <View className='item' hoverClass="item-hover" onClick={this.clickThemeIcon.bind(this, item.activityId)} key={item.activityId}> 
                         <Image className='itemImg' src={item.originalImageUrl} style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}}>
+
+
                           <View className='itemImgBorder' style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}}>
                             <View className='itemImgBorderText'>原图</View>
+                            <View className='itemImgBorderTri'></View>
                           </View>
+
+
                         </Image> 
+
+                        {/* <View className='triangle'></View> */}
+
                       </View>
                 })
             }

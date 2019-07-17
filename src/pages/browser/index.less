@@ -87,6 +87,7 @@ page {
     position: fixed;
     transition:all 0.2s;
     z-index: 1;
+    //margin-bottom: 35rpx;
     .scroll {
       white-space: nowrap;
       display: flex;
@@ -94,9 +95,10 @@ page {
       height: auto;
       transition:all 0.2s;
       padding-top: 3%;
-      padding-bottom: 3%;
+      //padding-bottom: 3%;
       padding-left: 3%;
       padding-right: 3%;
+      padding-bottom: 35rpx;
       z-index: 2;
       .item {
         display: inline-block;
@@ -109,11 +111,13 @@ page {
         height: auto;
         width: auto;
         z-index: 3;
+        //padding-bottom: 35rpx;
         .itemImg {
           transition:all 0.2s;
           border-radius: 4%;
           z-index: 4;
           position: relative;
+          padding-bottom: 35rpx;
           // TODO
           .itemImgBorder {
             position: absolute;
@@ -126,6 +130,11 @@ page {
             transition:all 0.2s;
             box-sizing: border-box;
             border-radius: 4%;
+            display: flex;
+            //align-items:center;
+            justify-content:center;
+            //TODO
+            //margin-bottom: 35rpx;
             .itemImgBorderText {
               font-size: 26rpx;
               color: white;
@@ -139,8 +148,39 @@ page {
               //border: 5px solid #FF3366;
               border-bottom-right-radius: 30%;
             }
+            .itemImgBorderTri {
+              position: absolute;
+              // width: 35rpx;
+              // height: 35rpx; 
+              bottom: -30rpx;
+              //background-color: #ff3366c4;
+              z-index: 6;
+
+              width: 0;
+              height: 0;
+              border-left: 25px solid transparent;
+              border-right: 25px solid transparent;
+              border-top: 30px solid #ff3366c4;
+              font-size: 0;
+              line-height: 0;
+
+            }
           }
         }
+
+        // .triangle {
+        //   position: absolute;
+        //   width: 35rpx;
+        //   height: 35rpx; 
+        //   bottom: 1rpx;
+        //   //bottom: -30rpx;
+        //   background-color: #ff3366c4;
+        //   z-index: 9999;
+        //   display: flex;
+        // }
+
+
+
         &.item-hover {
           transform: scale(0.95)
         }  

@@ -84,9 +84,9 @@ page {
   height: auto;
   transition: all 0.2s;
   padding-top: 3%;
-  padding-bottom: 3%;
   padding-left: 3%;
   padding-right: 3%;
+  padding-bottom: 35rpx;
   z-index: 2;
 }
 .browser .navBar .scroll .item {
@@ -104,6 +104,7 @@ page {
   border-radius: 4%;
   z-index: 4;
   position: relative;
+  padding-bottom: 35rpx;
 }
 .browser .navBar .scroll .item .itemImg .itemImgBorder {
   position: absolute;
@@ -116,6 +117,8 @@ page {
   transition: all 0.2s;
   box-sizing: border-box;
   border-radius: 4%;
+  display: flex;
+  justify-content: center;
 }
 .browser .navBar .scroll .item .itemImg .itemImgBorder .itemImgBorderText {
   font-size: 26rpx;
@@ -128,6 +131,18 @@ page {
   padding-right: 12rpx;
   padding-bottom: 3rpx;
   border-bottom-right-radius: 30%;
+}
+.browser .navBar .scroll .item .itemImg .itemImgBorder .itemImgBorderTri {
+  position: absolute;
+  bottom: -30rpx;
+  z-index: 6;
+  width: 0;
+  height: 0;
+  border-left: 25px solid transparent;
+  border-right: 25px solid transparent;
+  border-top: 30px solid #ff3366c4;
+  font-size: 0;
+  line-height: 0;
 }
 .browser .navBar .scroll .item.item-hover {
   transform: scale(0.95);

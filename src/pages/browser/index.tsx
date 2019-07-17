@@ -36,8 +36,8 @@ class Browser extends Component {
 
   componentDidMount () {
     this.getScreenHeight()
-    globalData.windowTop = globalData.totalTopHeight * 2 + globalData.sysHeight * 0.36 + 'rpx'
-    globalData.totalTopHeight = globalData.totalTopHeight * 2 + 'rpx'
+    globalData.windowTop = globalData.totalTopHeight * 2 + globalData.sysHeight * 0.36 + 40 + 'rpx'
+    globalData.totalTopHeight = globalData.totalTopHeight * 2 + 20 + 'rpx'
     this.initThemeList()
     this.changeWorkList(this.state.currentThemeID)
   }
@@ -88,7 +88,7 @@ class Browser extends Component {
     var maxHeight = globalData.sysHeight * 0.30
     var navScrollHeight = ''
     var navScrollHeight_higher = ''
-    if (topDistance!==0) {
+    if (topDistance>0) {
       navScrollHeight = minHeight + 'rpx',
       navScrollHeight_higher = minHeight + 32 + 'rpx'
     } else {
@@ -235,11 +235,6 @@ class Browser extends Component {
                             <View className='itemImgBorderTri'></View>
                           </View>
                           :''}
-
-                          {/* <View className='itemImgBorder' style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}}>
-                            <View className='itemImgBorderText'>原图</View>
-                            <View className='itemImgBorderTri'></View>
-                          </View> */}
 
 
                         </Image> 

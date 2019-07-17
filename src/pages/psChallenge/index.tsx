@@ -225,7 +225,9 @@ class Editor extends Component {
   }
   // 公共方法
   pageToHome = () => {
-    Taro.navigateBack({ delta: 1 })
+    Taro.redirectTo({
+      url: '/pages/browser/index'
+    })
   }
   showLoading = () => {
     this.setState({

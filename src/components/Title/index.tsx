@@ -1,6 +1,7 @@
 import { ComponentClass } from 'react'
 import Taro, { Component } from '@tarojs/taro'
 import { View, Text } from '@tarojs/components'
+import globalData from "@/services/global_data"
 
 import './index.less'
 
@@ -45,6 +46,7 @@ class Title extends Component {
       totalTopHeight = 62
     }
     const titleBarHeight = totalTopHeight - statusBarHeight
+    globalData.totalTopHeight = totalTopHeight
     this.setState({
       statusBarHeight,
       titleBarHeight

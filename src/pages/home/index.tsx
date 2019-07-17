@@ -257,39 +257,42 @@ class Home extends Component {
   // added by Shichao.Ma
   turnToStyle = () => {
     console.log('hohoho!')
-    Taro.navigateTo({url: '/pages/style/index'})
+    Taro.navigateTo({url: '/pages/browser/index'})
   }
 
   todo = () => {
-    work.chooseImage({
-      onTap: (index) => {
-        // console.log('tap index', index)
-        if (index === 0) {
-          this.app.aldstat.sendEvent('首页上传人像选择拍摄照片', '选择拍摄')
-        } else if (index === 1) {
-          this.app.aldstat.sendEvent('首页上传人像选择相册照片', '选择相册')
+    const { sceneType } = globalData
+    if (sceneType === 5){
+      Taro.navigateTo({url: '/pages/browser/index'})
+    } else {
+      work.chooseImage({
+        onTap: (index) => {
+          // console.log('tap index', index)
+          if (index === 0) {
+            this.app.aldstat.sendEvent('首页上传人像选择拍摄照片', '选择拍摄')
+          } else if (index === 1) {
+            this.app.aldstat.sendEvent('首页上传人像选择相册照片', '选择相册')
+          }
+        },
+        onSuccess: (path) => {
+          console.log('choosedImage', path, globalData)
+          this.app.aldstat.sendEvent('首页上传人像成功', '上传成功')
+          globalData.choosedImage = path
+          const { sceneType } = globalData
+          if (sceneType === 1) {
+            Taro.navigateTo({url: '/pages/filter/index'})
+          } else if (sceneType === 2) {
+            Taro.navigateTo({url: '/pages/dynamic/index'})
+          } else if (sceneType === 3) {
+            Taro.navigateTo({url: '/pages/segment/index'})
+          } else if (sceneType === 4){
+            Taro.navigateTo({url: '/pages/crop/index'})
+          } else {
+            Taro.navigateTo({url: '/pages/editor/index'})
+          }
         }
-      },
-      onSuccess: (path) => {
-        console.log('choosedImage', path, globalData)
-        this.app.aldstat.sendEvent('首页上传人像成功', '上传成功')
-        globalData.choosedImage = path
-        const { sceneType } = globalData
-        if (sceneType === 1) {
-          Taro.navigateTo({url: '/pages/filter/index'})
-        } else if (sceneType === 2) {
-          Taro.navigateTo({url: '/pages/dynamic/index'})
-        } else if (sceneType === 3) {
-          Taro.navigateTo({url: '/pages/segment/index'})
-        } else if (sceneType === 4) {
-          Taro.navigateTo({url: '/pages/crop/index'})
-        } else if(sceneType ===5) {
-          Taro.navigateTo({url: '/pages/psChallenge/index?imageId=301689056969674752'})
-        } else {
-          Taro.navigateTo({url: '/pages/editor/index'})
-        }
-      }
-    })
+      })
+    }
   }
 
   render () {
@@ -317,6 +320,8 @@ class Home extends Component {
             {/* {isIphoneX && <View style="width: 100%; height:100rpx; background:rgb(100,180,255)"></View>} */}
             <Image src={bg} mode="widthFix" style="width:100%;height:100%"/>
           </View>
+
+
           <View className={`main-container ${isIphoneX ? 'iphoneX' : ''}`} onClick={this.handleClickMain}>
             {
               categoryList.map(column => {
@@ -339,7 +344,7 @@ class Home extends Component {
               })
             }
 
-          <View className="bottomInfo" style='margin-top:50rpx;font-size:10px'>
+            <View className="bottomInfo" style='margin-top:50rpx;font-size:10px'>
               - 到底了哦 -
             </View>
             <View className="bottomInfo" style='margin-top:30rpx;'>

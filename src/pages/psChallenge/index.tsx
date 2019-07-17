@@ -265,16 +265,6 @@ class Editor extends Component {
     })
   }
 
-  initRawImage = () => {
-    const { rawImage } = this.state
-    globalData.choosedImage = globalData.choosedImage || 'http://tmp/wxcfe56965f4d986f0.o6zAJsztn2DIgXEGteELseHpiOtU.6gRGsIZIvyytf45cffd60a62912bada466d51e03f6fa.jpg'
-    this.setState({
-      rawImage: {
-        ...rawImage,
-        localUrl: globalData.choosedImage
-      }
-    })
-  }
   // 初始化场景信息
   initSceneData = async (callback) => {
     // 全局主题数据
@@ -303,79 +293,9 @@ class Editor extends Component {
       typeof callback === 'function' && callback()
     })
   }
-  // 初始化贴纸
-  // 初始化分割
-  initSegment = async () => {
-    let separateRes
-    try {
-      separateRes = await service.core.separateLocalImg(globalData.choosedImage, {
-        type: -1,
-        loading: true,
-        showLoading: () => {
-          // console.log('showLoading')
-          // Taro.showLoading({
-          //   title: '照片变身中...',
-          //   mask: true,
-          // })
-          this.showLoading()
-        },
-        hideLoading: () => {
-          // console.log('hideLoading')
-          // Taro.hideLoading()
-          if (this.state.foreground.loaded) {
-            this.hideLoading()
-          }
-        }
-      })
-      const { cateImageDict = {} } = separateRes.result || {}
-      if (!cateImageDict['16'] && !cateImageDict['16-1']) {
-        console.log('技术犯规了')
-        work.pageToError()
-        return
-      }
-    } catch (err) {
-      console.log('catch', err)
-      this.hideLoading()
-      return {}
-    }
-    return (separateRes && separateRes.result) || {}
-  }
 
-  initSeparateData = async (separateResult) => {
-    const { currentScene, foreground } = this.state
-    this.changeSceneChooseSegment(currentScene, separateResult, (res = {}) => {
-      this.setState({
-        foreground: {
-          ...foreground,
-          remoteUrl: res.separateUrl
-        }
-      })
-    })
-  }
 
-  // 根据场景决定头像
-  async changeSceneChooseSegment(currentScene, separateResult = {}, callback) {
-    const { imageHost } = appConfig
-    if (!separateResult.cateImageDict) {
-      return
-    }
-    // 判断分离的是全身还是头像
-    let separateUrl = ''
-    let separateMaskUrl = ''
-    if (currentScene.segmentType === 1) {
-      separateUrl = imageHost + separateResult.cateImageDict['16-1']
-      separateMaskUrl = imageHost + separateResult.maskImageDict['16-1']
-    } else {
-      separateUrl = imageHost + separateResult.cateImageDict['16']
-      separateMaskUrl = imageHost + separateResult.maskImageDict['16']
-    }
-    typeof callback === 'function' && callback({
-      separateUrl,
-      separateMaskUrl
-    })
-  }
 
-  // 背景
   handleBackgroundClick = () => {
     this.setForegroundActiveStatus(false)
     this.setCoverListActiveStatus({ type: 'all' }, false)
@@ -479,58 +399,6 @@ class Editor extends Component {
   handleForegroundTouchend = () => {
     this.storeForegroundInfo()
   }
-  // 贴纸
-  onCoverLoaded = (detail: object, item?: any) => {
-    // console.log('onCoverLoaded', detail, item)
-    const { width, height } = detail
-    const originInfo = {
-      originWidth: width,
-      originHeight: height
-    }
-    this.coverAuto(originInfo, item)
-  }
-  handleChangeCoverStyle = (data) => {
-    const { id } = data
-    const { coverList } = this.state
-    coverList.forEach((v, i) => {
-      if (v.id === id) {
-        coverList[i] = data
-      }
-    })
-    this.setState({
-      coverList: coverList
-    })
-  }
-  handleCoverTouchstart = (sticker) => {
-    // console.log('handleCoverTouchstart', sticker)
-    this.setCoverListActiveStatus({ type: 'some', ids: [sticker.id] }, true)
-    this.setForegroundActiveStatus(false)
-  }
-  handleCoverTouchend = (sticker) => {
-    // console.log('handleCoverTouchend', sticker)
-    this.storeCoverInfo(sticker)
-    this.app.aldstat.sendEvent('贴纸使用', { '贴纸Id': sticker.id })
-  }
-  handleDeleteCover = (sticker) => {
-    // console.log('handleDeleteCover', sticker)
-    const { id } = sticker
-    const { coverList } = this.state
-    coverList.forEach((v, i) => {
-      if (v.id === id) {
-        coverList[i] = {
-          ...v,
-          deleted: true,
-          visible: false
-        }
-      }
-    })
-    this.setState({
-      coverList: coverList
-    })
-    this.app.aldstat.sendEvent('贴纸删除', { '贴纸Id': sticker.id })
-  }
-
-  // 更换场景
   handleChooseScene = (scene) => {
     const { currentScene } = this.state
     if (currentScene.sceneId === scene.sceneId) {
@@ -700,10 +568,10 @@ class Editor extends Component {
     })
   }
   canvasDrawRecommend = async (context) => {
-    const { currentScene, frame, canvas } = this.state
+    const { currentScene, frame, canvas,preBackGroundList } = this.state
     const postfix = '?x-oss-process=image/resize,h_748,w_560'
     const { ratio = 3 } = canvas
-    const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
+    const sceneInfo = work.getSceneInfoById(currentScene.sceneId, preBackGroundList, 'sceneId')
     let sceneConfig = {}
     try {
       sceneConfig = tool.JSON_parse(sceneInfo.sceneConfig)

@@ -27,6 +27,7 @@ class Browser extends Component {
   
   state = {
     navScrollHeight: '',
+    navScrollHeight_higher: '',
     currentThemeID: 0,
     waterfallLoaded: false,
     showPic: false,
@@ -72,6 +73,7 @@ class Browser extends Component {
     })
     this.setState({
       navScrollHeight: globalData.sysHeight * 0.3 + 'rpx',
+      navScrollHeight_higher: globalData.sysHeight * 0.3 + 32 + 'rpx'
     })
   }
 
@@ -84,14 +86,18 @@ class Browser extends Component {
     var minHeight = globalData.sysHeight * 0.20
     var maxHeight = globalData.sysHeight * 0.30
     var navScrollHeight = ''
+    var navScrollHeight_higher = ''
     if (topDistance!==0) {
-      navScrollHeight = minHeight + 'rpx'
+      navScrollHeight = minHeight + 'rpx',
+      navScrollHeight_higher = minHeight + 32 + 'rpx'
     } else {
       // 当没有滚动的时候，navbar高度为最大值
       navScrollHeight = maxHeight + 'rpx'
+      navScrollHeight_higher = maxHeight + 32 + 'rpx'
     }
     this.setState({
-      navScrollHeight: navScrollHeight
+      navScrollHeight: navScrollHeight,
+      navScrollHeight_higher: navScrollHeight_higher
     })
   }
 
@@ -215,7 +221,7 @@ class Browser extends Component {
 
 
         <View className='navBar' style={{top: globalData.totalTopHeight}}>
-          <ScrollView className='scroll' scrollX={true}>
+          <ScrollView className='scroll' scrollX={true} style={{height: this.state.navScrollHeight_higher}}>
             {globalData.themeData.originalImageList.map(item=>{
                 return <View className='item' hoverClass="item-hover" onClick={this.clickThemeIcon.bind(this, item.activityId)} key={item.activityId}> 
                         <Image className='itemImg' src={item.originalImageUrl} style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}}>
@@ -228,9 +234,6 @@ class Browser extends Component {
 
 
                         </Image> 
-
-                        {/* <View className='triangle'></View> */}
-
                       </View>
                 })
             }

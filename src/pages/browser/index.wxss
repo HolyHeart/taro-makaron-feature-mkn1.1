@@ -86,7 +86,6 @@ page {
   padding-top: 3%;
   padding-left: 3%;
   padding-right: 3%;
-  padding-bottom: 35rpx;
   z-index: 2;
 }
 .browser .navBar .scroll .item {

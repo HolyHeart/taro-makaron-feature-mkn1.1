@@ -40,6 +40,7 @@ page {
       align-items:center;
       .maskImg {
         box-shadow:4rpx 4rpx 8rpx rgba(0,0,0,0.5);
+        border-radius: 4%;
       }
       .maskBtnGrp {
         display: flex;
@@ -120,9 +121,24 @@ page {
             left: 0;
             right: 0;
             bottom: 0;
-            border: 15px solid #FF3366;
-            z-index: 9999;
+            border: 7px solid #ff3366c4;
+            z-index: 5;
             transition:all 0.2s;
+            box-sizing: border-box;
+            border-radius: 4%;
+            .itemImgBorderText {
+              font-size: 26rpx;
+              color: white;
+              background-color: #ff3366c4;
+              position: absolute;
+              top: 0;
+              left: 0;
+              padding-left: 4rpx;
+              padding-right: 12rpx;
+              padding-bottom: 3rpx;
+              //border: 5px solid #FF3366;
+              border-bottom-right-radius: 30%;
+            }
           }
         }
         &.item-hover {

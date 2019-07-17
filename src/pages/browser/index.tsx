@@ -219,7 +219,9 @@ class Browser extends Component {
             {globalData.themeData.originalImageList.map(item=>{
                 return <View className='item' hoverClass="item-hover" onClick={this.clickThemeIcon.bind(this, item.activityId)} key={item.activityId}> 
                         <Image className='itemImg' src={item.originalImageUrl} style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}}>
-                          {/* <View className='itemImgBorder' style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}}></View> */}
+                          <View className='itemImgBorder' style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}}>
+                            <View className='itemImgBorderText'>原图</View>
+                          </View>
                         </Image> 
                       </View>
                 })

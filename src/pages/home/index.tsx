@@ -217,10 +217,13 @@ class Home extends Component {
 
   handleGetUserInfo = (data) => {
     // console.log('handleGetUserInfo', data)
-    const {detail: {userInfo}} = data
+    const { detail: { userInfo } } = data
     if (userInfo) {
-      base.loginAuth(data.detail)
+      base.loginAuth(data.detail).then(res=> {
+        globalData.totalUserInfo = res.result.result
+      })
       globalData.userInfo = userInfo
+      console.log(globalData.userInfo)
       this.todo()
     } else {
       Taro.showToast({

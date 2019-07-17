@@ -70,26 +70,18 @@ class Browser extends Component {
   }
 
   componentDidMount () {
-
-    Taro.getUserInfo({
-      success : res => 
-      console.log(res)
-    })
-
-    //this.showLoading()
     this.getScreenHeight()
     globalData.windowTop = globalData.totalTopHeight * 2 + globalData.sysHeight * 0.36 + 40 + 'rpx'
     globalData.totalTopHeight = globalData.totalTopHeight * 2 + 20 + 'rpx'
     this.initThemeList()
-    this.changeWorkList(this.state.currentThemeID)
-    //this.hideLoading()
+    this.changeWorkList(globalData.themeData.originalImageList[0].activityId)
+    console.log('看这个', globalData.themeData.originalImageList)
   }
 
   initThemeList () {
     this.setState({
       currentThemeID: globalData.themeData.originalImageList[0].activityId
     })
-    console.log(globalData.themeData.originalImageList[0].activityId)
   }
 
   resetPage () {
@@ -98,7 +90,7 @@ class Browser extends Component {
     })
   }
 
-  async changeWorkList (themeID) {
+  async changeWorkList (activityID) {
     this.showLoading()
     this.resetPage()
     globalData.waterfallLeftHeight = 0
@@ -106,11 +98,19 @@ class Browser extends Component {
     globalData.waterfallLeftList = []
     globalData.waterfallRightList = []
     try {
-      const result = await browser.psWorkList(themeID, 0)
+      const result = await browser.psWorkList(globalData.totalUserInfo.uid, activityID, 0)
+
+
+      console.log('uid:', globalData.totalUserInfo.uid)
+      console.log('theme id:', activityID)
+      console.log('result:', result)
+
+
       const workList = result.result.result.workList
+
       globalData.browserWorkList = workList
       //如果没有第二页
-      const resultAdvance = await browser.psWorkList(themeID, 1)
+      const resultAdvance = await browser.psWorkList(globalData.totalUserInfo.uid, activityID, 1)
       if (resultAdvance.result.result.workList.length===0) {
         this.setState({
           bottomTip: '-没有更多啦-',
@@ -131,7 +131,7 @@ class Browser extends Component {
   async loadMoreWorks () {
     try {
       console.log(this.state.currentPage)
-      const result = await browser.psWorkList(this.state.currentThemeID, this.state.currentPage + 1)
+      const result = await browser.psWorkList(globalData.totalUserInfo.uid, this.state.currentThemeID, this.state.currentPage + 1)
       const workList = result.result.result.workList
       if (workList.length!=0) {
         this.getList(workList)

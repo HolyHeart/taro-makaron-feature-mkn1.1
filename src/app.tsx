@@ -27,6 +27,8 @@ class _App extends Component {
   config: Config = {
     pages: [
       'pages/home/index',
+      'pages/browser/index',
+      // 'pages/home/index',
       'pages/filter/index',
       'pages/editor/index',
       'pages/segment/index',
@@ -35,7 +37,7 @@ class _App extends Component {
       'pages/crop/index',
       'pages/waiting/index',
       'pages/style/index',
-      'pages/browser/index',
+      
       'pages/index',
       'pages/psChallenge/index'
     ],

@@ -1,6 +1,6 @@
 import { ComponentClass } from 'react'
 import Taro, { Component, Config, navigateBackMiniProgram } from '@tarojs/taro'
-import { View, Button, Image, ScrollView, Text} from '@tarojs/components'
+import { View, Button, Image, ScrollView, Text } from '@tarojs/components'
 import Title from '@/components/Title'
 import CustomIcon from '@/components/Icon'
 import './index.less'
@@ -24,16 +24,16 @@ class Browser extends Component {
   config: Config = {
     navigationBarTitleText: '这图我能P',
     disableScroll: false,
-    enablePullDownRefresh:false
+    enablePullDownRefresh: false
   }
   activityId = 0
-
+  themeId = ''
   state = {
     navScrollHeight: '',
     navScrollHeight_higher: '',
     currentThemeID: 0,
     waterfallLoaded: false,
-    activityId:0,
+    activityId: 0,
     showPic: false,
     currentPicOnMask: '',
     loading: false,
@@ -71,35 +71,50 @@ class Browser extends Component {
     })
   }
 
-  componentDidMount () {
-    this.getScreenHeight()
-    globalData.windowTop = globalData.totalTopHeight * 2 + globalData.sysHeight * 0.36 + 'rpx'
-    this.initThemeList()
+  componentWillMount() {
+    // Taro.showToast({
+    //   title:this.$router.params.themeId
+    // })
+    this.themeId = this.$router.params.themeId
   }
+  componentDidMount() {
+    this.getThemeData(() => {
+      this.getScreenHeight()
+      globalData.windowTop = globalData.totalTopHeight * 2 + globalData.sysHeight * 0.36 + 'rpx'
+      this.initThemeList()
+    })
+  }
+  getThemeData = async (callback) => {
+    if (!globalData.themeData) {
+      const res = await service.core.theme(this.themeId)
+      globalData.themeData = res.result && res.result.result
+    }
+    typeof callback === 'function' && callback()
 
-  initThemeList () {
+  }
+  initThemeList() {
     this.setState({
       currentThemeID: globalData.themeData.originalImageList[0].imageId
-    },()=>{
+    }, () => {
       this.changeWorkList(this.state.currentThemeID)
     })
   }
 
-  resetPage () {
+  resetPage() {
     this.setState({
-      currentPage:1
+      currentPage: 1
     })
   }
 
-  async changeWorkList (themeID) {
+  changeWorkList = async (themeID) => {
     this.showLoading()
     this.resetPage()
     globalData.waterfallLeftHeight = 0
     globalData.waterfallRightHeight = 0
     globalData.waterfallLeftList = []
     globalData.waterfallRightList = []
-    const currentTheme = globalData.themeData.originalImageList.filter((item)=>{
-        return item.imageId ===themeID
+    const currentTheme = globalData.themeData.originalImageList.filter((item) => {
+      return item.imageId === themeID
     })
     this.activityId = currentTheme[0].activityId
 
@@ -109,7 +124,7 @@ class Browser extends Component {
       globalData.browserWorkList = workList
       //如果没有第二页
       const resultAdvance = await browser.psWorkList(globalData.totalUserInfo.uid, this.activityId, 2)
-      if (resultAdvance.result.result.workList.length===0) {
+      if (resultAdvance.result.result.workList.length === 0) {
         this.setState({
           bottomTip: '-没有更多啦-',
         })
@@ -126,12 +141,12 @@ class Browser extends Component {
   }
 
 
-  async loadMoreWorks () {
+  loadMoreWorks = async () => {
     try {
       console.log(this.state.currentPage)
       const result = await browser.psWorkList(globalData.totalUserInfo.uid, this.activityId, this.state.currentPage + 1)
       const workList = result.result.result.workList
-      if (workList.length!=0) {
+      if (workList.length != 0) {
         this.getList(workList)
         this.setState({
           currentPage: this.state.currentPage + 1
@@ -148,10 +163,10 @@ class Browser extends Component {
 
 
 
-  getScreenHeight () {
+  getScreenHeight() {
     Taro.getSystemInfo({
-      success : res =>
-      globalData.sysHeight = res.screenHeight
+      success: res =>
+        globalData.sysHeight = res.screenHeight
     })
     this.setState({
       navScrollHeight: globalData.sysHeight * 0.3 + 'rpx',
@@ -159,19 +174,19 @@ class Browser extends Component {
     })
   }
 
-  pageToHome () {
+  pageToHome() {
     Taro.navigateBack({ delta: 1 })
   }
 
-  onPageScroll (e) {
+  onPageScroll(e) {
     var topDistance = e.scrollTop
     var minHeight = globalData.sysHeight * 0.20
     var maxHeight = globalData.sysHeight * 0.30
     var navScrollHeight = ''
     var navScrollHeight_higher = ''
-    if (topDistance>0) {
+    if (topDistance > 0) {
       navScrollHeight = minHeight + 'rpx',
-      navScrollHeight_higher = minHeight + 32 + 'rpx'
+        navScrollHeight_higher = minHeight + 32 + 'rpx'
     } else {
       // 当没有滚动的时候，navbar高度为最大值
       navScrollHeight = maxHeight + 'rpx'
@@ -183,12 +198,12 @@ class Browser extends Component {
     })
   }
 
-  onReachBottom () {
+  onReachBottom() {
     console.log('触底了')
     this.loadMoreWorks()
   }
 
-  clickThemeIcon (imageId, e) {
+  clickThemeIcon(imageId, e) {
     this.setState({
       currentThemeID: imageId
     })
@@ -196,9 +211,9 @@ class Browser extends Component {
     this.changeWorkList(imageId)
   }
 
-  getList (list) {
+  getList(list) {
     var counter = 0
-    if (list.length===0) {
+    if (list.length === 0) {
       console.log('列表为空')
       this.hideLoading()
     }
@@ -206,7 +221,7 @@ class Browser extends Component {
       var picUrl = element.url
       Taro.getImageInfo({
         src: picUrl,
-      }).then((res)=>{
+      }).then((res) => {
         this.divideList(res, picUrl, counter)
         counter = counter + 1
         this.formWaterfall()
@@ -214,8 +229,8 @@ class Browser extends Component {
     });
   }
 
-  divideList (result, url, counter) {
-    if (counter===0 || globalData.waterfallLeftHeight <= globalData.waterfallRightHeight) {
+  divideList(result, url, counter) {
+    if (counter === 0 || globalData.waterfallLeftHeight <= globalData.waterfallRightHeight) {
       globalData.waterfallLeftHeight = globalData.waterfallLeftHeight + (result.height / result.width)
       globalData.waterfallLeftList.push(url)
     } else {
@@ -224,30 +239,30 @@ class Browser extends Component {
     }
   }
 
-  async formWaterfall () {
+  formWaterfall() {
     if (globalData.browserWorkList.length === globalData.waterfallLeftList.length + globalData.waterfallRightList.length) {
       this.setState({
         waterfallLoaded: true
       })
     }
-    this.hideLoading()
+    this.hideLoadinåg()
   }
 
-  openPicMaskContent (path, e) {
+  openPicMaskContent(path, e) {
     this.setState({
       showPic: true,
       currentPicOnMask: path
     })
   }
 
-  closePicMaskContent () {
+  closePicMaskContent() {
     this.setState({
       showPic: false,
     })
   }
 
-  clickLikeBtn () {
-    if (this.state.likeOrNot===false) {
+  clickLikeBtn() {
+    if (this.state.likeOrNot === false) {
       console.log('I like it :)')
       this.setState({
         likeBtnUrl: likedBtn,
@@ -264,20 +279,25 @@ class Browser extends Component {
     }
   }
 
-  clickShareBtn () {
+  clickShareBtn() {
     console.log('I Share it!!!')
     this.setState({
       showPic: true,
     })
   }
 
-  addWork () {
+  addWork() {
     console.log('我要创作')
   }
-  goEditor = ()=>{
-    Taro.navigateTo({url: `/pages/psChallenge/index?imageId=${this.state.currentThemeID}&activityId=${this.activityId}`})
+  goEditor = () => {
+    Taro.navigateTo({ url: `/pages/psChallenge/index?imageId=${this.state.currentThemeID}&activityId=${this.activityId}` })
   }
-  render () {
+
+
+
+
+
+  render() {
     let waterfallLeft
     let leftList
     let rightList
@@ -290,7 +310,7 @@ class Browser extends Component {
 
     if (this.state.showPic) {
       picMaskContent = (
-        <View className='showPicMask' style={{top: globalData.totalTopHeight+'px'}} onClick={this.closePicMaskContent}>
+        <View className='showPicMask' style={{ top: globalData.totalTopHeight + 'px' }} onClick={this.closePicMaskContent}>
           <View className='maskContent'>
             <Image src={this.state.currentPicOnMask} mode='aspectFit' className='maskImg'></Image>
             <View className='maskBtnGrp'>
@@ -309,66 +329,66 @@ class Browser extends Component {
       )
     }
 
-    return (
-      <View className='browser'>
-        <View className='title'>
-          <Title
-            color="#333"
-            leftStyleObj={{left: Taro.pxTransform(8)}}
-            renderLeft={
-              <CustomIcon type="back" theme="dark" onClick={this.pageToHome}/>
-            }
-          >这图我能P</Title>
-        </View>
-
-        {picMaskContent}
-        {/* 加入loading */}
-        <Loading visible={this.state.loading} />
-
-        <View className='navBar' style={{top: globalData.totalTopHeight+'px'}}>
-          <ScrollView className='scroll' scrollX style={{height: this.state.navScrollHeight_higher}}>
-            {globalData.themeData.originalImageList.map(item=>{
-                return <View className='item' hoverClass="item-hover" onClick={this.clickThemeIcon.bind(this, item.imageId)} key={item.imageId}>
-                        <Image className='itemImg' src={item.originalImageUrl} style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}}>
-                          {this.state.currentThemeID === item.imageId ?
-                          <View className='itemImgBorder' style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}}>
-                            <View className='itemImgBorderText'>原图</View>
-                            <View className='itemImgBorderTri'></View>
-                          </View>
-                          :''}
-                        </Image>
-                      </View>
-                })
-            }
-          </ScrollView>
-        </View>
-
-        <View className='waterfall'>
-          <View className='left-div' style={{marginTop: globalData.windowTop}}>
-          {leftList.map(item=>{
-                return <View className='card' hoverClass="card-hover" key={item} onClick={this.openPicMaskContent.bind(this, item)}>
-                        <Image className='cardImg' src={item} mode='widthFix'></Image>
-                      </View>
-                })
+    return (<View className='browser'>
+      <View className='title'>
+        <Title
+          color="#333"
+          leftStyleObj={{ left: Taro.pxTransform(8) }}
+          renderLeft={
+            <CustomIcon type="back" theme="dark" onClick={this.pageToHome} />
           }
-          </View>
-          <View className='right-div' style={{marginTop: globalData.windowTop}}>
-          {rightList.map(item=>{
-                return <View className='card' hoverClass="card-hover" key={item} onClick={this.openPicMaskContent.bind(this, item)}>
-                        <Image className='cardImg' src={item} mode='widthFix'></Image>
-                      </View>
-                })
-          }
-          </View>
-        </View>
+        >这图我能P</Title>
+      </View>
 
-        <View className='divider'>-没有更多啦-</View>
-        <View className='btnGrp'>
-          <Button className="button white" hoverClass="btn-hover" openType='share'>分享给好友</Button>
-          <Button className="button pink" hoverClass="btn-hover" onClick={this.goEditor}>我要创作</Button>
+      {picMaskContent}
+      {/* 加入loading */}
+      <Loading visible={this.state.loading} />
+
+      <View className='navBar' style={{ top: globalData.totalTopHeight + 'px' }}>
+        <ScrollView className='scroll' scrollX style={{ height: this.state.navScrollHeight_higher }}>
+          {(globalData.themeData && globalData.themeData.originalImageList || []).map(item => {
+            return <View className='item' hoverClass="item-hover" onClick={this.clickThemeIcon.bind(this, item.imageId)} key={item.imageId}>
+              <Image className='itemImg' src={item.originalImageUrl} style={{ height: this.state.navScrollHeight, width: this.state.navScrollHeight }}>
+                {this.state.currentThemeID === item.imageId ?
+                  <View className='itemImgBorder' style={{ height: this.state.navScrollHeight, width: this.state.navScrollHeight }}>
+                    <View className='itemImgBorderText'>原图</View>
+                    <View className='itemImgBorderTri'></View>
+                  </View>
+                  : ''}
+              </Image>
+            </View>
+          })
+          }
+        </ScrollView>
+      </View>
+
+      <View className='waterfall'>
+        <View className='left-div' style={{ marginTop: globalData.windowTop }}>
+          {leftList.map(item => {
+            return <View className='card' key={item} onClick={this.openPicMaskContent.bind(this, item)}>
+              <Image className='cardImg' src={item} mode='widthFix'></Image>
+            </View>
+          })
+          }
+        </View>
+        <View className='right-div' style={{ marginTop: globalData.windowTop }}>
+          {rightList.map(item => {
+            return <View className='card' key={item} onClick={this.openPicMaskContent.bind(this, item)}>
+              <Image className='cardImg' src={item} mode='widthFix'></Image>
+            </View>
+          })
+          }
         </View>
       </View>
+
+      <View className='divider'>-没有更多啦-</View>
+      <View className='btnGrp'>
+        <Button className="button white" hoverClass="btn-hover" openType='share'>分享给好友</Button>
+        <Button className="button pink" hoverClass="btn-hover" onClick={this.goEditor}>我要创作</Button>
+      </View>
+    </View>
     )
+
   }
 }
 

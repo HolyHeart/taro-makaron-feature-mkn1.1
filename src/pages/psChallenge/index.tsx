@@ -485,7 +485,12 @@ class Editor extends Component {
       }
     }, async () => {
       const { url } = await service.base.upload(canvasImageUrl)
-      await service.browser.postNewWork(this.state.foreground.remoteUrl,url,'pic','这图我能p',20,this.themeData.activityId,tool.uuid(),globalData.totalUserInfo.userToken,globalData.totalUserInfo.uid)
+      try {
+        await service.browser.postNewWork(this.state.foreground.remoteUrl,url,'pic','这图我能p',20,this.themeData.activityId,tool.uuid(),globalData.totalUserInfo.userToken,globalData.totalUserInfo.uid)
+      } catch (error) {
+        
+      }
+      // await service.browser.postNewWork(this.state.foreground.remoteUrl,url,'pic','这图我能p',20,this.themeData.activityId,tool.uuid(),globalData.totalUserInfo.userToken,globalData.totalUserInfo.uid)
       this.setState({
         result: {
           show: this.state.result.show,
@@ -787,18 +792,19 @@ class Editor extends Component {
     // 先判断是否有缓存
     console.log('loading foreground')
     const { currentScene } = this.state
-    const sceneId = currentScene.sceneId || 'demo_scene'
-    const cache_foreground = this.cache['foreground']
-    const scene_foreground_params = cache_foreground.get(sceneId)
+    //两层结构 暂时不满足
+    // const sceneId = currentScene.sceneId || 'demo_scene'
+    // const cache_foreground = this.cache['foreground']
+    // const scene_foreground_params = cache_foreground.get(sceneId)
 
-    if (scene_foreground_params) {
-      this.setStateTarget('foreground', {
-        ...scene_foreground_params
-      }, () => {
-        typeof callback === 'function' && callback()
-      })
-      return
-    }
+    // if (scene_foreground_params) {
+    //   this.setStateTarget('foreground', {
+    //     ...scene_foreground_params
+    //   }, () => {
+    //     typeof callback === 'function' && callback()
+    //   })
+    //   return
+    // }
 
     const size = this.calcForegroundSize()
     const position = this.calcForegroundPosition(size)

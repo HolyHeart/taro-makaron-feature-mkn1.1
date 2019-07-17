@@ -257,16 +257,11 @@ class Home extends Component {
     })
   }
 
-  // added by Shichao.Ma
-  turnToStyle = () => {
-    console.log('hohoho!')
-    Taro.navigateTo({ url: '/pages/browser/index' })
-  }
 
   todo = () => {
     const { sceneType } = globalData
     if (sceneType === 5) {
-      Taro.navigateTo({ url: '/pages/browser/index' })
+      Taro.navigateTo({ url: `/pages/browser/index?themeId=${globalData.themeId}` })
     } else {
       work.chooseImage({
         onTap: (index) => {

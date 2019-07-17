@@ -1,6 +1,6 @@
 import { ComponentClass } from 'react'
 import Taro, { Component, Config } from '@tarojs/taro'
-import { View, Button, Image, Canvas } from '@tarojs/components'
+import { View, Button, Image, Canvas ,ScrollView} from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 
 import { getSystemInfo } from '@/model/actions/global'
@@ -211,13 +211,7 @@ class Editor extends Component {
   _initPage = async () => {
     // this.initRawImage()
     await Session.set()
-    this.initSceneData(() => {
-      // this.initCoverData()
-      this.initImageLayer()
-    })
-    // const separateResult = globalData.separateResult = await this.initSegment()
-    // console.log('separateResult', separateResult)
-    // await this.initSeparateData(separateResult)
+    this.initSceneData(()=>{})
   }
   initImageLayer(){
     console.log(this.themeData.imageLayer)
@@ -229,22 +223,8 @@ class Editor extends Component {
       }
     })
   }
-
-  test = async () => {
-    // try {
-    //   const result = await service.core.column()
-    //   console.log('result', result)
-    // } catch(err) {
-    //   console.log('catch', err)
-    // }
-    //   const uploadResult = await service.base.upload(mock_path, 'png')
-    //   console.log('uploadResult', uploadResult)
-  }
   // 公共方法
   pageToHome = () => {
-    // Taro.navigateTo({
-    //   url: '/pages/home/index'
-    // })
     Taro.navigateBack({ delta: 1 })
   }
   showLoading = () => {
@@ -277,6 +257,8 @@ class Editor extends Component {
           left: rect.left,
           top: rect.top,
         }
+      },()=>{
+        this.initImageLayer()
       })
     })
   }
@@ -320,21 +302,6 @@ class Editor extends Component {
     })
   }
   // 初始化贴纸
-  initCoverData = () => {
-    const { currentScene } = this.state
-    const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
-    const sceneConfig = tool.JSON_parse(sceneInfo.sceneConfig)
-    const { cover = {} } = sceneConfig
-
-    this.themeData.rawCoverList = cover.list || []
-    const coverList = work.formatRawCoverList(this.themeData.rawCoverList)
-
-    this.setState({
-      coverList: coverList
-    })
-    // console.log('initCoverData cover', cover, coverList)
-  }
-
   // 初始化分割
   initSegment = async () => {
     let separateRes
@@ -944,6 +911,7 @@ class Editor extends Component {
   // 人物自适应
   foregroundAuto = (callback?: () => void) => {
     // 先判断是否有缓存
+    console.log('loading foreground')
     const { currentScene } = this.state
     const sceneId = currentScene.sceneId || 'demo_scene'
     const cache_foreground = this.cache['foreground']
@@ -969,14 +937,13 @@ class Editor extends Component {
   }
   // 计算人物尺寸
   calcForegroundSize = () => {
+    console.log('执行size')
     const { currentScene, preBackGroundList, foreground, frame } = this.state
     const { originWidth, originHeight } = foreground
-    const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
-
+    const sceneInfo = work.getSceneInfoById(currentScene.sceneId, preBackGroundList, 'sceneId')
     const imageRatio = originWidth / originHeight
     const params = tool.JSON_parse(sceneInfo.sceneConfig)
     const autoScale = parseFloat(params.size.default)
-
     const result = {
       autoScale,
       autoWidth: 0,
@@ -999,11 +966,12 @@ class Editor extends Component {
   }
   // 计算人物位置
   calcForegroundPosition = ({ width, height } = {}) => {
-    const { currentScene, sceneList, foreground, frame } = this.state
+    console.log('执行position')
+    const { currentScene, preBackGroundList, foreground, frame } = this.state
     const { originWidth, originHeight } = foreground
     width = width || foreground.width
     height = height || foreground.height
-    const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
+    const sceneInfo = work.getSceneInfoById(currentScene.sceneId, preBackGroundList, 'sceneId')
 
     const boxWidth = frame.width
     const boxHeight = frame.height
@@ -1323,7 +1291,16 @@ class Editor extends Component {
     const cacheKey = `${sceneId}_${sticker.id}`
     this.cache['cover'].set(cacheKey, clone_cover)
   }
-
+  changeOriginalImage= (item)=>{
+    console.log(item)
+    const {foreground}  = this.state
+    this.setState({
+      foreground:{
+        ...foreground,
+        remoteUrl:item.imageUrl
+      }
+    })
+  }
   render() {
     const { loading, rawImage, frame, customBg, foreground, coverList, preBackGroundList, currentScene, result, canvas } = this.state
     return (
@@ -1373,26 +1350,18 @@ class Editor extends Component {
                 onTouchstart={this.handleForegroundTouchstart}
                 onTouchend={this.handleForegroundTouchend}
               />
-              {coverList.map(item => {
-                return <Sticker
-                  key={item.id}
-                  url={item.remoteUrl}
-                  stylePrams={item}
-                  framePrams={frame}
-                  onChangeStyle={this.handleChangeCoverStyle}
-                  onImageLoaded={this.onCoverLoaded}
-                  onTouchstart={this.handleCoverTouchstart}
-                  onTouchend={this.handleCoverTouchend}
-                  onDeleteSticker={this.handleDeleteCover.bind(this, item)}
-                />
-              })}
             </View>
           </View>
-          <View className='toolWrap'>
-             {['全身','头部','整图'].map((item)=>{
-               return (<Button className='toolButton'>{item}</Button>)
-             })}
+          <MarginTopWrap config={{ large: 60, small: 40, default: 20 }}>
+          <View style='width:720rpx;margin-right:-60rpx'>
+            <ScrollView className='toolWrap' scrollX>
+              {this.themeData.imageLayer.map((item)=>{
+                return (<Button onClick={()=>this.changeOriginalImage(item)} className='toolButton'>{item.name}</Button>)
+              })}
+            </ScrollView>
           </View>
+          </MarginTopWrap>
+
           <MarginTopWrap config={{ large: 60, small: 40, default: 20 }}>
             <SceneList
               list={preBackGroundList}

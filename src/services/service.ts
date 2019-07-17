@@ -380,12 +380,13 @@ export const styleTransfer = {
 
 
 export const browser = {
-  psWorkList: function (activityID, page) {
+  psWorkList: function (uid, activityID, page) {
     const reqData = {
       method: 'GET',
       url: api.browser.psWorkList,
       header: {"Accept": "*/*"},
       data: {
+        uid: uid,
         activityId: activityID,
         page: page,
       }
@@ -402,8 +403,9 @@ export const browser = {
    * @param status 20 公开作品
    * @param activityIds  挑战id
    * @param renderSessionId 唯一id
+   * @param userToken
    */
-  postNewWork:function(originPicture,renderPicture,worksType='pic',worksDesc='这图我能p',status=20,activityIds,renderSessionId){
+  postNewWork:function(originPicture,renderPicture,worksType='pic',worksDesc='这图我能p',status=20,activityIds,renderSessionId,userToken,uid){
     const reqData = {
       method: 'POST',
       // url: `${getHost()}/image/render/segment`,
@@ -416,7 +418,8 @@ export const browser = {
         worksDesc,
         status,
         activityIds,
-        renderSessionId
+        renderSessionId,
+        userToken,uid
       }
     }
     return request(reqData)

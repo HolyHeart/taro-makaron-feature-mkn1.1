@@ -485,7 +485,7 @@ class Editor extends Component {
       }
     }, async () => {
       const { url } = await service.base.upload(canvasImageUrl)
-      await service.browser.postNewWork(this.state.foreground.remoteUrl,url,'pic','这图我能p',20,this.themeData.activityId,tool.uuid())
+      await service.browser.postNewWork(this.state.foreground.remoteUrl,url,'pic','这图我能p',20,this.themeData.activityId,tool.uuid(),globalData.totalUserInfo.userToken,globalData.totalUserInfo.uid)
       this.setState({
         result: {
           show: this.state.result.show,

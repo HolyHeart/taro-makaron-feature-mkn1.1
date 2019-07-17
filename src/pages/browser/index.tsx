@@ -73,11 +73,8 @@ class Browser extends Component {
 
   componentDidMount () {
     this.getScreenHeight()
-    globalData.windowTop = globalData.totalTopHeight * 2 + globalData.sysHeight * 0.36 + 40 + 'rpx'
-    globalData.totalTopHeight = globalData.totalTopHeight * 2 + 20 + 'rpx'
+    globalData.windowTop = globalData.totalTopHeight * 2 + globalData.sysHeight * 0.36 + 'rpx'
     this.initThemeList()
-    // this.changeWorkList(globalData.themeData.originalImageList[0].activityId)
-    console.log('看这个', globalData.themeData.originalImageList)
   }
 
   initThemeList () {
@@ -293,7 +290,7 @@ class Browser extends Component {
 
     if (this.state.showPic) {
       picMaskContent = (
-        <View className='showPicMask' style={{top: globalData.totalTopHeight}} onClick={this.closePicMaskContent}>
+        <View className='showPicMask' style={{top: globalData.totalTopHeight+'px'}} onClick={this.closePicMaskContent}>
           <View className='maskContent'>
             <Image src={this.state.currentPicOnMask} mode='aspectFit' className='maskImg'></Image>
             <View className='maskBtnGrp'>
@@ -328,8 +325,8 @@ class Browser extends Component {
         {/* 加入loading */}
         <Loading visible={this.state.loading} />
 
-        <View className='navBar' style={{top: globalData.totalTopHeight}}>
-          <ScrollView className='scroll' scrollX={true} style={{height: this.state.navScrollHeight_higher}}>
+        <View className='navBar' style={{top: globalData.totalTopHeight+'px'}}>
+          <ScrollView className='scroll' scrollX style={{height: this.state.navScrollHeight_higher}}>
             {globalData.themeData.originalImageList.map(item=>{
                 return <View className='item' hoverClass="item-hover" onClick={this.clickThemeIcon.bind(this, item.imageId)} key={item.imageId}>
                         <Image className='itemImg' src={item.originalImageUrl} style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}}>

@@ -171,11 +171,14 @@ class Editor extends Component {
   }
 
   isSaving = false // 是否正在保存
-
+  isPhonex = false
   componentDidMount() {
     this._initPage()
   }
   componentWillMount(){
+    const { global = {} } = this.props
+    const isIphoneX = global.system && global.system.isIphoneX
+    this.isPhonex = isIphoneX
     this.themeData.currentOriginalImageId = this.$router.params.imageId
     this.themeData.activityId= this.$router.params.activityId
   }
@@ -210,9 +213,6 @@ class Editor extends Component {
       path: path,
       imageUrl: shareImageUrl,
       success: () => {
-        Taro.showToast({
-          title:this.themeData.originalCompleteImageUrl
-        })
         console.log('分享成功')
       },
     }
@@ -328,62 +328,62 @@ class Editor extends Component {
     this.setCoverListActiveStatus({ type: 'all' }, false)
   }
   // 自定义背景
-  onCustomBgLoaded = (detail: object) => {
-    if ((detail.width / detail.height) >= (1)) {
-      this.setState({
-        drawBoard: {
-          width: '670rpx',
-          height: `${detail.height * 335 / detail.width * 2}rpx`
-        }
-      }, () => {
-        setTimeout(() => {
-          this.calFrameRect()
-        }, 250);
-      })
-    } else {
-      this.setState({
-        drawBoard: {
-          height: '670rpx',
-          width: `${detail.width * 335 / detail.height * 2}rpx`
-        }
-      }, () => {
-        setTimeout(() => {
-          this.calFrameRect()
-        }, 250);
-      })
+  imageLoaded = (detail) =>{
+    if(this.isPhonex){
+      if ((detail.width / detail.height) >= (1)) {
+        this.setState({
+          drawBoard: {
+            width: '670rpx',
+            height: `${detail.height * 335 / detail.width * 2}rpx`
+          }
+        }, () => {
+          setTimeout(() => {
+            this.calFrameRect()
+          }, 250);
+        })
+      } else {
+        this.setState({
+          drawBoard: {
+            height: '920rpx',
+            width: `${detail.width * 460 / detail.height * 2}rpx`
+          }
+        }, () => {
+          setTimeout(() => {
+            this.calFrameRect()
+          }, 250);
+        })
+      }
+    }else{
+      if ((detail.width / detail.height) >= (1)) {
+        this.setState({
+          drawBoard: {
+            width: '670rpx',
+            height: `${detail.height * 335 / detail.width * 2}rpx`
+          }
+        }, () => {
+          setTimeout(() => {
+            this.calFrameRect()
+          }, 250);
+        })
+      } else {
+        this.setState({
+          drawBoard: {
+            height: '670rpx',
+            width: `${detail.width * 335 / detail.height * 2}rpx`
+          }
+        }, () => {
+          setTimeout(() => {
+            this.calFrameRect()
+          }, 250);
+        })
+      }
     }
-    // this.setStateTarget('customBg', {
-    //   originWidth: width,
-    //   originHeight: height
-    // }, () => {
-    //   this.customBgAuto()
-    // })
+  }
+  onCustomBgLoaded = (detail: object) => {
+    this.imageLoaded(detail)
   }
   handleBgLoaded = ({ detail }) => {
-    console.log(detail)
-    if ((detail.width / detail.height) >= (1)) {
-      this.setState({
-        drawBoard: {
-          width: '670rpx',
-          height: `${detail.height * 335 / detail.width * 2}rpx`
-        }
-      }, () => {
-        setTimeout(() => {
-          this.calFrameRect()
-        }, 250);
-      })
-    } else {
-      this.setState({
-        drawBoard: {
-          height: '670rpx',
-          width: `${detail.width * 335 / detail.height * 2}rpx`
-        }
-      }, () => {
-        setTimeout(() => {
-          this.calFrameRect()
-        }, 250);
-      })
-    }
+    this.imageLoaded(detail)
   }
   handleChangeCustomBgStyle = (data) => {
     // console.log('handleChangeCustomBgStyle', data)
@@ -515,7 +515,7 @@ class Editor extends Component {
     if (this.isSaving) {
       return
     }
-    this.app.aldstat.sendEvent('保存图片或视频', { '场景名': this.state.currentScene.sceneName, '场景Id': this.state.currentScene.sceneId })
+    this.app.aldstat.sendEvent('这图我能p', { '场景名': this.state.currentScene.sceneName, '场景Id': this.state.currentScene.sceneId })
     Taro.showLoading({
       title: '照片生成中...',
       mask: true,
@@ -832,20 +832,6 @@ class Editor extends Component {
     // 先判断是否有缓存
     console.log('loading foreground')
     const { currentScene } = this.state
-    //两层结构 暂时不满足
-    // const sceneId = currentScene.sceneId || 'demo_scene'
-    // const cache_foreground = this.cache['foreground']
-    // const scene_foreground_params = cache_foreground.get(sceneId)
-
-    // if (scene_foreground_params) {
-    //   this.setStateTarget('foreground', {
-    //     ...scene_foreground_params
-    //   }, () => {
-    //     typeof callback === 'function' && callback()
-    //   })
-    //   return
-    // }
-
     const size = this.calcForegroundSize()
     const position = this.calcForegroundPosition(size)
     this.setStateTarget('foreground', {
@@ -1068,7 +1054,7 @@ class Editor extends Component {
   handleCoverTouchend = (sticker) => {
     // console.log('handleCoverTouchend', sticker)
     this.storeCoverInfo(sticker)
-    this.app.aldstat.sendEvent('贴纸使用', {'贴纸Id': sticker.id})
+    this.app.aldstat.sendEvent('预设贴纸使用', {'预设贴纸Id': sticker.id})
   }
   handleDeleteCover = (sticker) => {
     // console.log('handleDeleteCover', sticker)
@@ -1086,7 +1072,7 @@ class Editor extends Component {
     this.setState({
       coverList: coverList
     })
-    this.app.aldstat.sendEvent('贴纸删除', {'贴纸Id': sticker.id})
+    this.app.aldstat.sendEvent('预设贴纸删除', {'预设贴纸Id': sticker.id})
   }
   // 贴纸自适应
   coverAuto = (originInfo, cover, callback?: () => void) => {
@@ -1291,7 +1277,7 @@ class Editor extends Component {
           }
         >马卡龙玩图</Title>
         <View className="main">
-          <View className="pic-section">
+          <View className="pic-section" style={{height:this.isPhonex?'920rpx':'670rpx'}}>
             {/* <View className={`raw ${(foreground.remoteUrl && foreground.loaded) ? 'hidden' : ''}`} style={{ width: this.state.drawBoard.width, height: this.state.drawBoard.height }}>
               <Image src={rawImage.localUrl} style="width:100%;height:100%" mode="aspectFit" />
             </View> */}

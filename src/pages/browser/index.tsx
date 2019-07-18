@@ -91,7 +91,7 @@ class Browser extends Component {
       this.initParameters()
       this.initThemeList()
       this.changeWorkList(globalData.themeData.originalImageList[0].activityId)
-    }
+    })
   }
 
   initParameters() {
@@ -315,7 +315,7 @@ class Browser extends Component {
       picMaskContent = (
         <View className='showPicMask' style={{ top: this.state.titleAndNavHeight }}>
           <View className='maskContent'>
-            
+
             <View className='clickArea' onClick={this.closePicMaskContent}></View>
 
             <Image src={this.state.currentPicOnMask} mode='widthFix' className='maskImg'></Image>
@@ -329,7 +329,7 @@ class Browser extends Component {
               <Image src={shareBtn} className='shareBtnImg' onClick={this.clickShareBtn}></Image>
               <Text className='shareBtnText'>分享</Text>
             </View>
-            
+
 
 
           </View>

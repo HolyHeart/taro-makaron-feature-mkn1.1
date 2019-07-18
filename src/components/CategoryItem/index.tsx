@@ -39,7 +39,7 @@ class CategotyItem extends Component {
   }
   handleFormSubmit = (e) => {
     const { onFormSubmit } = this.props
-    typeof onFormSubmit === 'function' && onFormSubmit(e,sceneType)
+    typeof onFormSubmit === 'function' && onFormSubmit(e)
   }
   render() {
     const { onClick, url, column,sceneType } = this.props

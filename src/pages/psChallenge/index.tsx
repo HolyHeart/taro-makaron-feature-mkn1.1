@@ -160,7 +160,8 @@ class Editor extends Component {
     currentOriginalImageId:'',
     imageLayer:[],
     originalImage:{},
-    activityId:''
+    activityId:'',
+    originalCompleteImageUrl:''
   }
 
   cache = {
@@ -185,12 +186,13 @@ class Editor extends Component {
     this.app.aldstat.sendEvent('生成页分享', { '场景名': this.state.currentScene.sceneName, '场景Id': this.state.currentScene.sceneId })
     const { currentScene, result = {} } = this.state
     const { shareImage = {} } = result
-    const shareContent = currentScene.shareContent || (globalData.themeData && globalData.themeData.shareContent)
+    const shareContent =  this.themeData.originalImage.shareContent || (globalData.themeData && globalData.themeData.shareContent)
     const shareImageUrl = `${shareImage.remoteUrl}?x-oss-process=image/resize,m_pad,h_420,w_525`
     const data = {
       shareSource: shareImage.remoteUrl,
       themeId: globalData.themeId || '',
       sceneId: currentScene.sceneId || '',
+      originalCompleteImageUrl:this.themeData.originalCompleteImageUrl
     }
     const path = tool.formatQueryUrl('/pages/index', data)
     const { userInfo = {} } = globalData
@@ -208,6 +210,9 @@ class Editor extends Component {
       path: path,
       imageUrl: shareImageUrl,
       success: () => {
+        Taro.showToast({
+          title:this.themeData.originalCompleteImageUrl
+        })
         console.log('分享成功')
       },
     }
@@ -298,6 +303,7 @@ class Editor extends Component {
         return item.imageId === this.themeData.currentOriginalImageId
     })[0]
     console.log(this.themeData.originalImage)
+    this.themeData.originalCompleteImageUrl =this.themeData.originalImage.originalCompleteImageUrl
     this.themeData.imageLayer = JSON.parse(this.themeData.originalImage.imageLayer)
     // this.themeData.imageLayer =
     this.themeData.preBackGroundList = work.getPreBgList(this.themeData.originalImage.preBackGroundList)
@@ -515,7 +521,7 @@ class Editor extends Component {
     })
     this.isSaving = true
     const canvasImageUrl = await this.createCanvas()
-    Taro.hideLoading()
+
     this.isSaving = false
     this.setState({
       result: {
@@ -528,11 +534,10 @@ class Editor extends Component {
     }, async () => {
       const { url } = await service.base.upload(canvasImageUrl)
       try {
-        await service.browser.postNewWork(this.state.foreground.remoteUrl,url,'pic','这图我能p',20,this.themeData.activityId,tool.uuid(),globalData.totalUserInfo.userToken,globalData.totalUserInfo.uid)
+        await service.browser.postNewWork(this.themeData.originalCompleteImageUrl,url,'pic','这图我能p',20,this.themeData.activityId,tool.uuid(),globalData.totalUserInfo.userToken,globalData.totalUserInfo.uid)
       } catch (error) {
         console.log(error)
       }
-      // await service.browser.postNewWork(this.state.foreground.remoteUrl,url,'pic','这图我能p',20,this.themeData.activityId,tool.uuid(),globalData.totalUserInfo.userToken,globalData.totalUserInfo.uid)
       this.setState({
         result: {
           show: this.state.result.show,
@@ -541,6 +546,8 @@ class Editor extends Component {
             remoteUrl: url,
           }
         }
+      },()=>{
+        Taro.hideLoading()
       })
     })
     // 保存图片到相册

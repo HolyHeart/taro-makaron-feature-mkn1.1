@@ -55,7 +55,7 @@ page {
   position: fixed;
   align-items: center;
   justify-content: center;
-  bottom: 50rpx;
+  bottom: 12%;
   z-index: 4;
   background-color: #FF3366;
   border-radius: 80rpx;
@@ -99,7 +99,6 @@ page {
   border-radius: 4%;
   z-index: 4;
   position: relative;
-  padding-bottom: 35rpx;
 }
 .browser .navBar .scroll .item .itemImg .itemImgBorder {
   position: absolute;
@@ -127,18 +126,6 @@ page {
   padding-bottom: 3rpx;
   border-bottom-right-radius: 30%;
 }
-.browser .navBar .scroll .item .itemImg .itemImgBorder .itemImgBorderTri {
-  position: absolute;
-  bottom: -25rpx;
-  z-index: 6;
-  width: 0;
-  height: 0;
-  border-left: 20px solid transparent;
-  border-right: 20px solid transparent;
-  border-top: 25px solid #ff3366;
-  font-size: 0;
-  line-height: 0;
-}
 .browser .navBar .scroll .item .itemImg .itemMask {
   position: absolute;
   top: 0;
@@ -152,6 +139,26 @@ page {
   border-radius: 4%;
   display: flex;
   justify-content: center;
+}
+.browser .navBar .scroll .item .itemBottomArrow {
+  position: relative;
+  top: -15rpx;
+  height: 25rpx;
+  widows: 100%;
+  justify-content: center;
+  display: flex;
+}
+.browser .navBar .scroll .item .itemBottomArrow .itemImgBorderTri {
+  position: relative;
+  top: 0;
+  z-index: 6;
+  width: 0;
+  height: 0;
+  border-left: 20px solid transparent;
+  border-right: 20px solid transparent;
+  border-top: 25px solid #ff3366;
+  font-size: 0;
+  line-height: 0;
 }
 .browser .navBar .scroll .item.item-hover {
   transform: scale(0.95);

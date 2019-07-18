@@ -245,7 +245,7 @@ class Browser extends Component {
         waterfallLoaded: true
       })
     }
-    this.hideLoadinåg()
+    this.hideLoading()
   }
 
   openPicMaskContent(path, e) {

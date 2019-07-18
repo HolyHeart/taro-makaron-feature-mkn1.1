@@ -213,7 +213,19 @@ class Editor extends Component {
   _initPage = async () => {
     // this.initRawImage()
     await Session.set()
-    this.initSceneData(()=>{})
+    this.initSceneData(()=>{
+
+      // this.initCoverData()
+    })
+  }
+  initCoverData = () => {
+    console.log('ddd')
+    const coverList = work.formatRawCoverList(this.themeData.imageLayer)
+
+    this.setState({
+      coverList: coverList
+    })
+    // console.log('initCoverData cover', cover, coverList)
   }
   initImageLayer(){
     console.log(this.themeData.imageLayer)
@@ -262,7 +274,10 @@ class Editor extends Component {
           top: rect.top,
         }
       },()=>{
-        this.initImageLayer()
+        if(this.state.coverList.length===0){
+          this.initCoverData()
+        }
+        // this.initImageLayer()
       })
     })
   }
@@ -411,11 +426,13 @@ class Editor extends Component {
         ...currentScene,
         ...scene,
         type: 'recommend'
-      }
+      },
+      // coverList:[]
     }, () => {
       // console.log('handleChooseScene', this.state.currentScene)
-      this.foregroundAuto()
+      // this.foregroundAuto()
       // this.initCoverData()
+
       this.app.aldstat.sendEvent('选择场景', { '场景名': this.state.currentScene.sceneName, '场景Id': this.state.currentScene.sceneId })
     })
   }
@@ -457,9 +474,9 @@ class Editor extends Component {
   }
   // 保存
   handleOpenResult = async () => {
-    if (!this.state.foreground.remoteUrl) {
-      return
-    }
+    // if (!this.state.foreground.remoteUrl) {
+    //   return
+    // }
     if (!this.state.currentScene.bgUrl) {
       return
     }
@@ -622,20 +639,6 @@ class Editor extends Component {
     const { currentScene, foreground, frame, canvas, coverList = [] } = this.state
     // 收集所有元素进行排序
     let elements: Array<any> = []
-    const element_foreground = {
-      type: 'foreground',
-      id: foreground.id,
-      zIndex: foreground.zIndex,
-      remoteUrl: foreground.remoteUrl,
-      width: foreground.width * ratio,
-      height: foreground.height * ratio,
-      x: foreground.x * ratio,
-      y: foreground.y * ratio,
-      rotate: foreground.rotate,
-    }
-    // 收集人物
-    elements.push(element_foreground)
-    // 收集贴纸
     coverList.filter(v => !v.deleted).forEach(v => {
       const element_cover = {
         type: 'cover',
@@ -654,12 +657,15 @@ class Editor extends Component {
     elements.sort((a, b) => {
       return a.zIndex - b.zIndex
     })
+    console.log(elements)
+    // console.log(elements)
     // 下载成本地图片并绘制
     for (let i = 0; i < elements.length; i++) {
       const element = elements[i]
       try {
         const localImagePath = await this.downloadRemoteImage(element.remoteUrl)
         element.localUrl = localImagePath
+        console.log(element.localUrl)
         drawElement(element)
       } catch (err) {
         console.log('下载贴纸图片失败', err)
@@ -674,6 +680,7 @@ class Editor extends Component {
       context.drawImage(localUrl, -0.5 * width, -0.5 * height, width, height)
       context.restore()
       context.stroke()
+      console.log(`draw:${localUrl} done`)
     }
   }
   // 绘制二维码和logo
@@ -997,7 +1004,55 @@ class Editor extends Component {
     this.cache['foreground'].set(sceneId, clone_foreground)
     // console.log('this.cache.foreground', this.cache['foreground'].get(sceneId))
   }
-
+  onCoverLoaded = (detail:object, item?:any) => {
+    // console.log('onCoverLoaded', detail, item)
+    const {width, height} = detail
+    const originInfo = {
+      originWidth: width,
+      originHeight: height
+    }
+    this.coverAuto(originInfo, item)
+  }
+  handleChangeCoverStyle = (data) => {
+    const {id} = data
+    const {coverList} = this.state
+    coverList.forEach((v, i) => {
+      if (v.id === id) {
+        coverList[i] = data
+      }
+    })
+    this.setState({
+      coverList: coverList
+    })
+  }
+  handleCoverTouchstart = (sticker) => {
+    // console.log('handleCoverTouchstart', sticker)
+    this.setCoverListActiveStatus({type: 'some', ids:[sticker.id]}, true)
+    this.setForegroundActiveStatus(false)
+  }
+  handleCoverTouchend = (sticker) => {
+    // console.log('handleCoverTouchend', sticker)
+    this.storeCoverInfo(sticker)
+    this.app.aldstat.sendEvent('贴纸使用', {'贴纸Id': sticker.id})
+  }
+  handleDeleteCover = (sticker) => {
+    // console.log('handleDeleteCover', sticker)
+    const {id} = sticker
+    const {coverList} = this.state
+    coverList.forEach((v, i) => {
+      if (v.id === id) {
+        coverList[i] = {
+          ...v,
+          deleted: true,
+          visible: false
+        }
+      }
+    })
+    this.setState({
+      coverList: coverList
+    })
+    this.app.aldstat.sendEvent('贴纸删除', {'贴纸Id': sticker.id})
+  }
   // 贴纸自适应
   coverAuto = (originInfo, cover, callback?: () => void) => {
     const size = this.calcCoverSize(originInfo, cover)
@@ -1025,7 +1080,7 @@ class Editor extends Component {
   calcCoverSize = (originInfo, cover) => {
     const { originWidth, originHeight } = originInfo
     const { frame } = this.state
-    const coverInfo = work.getCoverInfoById(cover.id, this.themeData.rawCoverList, 'id')
+    const coverInfo = work.getCoverInfoById(cover.id, this.state.coverList, 'id')
     const imageRatio = originWidth / originHeight
     let autoScale
     if (coverInfo && coverInfo.size) {
@@ -1056,12 +1111,12 @@ class Editor extends Component {
   calcCoverPosition = (size = {}, cover = {}) => {
     const { width = 0, height = 0 } = size
     const { frame } = this.state
-    const coverInfo = work.getCoverInfoById(cover.id, this.themeData.rawCoverList, 'id')
+    const coverInfo = work.getCoverInfoById(cover.id, this.state.coverList, 'id')
     const { position, rotate = 0 } = coverInfo
     const boxWidth = frame.width
     const boxHeight = frame.height
 
-    const type = position.place || '0'
+    const type = position || '0'
     const result = {
       x: 0,
       y: 0,
@@ -1172,13 +1227,28 @@ class Editor extends Component {
     this.cache['cover'].set(cacheKey, clone_cover)
   }
   changeOriginalImage= (item)=>{
-    console.log(item)
-    const {foreground}  = this.state
-    this.setState({
-      foreground:{
-        ...foreground,
-        remoteUrl:item.imageUrl
+
+    // console.log(item)
+    // const {foreground}  = this.state
+    // this.setState({
+    //   foreground:{
+    //     ...foreground,
+    //     remoteUrl:item.imageUrl
+    //   }
+    // })
+    const {id} = item
+    const {coverList} = this.state
+    coverList.forEach((v, i) => {
+      if (v.id === id) {
+        coverList[i] = {
+          ...v,
+          deleted: !item.deleted,
+          visible: !item.visible
+        }
       }
+    })
+    this.setState({
+      coverList: coverList
     })
   }
   render() {
@@ -1197,7 +1267,7 @@ class Editor extends Component {
             {/* <View className={`raw ${(foreground.remoteUrl && foreground.loaded) ? 'hidden' : ''}`} style={{ width: this.state.drawBoard.width, height: this.state.drawBoard.height }}>
               <Image src={rawImage.localUrl} style="width:100%;height:100%" mode="aspectFit" />
             </View> */}
-            <View style={{ width: this.state.drawBoard.width, height: this.state.drawBoard.height }} className={`crop ${(foreground.remoteUrl && foreground.loaded) ? '' : 'hidden'}`} id="crop">
+            <View style={{ width: this.state.drawBoard.width, height: this.state.drawBoard.height }} className={`crop`} id="crop">
               {currentScene.type === 'recommend' &&
                 <View className="background-image">
                   <Image
@@ -1220,22 +1290,25 @@ class Editor extends Component {
                   onTouchend={this.handleCustomBgTouchend}
                 />
               }
-              <Sticker
-                ref="foreground"
-                url={foreground.remoteUrl}
-                stylePrams={foreground}
-                framePrams={frame}
-                onChangeStyle={this.handleChangeStyle}
-                onImageLoaded={this.onForegroundLoaded}
-                onTouchstart={this.handleForegroundTouchstart}
-                onTouchend={this.handleForegroundTouchend}
-              />
+              {coverList.map(item => {
+                return <Sticker
+                        key={item.id}
+                        url={item.remoteUrl}
+                        stylePrams={item}
+                        framePrams={frame}
+                        onChangeStyle={this.handleChangeCoverStyle}
+                        onImageLoaded={this.onCoverLoaded}
+                        onTouchstart={this.handleCoverTouchstart}
+                        onTouchend={this.handleCoverTouchend}
+                        onDeleteSticker={this.handleDeleteCover.bind(this, item)}
+                      />
+              })}
             </View>
           </View>
           <MarginTopWrap config={{ large: 60, small: 40, default: 20 }}>
           <View style='width:720rpx;margin-right:-60rpx'>
             <ScrollView className='toolWrap' scrollX>
-              {this.themeData.imageLayer.map((item)=>{
+              {this.state.coverList.map((item)=>{
                 return (<Button onClick={()=>this.changeOriginalImage(item)} className='toolButton'>{item.name}</Button>)
               })}
             </ScrollView>

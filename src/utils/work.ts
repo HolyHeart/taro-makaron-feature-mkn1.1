@@ -135,6 +135,45 @@ const formatRawCoverList = (list:Array<any> = []) => {
     return cover_model
   })
 }
+const formatIcanPsCoverList = (list:Array<any> =[]) =>{
+  return list.map((v,index) => {
+    const cover_model = {
+      id: '',
+      remoteUrl: '',
+      originHeight: 0,
+      originWidth: 0,
+      autoHeight: 0,
+      autoScale: 0,
+      autoWidth: 0,
+      width: 0,
+      height: 0,
+      x: 0,
+      y: 0,
+      rotate: 0,
+      zIndex: 0,
+      fixed: false,
+      isActive: false,
+      visible: false,
+      deleted: false,
+      deleteable: true,
+      name : '贴纸'
+    }
+    cover_model.remoteUrl = v.imageUrl
+    cover_model.id = v.id || tool.uuid()
+    cover_model.zIndex = v.zIndex || 0
+    cover_model.fixed = v.fixed || false
+    cover_model.isActive = v.isActive || false
+    if(index===0){
+      cover_model.visible = true
+    }else{
+      cover_model.visible = false
+    }
+    cover_model.deleted = false
+    cover_model.deleteable = true
+    cover_model.name = v.name || '贴纸'
+    return cover_model
+  })
+}
 // 下载照片并存储到本地
 const downloadRemoteImage = async (remoteUrl = '') => {
   // 判断是否在缓存里
@@ -268,6 +307,7 @@ const work = {
   saveSourceToPhotosAlbum,
   calcVideoSize,
   chooseImage,
-  getPreBgList
+  getPreBgList,
+  formatIcanPsCoverList
 }
 export default work

@@ -8,9 +8,9 @@ import loading from '../../assets/images/pic_loading.png'
 type ComponentStateProps = {}
 
 type ComponentOwnProps = {
-  onChangeStyle: () => void,
-  onTouchend: (data?:any) => void,
-  onTouchstart: (data?:any) => void,
+  onChangeStyle?: () => void,
+  onTouchend?: (data?:any) => void,
+  onTouchstart?: (data?:any) => void,
   onImageLoaded?: (detail:object, item?:any) => void,
   onDeleteSticker?:(item?:any) => void,
   url: string,
@@ -40,9 +40,9 @@ class CustomBg extends Component {
     url: loading,
     stylePrams: {
       id: '',
-      zIndex: 0,
-      width: 0,
-      height: 0,
+      zIndex: 1,
+      width: '100%',
+      height: '100%',
       x: 0,
       y: 0,
       rotate: 0,

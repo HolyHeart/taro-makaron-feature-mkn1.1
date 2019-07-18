@@ -9,6 +9,7 @@ import work from '@/utils/work'
 import Title from '@/components/Title'
 import CustomIcon from '@/components/Icon'
 import CustomBg from '@/components/CustomBg'
+import NewCustomBg from "@/components/NewCustomBg";
 import Sticker from '@/components/Sticker'
 import SceneList from '@/components/SceneList'
 import Loading from '@/components/Loading'
@@ -99,11 +100,13 @@ class Editor extends Component {
       autoScale: 1,
       autoWidth: 0,
       autoHeight: 0,
-      width: 0,
-      height: 0,
+      width: '100%',
+      height: '100%',
       x: 0,
       y: 0,
       rotate: 0,
+
+
     },
     foreground: {
       id: 'foreground',
@@ -220,7 +223,7 @@ class Editor extends Component {
   }
   initCoverData = () => {
     console.log('ddd')
-    const coverList = work.formatRawCoverList(this.themeData.imageLayer)
+    const coverList = work.formatIcanPsCoverList(this.themeData.imageLayer)
 
     this.setState({
       coverList: coverList
@@ -319,13 +322,35 @@ class Editor extends Component {
   }
   // 自定义背景
   onCustomBgLoaded = (detail: object) => {
-    const { width, height } = detail
-    this.setStateTarget('customBg', {
-      originWidth: width,
-      originHeight: height
-    }, () => {
-      this.customBgAuto()
-    })
+    if ((detail.width / detail.height) >= (1)) {
+      this.setState({
+        drawBoard: {
+          width: '670rpx',
+          height: `${detail.height * 335 / detail.width * 2}rpx`
+        }
+      }, () => {
+        setTimeout(() => {
+          this.calFrameRect()
+        }, 250);
+      })
+    } else {
+      this.setState({
+        drawBoard: {
+          height: '670rpx',
+          width: `${detail.width * 335 / detail.height * 2}rpx`
+        }
+      }, () => {
+        setTimeout(() => {
+          this.calFrameRect()
+        }, 250);
+      })
+    }
+    // this.setStateTarget('customBg', {
+    //   originWidth: width,
+    //   originHeight: height
+    // }, () => {
+    //   this.customBgAuto()
+    // })
   }
   handleBgLoaded = ({ detail }) => {
     console.log(detail)
@@ -465,7 +490,7 @@ class Editor extends Component {
             ...this.state.customBg,
             localUrl: path
           },
-          coverList: []
+          // coverList: []
         }, () => {
           // console.log('handleChooseCustom', this.state.currentScene)
         })
@@ -505,7 +530,7 @@ class Editor extends Component {
       try {
         await service.browser.postNewWork(this.state.foreground.remoteUrl,url,'pic','这图我能p',20,this.themeData.activityId,tool.uuid(),globalData.totalUserInfo.userToken,globalData.totalUserInfo.uid)
       } catch (error) {
-        
+
       }
       // await service.browser.postNewWork(this.state.foreground.remoteUrl,url,'pic','这图我能p',20,this.themeData.activityId,tool.uuid(),globalData.totalUserInfo.userToken,globalData.totalUserInfo.uid)
       this.setState({
@@ -628,7 +653,7 @@ class Editor extends Component {
     // 自定义背景为本地图片，不需要下载
     const localBgImagePath = customBg.localUrl
     //防止锯齿，绘的图片是所需图片的3倍
-    context.drawImage(localBgImagePath, customBg.x * ratio, customBg.y * ratio, customBg.width * ratio, customBg.height * ratio)
+    context.drawImage(localBgImagePath, 0, 0, this.state.frame.width * ratio, this.state.frame.height * ratio)
     // 绘制元素
     await this.canvasDrawElement(context, ratio)
     // 绘制二维码
@@ -1280,14 +1305,14 @@ class Editor extends Component {
                 </View>
               }
               {currentScene.type === 'custom' &&
-                <CustomBg
+                <NewCustomBg
                   framePrams={frame}
                   stylePrams={customBg}
                   url={customBg.localUrl}
                   onImageLoaded={this.onCustomBgLoaded}
-                  onChangeStyle={this.handleChangeCustomBgStyle}
-                  onTouchstart={this.handleCustomBgTouchstart}
-                  onTouchend={this.handleCustomBgTouchend}
+                  // onChangeStyle={this.handleChangeCustomBgStyle}
+                  // onTouchstart={this.handleCustomBgTouchstart}
+                  // onTouchend={this.handleCustomBgTouchend}
                 />
               }
               {coverList.map(item => {
@@ -1309,7 +1334,7 @@ class Editor extends Component {
           <View style='width:720rpx;margin-right:-60rpx'>
             <ScrollView className='toolWrap' scrollX>
               {this.state.coverList.map((item)=>{
-                return (<Button onClick={()=>this.changeOriginalImage(item)} className='toolButton'>{item.name}</Button>)
+                return (<Button onClick={()=>this.changeOriginalImage(item)} className={`toolButton ${item.visible===true?'active':''}`}>{item.name}</Button>)
               })}
             </ScrollView>
           </View>

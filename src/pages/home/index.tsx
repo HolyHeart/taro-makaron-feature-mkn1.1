@@ -213,6 +213,9 @@ class Home extends Component {
     }
     // 埋码
     this.app.aldstat.sendEvent('选择主题', { '主题名': item.themeName, '主题Id': item.themeId })
+    if(item.sceneType ===5){
+      Taro.navigateTo({ url: `/pages/browser/index?themeId=${globalData.themeId}` })
+    }
   }
 
   handleGetUserInfo = (data) => {
@@ -236,6 +239,7 @@ class Home extends Component {
     const { detail: { formId } } = e
     if (formId) {
       core.reportFormId(formId)
+
     }
   }
 
@@ -326,6 +330,7 @@ class Home extends Component {
                     {
                       (column.themeList).map(item => {
                         return <CategoryItem
+                          sceneType={item.sceneType }
                           column={column.columnNum}
                           onGetUserInfo={this.handleGetUserInfo}
                           key={item.themeId}

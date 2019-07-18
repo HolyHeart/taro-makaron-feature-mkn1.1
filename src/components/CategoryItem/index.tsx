@@ -12,7 +12,8 @@ type ComponentOwnProps = {
   onClick?: () => void,
   onFormSubmit?: (e?:any) => void,
   url: string,
-  column: number
+  column: number,
+  sceneType?:number
 }
 
 type ComponentState = {}
@@ -26,7 +27,8 @@ interface CategotyItem {
 class CategotyItem extends Component {
   static defaultProps = {
     url: loading,
-    column: 2
+    column: 2,
+    sceneType:0
   }
   componentWillReceiveProps (nextProps) {
     // console.log(this.props, nextProps)
@@ -37,14 +39,15 @@ class CategotyItem extends Component {
   }
   handleFormSubmit = (e) => {
     const { onFormSubmit } = this.props
-    typeof onFormSubmit === 'function' && onFormSubmit(e)
+    typeof onFormSubmit === 'function' && onFormSubmit(e,sceneType)
   }
   render() {
-    const { onClick, url, column } = this.props
+    const { onClick, url, column,sceneType } = this.props
+
     return (
       <View className={`category-box ${column === 2 ? 'two' : 'one'}`} onClick={onClick}>
         <Form onSubmit={this.handleFormSubmit} reportSubmit>
-          <Button
+          {sceneType!==5?<Button
             className="category-box-button"
             hoverClass="btn-hover"
             openType="getUserInfo"
@@ -54,7 +57,19 @@ class CategotyItem extends Component {
               className="category-box-image"
               src={url}
               mode="scaleToFill"/>
-          </Button>
+          </Button>:<Button
+            className="category-box-button"
+            hoverClass="btn-hover"
+
+            // openType="getUserInfo"
+            // onGetUserInfo={this.handleGgetUserInfo}
+            formType="submit">
+            <Image
+              className="category-box-image"
+              src={url}
+              mode="scaleToFill"/>
+          </Button>}
+
         </Form>
       </View>
     )

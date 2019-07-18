@@ -50,7 +50,7 @@ page {
   height: 100%;
   z-index: 4;
 }
-.browser .showPicMask .maskContent .likedBtn {
+.browser .showPicMask .maskContent .likeBtn {
   width: auto;
   height: auto;
   display: flex;
@@ -62,11 +62,11 @@ page {
   left: 190rpx;
   z-index: 4;
 }
-.browser .showPicMask .maskContent .likedBtn .likedBtnImg {
+.browser .showPicMask .maskContent .likeBtn .likeBtnImg {
   height: 130rpx;
   width: 130rpx;
 }
-.browser .showPicMask .maskContent .likedBtn .likedBtnText {
+.browser .showPicMask .maskContent .likeBtn .likeBtnText {
   margin-top: 3%;
   color: white;
   font-size: 30rpx;

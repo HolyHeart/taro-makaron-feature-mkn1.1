@@ -7,8 +7,6 @@ import './index.less'
 import globalData from "@/services/global_data"
 
 
-import likeBtn from '@/assets/images/icon_like@2x.png'
-import shareBtn from '@/assets/images/icon_share@2x.png'
 
 import { browser, base } from '@/services/service'
 import Loading from '@/components/Loading'
@@ -151,7 +149,11 @@ class Browser extends Component {
     this.getThemeData(() => {
       this.initParameters()
       this.initThemeList()
-      this.changeWorkList(globalData.themeData.originalImageList[0].activityId)
+      if (this.activityId) {
+        this.changeWorkList(this.activityId)
+      } else {
+        this.changeWorkList(globalData.themeData.originalImageList[0].activityId)
+      }
     })
   }
 
@@ -431,10 +433,22 @@ class Browser extends Component {
                   {this.state.currentActivityImgID === item.imageId ?
                     <View className='itemImgBorder' style={{ height: this.state.navScrollHeight, width: this.state.navScrollHeight }}>
                       <View className='itemImgBorderText'>原图</View>
-                      <View className='itemImgBorderTri'></View>
+                      {/* <View className='itemImgBorderTri'></View> */}
                     </View>
                     : <View className='itemMask'></View>}
                 </Image>
+
+
+                
+
+                <View className='itemBottomArrow'>
+                  {this.state.currentActivityImgID === item.imageId ?
+                    <View className='itemImgBorderTri'></View>
+                    : <View />}
+                </View>
+                
+
+
               </View>
             })
             }

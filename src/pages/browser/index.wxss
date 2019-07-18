@@ -97,7 +97,7 @@ page {
   width: 100%;
   background-color: white;
   position: fixed;
-  transition: all 0.2s;
+  transition: all 0.3s;
   z-index: 1;
 }
 .browser .navBar .scroll {
@@ -105,7 +105,7 @@ page {
   display: flex;
   width: auto;
   height: auto;
-  transition: all 0.2s;
+  transition: all 0.3s;
   padding-top: 3%;
   z-index: 2;
 }
@@ -114,13 +114,13 @@ page {
   position: relative;
   margin-left: 6rpx;
   margin-right: 6rpx;
-  transition: all 0.2s;
+  transition: all 0.3s;
   height: auto;
   width: auto;
   z-index: 3;
 }
 .browser .navBar .scroll .item .itemImg {
-  transition: all 0.2s;
+  transition: all 0.3s;
   border-radius: 4%;
   z-index: 4;
   position: relative;
@@ -134,7 +134,7 @@ page {
   bottom: 0;
   border: 7px solid #ff3366;
   z-index: 5;
-  transition: all 0.2s;
+  transition: all 0.3s;
   box-sizing: border-box;
   border-radius: 4%;
   display: flex;
@@ -163,6 +163,20 @@ page {
   border-top: 25px solid #ff3366;
   font-size: 0;
   line-height: 0;
+}
+.browser .navBar .scroll .item .itemImg .itemMask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.5);
+  z-index: 5;
+  transition: all 0.3s;
+  box-sizing: border-box;
+  border-radius: 4%;
+  display: flex;
+  justify-content: center;
 }
 .browser .navBar .scroll .item.item-hover {
   transform: scale(0.95);
@@ -239,7 +253,7 @@ page {
   line-height: 80rpx;
   font-size: 36rpx;
   text-align: center;
-  transition: all 0.2s;
+  transition: all 0.3s;
 }
 .browser .btnGrp .button.btn-hover {
   transform: scale(0.85);

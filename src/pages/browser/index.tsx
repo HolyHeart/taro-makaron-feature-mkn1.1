@@ -364,7 +364,7 @@ class Browser extends Component {
                       <View className='itemImgBorderText'>原图</View>
                       <View className='itemImgBorderTri'></View>
                     </View>
-                    : ''}
+                    : <View className='itemMask'></View>}
                 </Image>
               </View>
             })

@@ -258,10 +258,14 @@ class Browser extends Component {
     }
   }
 
+  app = Taro.getApp()
 
-
-  pageToHome() {
-    Taro.navigateBack({ delta: 1 })
+  pageToHome () {
+    if(this.activityId!=0){
+      Taro.navigateTo({ url: '/pages/home/index' })
+    }else{
+      Taro.navigateBack({ delta: 1 })
+    }
   }
 
   onPageScroll(e) {
@@ -290,6 +294,7 @@ class Browser extends Component {
   }
 
   clickThemeIcon(activityID, activityImgID, e) {
+    this.app.aldstat.sendEvent('选择原图', {'imgid':activityImgID})
     this.setState({
       currentActivityID: activityID,
       currentActivityImgID: activityImgID,

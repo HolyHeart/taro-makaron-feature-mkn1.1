@@ -24,7 +24,7 @@ class Guide extends Component {
   }
   componentDidShow () {
   }
-
+  app = Taro.getApp()
   componentDidMount () {
     try {
       const  value = Taro.getStorageSync('firstView')
@@ -47,6 +47,7 @@ class Guide extends Component {
 
   handleClick = () => {
     console.log(this)
+    this.app.aldstat.sendEvent('关闭引导', '关闭引导')
     setTimeout(() => {
       this.setState({
         open: false

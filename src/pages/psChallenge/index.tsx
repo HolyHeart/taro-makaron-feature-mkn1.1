@@ -207,7 +207,7 @@ class Editor extends Component {
         imageUrl: currentScene.thumbnailUrl,
       }
     }
-    console.log(title, path, shareImageUrl)
+    // console.log(title, path, shareImageUrl)
     return {
       title: title,
       path: path,
@@ -1248,7 +1248,7 @@ class Editor extends Component {
     this.cache['cover'].set(cacheKey, clone_cover)
   }
   changeOriginalImage= (item)=>{
-
+    this.app.aldstat.sendEvent('选择图层', { '图层名':item.name })
     console.log(item)
     const {id} = item
     const {coverList} = this.state

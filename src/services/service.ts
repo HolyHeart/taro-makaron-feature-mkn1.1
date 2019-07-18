@@ -380,13 +380,12 @@ export const styleTransfer = {
 
 
 export const browser = {
-  psWorkList: function (uid, activityID, page) {
+  psWorkList: function (activityID, page) {
     const reqData = {
       method: 'GET',
       url: api.browser.psWorkList,
       header: {"Accept": "*/*"},
       data: {
-        uid: uid,
         activityId: activityID,
         page: page,
       }

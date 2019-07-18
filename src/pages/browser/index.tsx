@@ -110,11 +110,11 @@ class Browser extends Component {
     globalData.waterfallLeftList = []
     globalData.waterfallRightList = []
     try {
-      const result = await browser.psWorkList(globalData.totalUserInfo.uid, activityID, 0)
+      const result = await browser.psWorkList(activityID, 0)
       const workList = result.result.result.workList
       globalData.browserWorkList = workList
       //如果没有第二页
-      const resultAdvance = await browser.psWorkList(globalData.totalUserInfo.uid, activityID, 1)
+      const resultAdvance = await browser.psWorkList(activityID, 1)
       if (resultAdvance.result.result.workList.length===0) {
         this.setState({
           bottomTip: '-没有更多啦-',
@@ -134,7 +134,7 @@ class Browser extends Component {
   async loadMoreWorks () {
     try {
       console.log(this.state.currentPage)
-      const result = await browser.psWorkList(globalData.totalUserInfo.uid, this.state.currentActivityID, this.state.currentPage + 1)
+      const result = await browser.psWorkList(this.state.currentActivityID, this.state.currentPage + 1)
       const workList = result.result.result.workList
       if (workList.length!=0) {
         this.getList(workList)

@@ -80,7 +80,7 @@ class Browser extends Component {
   componentDidMount() {
     this.getThemeData(() => {
       this.getScreenHeight()
-      globalData.windowTop = globalData.totalTopHeight * 2 + globalData.sysHeight * 0.36 + 'rpx'
+      globalData.windowTop = globalData.totalTopHeight * 2 + globalData.sysHeight * 0.36 + 40 + 'rpx'
       this.initThemeList()
     })
   }
@@ -386,8 +386,8 @@ class Browser extends Component {
 
       <View className='divider'>{this.state.bottomTip}</View>
       <View className='btnGrp'>
-        <Button className="button white" hoverClass="btn-hover" openType='share'>分享给好友</Button>
-        <Button className="button pink" hoverClass="btn-hover" onClick={this.goEditor}>我要创作</Button>
+        <Button className="button white" hoverClass="btn-hover" openType='share'>邀请好友PK</Button>
+        <Button className="button pink" hoverClass="btn-hover" onClick={this.goEditor}>开始P图</Button>
       </View>
     </View>
     )

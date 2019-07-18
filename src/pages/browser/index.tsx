@@ -7,7 +7,7 @@ import './index.less'
 import globalData from "@/services/global_data"
 
 
-import likedBtn from '@/assets/images/icon_liked@2x.png'
+import likeBtn from '@/assets/images/icon_like@2x.png'
 import shareBtn from '@/assets/images/icon_share@2x.png'
 
 import { browser, base } from '@/services/service'
@@ -48,7 +48,7 @@ class Browser extends Component {
     //loadMoreWorks: false,
 
     currentPage: 1,
-    bottomTip: '-加载中-',
+    bottomTip: '加载中...',
 
     waterfallTopMargin: '',
     titleAndNavHeight: '',
@@ -142,7 +142,7 @@ class Browser extends Component {
         })
       } else {
         this.setState({
-          bottomTip: '-加载中-',
+          bottomTip: '加载中...',
         })
       }
     } catch (err) {
@@ -207,7 +207,7 @@ class Browser extends Component {
     this.setState({
       currentActivityID: activityID,
       currentActivityImgID: activityImgID,
-      bottomTip: '-加载中-',
+      bottomTip: '加载中...',
     })
     this.changeWorkList(activityID)
   }
@@ -319,17 +319,19 @@ class Browser extends Component {
             <View className='clickArea' onClick={this.closePicMaskContent}></View>
 
             <Image src={this.state.currentPicOnMask} mode='widthFix' className='maskImg'></Image>
-            <View className='maskBtnGrp'>
-              <View className='maskBtn'>
-                {/* TODO 判断是否喜欢 */}
-                <Image src={likedBtn} className='maskBtnImg' onClick={this.clickLikeBtn}  hoverClass='maskBtn-hover'></Image>
-                <Text className='maskBtnText'>喜欢</Text>
-              </View>
-              <View className='maskBtn'>
-                <Image src={shareBtn} className='maskBtnImg' onClick={this.clickShareBtn}  hoverClass='maskBtn-hover'></Image>
-                <Text className='maskBtnText'>分享</Text>
-              </View>
+
+            <View className='likeBtn'>
+              <Image src={likeBtn} className='likeBtnImg' onClick={this.clickLikeBtn}></Image>
+              <Text className='likeBtnText'>喜欢</Text>
             </View>
+
+            <View className='shareBtn'>
+              <Image src={shareBtn} className='shareBtnImg' onClick={this.clickShareBtn}></Image>
+              <Text className='shareBtnText'>分享</Text>
+            </View>
+            
+
+
           </View>
         </View>
       )

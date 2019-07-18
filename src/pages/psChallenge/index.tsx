@@ -530,7 +530,7 @@ class Editor extends Component {
       try {
         await service.browser.postNewWork(this.state.foreground.remoteUrl,url,'pic','这图我能p',20,this.themeData.activityId,tool.uuid(),globalData.totalUserInfo.userToken,globalData.totalUserInfo.uid)
       } catch (error) {
-
+        console.log(error)
       }
       // await service.browser.postNewWork(this.state.foreground.remoteUrl,url,'pic','这图我能p',20,this.themeData.activityId,tool.uuid(),globalData.totalUserInfo.userToken,globalData.totalUserInfo.uid)
       this.setState({

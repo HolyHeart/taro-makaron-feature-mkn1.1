@@ -76,7 +76,7 @@ interface Editor {
 }))
 class Editor extends Component {
   config: Config = {
-    navigationBarTitleText: '马卡龙玩图',
+    navigationBarTitleText: '懒人抠图',
     disableScroll: true,
     enablePullDownRefresh: false
   }
@@ -1275,7 +1275,7 @@ class Editor extends Component {
           renderLeft={
             <CustomIcon type="back" theme="dark" onClick={this.pageToHome} />
           }
-        >马卡龙玩图</Title>
+        >懒人抠图</Title>
         <View className="main">
           <View className="pic-section" style={{height:this.isPhonex?'920rpx':'670rpx'}}>
             {/* <View className={`raw ${(foreground.remoteUrl && foreground.loaded) ? 'hidden' : ''}`} style={{ width: this.state.drawBoard.width, height: this.state.drawBoard.height }}>

@@ -26,7 +26,6 @@ class _App extends Component {
    */
   config: Config = {
     pages: [
-
       'pages/home/index',
       'pages/browser/index',
       // 'pages/home/index',

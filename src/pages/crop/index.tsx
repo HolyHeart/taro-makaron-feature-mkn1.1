@@ -42,7 +42,7 @@ class Crop extends Component {
     this.throttledStickerOntouchmove = this.throttle(this.touchmove, 1000 / 30).bind(this)
   }
   config:Config = {
-    // navigationBarTitleText: '马卡龙玩图',
+    // navigationBarTitleText: '懒人抠图',
     disableScroll: true
   }
   components = {
@@ -427,7 +427,7 @@ class Crop extends Component {
           renderLeft={
             <CustomIcon type="back" theme="dark" onClick={this.pageToHome}/>
           }
-        >马卡龙玩图</Title>
+        >懒人抠图</Title>
         <View className="header"></View>
         <View
           className="main"

@@ -24,7 +24,7 @@ interface Error {
 
 class Error extends Component {
   config: Config = {
-    navigationBarTitleText: '马卡龙玩图'
+    navigationBarTitleText: '懒人抠图'
   }
 
   state = {

@@ -39,7 +39,7 @@ type IProps = PageStateProps & PageDispatchProps & PageOwnProps
 
 class Style extends Component {
   config: Config = {
-    navigationBarTitleText: '马卡龙玩图',
+    navigationBarTitleText: '懒人抠图',
     disableScroll: true,
     enablePullDownRefresh:false
   }
@@ -517,7 +517,7 @@ class Style extends Component {
         <Title color="#333" leftStyleObj={{left: Taro.pxTransform(8)}}
           renderLeft={
             <CustomIcon type="back" theme="dark" onClick={this.pageToHome}/>
-          }>马卡龙玩图</Title>
+          }>懒人抠图</Title>
         {iPXblank}
         <View style='margin-top:3%'>
         </View>

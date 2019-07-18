@@ -8,7 +8,7 @@ import globalData from "@/services/global_data"
 
 
 
-import { browser, base } from '@/services/service'
+import service,{ browser, base } from '@/services/service'
 import Loading from '@/components/Loading'
 
 import tool from '@/utils/tool'
@@ -439,14 +439,14 @@ class Browser extends Component {
                 </Image>
 
 
-                
+
 
                 <View className='itemBottomArrow'>
                   {this.state.currentActivityImgID === item.imageId ?
                     <View className='itemImgBorderTri'></View>
                     : <View />}
                 </View>
-                
+
 
 
               </View>

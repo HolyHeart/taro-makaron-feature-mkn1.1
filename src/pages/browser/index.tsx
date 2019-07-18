@@ -297,7 +297,22 @@ class Browser extends Component {
     Taro.navigateTo({ url: `/pages/psChallenge/index?imageId=${this.state.currentActivityImgID}&activityId=${this.state.currentActivityID}` })
   }
 
-
+  handleGetUserInfo = async (data) => {
+    // console.log('handleGetUserInfo', data)
+    const {detail: {userInfo}} = data
+    if (userInfo) {
+      const result = await base.loginAuth(data.detail)
+      globalData.totalUserInfo = result.result.result
+      globalData.userInfo = userInfo
+      Taro.navigateTo({ url: `/pages/psChallenge/index?imageId=${this.state.currentActivityImgID}&activityId=${this.state.currentActivityID}` })
+    } else {
+      Taro.showToast({
+        title: '请授权',
+        icon: 'success',
+        duration: 2000
+      })
+    }
+  }
 
   render() {
 
@@ -390,7 +405,7 @@ class Browser extends Component {
 
         <View className='btnGrp'>
           <Button className="button white" hoverClass="btn-hover" openType='share'>邀请好友PK</Button>
-          <Button className="button pink" hoverClass="btn-hover" onClick={this.goEditor}>开始P图</Button>
+          <Button className="button pink" openType='getUserInfo' onGetUserInfo={this.handleGetUserInfo} hoverClass="btn-hover" >开始P图</Button>
         </View>
 
       </View>

@@ -121,7 +121,11 @@ class Browser extends Component {
     this.getThemeData(() => {
       this.initParameters()
       this.initThemeList()
-      this.changeWorkList(globalData.themeData.originalImageList[0].activityId)
+      if (this.activityId) {
+        this.changeWorkList(this.activityId)
+      } else {
+        this.changeWorkList(globalData.themeData.originalImageList[0].activityId)
+      }
     })
   }
 

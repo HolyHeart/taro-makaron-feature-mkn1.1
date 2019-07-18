@@ -319,21 +319,36 @@ class Browser extends Component {
             <View className='clickArea' onClick={this.closePicMaskContent}></View>
 
             <Image src={this.state.currentPicOnMask} mode='widthFix' className='maskImg'></Image>
-            <View className='maskBtnGrp'>
-              <View className='maskBtn'>
-                {/* TODO 判断是否喜欢 */}
-                <Image src={likedBtn} className='maskBtnImg' onClick={this.clickLikeBtn}  hoverClass='maskBtn-hover'></Image>
-                <Text className='maskBtnText'>喜欢</Text>
-              </View>
-              <View className='maskBtn'>
-                <Image src={shareBtn} className='maskBtnImg' onClick={this.clickShareBtn}  hoverClass='maskBtn-hover'></Image>
-                <Text className='maskBtnText'>分享</Text>
-              </View>
+
+            <View className='likedBtn'>
+              <Image src={likedBtn} className='likedBtnImg' onClick={this.clickLikeBtn}></Image>
+              <Text className='likedBtnText'>喜欢</Text>
             </View>
+
+            <View className='shareBtn'>
+              <Image src={shareBtn} className='shareBtnImg' onClick={this.clickShareBtn}></Image>
+              <Text className='shareBtnText'>分享</Text>
+            </View>
+            
+
+
           </View>
         </View>
       )
     }
+
+  //   <View className='maskBtnGrp'>
+  //   <View className='maskBtn'>
+  //     {/* TODO 判断是否喜欢 */}
+  //     <Image src={likedBtn} className='maskBtnImg' onClick={this.clickLikeBtn}  hoverClass='maskBtn-hover'></Image>
+  //     <Text className='maskBtnText'>喜欢</Text>
+  //   </View>
+  //   <View className='maskBtn'>
+  //     <Image src={shareBtn} className='maskBtnImg' onClick={this.clickShareBtn}  hoverClass='maskBtn-hover'></Image>
+  //     <Text className='maskBtnText'>分享</Text>
+  //   </View>
+  // </View>
+
 
     return (
       <View className='browser'>

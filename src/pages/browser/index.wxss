@@ -32,7 +32,6 @@ page {
   margin-top: 20%;
   justify-content: center;
   align-items: center;
-  z-index: 2;
 }
 .browser .showPicMask .maskContent .clickArea {
   position: fixed;
@@ -51,41 +50,47 @@ page {
   height: 100%;
   z-index: 4;
 }
-.browser .showPicMask .maskContent .maskBtnGrp {
+.browser .showPicMask .maskContent .likedBtn {
+  width: auto;
+  height: auto;
   display: flex;
   position: fixed;
-  width: 80%;
-  height: 20%;
-  bottom: 0;
-  justify-content: center;
-  flex-direction: row;
-  z-index: 3;
-}
-.browser .showPicMask .maskContent .maskBtnGrp .maskBtn {
-  width: 35%;
-  height: 80%;
-  display: flex;
-  position: relative;
-  margin-right: 4%;
-  margin-left: 4%;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  flex-direction: column;
-  z-index: 3;
+  bottom: 50rpx;
+  left: 190rpx;
+  z-index: 4;
 }
-.browser .showPicMask .maskContent .maskBtnGrp .maskBtn .maskBtnImg {
+.browser .showPicMask .maskContent .likedBtn .likedBtnImg {
   height: 130rpx;
   width: 130rpx;
-  z-index: 5;
 }
-.browser .showPicMask .maskContent .maskBtnGrp .maskBtn .maskBtnText {
+.browser .showPicMask .maskContent .likedBtn .likedBtnText {
   margin-top: 3%;
   color: white;
-  font-weight: bold;
-  z-index: 5;
+  font-size: 30rpx;
 }
-.browser .showPicMask .maskContent .maskBtnGrp .maskBtn.maskBtn-hover {
-  transform: scale(0.85);
+.browser .showPicMask .maskContent .shareBtn {
+  width: auto;
+  height: auto;
+  display: flex;
+  position: fixed;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  bottom: 50rpx;
+  right: 190rpx;
+  z-index: 4;
+}
+.browser .showPicMask .maskContent .shareBtn .shareBtnImg {
+  height: 130rpx;
+  width: 130rpx;
+}
+.browser .showPicMask .maskContent .shareBtn .shareBtnText {
+  margin-top: 3%;
+  color: white;
+  font-size: 30rpx;
 }
 .browser .navBar {
   height: auto;

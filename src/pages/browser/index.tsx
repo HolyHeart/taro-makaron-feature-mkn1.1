@@ -6,8 +6,7 @@ import CustomIcon from '@/components/Icon'
 import './index.less'
 import globalData from "@/services/global_data"
 
-import testImg from '@/assets/images/Test.png'
-import likeBtn from '@/assets/images/icon_like@2x.png'
+
 import likedBtn from '@/assets/images/icon_liked@2x.png'
 import shareBtn from '@/assets/images/icon_share@2x.png'
 
@@ -28,6 +27,10 @@ class Browser extends Component {
   }
   activityId = 0
   themeId = ''
+
+  activityImgWidthL = 240
+  activityImgWidthS = 120
+
   state = {
     navScrollHeight: '',
     navScrollHeight_higher: '',
@@ -40,8 +43,6 @@ class Browser extends Component {
     showPic: false,
     currentPicOnMask: '',
     loading: false,
-    likeOrNot: false,
-    likeBtnUrl: likeBtn,
 
 
     //loadMoreWorks: false,
@@ -78,28 +79,26 @@ class Browser extends Component {
   }
 
   componentWillMount() {
-    // Taro.showToast({
-    //   title:this.$router.params.themeId
-    // })
     this.themeId = this.$router.params.themeId
   }
+
   componentDidMount() {
+    this.setState({
+      navScrollHeight: this.activityImgWidthL + 'rpx',
+      navScrollHeight_higher: this.activityImgWidthL + 32 + 'rpx'
+    })
     this.getThemeData(() => {
-      this.getScreenHeight()
       this.initParameters()
       this.initThemeList()
       this.changeWorkList(globalData.themeData.originalImageList[0].activityId)
-
-      //this.changeWorkList('303588543618289664')
-
     }
   }
 
   initParameters() {
     this.setState({
       // IP7有显示问题，需要分别加20和40。待解决
-      waterfallTopMargin: globalData.totalTopHeight * 2 + globalData.sysHeight * 0.36 + 'rpx',
-      titleAndNavHeight: globalData.totalTopHeight * 2 + 'rpx',
+      waterfallTopMargin: globalData.totalTopHeight * 2 + this.activityImgWidthL + 40 + 32 + 'rpx',
+      titleAndNavHeight: globalData.totalTopHeight * 2 + 20 + 'rpx',
     })
   }
   getThemeData = async (callback) => {
@@ -112,11 +111,9 @@ class Browser extends Component {
   }
   initThemeList() {
     this.setState({
-      // currentThemeID: globalData.themeData.originalImageList[0].imageId,
       currentActivityID: globalData.themeData.originalImageList[0].activityId,
       currentActivityImgID: globalData.themeData.originalImageList[0].imageId,
     }, () => {
-      // this.changeWorkList(this.state.currentThemeID)
     })
   }
 
@@ -177,25 +174,14 @@ class Browser extends Component {
 
 
 
-  getScreenHeight() {
-    Taro.getSystemInfo({
-      success: res =>
-        globalData.sysHeight = res.screenHeight
-    })
-    this.setState({
-      navScrollHeight: globalData.sysHeight * 0.3 + 'rpx',
-      navScrollHeight_higher: globalData.sysHeight * 0.3 + 32 + 'rpx'
-    })
-  }
-
   pageToHome() {
     Taro.navigateBack({ delta: 1 })
   }
 
   onPageScroll(e) {
     var topDistance = e.scrollTop
-    var minHeight = globalData.sysHeight * 0.20
-    var maxHeight = globalData.sysHeight * 0.30
+    var minHeight = this.activityImgWidthS
+    var maxHeight = this.activityImgWidthL
     var navScrollHeight = ''
     var navScrollHeight_higher = ''
     if (topDistance > 0) {
@@ -277,21 +263,13 @@ class Browser extends Component {
   }
 
   clickLikeBtn() {
-    if (this.state.likeOrNot === false) {
-      console.log('I like it :)')
-      this.setState({
-        likeBtnUrl: likedBtn,
-        likeOrNot: true,
-        showPic: true,
-      })
-    } else {
-      console.log('I dislike it :(')
-      this.setState({
-        likeBtnUrl: likeBtn,
-        likeOrNot: false,
-        showPic: true,
-      })
-    }
+    console.log('I like it :)')
+    Taro.showToast({
+      title: '喜欢+1❤',
+      icon: 'none',
+      duration: 800
+    })
+      .then(res => console.log(res))
   }
 
   clickShareBtn() {
@@ -301,9 +279,6 @@ class Browser extends Component {
     })
   }
 
-  addWork() {
-    console.log('我要创作')
-  }
   goEditor = () => {
     Taro.navigateTo({ url: `/pages/psChallenge/index?imageId=${this.state.currentActivityImgID}&activityId=${this.state.currentActivityID}` })
   }
@@ -338,17 +313,20 @@ class Browser extends Component {
 
     if (this.state.showPic) {
       picMaskContent = (
-        <View className='showPicMask' style={{ top: this.state.titleAndNavHeight }} onClick={this.closePicMaskContent}>
+        <View className='showPicMask' style={{ top: this.state.titleAndNavHeight }}>
           <View className='maskContent'>
-            <Image src={this.state.currentPicOnMask} mode='aspectFit' className='maskImg'></Image>
+            
+            <View className='clickArea' onClick={this.closePicMaskContent}></View>
+
+            <Image src={this.state.currentPicOnMask} mode='widthFix' className='maskImg'></Image>
             <View className='maskBtnGrp'>
-              <View className='maskBtn' hoverClass='maskBtn-hover'>
+              <View className='maskBtn'>
                 {/* TODO 判断是否喜欢 */}
-                <Image src={this.state.likeBtnUrl} className='maskBtnImg' onClick={this.clickLikeBtn}></Image>
+                <Image src={likedBtn} className='maskBtnImg' onClick={this.clickLikeBtn}  hoverClass='maskBtn-hover'></Image>
                 <Text className='maskBtnText'>喜欢</Text>
               </View>
-              <View className='maskBtn' hoverClass='maskBtn-hover'>
-                <Image src={shareBtn} className='maskBtnImg' onClick={this.clickShareBtn}></Image>
+              <View className='maskBtn'>
+                <Image src={shareBtn} className='maskBtnImg' onClick={this.clickShareBtn}  hoverClass='maskBtn-hover'></Image>
                 <Text className='maskBtnText'>分享</Text>
               </View>
             </View>
@@ -373,30 +351,9 @@ class Browser extends Component {
         {/* 加入loading */}
         <Loading visible={this.state.loading} />
 
-        <View className='navBar' style={{ top: globalData.totalTopHeight + 'px' }}>
-          <ScrollView className='scroll' scrollX style={{ height: this.state.navScrollHeight_higher }}>
-            {(globalData.themeData && globalData.themeData.originalImageList || []).map(item => {
-              return <View className='item' hoverClass="item-hover" onClick={this.clickThemeIcon.bind(this, item.imageId)} key={item.imageId}>
-                <Image className='itemImg' src={item.originalImageUrl} style={{ height: this.state.navScrollHeight, width: this.state.navScrollHeight }}>
-                  {this.state.currentThemeID === item.imageId ?
-                    <View className='itemImgBorder' style={{ height: this.state.navScrollHeight, width: this.state.navScrollHeight }}>
-                      <View className='itemImgBorderText'>原图</View>
-                      <View className='itemImgBorderTri'></View>
-                    </View>
-                    : ''}
-                </Image>
-              </View>
-            })
-            }
-          </ScrollView>
-        </View>
-
-        {picMaskContent}
-        {/* 加入loading */}
-        <Loading visible={this.state.loading} />
-
-        <View className='navBar' style={{ top: this.state.titleAndNavHeight }}>
+        <View className='navBar' style={{ top: 0, paddingTop: this.state.titleAndNavHeight}}>
           <ScrollView className='scroll' scrollX={true} style={{ height: this.state.navScrollHeight_higher }}>
+            <View className='item' style='width: 33rpx'></View>
             {globalData && globalData.themeData && globalData.themeData.originalImageList.map(item => {
               return <View className='item' hoverClass="item-hover" onClick={this.clickThemeIcon.bind(this, item.activityId, item.imageId)} key={item.activityId}>
                 <Image className='itemImg' src={item.originalImageUrl} style={{ height: this.state.navScrollHeight, width: this.state.navScrollHeight }}>
@@ -410,6 +367,7 @@ class Browser extends Component {
               </View>
             })
             }
+            <View className='item' style='width: 33rpx'></View>
           </ScrollView>
         </View>
 

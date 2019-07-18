@@ -6,8 +6,7 @@ import CustomIcon from '@/components/Icon'
 import './index.less'
 import globalData from "@/services/global_data"
 
-import testImg from '@/assets/images/Test.png'
-import likeBtn from '@/assets/images/icon_like@2x.png'
+
 import likedBtn from '@/assets/images/icon_liked@2x.png'
 import shareBtn from '@/assets/images/icon_share@2x.png'
 
@@ -44,8 +43,6 @@ class Browser extends Component {
     showPic: false,
     currentPicOnMask: '',
     loading: false,
-    likeOrNot: false,
-    likeBtnUrl: likeBtn,
 
 
     //loadMoreWorks: false,
@@ -266,21 +263,13 @@ class Browser extends Component {
   }
 
   clickLikeBtn() {
-    if (this.state.likeOrNot === false) {
-      console.log('I like it :)')
-      this.setState({
-        likeBtnUrl: likedBtn,
-        likeOrNot: true,
-        showPic: true,
-      })
-    } else {
-      console.log('I dislike it :(')
-      this.setState({
-        likeBtnUrl: likeBtn,
-        likeOrNot: false,
-        showPic: true,
-      })
-    }
+    console.log('I like it :)')
+    Taro.showToast({
+      title: '喜欢+1❤',
+      icon: 'none',
+      duration: 800
+    })
+      .then(res => console.log(res))
   }
 
   clickShareBtn() {
@@ -290,9 +279,6 @@ class Browser extends Component {
     })
   }
 
-  addWork() {
-    console.log('我要创作')
-  }
   goEditor = () => {
     Taro.navigateTo({ url: `/pages/psChallenge/index?imageId=${this.state.currentActivityImgID}&activityId=${this.state.currentActivityID}` })
   }
@@ -327,17 +313,20 @@ class Browser extends Component {
 
     if (this.state.showPic) {
       picMaskContent = (
-        <View className='showPicMask' style={{ top: this.state.titleAndNavHeight }} onClick={this.closePicMaskContent}>
+        <View className='showPicMask' style={{ top: this.state.titleAndNavHeight }}>
           <View className='maskContent'>
+            
+            <View className='clickArea' onClick={this.closePicMaskContent}></View>
+
             <Image src={this.state.currentPicOnMask} mode='widthFix' className='maskImg'></Image>
             <View className='maskBtnGrp'>
-              <View className='maskBtn' hoverClass='maskBtn-hover'>
+              <View className='maskBtn'>
                 {/* TODO 判断是否喜欢 */}
-                <Image src={this.state.likeBtnUrl} className='maskBtnImg' onClick={this.clickLikeBtn}></Image>
+                <Image src={likedBtn} className='maskBtnImg' onClick={this.clickLikeBtn}  hoverClass='maskBtn-hover'></Image>
                 <Text className='maskBtnText'>喜欢</Text>
               </View>
-              <View className='maskBtn' hoverClass='maskBtn-hover'>
-                <Image src={shareBtn} className='maskBtnImg' onClick={this.clickShareBtn}></Image>
+              <View className='maskBtn'>
+                <Image src={shareBtn} className='maskBtnImg' onClick={this.clickShareBtn}  hoverClass='maskBtn-hover'></Image>
                 <Text className='maskBtnText'>分享</Text>
               </View>
             </View>

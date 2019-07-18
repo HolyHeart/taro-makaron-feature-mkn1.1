@@ -30,11 +30,25 @@ page {
       margin-top: 20%;
       justify-content:center;
       align-items:center;
+      z-index: 2;
+
+      .clickArea {
+        position: fixed;
+        z-index: 3;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+      }
+
       .maskImg {
         box-shadow:4rpx 4rpx 8rpx rgba(0,0,0,0.5);
         border-radius: 2%;
         width: 100%;
-        height: 100%
+        height: 100%;
+        z-index: 4;
       }
       .maskBtnGrp {
         display: flex;
@@ -44,6 +58,7 @@ page {
         bottom: 0;
         justify-content:center;
         flex-direction:row;
+        z-index: 3;
         .maskBtn {
           width: 35%;
           height: 80%;
@@ -54,14 +69,17 @@ page {
           align-items:center;
           justify-content:center;
           flex-direction:column;
+          z-index: 3;
           .maskBtnImg {
             height: 130rpx;
             width: 130rpx;
+            z-index: 5;
           }
           .maskBtnText {
             margin-top: 3%;
             color: white;
             font-weight:bold;
+            z-index: 5;
           }
           &.maskBtn-hover {
             transform: scale(0.85)

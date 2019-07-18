@@ -96,12 +96,13 @@ page {
         height: auto;
         width: auto;
         z-index: 3;
+        //padding-bottom: 35rpx;
         .itemImg {
           transition:all 0.2s;
           border-radius: 4%;
           z-index: 4;
           position: relative;
-          padding-bottom: 35rpx;
+          //padding-bottom: 35rpx;
           .itemImgBorder {
             position: absolute;
             top: 0;
@@ -153,6 +154,26 @@ page {
             border-radius: 4%;
             display: flex;
             justify-content:center;
+          }
+        }
+        .itemBottomArrow {
+          position: relative;
+          top: -15rpx;
+          height: 25rpx;
+          widows: 100%;
+          justify-content:center;
+          display: flex;
+          .itemImgBorderTri {
+            position: relative;
+            top: 0;
+            z-index: 6;
+            width: 0;
+            height: 0;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-top: 25px solid #ff3366;
+            font-size: 0;
+            line-height: 0;
           }
         }
         &.item-hover {

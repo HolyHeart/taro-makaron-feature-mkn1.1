@@ -43,6 +43,9 @@ class Browser extends Component {
 
     currentPage: 0,
     bottomTip: '-加载中-',
+
+    waterfallTopMargin: '',
+    titleAndNavHeight: '',
   }
 
   // TODO
@@ -71,14 +74,19 @@ class Browser extends Component {
 
   componentDidMount () {
     this.getScreenHeight()
-    globalData.windowTop = globalData.totalTopHeight * 2 + globalData.sysHeight * 0.36 + 40 + 'rpx'
-    globalData.totalTopHeight = globalData.totalTopHeight * 2 + 20 + 'rpx'
+    this.initParameters()
     this.initThemeList()
     this.changeWorkList(globalData.themeData.originalImageList[0].activityId)
 
     //this.changeWorkList('303588543618289664')
 
-    console.log('看这个', globalData.themeData.originalImageList)
+  }
+
+  initParameters () {
+    this.setState({
+      waterfallTopMargin: globalData.totalTopHeight * 2 + globalData.sysHeight * 0.36 + 40 + 'rpx',
+      titleAndNavHeight: globalData.totalTopHeight * 2 + 20 + 'rpx',
+    })
   }
 
   initThemeList () {
@@ -103,15 +111,7 @@ class Browser extends Component {
     globalData.waterfallRightList = []
     try {
       const result = await browser.psWorkList(globalData.totalUserInfo.uid, activityID, 0)
-
-
-      console.log('uid:', globalData.totalUserInfo.uid)
-      console.log('theme id:', activityID)
-      console.log('result:', result)
-
-
       const workList = result.result.result.workList
-
       globalData.browserWorkList = workList
       //如果没有第二页
       const resultAdvance = await browser.psWorkList(globalData.totalUserInfo.uid, activityID, 1)
@@ -124,7 +124,6 @@ class Browser extends Component {
           bottomTip: '-加载中-',
         })
       }
-
     } catch (err) {
       console.log('Oops, failed to get work list', err)
     }
@@ -295,7 +294,7 @@ class Browser extends Component {
 
     if (this.state.showPic) {
       picMaskContent = (
-        <View className='showPicMask' style={{top: globalData.totalTopHeight}} onClick={this.closePicMaskContent}>
+        <View className='showPicMask' style={{top: this.state.titleAndNavHeight}} onClick={this.closePicMaskContent}>
           <View className='maskContent'>
             <Image src={this.state.currentPicOnMask} mode='widthFix' className='maskImg'></Image>
             <View className='maskBtnGrp'>
@@ -330,7 +329,7 @@ class Browser extends Component {
         {/* 加入loading */}
         <Loading visible={this.state.loading} />
 
-        <View className='navBar' style={{top: globalData.totalTopHeight}}>
+        <View className='navBar' style={{top: this.state.titleAndNavHeight}}>
           <ScrollView className='scroll' scrollX={true} style={{height: this.state.navScrollHeight_higher}}>
             {globalData.themeData.originalImageList.map(item=>{
                 return <View className='item' hoverClass="item-hover" onClick={this.clickThemeIcon.bind(this, item.activityId, item.imageId)} key={item.activityId}> 
@@ -349,7 +348,7 @@ class Browser extends Component {
         </View> 
 
         <View className='waterfall'>
-          <View className='left-div' style={{marginTop: globalData.windowTop}}>
+          <View className='left-div' style={{marginTop: this.state.waterfallTopMargin}}>
           {leftList.map(item=>{
                 return <View className='card' hoverClass="card-hover" key={item} onClick={this.openPicMaskContent.bind(this, item)}> 
                         <Image className='cardImg' src={item} mode='widthFix'></Image>
@@ -357,7 +356,7 @@ class Browser extends Component {
                 })
           }
           </View> 
-          <View className='right-div' style={{marginTop: globalData.windowTop}}>
+          <View className='right-div' style={{marginTop: this.state.waterfallTopMargin}}>
           {rightList.map(item=>{
                 return <View className='card' hoverClass="card-hover" key={item} onClick={this.openPicMaskContent.bind(this, item)}> 
                         <Image className='cardImg' src={item} mode='widthFix'></Image>
@@ -370,8 +369,8 @@ class Browser extends Component {
         <View className='divider'>{this.state.bottomTip}</View>
 
         <View className='btnGrp'>
-          <Button className="button white" hoverClass="btn-hover" openType='share'>分享给好友</Button>
-          <Button className="button pink" hoverClass="btn-hover" onClick={this.addWork}>我要创作</Button>
+          <Button className="button white" hoverClass="btn-hover" openType='share'>邀请好友PK</Button>
+          <Button className="button pink" hoverClass="btn-hover" onClick={this.addWork}>开始P图</Button>
         </View>  
 
       </View>

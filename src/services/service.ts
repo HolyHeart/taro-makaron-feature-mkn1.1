@@ -392,7 +392,18 @@ export const browser = {
     }
     return request(reqData)
   },
-
+  getWorkList: function (activityID, page) {
+    const reqData = {
+      method: 'GET',
+      url: api.browser.getWorkList,
+      header: {"Accept": "*/*"},
+      data: {
+        activityId: activityID,
+        from: page,
+      }
+    }
+    return request(reqData)
+  },
   /**
    *
    * @param originPicture 原图

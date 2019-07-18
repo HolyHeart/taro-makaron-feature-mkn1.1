@@ -65,10 +65,17 @@ class Browser extends Component {
     const {userInfo = {}} = globalData
     console.log('username: ', userInfo.nickName)
     var content = ''
-    if (userInfo.nickName){
-      content = `@${userInfo.nickName}：${globalData.themeData.shareContent}`
-    } else {
-      content = `${globalData.themeData.shareContent}`
+    // if(userInfo.nickName){
+    //   content = `@${userInfo.nickName}：${globalData.themeData.shareContent}`
+    // }
+    // content = `@${userInfo.nickName}：${globalData.themeData.shareContent}`
+    const originalImage = globalData.themeData.originalImageList.filter((item)=>{
+      return item.imageId == this.state.currentActivityImgID
+    })
+    if(originalImage.length>0){
+      content = `${originalImage[0].shareContent}`
+    } else{
+      content = globalData.themeData.shareContent
     }
 
     const data = {
@@ -79,12 +86,35 @@ class Browser extends Component {
 
     const path = tool.formatQueryUrl('/pages/browser/index', data)
     var imgurl = ''
+    console.log(this.state.showPic)
     if (this.state.showPic) {
       imgurl = this.state.currentPicOnMask
-    } else {
-      imgurl = globalData.waterfallLeftList[0]
-    }
+      const data = {
+        shareSource: this.state.currentPicOnMask,
+        themeId: globalData.themeId || '',
+        // sceneId: currentScene.sceneId || '',
+        originalCompleteImageUrl:this.state.originUrl
+      }
+      const path = tool.formatQueryUrl('/pages/index', data)
+      const { userInfo = {} } = globalData
+      if(userInfo.nickName){
+         content = `@${userInfo.nickName}：${content}`
+      }
+      return {
+        title: content,
+        path: path,
+        imageUrl: this.state.currentPicOnMask,
+        success: () => {
+          console.log('分享成功')
+        },
+      }
 
+    } else {
+      imgurl = globalData.waterfallLeftList[0].url
+    }
+    if(userInfo.nickName){
+      content =`@${userInfo.nickName}: ${content}`
+    }
     return {
       title: content,
       imageUrl: imgurl,
@@ -169,13 +199,13 @@ class Browser extends Component {
     globalData.waterfallLeftList = []
     globalData.waterfallRightList = []
     try {
-      const result = await browser.psWorkList(activityID, 0)
-      const workList = result.result.result.workList
+      const result = await browser.getWorkList(activityID, 1)
+      const workList = result.result.result
       globalData.browserWorkList = workList
 
       //如果没有第二页
-      const resultAdvance = await browser.psWorkList(activityID, 1)
-      if (resultAdvance.result.result.workList.length === 0) {
+      const resultAdvance = await browser.getWorkList(activityID, 2)
+      if (resultAdvance.result.result.length === 0) {
         this.setState({
           bottomTip: '-没有更多啦-',
         })
@@ -185,7 +215,14 @@ class Browser extends Component {
         })
       }
     } catch (err) {
-      console.log('Oops, failed to get work list', err)
+      this.hideLoading()
+      Taro.showToast({
+        title:'系统异常',
+      })
+      this.setState({
+        bottomTip: '-没有更多啦-',
+      })
+      return
     }
     this.getList(globalData.browserWorkList)
   }
@@ -194,8 +231,8 @@ class Browser extends Component {
   loadMoreWorks = async () => {
     try {
       console.log(this.state.currentPage)
-      const result = await browser.psWorkList(this.state.currentActivityID, this.state.currentPage + 1)
-      const workList = result.result.result.workList
+      const result = await browser.getWorkList(this.state.currentActivityID, this.state.currentPage + 1)
+      const workList = result.result.result
       if (workList.length != 0) {
         this.getList(workList)
         this.setState({
@@ -207,7 +244,15 @@ class Browser extends Component {
         })
       }
     } catch (err) {
-      console.log('Oops, failed to get work list', err)
+      console.log(err)
+      this.hideLoading()
+      Taro.showToast({
+        title:'系统异常',
+      })
+      this.setState({
+        bottomTip: '-没有更多啦-',
+      })
+      return
     }
   }
 
@@ -248,6 +293,7 @@ class Browser extends Component {
       currentActivityImgID: activityImgID,
       bottomTip: '加载中...',
     })
+    console.log(activityID)
     this.changeWorkList(activityID)
   }
 
@@ -258,27 +304,23 @@ class Browser extends Component {
       this.hideLoading()
     }
     list.forEach(element => {
-      var picUrl = element.url
-      Taro.getImageInfo({
-        src: picUrl,
-      }).then((res) => {
-        this.divideList(res, picUrl, counter)
-        counter = counter + 1
-        this.formWaterfall()
-      })
+      let picUrl = element.renderPictureInfo.url
+      let originalUrl = element.originPictureInfo && element.originPictureInfo.url || ""
+      this.divideList({height:element.renderPictureInfo.imageHeight,width:element.renderPictureInfo.imageWidth},picUrl,counter ,originalUrl)
+      counter = counter + 1
+      this.formWaterfall()
     });
   }
 
-  divideList(result, url, counter) {
+  divideList(result, url, counter,originalUrl) {
     if (counter === 0 || globalData.waterfallLeftHeight <= globalData.waterfallRightHeight) {
       globalData.waterfallLeftHeight = globalData.waterfallLeftHeight + (result.height / result.width)
-      globalData.waterfallLeftList.push(url)
+      globalData.waterfallLeftList.push({url:url,originUrl:originalUrl})
     } else {
       globalData.waterfallRightHeight = globalData.waterfallRightHeight + (result.height / result.width)
-      globalData.waterfallRightList.push(url)
+      globalData.waterfallRightList.push({url:url,originUrl:originalUrl})
     }
   }
-
   formWaterfall() {
     if (globalData.browserWorkList.length === globalData.waterfallLeftList.length + globalData.waterfallRightList.length) {
       this.setState({
@@ -288,10 +330,12 @@ class Browser extends Component {
     this.hideLoading()
   }
 
-  openPicMaskContent(path, e) {
+  openPicMaskContent(item, e) {
+    console.log(item)
     this.setState({
       showPic: true,
-      currentPicOnMask: path
+      currentPicOnMask: item.url,
+      originUrl:item.originUrl
     })
   }
 
@@ -401,16 +445,16 @@ class Browser extends Component {
         <View className='waterfall'>
           <View className='left-div' style={{ marginTop: this.state.waterfallTopMargin }}>
             {leftList.map(item => {
-              return <View className='card' hoverClass="card-hover" key={item} onClick={this.openPicMaskContent.bind(this, item)}>
-                <Image className='cardImg' src={item} mode='widthFix'></Image>
+              return <View className='card' hoverClass="card-hover" key={item.url} onClick={this.openPicMaskContent.bind(this, item)}>
+                <Image className='cardImg' src={item.url} mode='widthFix'></Image>
               </View>
             })
             }
           </View>
           <View className='right-div' style={{ marginTop: this.state.waterfallTopMargin }}>
             {rightList.map(item => {
-              return <View className='card' hoverClass="card-hover" key={item} onClick={this.openPicMaskContent.bind(this, item)}>
-                <Image className='cardImg' src={item} mode='widthFix'></Image>
+              return <View className='card' hoverClass="card-hover" key={item.url} onClick={this.openPicMaskContent.bind(this, item)}>
+                <Image className='cardImg' src={item.url} mode='widthFix'></Image>
               </View>
             })
             }

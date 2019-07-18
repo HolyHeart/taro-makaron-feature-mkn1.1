@@ -13,6 +13,8 @@ import shareBtn from '@/assets/images/icon_share@2x.png'
 import { browser, base } from '@/services/service'
 import Loading from '@/components/Loading'
 
+import tool from '@/utils/tool'
+
 
 type PageOwnProps = {}
 
@@ -25,8 +27,10 @@ class Browser extends Component {
     disableScroll: false,
     enablePullDownRefresh: false
   }
+
   activityId = 0
   themeId = ''
+  activityImgId = ''
 
   activityImgWidthL = 240
   activityImgWidthS = 120
@@ -52,19 +56,44 @@ class Browser extends Component {
 
     waterfallTopMargin: '',
     titleAndNavHeight: '',
+
+    shareImgSpecific: '',
+
   }
 
-  // TODO
+  onShareAppMessage (res) {
+    const {userInfo = {}} = globalData
+    console.log('username: ', userInfo.nickName)
+    var content = ''
+    if (userInfo.nickName){
+      content = `@${userInfo.nickName}：${globalData.themeData.shareContent}`
+    } else {
+      content = `${globalData.themeData.shareContent}`
+    }
 
-  // onShareAppMessage (res) {
-  //   return {
-  //     title: '这图我能P',
-  //     //path: '/pages/browser/index',
-  //     success: () => {
-  //       console.log('分享成功')
-  //     },
-  //   }
-  // }
+    const data = {
+      themeId: globalData.themeId || '',
+      activityId: this.state.currentActivityID || '',
+      activityImgId: this.state.currentActivityImgID || '',
+    }
+
+    const path = tool.formatQueryUrl('/pages/browser/index', data)
+    var imgurl = ''
+    if (this.state.showPic) {
+      imgurl = this.state.currentPicOnMask
+    } else {
+      imgurl = globalData.waterfallLeftList[0]
+    }
+
+    return {
+      title: content,
+      imageUrl: imgurl,
+      path: path,
+      success: () => {
+        console.log('分享成功')
+      },
+    }
+  }
 
   // 显示与隐藏Loading
   showLoading = () => {
@@ -80,6 +109,8 @@ class Browser extends Component {
 
   componentWillMount() {
     this.themeId = this.$router.params.themeId
+    this.activityId = this.$router.params.activityId
+    this.activityImgId = this.$router.params.activityImgId
   }
 
   componentDidMount() {
@@ -96,7 +127,6 @@ class Browser extends Component {
 
   initParameters() {
     this.setState({
-      // IP7有显示问题，需要分别加20和40。待解决
       waterfallTopMargin: globalData.totalTopHeight * 2 + this.activityImgWidthL + 40 + 32 + 'rpx',
       titleAndNavHeight: globalData.totalTopHeight * 2 + 20 + 'rpx',
     })
@@ -110,11 +140,19 @@ class Browser extends Component {
 
   }
   initThemeList() {
-    this.setState({
-      currentActivityID: globalData.themeData.originalImageList[0].activityId,
-      currentActivityImgID: globalData.themeData.originalImageList[0].imageId,
-    }, () => {
-    })
+    if (this.activityId) {
+      this.setState({
+        currentActivityID: this.activityId,
+        currentActivityImgID: this.activityImgId,
+        }, () => {
+      })
+    } else {
+      this.setState({
+        currentActivityID: globalData.themeData.originalImageList[0].activityId,
+        currentActivityImgID: globalData.themeData.originalImageList[0].imageId,
+        }, () => {
+      })
+    }
   }
 
   resetPage() {
@@ -134,6 +172,7 @@ class Browser extends Component {
       const result = await browser.psWorkList(activityID, 0)
       const workList = result.result.result.workList
       globalData.browserWorkList = workList
+
       //如果没有第二页
       const resultAdvance = await browser.psWorkList(activityID, 1)
       if (resultAdvance.result.result.workList.length === 0) {
@@ -273,10 +312,6 @@ class Browser extends Component {
   }
 
   clickShareBtn() {
-    console.log('I Share it!!!')
-    this.setState({
-      showPic: true,
-    })
   }
 
   goEditor = () => {
@@ -320,17 +355,7 @@ class Browser extends Component {
 
             <Image src={this.state.currentPicOnMask} mode='widthFix' className='maskImg'></Image>
 
-            <View className='likeBtn'>
-              <Image src={likeBtn} className='likeBtnImg' onClick={this.clickLikeBtn}></Image>
-              <Text className='likeBtnText'>喜欢</Text>
-            </View>
-
-            <View className='shareBtn'>
-              <Image src={shareBtn} className='shareBtnImg' onClick={this.clickShareBtn}></Image>
-              <Text className='shareBtnText'>分享</Text>
-            </View>
-            
-
+            <Button className="shareButton" hoverClass="btn-hover" openType='share'>分享</Button>
 
           </View>
         </View>

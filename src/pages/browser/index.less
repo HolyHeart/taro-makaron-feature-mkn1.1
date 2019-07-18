@@ -22,6 +22,7 @@ page {
     backdrop-filter: blur(8px) brightness(50%);
     justify-content:center;
     display: flex;
+    transition: 0.3s;
     .maskContent {
       display: flex;
       position: relative;
@@ -52,47 +53,21 @@ page {
       }
 
 
-      .likeBtn {
-        width: auto;
-        height: auto;
-        display: flex;
+      .shareButton {
         position: fixed;
-        flex-direction:column;
         align-items:center;
         justify-content:center;
         bottom: 50rpx;
-        left: 190rpx;
         z-index: 4;
-        .likeBtnImg {
-          height: 130rpx;
-          width: 130rpx;
-        }
-        .likeBtnText {
-          margin-top: 3%;
-          color: white;
-          font-size: 30rpx;
-        }
-      }
-      .shareBtn {
-        width: auto;
-        height: auto;
-        display: flex;
-        position: fixed;
-        flex-direction:column;
-        align-items:center;
-        justify-content:center;
-        bottom: 50rpx;
-        right: 190rpx;
-        z-index: 4;
-        .shareBtnImg {
-          height: 130rpx;
-          width: 130rpx;
-        }
-        .shareBtnText {
-          margin-top: 3%;
-          color: white;
-          font-size: 30rpx;
-        }
+        background-color: #FF3366;
+        border-radius:80rpx;
+        height:80rpx;
+        line-height:80rpx;
+        font-size:36rpx;
+        text-align:center;
+        transition:all 0.2s;
+        width:50%;
+        color:white;
       }
     }
 
@@ -102,14 +77,14 @@ page {
     width: 100%;
     background-color: white;
     position: fixed;
-    transition:all 0.3s;
+    transition:all 0.2s;
     z-index: 1;
     .scroll {
       white-space: nowrap;
       display: flex;
       width: auto;
       height: auto;
-      transition:all 0.3s;
+      transition:all 0.2s;
       padding-top: 3%;
       z-index: 2;
       .item {
@@ -117,12 +92,12 @@ page {
         position: relative;
         margin-left: 6rpx;
         margin-right: 6rpx;
-        transition:all 0.3s;
+        transition:all 0.2s;
         height: auto;
         width: auto;
         z-index: 3;
         .itemImg {
-          transition:all 0.3s;
+          transition:all 0.2s;
           border-radius: 4%;
           z-index: 4;
           position: relative;
@@ -135,7 +110,7 @@ page {
             bottom: 0;
             border: 7px solid #ff3366;
             z-index: 5;
-            transition:all 0.3s;
+            transition:all 0.2s;
             box-sizing: border-box;
             border-radius: 4%;
             display: flex;
@@ -173,7 +148,7 @@ page {
             bottom: 0;
             background-color: rgba(255, 255, 255, 0.5);
             z-index: 5;
-            transition:all 0.3s;
+            transition:all 0.2s;
             box-sizing: border-box;
             border-radius: 4%;
             display: flex;
@@ -260,7 +235,7 @@ page {
       line-height:80rpx;
       font-size:36rpx;
       text-align:center;
-      transition:all 0.3s;
+      transition:all 0.2s;
       &.btn-hover {
         transform: scale(0.85)
       }
@@ -282,3 +257,4 @@ page {
 
   }
 }
+

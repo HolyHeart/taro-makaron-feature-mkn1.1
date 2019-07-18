@@ -124,6 +124,9 @@ class Browser extends Component {
       globalData.browserWorkList = workList
       //如果没有第二页
       const resultAdvance = await browser.psWorkList(globalData.totalUserInfo.uid, this.activityId, 2)
+
+      console.log(resultAdvance.result.result.workList.length, this.state.bottomTip)
+
       if (resultAdvance.result.result.workList.length === 0) {
         this.setState({
           bottomTip: '-没有更多啦-',
@@ -381,7 +384,7 @@ class Browser extends Component {
         </View>
       </View>
 
-      <View className='divider'>-没有更多啦-</View>
+      <View className='divider'>{this.state.bottomTip}</View>
       <View className='btnGrp'>
         <Button className="button white" hoverClass="btn-hover" openType='share'>分享给好友</Button>
         <Button className="button pink" hoverClass="btn-hover" onClick={this.goEditor}>我要创作</Button>

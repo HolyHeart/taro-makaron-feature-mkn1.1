@@ -155,21 +155,22 @@ const formatIcanPsCoverList = (list:Array<any> =[]) =>{
       isActive: false,
       visible: false,
       deleted: false,
-      deleteable: true,
+      // deleteable: true,
       name : '贴纸'
     }
     cover_model.remoteUrl = v.imageUrl
     cover_model.id = v.id || tool.uuid()
-    cover_model.zIndex = v.zIndex || 0
+    cover_model.zIndex = index+1 || 0
     cover_model.fixed = v.fixed || false
     cover_model.isActive = v.isActive || false
     if(index===0){
       cover_model.visible = true
+      cover_model.deleted = false
     }else{
       cover_model.visible = false
+      cover_model.deleted = true
     }
-    cover_model.deleted = false
-    cover_model.deleteable = true
+    // cover_model.deleteable = true
     cover_model.name = v.name || '贴纸'
     return cover_model
   })

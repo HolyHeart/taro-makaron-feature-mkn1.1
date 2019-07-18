@@ -1039,7 +1039,9 @@ class Editor extends Component {
     this.coverAuto(originInfo, item)
   }
   handleChangeCoverStyle = (data) => {
+    console.log('update')
     const {id} = data
+    console.log(id)
     const {coverList} = this.state
     coverList.forEach((v, i) => {
       if (v.id === id) {
@@ -1253,14 +1255,7 @@ class Editor extends Component {
   }
   changeOriginalImage= (item)=>{
 
-    // console.log(item)
-    // const {foreground}  = this.state
-    // this.setState({
-    //   foreground:{
-    //     ...foreground,
-    //     remoteUrl:item.imageUrl
-    //   }
-    // })
+    console.log(item)
     const {id} = item
     const {coverList} = this.state
     coverList.forEach((v, i) => {
@@ -1310,9 +1305,6 @@ class Editor extends Component {
                   stylePrams={customBg}
                   url={customBg.localUrl}
                   onImageLoaded={this.onCustomBgLoaded}
-                  // onChangeStyle={this.handleChangeCustomBgStyle}
-                  // onTouchstart={this.handleCustomBgTouchstart}
-                  // onTouchend={this.handleCustomBgTouchend}
                 />
               }
               {coverList.map(item => {

@@ -50,7 +50,7 @@ class ResultModal extends Component {
     // Taro.redirectTo({
     //   url: '/pages/home/index'
     // })
-    Taro.navigateBack({ delta: 2 })
+    Taro.navigateBack({ delta: 3 })
   }
   render() {
     const { layer, image, video, type ,cropWidth ,cropHeight} = this.props

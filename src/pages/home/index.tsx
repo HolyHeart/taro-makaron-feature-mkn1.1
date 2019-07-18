@@ -296,14 +296,6 @@ class Home extends Component {
     } 
   }
 
-
-  turnToStyle = () => {
-    console.log('hohoho!')
-    Taro.navigateTo({url: '/pages/browser/index'})
-  }
-
-
-
   render () {
     const { categoryList } = this.state
     const {global = {}} = this.props
@@ -352,11 +344,6 @@ class Home extends Component {
                 )
               })
             }
-
-
-            {/* added by Shichao.Ma */}
-            {/* 灵魂画手临时接口 */}
-            <Button style='margin-top: 25px; font-size:30px' onClick={this.turnToStyle}>灵魂画手临时接口</Button>
 
 
 

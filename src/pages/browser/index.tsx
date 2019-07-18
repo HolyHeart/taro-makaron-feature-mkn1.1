@@ -84,8 +84,9 @@ class Browser extends Component {
 
   initParameters () {
     this.setState({
-      waterfallTopMargin: globalData.totalTopHeight * 2 + globalData.sysHeight * 0.36 + 40 + 'rpx',
-      titleAndNavHeight: globalData.totalTopHeight * 2 + 20 + 'rpx',
+      // IP7有显示问题，需要分别加20和40。待解决
+      waterfallTopMargin: globalData.totalTopHeight * 2 + globalData.sysHeight * 0.36 + 'rpx',
+      titleAndNavHeight: globalData.totalTopHeight * 2 + 'rpx',
     })
   }
 
@@ -196,7 +197,8 @@ class Browser extends Component {
   clickThemeIcon (activityID, activityImgID, e) {
     this.setState({
       currentActivityID: activityID,
-      currentActivityImgID: activityImgID
+      currentActivityImgID: activityImgID,
+      bottomTip: '-加载中-',
     })
     console.log(activityID)
     this.changeWorkList(activityID)

@@ -30,16 +30,16 @@ class Browser extends Component {
   state = {
     navScrollHeight: '',
     navScrollHeight_higher: '',
-    currentThemeID: 0,
+    currentActivityID: '',
+
+    currentActivityImgID: '',
+
     waterfallLoaded: false,
     showPic: false,
     currentPicOnMask: '',
     loading: false,
     likeOrNot: false,
     likeBtnUrl: likeBtn,
-
-
-    //loadMoreWorks: false,
 
     currentPage: 0,
     bottomTip: '-加载中-',
@@ -75,12 +75,16 @@ class Browser extends Component {
     globalData.totalTopHeight = globalData.totalTopHeight * 2 + 20 + 'rpx'
     this.initThemeList()
     this.changeWorkList(globalData.themeData.originalImageList[0].activityId)
+
+    //this.changeWorkList('303588543618289664')
+
     console.log('看这个', globalData.themeData.originalImageList)
   }
 
   initThemeList () {
     this.setState({
-      currentThemeID: globalData.themeData.originalImageList[0].activityId
+      currentActivityID: globalData.themeData.originalImageList[0].activityId,
+      currentActivityImgID: globalData.themeData.originalImageList[0].imageId,
     })
   }
 
@@ -131,7 +135,7 @@ class Browser extends Component {
   async loadMoreWorks () {
     try {
       console.log(this.state.currentPage)
-      const result = await browser.psWorkList(globalData.totalUserInfo.uid, this.state.currentThemeID, this.state.currentPage + 1)
+      const result = await browser.psWorkList(globalData.totalUserInfo.uid, this.state.currentActivityID, this.state.currentPage + 1)
       const workList = result.result.result.workList
       if (workList.length!=0) {
         this.getList(workList)
@@ -190,9 +194,10 @@ class Browser extends Component {
     this.loadMoreWorks()
   }
 
-  clickThemeIcon (activityID, e) {
+  clickThemeIcon (activityID, activityImgID, e) {
     this.setState({
-      currentThemeID: activityID
+      currentActivityID: activityID,
+      currentActivityImgID: activityImgID
     })
     console.log(activityID)
     this.changeWorkList(activityID)
@@ -279,7 +284,6 @@ class Browser extends Component {
 
   render () {
     
-    let waterfallLeft
     let leftList
     let rightList
     let picMaskContent
@@ -329,9 +333,9 @@ class Browser extends Component {
         <View className='navBar' style={{top: globalData.totalTopHeight}}>
           <ScrollView className='scroll' scrollX={true} style={{height: this.state.navScrollHeight_higher}}>
             {globalData.themeData.originalImageList.map(item=>{
-                return <View className='item' hoverClass="item-hover" onClick={this.clickThemeIcon.bind(this, item.activityId)} key={item.activityId}> 
+                return <View className='item' hoverClass="item-hover" onClick={this.clickThemeIcon.bind(this, item.activityId, item.imageId)} key={item.activityId}> 
                         <Image className='itemImg' src={item.originalImageUrl} style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}}>
-                          {this.state.currentThemeID === item.activityId ?
+                          {this.state.currentActivityImgID === item.imageId ?
                           <View className='itemImgBorder' style={{height: this.state.navScrollHeight, width: this.state.navScrollHeight}}>
                             <View className='itemImgBorderText'>原图</View>
                             <View className='itemImgBorderTri'></View>

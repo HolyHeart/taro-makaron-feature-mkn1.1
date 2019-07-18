@@ -31,7 +31,10 @@ class Browser extends Component {
   state = {
     navScrollHeight: '',
     navScrollHeight_higher: '',
-    currentThemeID: 0,
+    currentActivityID: '',
+
+    currentActivityImgID: '',
+
     waterfallLoaded: false,
     activityId: 0,
     showPic: false,
@@ -45,6 +48,9 @@ class Browser extends Component {
 
     currentPage: 1,
     bottomTip: '-加载中-',
+
+    waterfallTopMargin: '',
+    titleAndNavHeight: '',
   }
 
   // TODO
@@ -80,8 +86,20 @@ class Browser extends Component {
   componentDidMount() {
     this.getThemeData(() => {
       this.getScreenHeight()
-      globalData.windowTop = globalData.totalTopHeight * 2 + globalData.sysHeight * 0.36 + 40 + 'rpx'
+      this.initParameters()
       this.initThemeList()
+      this.changeWorkList(globalData.themeData.originalImageList[0].activityId)
+
+      //this.changeWorkList('303588543618289664')
+
+    }
+  }
+
+  initParameters() {
+    this.setState({
+      // IP7有显示问题，需要分别加20和40。待解决
+      waterfallTopMargin: globalData.totalTopHeight * 2 + globalData.sysHeight * 0.36 + 'rpx',
+      titleAndNavHeight: globalData.totalTopHeight * 2 + 'rpx',
     })
   }
   getThemeData = async (callback) => {
@@ -94,9 +112,11 @@ class Browser extends Component {
   }
   initThemeList() {
     this.setState({
-      currentThemeID: globalData.themeData.originalImageList[0].imageId
+      // currentThemeID: globalData.themeData.originalImageList[0].imageId,
+      currentActivityID: globalData.themeData.originalImageList[0].activityId,
+      currentActivityImgID: globalData.themeData.originalImageList[0].imageId,
     }, () => {
-      this.changeWorkList(this.state.currentThemeID)
+      // this.changeWorkList(this.state.currentThemeID)
     })
   }
 
@@ -106,27 +126,19 @@ class Browser extends Component {
     })
   }
 
-  changeWorkList = async (themeID) => {
+  changeWorkList = async (activityID) => {
     this.showLoading()
     this.resetPage()
     globalData.waterfallLeftHeight = 0
     globalData.waterfallRightHeight = 0
     globalData.waterfallLeftList = []
     globalData.waterfallRightList = []
-    const currentTheme = globalData.themeData.originalImageList.filter((item) => {
-      return item.imageId === themeID
-    })
-    this.activityId = currentTheme[0].activityId
-
     try {
-      const result = await browser.psWorkList(globalData.totalUserInfo.uid, this.activityId, 1)
+      const result = await browser.psWorkList(activityID, 0)
       const workList = result.result.result.workList
       globalData.browserWorkList = workList
       //如果没有第二页
-      const resultAdvance = await browser.psWorkList(globalData.totalUserInfo.uid, this.activityId, 2)
-
-      console.log(resultAdvance.result.result.workList.length, this.state.bottomTip)
-
+      const resultAdvance = await browser.psWorkList(activityID, 1)
       if (resultAdvance.result.result.workList.length === 0) {
         this.setState({
           bottomTip: '-没有更多啦-',
@@ -136,7 +148,6 @@ class Browser extends Component {
           bottomTip: '-加载中-',
         })
       }
-
     } catch (err) {
       console.log('Oops, failed to get work list', err)
     }
@@ -147,7 +158,7 @@ class Browser extends Component {
   loadMoreWorks = async () => {
     try {
       console.log(this.state.currentPage)
-      const result = await browser.psWorkList(globalData.totalUserInfo.uid, this.activityId, this.state.currentPage + 1)
+      const result = await browser.psWorkList(this.state.currentActivityID, this.state.currentPage + 1)
       const workList = result.result.result.workList
       if (workList.length != 0) {
         this.getList(workList)
@@ -206,12 +217,13 @@ class Browser extends Component {
     this.loadMoreWorks()
   }
 
-  clickThemeIcon(imageId, e) {
+  clickThemeIcon(activityID, activityImgID, e) {
     this.setState({
-      currentThemeID: imageId
+      currentActivityID: activityID,
+      currentActivityImgID: activityImgID,
+      bottomTip: '-加载中-',
     })
-    console.log(imageId)
-    this.changeWorkList(imageId)
+    this.changeWorkList(activityID)
   }
 
   getList(list) {
@@ -293,15 +305,13 @@ class Browser extends Component {
     console.log('我要创作')
   }
   goEditor = () => {
-    Taro.navigateTo({ url: `/pages/psChallenge/index?imageId=${this.state.currentThemeID}&activityId=${this.activityId}` })
+    Taro.navigateTo({ url: `/pages/psChallenge/index?imageId=${this.state.currentActivityImgID}&activityId=${this.state.currentActivityID}` })
   }
 
 
 
-
-
   render() {
-    let waterfallLeft
+
     let leftList
     let rightList
     let picMaskContent
@@ -313,7 +323,7 @@ class Browser extends Component {
 
     if (this.state.showPic) {
       picMaskContent = (
-        <View className='showPicMask' style={{ top: globalData.totalTopHeight + 'px' }} onClick={this.closePicMaskContent}>
+        <View className='showPicMask' style={{ top: this.state.titleAndNavHeight }} onClick={this.closePicMaskContent}>
           <View className='maskContent'>
             <Image src={this.state.currentPicOnMask} mode='aspectFit' className='maskImg'></Image>
             <View className='maskBtnGrp'>
@@ -332,66 +342,90 @@ class Browser extends Component {
       )
     }
 
-    return (<View className='browser'>
-      <View className='title'>
-        <Title
-          color="#333"
-          leftStyleObj={{ left: Taro.pxTransform(8) }}
-          renderLeft={
-            <CustomIcon type="back" theme="dark" onClick={this.pageToHome} />
-          }
-        >这图我能P</Title>
-      </View>
-
-      {picMaskContent}
-      {/* 加入loading */}
-      <Loading visible={this.state.loading} />
-
-      <View className='navBar' style={{ top: globalData.totalTopHeight + 'px' }}>
-        <ScrollView className='scroll' scrollX style={{ height: this.state.navScrollHeight_higher }}>
-          {(globalData.themeData && globalData.themeData.originalImageList || []).map(item => {
-            return <View className='item' hoverClass="item-hover" onClick={this.clickThemeIcon.bind(this, item.imageId)} key={item.imageId}>
-              <Image className='itemImg' src={item.originalImageUrl} style={{ height: this.state.navScrollHeight, width: this.state.navScrollHeight }}>
-                {this.state.currentThemeID === item.imageId ?
-                  <View className='itemImgBorder' style={{ height: this.state.navScrollHeight, width: this.state.navScrollHeight }}>
-                    <View className='itemImgBorderText'>原图</View>
-                    <View className='itemImgBorderTri'></View>
-                  </View>
-                  : ''}
-              </Image>
-            </View>
-          })
-          }
-        </ScrollView>
-      </View>
-
-      <View className='waterfall'>
-        <View className='left-div' style={{ marginTop: globalData.windowTop }}>
-          {leftList.map(item => {
-            return <View className='card' key={item} onClick={this.openPicMaskContent.bind(this, item)}>
-              <Image className='cardImg' src={item} mode='widthFix'></Image>
-            </View>
-          })
-          }
+    return (
+      <View className='browser'>
+        <View className='title'>
+          <Title
+            color="#333"
+            leftStyleObj={{ left: Taro.pxTransform(8) }}
+            renderLeft={
+              <CustomIcon type="back" theme="dark" onClick={this.pageToHome} />
+            }
+          >这图我能P</Title>
         </View>
-        <View className='right-div' style={{ marginTop: globalData.windowTop }}>
-          {rightList.map(item => {
-            return <View className='card' key={item} onClick={this.openPicMaskContent.bind(this, item)}>
-              <Image className='cardImg' src={item} mode='widthFix'></Image>
-            </View>
-          })
-          }
-        </View>
-      </View>
 
-      <View className='divider'>{this.state.bottomTip}</View>
-      <View className='btnGrp'>
-        <Button className="button white" hoverClass="btn-hover" openType='share'>邀请好友PK</Button>
-        <Button className="button pink" hoverClass="btn-hover" onClick={this.goEditor}>开始P图</Button>
+        {picMaskContent}
+        {/* 加入loading */}
+        <Loading visible={this.state.loading} />
+
+        <View className='navBar' style={{ top: globalData.totalTopHeight + 'px' }}>
+          <ScrollView className='scroll' scrollX style={{ height: this.state.navScrollHeight_higher }}>
+            {(globalData.themeData && globalData.themeData.originalImageList || []).map(item => {
+              return <View className='item' hoverClass="item-hover" onClick={this.clickThemeIcon.bind(this, item.imageId)} key={item.imageId}>
+                <Image className='itemImg' src={item.originalImageUrl} style={{ height: this.state.navScrollHeight, width: this.state.navScrollHeight }}>
+                  {this.state.currentThemeID === item.imageId ?
+                    <View className='itemImgBorder' style={{ height: this.state.navScrollHeight, width: this.state.navScrollHeight }}>
+                      <View className='itemImgBorderText'>原图</View>
+                      <View className='itemImgBorderTri'></View>
+                    </View>
+                    : ''}
+                </Image>
+              </View>
+            })
+            }
+          </ScrollView>
+        </View>
+
+        {picMaskContent}
+        {/* 加入loading */}
+        <Loading visible={this.state.loading} />
+
+        <View className='navBar' style={{ top: this.state.titleAndNavHeight }}>
+          <ScrollView className='scroll' scrollX={true} style={{ height: this.state.navScrollHeight_higher }}>
+            {globalData && globalData.themeData && globalData.themeData.originalImageList.map(item => {
+              return <View className='item' hoverClass="item-hover" onClick={this.clickThemeIcon.bind(this, item.activityId, item.imageId)} key={item.activityId}>
+                <Image className='itemImg' src={item.originalImageUrl} style={{ height: this.state.navScrollHeight, width: this.state.navScrollHeight }}>
+                  {this.state.currentActivityImgID === item.imageId ?
+                    <View className='itemImgBorder' style={{ height: this.state.navScrollHeight, width: this.state.navScrollHeight }}>
+                      <View className='itemImgBorderText'>原图</View>
+                      <View className='itemImgBorderTri'></View>
+                    </View>
+                    : ''}
+                </Image>
+              </View>
+            })
+            }
+          </ScrollView>
+        </View>
+
+        <View className='waterfall'>
+          <View className='left-div' style={{ marginTop: this.state.waterfallTopMargin }}>
+            {leftList.map(item => {
+              return <View className='card' hoverClass="card-hover" key={item} onClick={this.openPicMaskContent.bind(this, item)}>
+                <Image className='cardImg' src={item} mode='widthFix'></Image>
+              </View>
+            })
+            }
+          </View>
+          <View className='right-div' style={{ marginTop: this.state.waterfallTopMargin }}>
+            {rightList.map(item => {
+              return <View className='card' hoverClass="card-hover" key={item} onClick={this.openPicMaskContent.bind(this, item)}>
+                <Image className='cardImg' src={item} mode='widthFix'></Image>
+              </View>
+            })
+            }
+          </View>
+        </View>
+
+        <View className='divider'>{this.state.bottomTip}</View>
+
+        <View className='btnGrp'>
+          <Button className="button white" hoverClass="btn-hover" openType='share'>邀请好友PK</Button>
+          <Button className="button pink" hoverClass="btn-hover" onClick={this.goEditor}>开始P图</Button>
+        </View>
+
       </View>
-    </View>
     )
-
   }
 }
 

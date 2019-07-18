@@ -217,13 +217,10 @@ class Home extends Component {
 
   handleGetUserInfo = (data) => {
     // console.log('handleGetUserInfo', data)
-    const { detail: { userInfo } } = data
+    const {detail: {userInfo}} = data
     if (userInfo) {
-      base.loginAuth(data.detail).then(res=> {
-        globalData.totalUserInfo = res.result.result
-      })
+      base.loginAuth(data.detail)
       globalData.userInfo = userInfo
-      console.log(globalData.userInfo)
       this.todo()
     } else {
       Taro.showToast({
@@ -233,6 +230,7 @@ class Home extends Component {
       })
     }
   }
+
 
   handleFormSubmit = (e) => {
     const { detail: { formId } } = e
@@ -341,6 +339,8 @@ class Home extends Component {
                 )
               })
             }
+
+
 
             <View className="bottomInfo" style='margin-top:50rpx;font-size:10px'>
               - 到底了哦 -

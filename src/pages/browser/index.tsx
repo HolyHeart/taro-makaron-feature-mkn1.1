@@ -318,7 +318,7 @@ class Browser extends Component {
     list.forEach(element => {
       let picUrl = element.renderPictureInfo.type==='video'?element.renderPictureInfo.firstFrame:element.renderPictureInfo.url
       let originalUrl = element.originPictureInfo && element.originPictureInfo.url || ""
-      let originalBgColor = this.colorStrTransform(element.originPictureInfo.placeHolderColor)
+      let originalBgColor = this.colorStrTransform(element.renderPictureInfo.placeHolderColor)
       this.divideList({height:element.renderPictureInfo.imageHeight,width:element.renderPictureInfo.imageWidth},picUrl,counter ,originalUrl, originalBgColor)
       counter = counter + 1
       this.formWaterfall()
@@ -479,7 +479,7 @@ class Browser extends Component {
 
         <View className='waterfall'>
           <View className='left-div' style={{ marginTop: this.state.waterfallTopMargin }}>
-            {leftList.map(item => {
+            {leftList&&leftList.map(item => {
               return <View className='card' hoverClass="card-hover" key={item.url} onClick={this.openPicMaskContent.bind(this, item)}>
                 <Image className='cardImg' src={item.url} mode='widthFix' style={{ backgroundColor: item.bgColor }}></Image>
               </View>
@@ -487,7 +487,7 @@ class Browser extends Component {
             }
           </View>
           <View className='right-div' style={{ marginTop: this.state.waterfallTopMargin }}>
-            {rightList.map(item => {
+            {rightList&&rightList.map(item => {
               return <View className='card' hoverClass="card-hover" key={item.url} onClick={this.openPicMaskContent.bind(this, item)}>
                 <Image className='cardImg' src={item.url} mode='widthFix' style={{ backgroundColor: item.bgColor }}></Image>
               </View>

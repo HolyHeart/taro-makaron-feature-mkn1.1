@@ -57,6 +57,8 @@ class Browser extends Component {
 
     shareImgSpecific: '',
 
+    activityName: '',
+
   }
 
   onShareAppMessage (res) {
@@ -151,6 +153,9 @@ class Browser extends Component {
       this.initThemeList()
       if (this.activityId) {
         this.changeWorkList(this.activityId)
+        this.setState({
+          activityName: 'x'+this.activityImgId
+        })
       } else {
         this.changeWorkList(globalData.themeData.originalImageList[0].activityId)
       }
@@ -299,8 +304,9 @@ class Browser extends Component {
       currentActivityID: activityID,
       currentActivityImgID: activityImgID,
       bottomTip: '加载中...',
+      //activityName: 'x' + activityImgID,
     })
-    console.log(activityID)
+    console.log('x' + activityImgID)
     this.changeWorkList(activityID)
   }
 
@@ -350,6 +356,7 @@ class Browser extends Component {
     this.setState({
       showPic: false,
     })
+    console.log(globalData.themeData.originalImageList)
   }
 
   clickLikeBtn() {
@@ -430,10 +437,10 @@ class Browser extends Component {
         <Loading visible={this.state.loading} />
 
         <View className='navBar' style={{ top: 0, paddingTop: this.state.titleAndNavHeight}}>
-          <ScrollView className='scroll' scrollX={true} style={{ height: this.state.navScrollHeight_higher }}>
+          <ScrollView className='scroll' scrollX={true} style={{ height: this.state.navScrollHeight_higher}} scrollIntoView={this.state.activityName} scrollWithAnimation={true}>
             <View className='item' style='width: 33rpx'></View>
             {globalData && globalData.themeData && globalData.themeData.originalImageList.map(item => {
-              return <View className='item' hoverClass="item-hover" onClick={this.clickThemeIcon.bind(this, item.activityId, item.imageId)} key={item.activityId}>
+              return <View id={'x'+item.imageId} className='item' hoverClass="item-hover" onClick={this.clickThemeIcon.bind(this, item.activityId, item.imageId)} key={item.activityId}>
                 <Image className='itemImg' src={item.originalImageUrl} style={{ height: this.state.navScrollHeight, width: this.state.navScrollHeight }}>
                   {this.state.currentActivityImgID === item.imageId ?
                     <View className='itemImgBorder' style={{ height: this.state.navScrollHeight, width: this.state.navScrollHeight }}>

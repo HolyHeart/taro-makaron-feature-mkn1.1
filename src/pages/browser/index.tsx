@@ -306,7 +306,6 @@ class Browser extends Component {
       bottomTip: '加载中...',
       //activityName: 'x' + activityImgID,
     })
-    console.log('x' + activityImgID)
     this.changeWorkList(activityID)
   }
 
@@ -319,19 +318,29 @@ class Browser extends Component {
     list.forEach(element => {
       let picUrl = element.renderPictureInfo.type==='video'?element.renderPictureInfo.firstFrame:element.renderPictureInfo.url
       let originalUrl = element.originPictureInfo && element.originPictureInfo.url || ""
-      this.divideList({height:element.renderPictureInfo.imageHeight,width:element.renderPictureInfo.imageWidth},picUrl,counter ,originalUrl)
+      let originalBgColor = this.colorStrTransform(element.originPictureInfo.placeHolderColor)
+      this.divideList({height:element.renderPictureInfo.imageHeight,width:element.renderPictureInfo.imageWidth},picUrl,counter ,originalUrl, originalBgColor)
       counter = counter + 1
       this.formWaterfall()
     });
   }
 
-  divideList(result, url, counter,originalUrl) {
+  colorStrTransform (strOriginal) {
+    if (strOriginal) {
+      return '#'+strOriginal.substr(2)
+    } else {
+      console.log('未收到背景颜色！')
+      return '#000000'
+    }
+  }
+
+  divideList(result, url, counter,originalUrl, originalBgColor) {
     if (counter === 0 || globalData.waterfallLeftHeight <= globalData.waterfallRightHeight) {
       globalData.waterfallLeftHeight = globalData.waterfallLeftHeight + (result.height / result.width)
-      globalData.waterfallLeftList.push({url:url,originUrl:originalUrl})
+      globalData.waterfallLeftList.push({url:url,originUrl:originalUrl,bgColor:originalBgColor})
     } else {
       globalData.waterfallRightHeight = globalData.waterfallRightHeight + (result.height / result.width)
-      globalData.waterfallRightList.push({url:url,originUrl:originalUrl})
+      globalData.waterfallRightList.push({url:url,originUrl:originalUrl,bgColor:originalBgColor})
     }
   }
   formWaterfall() {
@@ -356,7 +365,7 @@ class Browser extends Component {
     this.setState({
       showPic: false,
     })
-    console.log(globalData.themeData.originalImageList)
+    //console.log(globalData.themeData.originalImageList)
   }
 
   clickLikeBtn() {
@@ -472,7 +481,7 @@ class Browser extends Component {
           <View className='left-div' style={{ marginTop: this.state.waterfallTopMargin }}>
             {leftList.map(item => {
               return <View className='card' hoverClass="card-hover" key={item.url} onClick={this.openPicMaskContent.bind(this, item)}>
-                <Image className='cardImg' src={item.url} mode='widthFix'></Image>
+                <Image className='cardImg' src={item.url} mode='widthFix' style={{ backgroundColor: item.bgColor }}></Image>
               </View>
             })
             }
@@ -480,7 +489,7 @@ class Browser extends Component {
           <View className='right-div' style={{ marginTop: this.state.waterfallTopMargin }}>
             {rightList.map(item => {
               return <View className='card' hoverClass="card-hover" key={item.url} onClick={this.openPicMaskContent.bind(this, item)}>
-                <Image className='cardImg' src={item.url} mode='widthFix'></Image>
+                <Image className='cardImg' src={item.url} mode='widthFix' style={{ backgroundColor: item.bgColor }}></Image>
               </View>
             })
             }

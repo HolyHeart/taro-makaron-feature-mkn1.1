@@ -37,14 +37,14 @@ interface Share {
 }))
 class Share extends Component {
   config: Config = {
-    navigationBarTitleText: '懒人抠图'
+    navigationBarTitleText: '马卡龙完图'
   }
 
   state = {
     isFromApp: false,
     shareSourceType: 'image', // 'video' 'image'
     shareSource: '',
-    originalCompleteImageUrl:'',
+    originalCompleteImageUrl: '',
     videoPoster: '',
     width: 690,
     height: 920,
@@ -52,12 +52,12 @@ class Share extends Component {
     themeId: '',
     sceneId: '',
     themeData: {},
-    sceneType:0,
+    sceneType: 0,
   }
 
   app = Taro.getApp()
 
-  componentWillMount () {
+  componentWillMount() {
     // 兼容跳转使用
     // console.log('index page willMount', this.$router.params)
     // let {from = 'app', remoteURL = ''} = this.$router.params
@@ -69,20 +69,20 @@ class Share extends Component {
     // Taro.redirectTo({url: path})
   }
 
-  componentDidMount () {
+  componentDidMount() {
     this._initPage()
     // Taro.showToast({
     //   title:this.$router.params.originalCompleteImageUrl
     // })
   }
-  componentWillReceiveProps (nextProps) {
+  componentWillReceiveProps(nextProps) {
     // console.log(this.props, nextProps)
   }
-  componentWillUnmount () { }
-  componentDidShow () { }
-  componentDidHide () { }
-  onShareAppMessage (res) {
-    const themeData = globalData.themeData || {generalShowUrl: '', shareContent: ''}
+  componentWillUnmount() { }
+  componentDidShow() { }
+  componentDidHide() { }
+  onShareAppMessage(res) {
+    const themeData = globalData.themeData || { generalShowUrl: '', shareContent: '' }
     const shareContent = themeData.shareContent || ''
     const url = themeData.generalShowUrl
     return {
@@ -102,7 +102,7 @@ class Share extends Component {
     this.getThemeData((themeData = {}) => {
       this.setState({
         themeData,
-        sceneType:themeData.sceneType
+        sceneType: themeData.sceneType
       })
     })
     this.getRecommendList()
@@ -110,8 +110,8 @@ class Share extends Component {
 
   processLoadData = () => {
     console.log('share page', this.$router.params) // 输出 { id: 2, type: 'test' }
-    let isFromApp, shareSourceType = 'image', videoPoster = '', shareVideoInfo = {width: 690, height: 920,}
-    let {shareSource, themeId, sceneId, from, remoteURL = '', width = 690, height = 920, originalCompleteImageUrl} = this.$router.params
+    let isFromApp, shareSourceType = 'image', videoPoster = '', shareVideoInfo = { width: 690, height: 920, }
+    let { shareSource, themeId, sceneId, from, remoteURL = '', width = 690, height = 920, originalCompleteImageUrl } = this.$router.params
     if (from === 'app') {
       isFromApp = true
       if (remoteURL.indexOf('versa-ai.com') > -1) {
@@ -145,7 +145,7 @@ class Share extends Component {
       height: shareVideoInfo.height,
       themeId,
       sceneId,
-      originalCompleteImageUrl:decodeURIComponent(originalCompleteImageUrl)
+      originalCompleteImageUrl: decodeURIComponent(originalCompleteImageUrl)
     })
   }
 
@@ -157,7 +157,7 @@ class Share extends Component {
     })
   }
 
-  getThemeData = async (callback?:(data?)=>void) => {
+  getThemeData = async (callback?: (data?) => void) => {
     if (!globalData.themeId) {
       return
     }
@@ -176,13 +176,15 @@ class Share extends Component {
 
   handleGetUserInfo = (e) => {
     // console.log('handleGetUserInfo', e)
-    const {detail: {userInfo}} = e
+    const { detail: { userInfo } } = e
     if (userInfo) {
+      const { themeData = {}, sceneId } = globalData
       globalData.userInfo = userInfo
       service.base.loginAuth(e.detail)
-      if(this.state.sceneType ===5){
+      console.log(themeData)
+      if (themeData.sceneType === 5) {
         Taro.navigateTo({ url: `/pages/browser/index?themeId=${globalData.themeId}` })
-      }else{
+      } else {
         this.todo()
       }
     } else {
@@ -213,8 +215,10 @@ class Share extends Component {
           url = '/pages/dynamic/index'
         } else if (themeData.sceneType === 3) {
           url = '/pages/segment/index'
-        } else {
+        } else if (themeData.sceneType === 4) {
           url = '/pages/crop/index'
+        } else {
+          url = '/pages/editor/index'
         }
         // } else {
         //   url = '/pages/editor/index'
@@ -222,6 +226,7 @@ class Share extends Component {
         if (sceneId) {
           url = url + '?sceneId=' + sceneId
         }
+        console.log(url)
         Taro.navigateTo({url})
       }
     })
@@ -234,19 +239,19 @@ class Share extends Component {
     globalData.themeId = data.themeId
     globalData.sceneId = ''
     this.getThemeData()
-    this.app.aldstat.sendEvent('选择推荐主题', {'主题名': data.themeName, '主题Id': data.themeId})
+    this.app.aldstat.sendEvent('选择推荐主题', { '主题名': data.themeName, '主题Id': data.themeId })
   }
   handleFormSubmit = (e) => {
-    const {detail: {formId}} = e
+    const { detail: { formId } } = e
     formId && service.core.reportFormId(formId)
   }
-  swapImag=()=>{
-    if(this.state.originalCompleteImageUrl && this.state.originalCompleteImageUrl.length>0){
+  swapImag = () => {
+    if (this.state.originalCompleteImageUrl && this.state.originalCompleteImageUrl.length > 0) {
       let tmpURL = this.state.originalCompleteImageUrl;
       let swapUrl = this.state.shareSource;
       this.setState({
-        originalCompleteImageUrl:swapUrl,
-        shareSource:tmpURL
+        originalCompleteImageUrl: swapUrl,
+        shareSource: tmpURL
       })
     }
   }
@@ -258,23 +263,23 @@ class Share extends Component {
     this.app.aldstat.sendEvent('分享页打开app', '打开app')
   }
 
-  render () {
-    const {isFromApp, shareSourceType, shareSource, videoPoster, width, height, recommendList,originalCompleteImageUrl} = this.state
+  render() {
+    const { isFromApp, shareSourceType, shareSource, videoPoster, width, height, recommendList, originalCompleteImageUrl } = this.state
     return (
       <View className='page-share'>
         <Title
-          leftStyleObj={{left: Taro.pxTransform(12)}}
+          leftStyleObj={{ left: Taro.pxTransform(12) }}
           renderLeft={
-            <CustomIcon type="home" theme="dark" onClick={this.pageToHome}/>
+            <CustomIcon type="home" theme="dark" onClick={this.pageToHome} />
           }
           color='#333'
-        >懒人抠图</Title>
+        >马卡龙完图</Title>
         <View className='main-section'>
           {shareSourceType === 'image' &&
             <View className='pic-wrap'>
               {themeData.sceneType === 3 && <View class="share-bg"></View>}
               <View class="share-img">
-                <Image src={shareSource} style='width: 100%; height: 100%' mode='aspectFit'/>
+                <Image src={shareSource} style='width: 100%; height: 100%' mode='aspectFit' />
                 {/* <Image src={originalCompleteImageUrl} style='width: 100%; height: 100%' mode='aspectFit'/> */}
               </View>
             </View>
@@ -283,7 +288,7 @@ class Share extends Component {
             <View className='video-wrap'>
               <Video
                 className="video"
-                style={{width: Taro.pxTransform(width), height:Taro.pxTransform(height - 2)}}
+                style={{ width: Taro.pxTransform(width), height: Taro.pxTransform(height - 2) }}
                 loop
                 autoplay
                 src={shareSource}
@@ -296,41 +301,34 @@ class Share extends Component {
         </View>
         <View className='sub-section'>
           {
-            this.state.sceneType==5?<View className='originalWrap'>
-            <View className='ImageWrap'>
-              <Image src={originalImageIcon} className='originalIcon' >
-              </Image>
-            <Image className='originalImage' src={originalCompleteImageUrl}  mode='aspectFit' onClick={this.swapImag}/>
-            </View>
-          <Button
+            this.state.sceneType == 5 ? <View className='originalWrap'>
+              <View className='ImageWrap'>
+                <Image src={originalImageIcon} className='originalIcon' >
+                </Image>
+                <Image className='originalImage' src={originalCompleteImageUrl} mode='aspectFit' onClick={this.swapImag} />
+              </View>
+              <Button
                 className="custom-button pink " hoverClass="btn-hover" style='flex:1'
                 openType="getUserInfo"
                 onGetUserInfo={this.handleGetUserInfo}
                 onClick={this.handleMainButton}
                 formType='submit'>我来P图</Button>
-          </View>:    <Form onSubmit={this.handleFormSubmit} reportSubmit>
-            {isFromApp ?
-              <Button
-                className="button animation-btn"
-                hoverClass="btnhover"
-                onClick={this.pageToHome}
-                >限时用同款</Button> : this.state.sceneType!==5?
-              <Button
-                className="button animation-btn"
-                hoverClass="btnhover"
-                openType="getUserInfo"
-                onGetUserInfo={this.handleGetUserInfo}
-                onClick={this.handleMainButton}
-                formType='submit'>限时用同款</Button> :(
-                <Button
-                className="button animation-btn"
-                hoverClass="btnhover"
-                openType="getUserInfo"
-                onGetUserInfo={this.handleGetUserInfo}
-                onClick={this.handleMainButton}
-                formType='submit'>我也要创作</Button>)
-            }
-          </Form>
+            </View> : <Form onSubmit={this.handleFormSubmit} reportSubmit>
+                {isFromApp ?
+                  <Button
+                    className="button animation-btn"
+                    hoverClass="btnhover"
+                    onClick={this.pageToHome}
+                  >限时用同款</Button> :
+                  <Button
+                    className="button animation-btn"
+                    hoverClass="btnhover"
+                    openType="getUserInfo"
+                    onGetUserInfo={this.handleGetUserInfo}
+                    onClick={this.handleMainButton}
+                    formType='submit'>限时用同款</Button>
+                }
+              </Form>
           }
           <View className='recommend-wrap'>
             <View className='recommend-title'>你还可以玩：</View>
@@ -342,7 +340,7 @@ class Share extends Component {
             />
           </View>
         </View>
-        {isFromApp && <BackApp onClick={this.handleOpenApp}/>}
+        {isFromApp && <BackApp onClick={this.handleOpenApp} />}
         <AuthModal />
       </View>
     )

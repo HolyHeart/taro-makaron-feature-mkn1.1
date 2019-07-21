@@ -37,7 +37,7 @@ interface Share {
 }))
 class Share extends Component {
   config: Config = {
-    navigationBarTitleText: '马卡龙完图'
+    navigationBarTitleText: '懒人抠图'
   }
 
   state = {

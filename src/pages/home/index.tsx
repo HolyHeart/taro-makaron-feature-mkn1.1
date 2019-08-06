@@ -131,7 +131,15 @@ class Home extends Component {
 
   componentWillUnmount() { }
 
-  componentDidShow() { }
+  componentDidShow() {
+    this.handleGetUserInfo
+    qq.getUserInfo({
+      success(res) {
+        console.log('用户信息🔥🔥🔥', res)
+      }
+    })
+    console.log('加载完成🔥🔥🔥')
+  }
 
   componentDidHide() { }
   onPageScroll(e) {

@@ -699,7 +699,7 @@ class Editor extends Component {
   }
 
   // 发布到QQ空间
-  // TODO 待media
+
   publishToQzone = () => {
     const {currentScene} = this.state
     const shareContent = currentScene.shareContent || (globalData.themeData && globalData.themeData.shareContent)

@@ -3,6 +3,7 @@ import Taro, { Component } from '@tarojs/taro'
 import { View, Button } from '@tarojs/components'
 import './index.less'
 import guideImg from '@/assets/images/guide.gif'
+import globalData from '@/services/global_data';
 
 type ComponentStateProps = {}
 

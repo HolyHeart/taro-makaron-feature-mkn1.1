@@ -701,9 +701,16 @@ class Editor extends Component {
   // 发布到QQ空间
   // TODO 待media
   publishToQzone = () => {
-    console.log('发布到QQ空间')
+    const {currentScene} = this.state
+    const shareContent = currentScene.shareContent || (globalData.themeData && globalData.themeData.shareContent)
     qq.openQzonePublish({
-      text: '震惊！世界上最🐂🍺的P图软件', 
+      text: shareContent, 
+      media: [
+        {
+          type: 'photo',
+          path: this.state.result.shareImage.localUrl
+        }
+      ]
     })
   }
 

@@ -132,13 +132,18 @@ class Home extends Component {
   componentWillUnmount() { }
 
   componentDidShow() {
-    this.handleGetUserInfo
-    qq.getUserInfo({
-      success(res) {
-        console.log('用户信息🔥🔥🔥', res)
-      }
-    })
-    console.log('加载完成🔥🔥🔥')
+    const data = Taro.getStorageSync('firstView')
+    // TODO 如果没有授权，取得授权
+    if (data == 'no') {
+      console.log('🔥🔥🔥')
+      Taro.getSetting({
+        success(res) {
+          if (!res.authSetting['scope.userInfo']) {
+            console.log(res)
+          }
+        }
+      })
+    }
   }
 
   componentDidHide() { }

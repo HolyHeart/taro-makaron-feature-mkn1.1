@@ -81,4 +81,11 @@ page {
 }
 .page-editor .btn-wrap .btn-2 {
   margin-top: 30rpx;
+  width: 49%;
+  float: left;
+}
+.page-editor .btn-wrap .btn-3 {
+  margin-top: 30rpx;
+  width: 49%;
+  float: right;
 }

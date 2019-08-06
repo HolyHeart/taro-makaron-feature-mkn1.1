@@ -698,6 +698,15 @@ class Editor extends Component {
     this.pageToHome()
   }
 
+  // 发布到QQ空间
+  // TODO 待media
+  publishToQzone = () => {
+    console.log('发布到QQ空间')
+    qq.openQzonePublish({
+      text: '震惊！世界上最🐂🍺的P图软件', 
+    })
+  }
+
   setResultModalStatus = (flag = false) => {
     const {result} = this.state
     result.show = flag
@@ -1430,7 +1439,8 @@ class Editor extends Component {
             renderButton={
               <View className="btn-wrap">
                 <Button className="custom-button pink btn-1" hoverClass="btn-hover" openType="share" >分享给好友</Button>
-                <Button className="custom-button dark btn-2" hoverClass="btn-hover"  onClick={this.handlePlayAgain}>再玩一次</Button>
+                <Button className="custom-button dark btn-2" hoverClass="btn-hover"  onClick={this.publishToQzone}>同步到说说</Button>
+                <Button className="custom-button dark btn-3" hoverClass="btn-hover"  onClick={this.handlePlayAgain}>再玩一次</Button>
               </View>
             }
           />

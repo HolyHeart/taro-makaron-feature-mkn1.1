@@ -240,19 +240,14 @@ class Dynamic extends Component {
   publishToQzone = () => {
     const {currentScene} = this.state
     const shareContent = currentScene.shareContent || (globalData.themeData && globalData.themeData.shareContent)
-    Taro.downloadFile({
-      url: this.state.result.shareVideo.remoteUrl,
-      success (res) {
-        qq.openQzonePublish({
-          text: shareContent, 
-          media: [
-            {
-              type: 'video',
-              path: res.tempFilePath
-            }
-          ] 
-       })
-      }
+    qq.openQzonePublish({
+      text: shareContent, 
+      media: [
+        {
+          type: 'video',
+          path: globalData.videoQQZonePublishLocalUrl
+        }
+      ] 
     })
   }
 
@@ -704,11 +699,11 @@ class Dynamic extends Component {
     let result
     try {
       result = await this.createShareSource('mp4')
-      Taro.hideLoading()
-      this.isSaving = false
+      // Taro.hideLoading()
+      // this.isSaving = false
     } catch (err) {
-      Taro.hideLoading()
-      this.isSaving = false
+      // Taro.hideLoading()
+      // this.isSaving = false
       Taro.showToast({
         title: '生成视频失败',
         icon: 'fail',
@@ -741,6 +736,8 @@ class Dynamic extends Component {
       sourceUrl: shareVideoRemoteUrl,
       sourceType: 'video',
       onSuccess: () => {
+        Taro.hideLoading()
+        this.isSaving = false
         Taro.showToast({
           title: '保存成功!',
           icon: 'success',
@@ -754,6 +751,8 @@ class Dynamic extends Component {
         this.setResultModalStatus(false)
       },
       onFail: () => {
+        Taro.hideLoading()
+        this.isSaving = false
         Taro.showToast({
           title: '保存失败!',
           icon: 'success',

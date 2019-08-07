@@ -3,6 +3,8 @@ import Taro from '@tarojs/taro'
 import { cacheImg } from '@/services/cache'
 import service from '@/services/service'
 import tool from './tool'
+import globalData from '@/services/global_data'
+
 interface saveSourceOptions {
   location: string,
   sourceUrl: any,
@@ -212,6 +214,7 @@ const saveSourceToPhotosAlbum = async (options:saveSourceOptions) => {
   // 保存到相册
   try {
     if (options.sourceType === 'video') {
+      globalData.videoQQZonePublishLocalUrl = localUrl
       await Taro.saveVideoToPhotosAlbum({filePath: localUrl})
     } else {
       await Taro.saveImageToPhotosAlbum({filePath: localUrl})

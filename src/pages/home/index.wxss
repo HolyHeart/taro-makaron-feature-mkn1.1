@@ -9,6 +9,7 @@
   background-color: red;
 }
 .page-home .tooltip {
+  height: 90rpx;
   width: 100%;
   background-color: orange;
 }

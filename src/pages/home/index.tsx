@@ -102,9 +102,12 @@ class Home extends Component {
   state = {
     categoryList: default_column,
     defaultThemeData: {},
-    isScrollToTop: true
+    isScrollToTop: true,
 
 
+
+    // 🔥🔥🔥 following states are added by Shichao 🔥🔥🔥
+    screenHeight: 0
   }
 
   app = Taro.getApp()
@@ -120,6 +123,11 @@ class Home extends Component {
       systemInfo.isIphoneX = false
     }
     getSystemInfo(systemInfo)
+
+    console.log('Screen Height', systemInfo.screenHeight)
+    this.setState({
+      screenHeight: systemInfo.screenHeight
+    })
   }
   componentDidMount() {
     this._initPage()
@@ -132,7 +140,7 @@ class Home extends Component {
     const data = Taro.getStorageSync('firstView')
     // TODO 如果没有授权，取得授权
     if (data == 'no') {
-      console.log('🔥🔥🔥')
+      // TODO 此段代码暂时无用
       Taro.getSetting({
         success(res) {
           if (!res.authSetting['scope.userInfo']) {
@@ -301,6 +309,15 @@ class Home extends Component {
       })
     }
   }
+
+
+
+  // 🔥🔥🔥 following functions are added by Shichao 🔥🔥🔥
+
+
+
+
+
 
   render() {
     const { categoryList } = this.state

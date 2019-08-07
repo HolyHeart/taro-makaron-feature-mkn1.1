@@ -9,13 +9,15 @@
   background-color: red;
 }
 .page-home .tooltip {
-  height: 90rpx;
   width: 100%;
   background-color: orange;
 }
 .page-home .nav-bar {
   width: 140rpx;
-  height: 1500rpx;
   background-color: yellow;
   float: left;
+}
+.page-home .items-window {
+  background-color: green;
+  float: right;
 }

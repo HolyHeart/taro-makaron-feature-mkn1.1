@@ -107,10 +107,14 @@ class Home extends Component {
 
 
     // 🔥🔥🔥 following states are added by Shichao 🔥🔥🔥
-    screenHeight: 0
+    screenHeight: 0,
+    screenWidth: 0,
+    titleHeight: 0,
+    tooltipHeight: 0
   }
 
   app = Taro.getApp()
+
 
   componentWillMount() {
     const { getSystemInfo } = this.props
@@ -124,13 +128,22 @@ class Home extends Component {
     }
     getSystemInfo(systemInfo)
 
-    console.log('Screen Height', systemInfo.screenHeight)
+
+
+    console.log('🔥初始化高度🔥')
     this.setState({
-      screenHeight: systemInfo.screenHeight
+      screenHeight: systemInfo.screenHeight,
+      screenWidth: systemInfo.screenWidth,
+      tooltipHeight: 90 
     })
   }
   componentDidMount() {
     this._initPage()
+
+
+    this.setState({
+      titleHeight: globalData.totalTopHeight * 2 + 20
+    })
   }
   componentWillReceiveProps(nextProps) {
     // console.log(this.props, nextProps)
@@ -340,10 +353,12 @@ class Home extends Component {
           }
         >懒人抠图</Title>
 
-        <View className='title-filler' style={{ height: globalData.totalTopHeight * 2 + 20 + 'rpx' }}></View>
-        <View className='tooltip'>Blah blah blah</View>
+        <View className='title-filler' style={{ height: this.state.titleHeight + 'rpx' }}></View>
+        <View className='tooltip' style={{ height: this.state.tooltipHeight + 'rpx' }}>Blah blah blah</View>
 
-        <View className='nav-bar'></View>
+        <View className='nav-bar' style={{ height: this.state.screenHeight * 2 - this.state.titleHeight - this.state.tooltipHeight + 'rpx' }}></View>
+
+        <View className='items-window' style={{ height: this.state.screenHeight * 2 - this.state.titleHeight - this.state.tooltipHeight + 'rpx', width: this.state.screenWidth * 2 - 140 + 'rpx'}}></View>
         
 
 

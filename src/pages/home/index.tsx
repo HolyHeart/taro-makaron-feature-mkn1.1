@@ -325,6 +325,8 @@ class Home extends Component {
 
         <View className='title-filler' style={{ height: globalData.totalTopHeight * 2 + 20 + 'rpx' }}></View>
         <View className='tooltip'>Blah blah blah</View>
+
+        <View className='nav-bar'></View>
         
 
 

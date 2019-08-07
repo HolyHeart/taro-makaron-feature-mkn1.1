@@ -273,7 +273,7 @@ class Share extends Component {
             <CustomIcon type="home" theme="dark" onClick={this.pageToHome} />
           }
           color='#333'
-        >马卡龙完图</Title>
+        >懒人抠图</Title>
         <View className='main-section'>
           {shareSourceType === 'image' &&
             <View className='pic-wrap'>

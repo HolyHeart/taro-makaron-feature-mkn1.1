@@ -160,7 +160,8 @@ class Dynamic extends Component {
         remoteUrl: '',
       }
     },
-    videoRatio: 2
+    videoRatio: 2,
+    ableToShareToQZone: false
   }
 
   app = Taro.getApp()
@@ -186,6 +187,7 @@ class Dynamic extends Component {
   }
   componentDidMount () {
     this._initPage()
+    this.canIShareToQQZone()
   }
   componentWillReceiveProps (nextProps) {
     // console.log(this.props, nextProps)
@@ -250,6 +252,18 @@ class Dynamic extends Component {
       ] 
     })
   }
+
+  // qq空间分享兼容性检测
+  canIShareToQQZone = () => {
+    if (qq.canIUse('openQzonePublish')) {
+      console.log('🔥🔥🔥可以分享到空间')
+      this.setState({
+        ableToShareToQZone: true
+      })
+    } else {
+      console.log('QQ版本低，不支持分享到空间')
+    }
+  } 
 
   _initPage = async () => {
     globalData.choosedImage = globalData.choosedImage || 'http://tmp/wxcfe56965f4d986f0.o6zAJsztn2DIgXEGteELseHpiOtU.6gRGsIZIvyytf45cffd60a62912bada466d51e03f6fa.jpg'
@@ -1286,8 +1300,13 @@ class Dynamic extends Component {
             renderButton={
               <View className="btn-wrap">
                 <Button className="custom-button pink btn-1" hoverClass="btn-hover" openType="share" >分享给好友</Button>
-                <Button className="custom-button dark btn-2" hoverClass="btn-hover"  onClick={this.publishToQzone}>同步到说说</Button>
-                <Button className="custom-button dark btn-3" hoverClass="btn-hover"  onClick={this.handleShowGif}>保存Gif</Button>
+                {this.state.ableToShareToQZone ? 
+                <View>
+                  <Button className="custom-button dark btn-2" hoverClass="btn-hover"  onClick={this.publishToQzone}>同步到说说</Button>
+                  <Button className="custom-button dark btn-3" hoverClass="btn-hover"  onClick={this.handleShowGif}>保存Gif</Button>
+                </View>: <View>
+                  <Button className="custom-button dark btn-4" hoverClass="btn-hover"  onClick={this.handleShowGif}>保存Gif</Button>
+                </View>}      
               </View>
             }
           />

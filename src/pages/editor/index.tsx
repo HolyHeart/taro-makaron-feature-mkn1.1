@@ -698,6 +698,22 @@ class Editor extends Component {
     this.pageToHome()
   }
 
+  // 发布到QQ空间
+
+  publishToQzone = () => {
+    const {currentScene} = this.state
+    const shareContent = currentScene.shareContent || (globalData.themeData && globalData.themeData.shareContent)
+    qq.openQzonePublish({
+      text: shareContent, 
+      media: [
+        {
+          type: 'photo',
+          path: this.state.result.shareImage.localUrl
+        }
+      ]
+    })
+  }
+
   setResultModalStatus = (flag = false) => {
     const {result} = this.state
     result.show = flag
@@ -1430,7 +1446,8 @@ class Editor extends Component {
             renderButton={
               <View className="btn-wrap">
                 <Button className="custom-button pink btn-1" hoverClass="btn-hover" openType="share" >分享给好友</Button>
-                <Button className="custom-button dark btn-2" hoverClass="btn-hover"  onClick={this.handlePlayAgain}>再玩一次</Button>
+                <Button className="custom-button dark btn-2" hoverClass="btn-hover"  onClick={this.publishToQzone}>同步到说说</Button>
+                <Button className="custom-button dark btn-3" hoverClass="btn-hover"  onClick={this.handlePlayAgain}>再玩一次</Button>
               </View>
             }
           />

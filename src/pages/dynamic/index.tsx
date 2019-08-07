@@ -236,6 +236,21 @@ class Dynamic extends Component {
     }
   }
 
+  // 发布到QQ空间
+  publishToQzone = () => {
+    const {currentScene} = this.state
+    const shareContent = currentScene.shareContent || (globalData.themeData && globalData.themeData.shareContent)
+    qq.openQzonePublish({
+      text: shareContent, 
+      media: [
+        {
+          type: 'video',
+          path: globalData.videoQQZonePublishLocalUrl
+        }
+      ] 
+    })
+  }
+
   _initPage = async () => {
     globalData.choosedImage = globalData.choosedImage || 'http://tmp/wxcfe56965f4d986f0.o6zAJsztn2DIgXEGteELseHpiOtU.6gRGsIZIvyytf45cffd60a62912bada466d51e03f6fa.jpg'
     this.calFrameRect()
@@ -684,11 +699,11 @@ class Dynamic extends Component {
     let result
     try {
       result = await this.createShareSource('mp4')
-      Taro.hideLoading()
-      this.isSaving = false
+      // Taro.hideLoading()
+      // this.isSaving = false
     } catch (err) {
-      Taro.hideLoading()
-      this.isSaving = false
+      // Taro.hideLoading()
+      // this.isSaving = false
       Taro.showToast({
         title: '生成视频失败',
         icon: 'fail',
@@ -721,6 +736,8 @@ class Dynamic extends Component {
       sourceUrl: shareVideoRemoteUrl,
       sourceType: 'video',
       onSuccess: () => {
+        Taro.hideLoading()
+        this.isSaving = false
         Taro.showToast({
           title: '保存成功!',
           icon: 'success',
@@ -734,6 +751,8 @@ class Dynamic extends Component {
         this.setResultModalStatus(false)
       },
       onFail: () => {
+        Taro.hideLoading()
+        this.isSaving = false
         Taro.showToast({
           title: '保存失败!',
           icon: 'success',
@@ -1267,7 +1286,8 @@ class Dynamic extends Component {
             renderButton={
               <View className="btn-wrap">
                 <Button className="custom-button pink btn-1" hoverClass="btn-hover" openType="share" >分享给好友</Button>
-                <Button className="custom-button dark btn-2" hoverClass="btn-hover"  onClick={this.handleShowGif}>保存Gif</Button>
+                <Button className="custom-button dark btn-2" hoverClass="btn-hover"  onClick={this.publishToQzone}>同步到说说</Button>
+                <Button className="custom-button dark btn-3" hoverClass="btn-hover"  onClick={this.handleShowGif}>保存Gif</Button>
               </View>
             }
           />

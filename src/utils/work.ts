@@ -3,6 +3,8 @@ import Taro from '@tarojs/taro'
 import { cacheImg } from '@/services/cache'
 import service from '@/services/service'
 import tool from './tool'
+import globalData from '@/services/global_data'
+
 interface saveSourceOptions {
   location: string,
   sourceUrl: any,
@@ -196,7 +198,8 @@ const downloadRemoteImage = async (remoteUrl = '') => {
 // 将本地或远程资源存储到相册
 const saveSourceToPhotosAlbum = async (options:saveSourceOptions) => {
   options.location = options.location || 'local'
-  options.sourceType = options.location || 'image'
+  // 更改options.location为options.sourceType，解决iPhone无法保存视频的bug    by Shichao
+  options.sourceType = options.sourceType || 'image'
   let localUrl
   if (options.location === 'remote') {
     try {
@@ -211,6 +214,7 @@ const saveSourceToPhotosAlbum = async (options:saveSourceOptions) => {
   // 保存到相册
   try {
     if (options.sourceType === 'video') {
+      globalData.videoQQZonePublishLocalUrl = localUrl
       await Taro.saveVideoToPhotosAlbum({filePath: localUrl})
     } else {
       await Taro.saveImageToPhotosAlbum({filePath: localUrl})

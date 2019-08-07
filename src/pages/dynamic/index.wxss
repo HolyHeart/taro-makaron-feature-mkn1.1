@@ -3,7 +3,7 @@ page {
   height: 100%;
   overflow-y: hidden;
 }
-.page-editor {
+.page-dynamic {
   position: relative;
   width: 100%;
   height: 100%;
@@ -14,58 +14,51 @@ page {
   align-items: center;
   justify-content: center;
 }
-.page-editor .pic-section {
+.page-dynamic .pic-section {
   position: relative;
   width: 690rpx;
-  height: 920rpx;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
-.page-editor .pic-section .raw {
+.page-dynamic .pic-section .raw {
   position: absolute;
-  left: 50%;
-  transition: all 0.2s;
-  top: 50%;
+  left: 0;
+  top: 0;
   width: 690rpx;
   height: 920rpx;
-  transform: translateX(-50%) translateY(-50%);
 }
-.page-editor .pic-section .raw.hidden {
+.page-dynamic .pic-section .raw.hidden {
   opacity: 0;
 }
-.page-editor .pic-section .crop {
+.page-dynamic .pic-section .crop {
   position: relative;
   width: 690rpx;
   height: 920rpx;
-  transition: all 0.2s;
   overflow: hidden;
   box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.3);
 }
-.page-editor .pic-section .crop.hidden {
+.page-dynamic .pic-section .crop.hidden {
   opacity: 0;
 }
-.page-editor .pic-section .crop .background-image {
+.page-dynamic .pic-section .crop .background-image {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
 }
-.page-editor .pic-section .crop .raw-image {
+.page-dynamic .pic-section .crop .raw-image {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
 }
-.page-editor .button-section {
+.page-dynamic .button-section {
   margin-top: 20px;
 }
-.page-editor .button-section.high {
+.page-dynamic .button-section.high {
   margin-top: 60px;
 }
-.page-editor .canvas-wrap {
+.page-dynamic .canvas-wrap {
   position: fixed;
   left: 0;
   bottom: -3050px;
@@ -73,18 +66,18 @@ page {
   opacity: 0;
   visibility: none;
 }
-.page-editor .btn-wrap {
+.page-dynamic .btn-wrap {
   width: 690rpx;
 }
-.page-editor .btn-wrap .btn-1 {
+.page-dynamic .btn-wrap .btn-1 {
   margin-top: 40rpx;
 }
-.page-editor .btn-wrap .btn-2 {
+.page-dynamic .btn-wrap .btn-2 {
   margin-top: 30rpx;
   width: 49%;
   float: left;
 }
-.page-editor .btn-wrap .btn-3 {
+.page-dynamic .btn-wrap .btn-3 {
   margin-top: 30rpx;
   width: 49%;
   float: right;

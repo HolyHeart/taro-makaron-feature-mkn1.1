@@ -2,7 +2,6 @@ import { ComponentClass } from 'react'
 import Taro, { Component, Config } from '@tarojs/taro'
 import { View, Image, Button } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
-
 import { getSystemInfo } from '@/model/actions/global'
 import work from '@/utils/work'
 import Title from '@/components/Title'
@@ -16,11 +15,8 @@ import { core, base } from '@/services/service'
 import Session from '@/services/session'
 import bg from '@/assets/images/BG@2x.png'
 import by from '@/assets/images/by@3x.png'
-import toApp from '@/assets/images/app@2x.png'
-// import pic_loading from '@/assets/images/pic_loading.png'
 import pic_loading_big from '@/assets/images/0@2x.png'
 import pic_feedback from '@/assets/images/feedback.png'
-
 import pic_loading_1 from '@/assets/images/1@2x.png'
 import pic_loading_2 from '@/assets/images/2@2x.png'
 import pic_loading_3 from '@/assets/images/3@2x.png'
@@ -28,6 +24,7 @@ import pic_loading_4 from '@/assets/images/4@2x.png'
 import pic_loading_5 from '@/assets/images/5@2x.png'
 import pic_loading_6 from '@/assets/images/6@2x.png'
 import './index.less'
+
 const default_column = [
   {
     columnId: "189063862158151681",
@@ -106,6 +103,8 @@ class Home extends Component {
     categoryList: default_column,
     defaultThemeData: {},
     isScrollToTop: true
+
+
   }
 
   app = Taro.getApp()
@@ -128,9 +127,7 @@ class Home extends Component {
   componentWillReceiveProps(nextProps) {
     // console.log(this.props, nextProps)
   }
-
   componentWillUnmount() { }
-
   componentDidShow() {
     const data = Taro.getStorageSync('firstView')
     // TODO 如果没有授权，取得授权
@@ -145,7 +142,6 @@ class Home extends Component {
       })
     }
   }
-
   componentDidHide() { }
   onPageScroll(e) {
     if (e.scrollTop > 0) {
@@ -247,7 +243,6 @@ class Home extends Component {
     }
   }
 
-
   handleFormSubmit = (e) => {
     const { detail: { formId } } = e
     if (formId) {
@@ -271,7 +266,6 @@ class Home extends Component {
       open: false
     })
   }
-
 
   todo = () => {
     const { sceneType } = globalData
@@ -328,13 +322,16 @@ class Home extends Component {
             </View>
           }
         >懒人抠图</Title>
-        <View className="main">
+
+        <View className='title-filler' style={{ height: globalData.totalTopHeight * 2 + 20 + 'rpx' }}></View>
+        <View className='tooltip'>Blah blah blah</View>
+        
+
+
+        {/* <View className="main">
           <View className="main-bg">
-            {/* {isIphoneX && <View style="width: 100%; height:100rpx; background:rgb(100,180,255)"></View>} */}
             <Image src={bg} mode="widthFix" style="width:100%;height:100%" />
           </View>
-
-
           <View className={`main-container ${isIphoneX ? 'iphoneX' : ''}`} onClick={this.handleClickMain}>
             {
               categoryList.map(column => {
@@ -357,9 +354,6 @@ class Home extends Component {
                 )
               })
             }
-
-
-
             <View className="bottomInfo" style='margin-top:50rpx;font-size:10px'>
               - 到底了哦 -
             </View>
@@ -367,7 +361,11 @@ class Home extends Component {
               <Image src={by} mode="widthFix" style="width:266rpx" />
             </View>
           </View>
-        </View>
+        </View> */}
+
+
+
+
         <AuthModal />
         <Guide />
       </View>

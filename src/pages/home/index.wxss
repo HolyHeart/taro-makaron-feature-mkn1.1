@@ -1,0 +1,14 @@
+.page-home {
+  box-sizing: border-box;
+  position: relative;
+  background: #fff;
+  -webkit-overflow-scrolling: touch;
+}
+.page-home .title-filler {
+  width: 100%;
+  background-color: red;
+}
+.page-home .tooltip {
+  width: 100%;
+  background-color: orange;
+}

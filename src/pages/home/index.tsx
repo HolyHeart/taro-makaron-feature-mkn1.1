@@ -26,6 +26,7 @@ import pic_loading_6 from '@/assets/images/6@2x.png'
 import homepage_logo from '@/assets/images/logo@2x.png'
 import icon_collect from '@/assets/images/icon_collect@2x.png'
 import icon_close from '@/assets/images/icon_nofollow_close@2x.png'
+import tooltip_pic from '@/assets/images/tips_collect@2x.png'
 import './index.less'
 
 const default_column = [
@@ -137,7 +138,7 @@ class Home extends Component {
     this.setState({
       screenHeight: systemInfo.screenHeight,
       screenWidth: systemInfo.screenWidth,
-      tooltipHeight: 40 
+      tooltipHeight: 47 
     })
   }
   componentDidMount() {
@@ -362,14 +363,20 @@ class Home extends Component {
 
 
 
-        <View className='tooltip' style={{ height: this.state.tooltipHeight + 'px', lineHeight:  this.state.tooltipHeight + 'px'}}>
+        {/* <View className='tooltip' style={{ height: this.state.tooltipHeight + 'px', lineHeight:  this.state.tooltipHeight + 'px'}}>
           <Text className='tooltip-text'>喜欢懒人抠图，就点击 </Text>
           <Image src={icon_collect} style='height: 14px; width: 24px;'></Image>
-          <Text className='tooltip-text'> 添加到我的小程序吧！</Text>
+          <Text className='tooltip-text'> 添加到我的小程序吧！</Text> */}
 
           {/* TODO 待上 */}
           {/* <Image src={icon_close} style='height: 14px; width: 14px; float: right;'></Image> */}
+        {/* </View> */}
+
+        <View className='tooltip' style={{ height: this.state.tooltipHeight + 'px'}}>
+          <Image src={tooltip_pic} style='width: 100%;' mode='widthFix'></Image>
         </View>
+
+
 
 
 

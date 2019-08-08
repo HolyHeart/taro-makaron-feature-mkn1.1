@@ -24,8 +24,26 @@
   width: 90%;
   margin-top: 20px;
   margin-bottom: 20px;
-  background-color: aquamarine;
+  background-color: #FF3366;
+  border-top-right-radius: 140px;
+  border-bottom-right-radius: 140px;
   text-align: center;
+}
+.page-home .nav-bar .nav-label .nav-label-text {
+  color: white;
+  font-size: 30px;
+}
+.page-home .nav-bar .nav-label-2 {
+  height: 70px;
+  line-height: 70px;
+  width: 90%;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+.page-home .nav-bar .nav-label-2 .nav-label-2-text {
+  color: #333333;
+  font-size: 30px;
 }
 .page-home .nav-bar ::-webkit-scrollbar {
   width: 0;
@@ -66,7 +84,7 @@
   height: 0;
 }
 .page-home .items-window .window-container .item-block .item {
-  background-color: purple;
+  background-color: #FF3366;
   width: 90%;
   padding-bottom: 90%;
   height: 0;

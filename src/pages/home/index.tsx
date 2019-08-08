@@ -138,7 +138,7 @@ class Home extends Component {
     this.setState({
       screenHeight: systemInfo.screenHeight,
       screenWidth: systemInfo.screenWidth,
-      tooltipHeight: 47 
+      tooltipHeight: systemInfo.screenWidth/750 * 92,
     })
   }
   componentDidMount() {
@@ -329,7 +329,12 @@ class Home extends Component {
 
 
   // 🔥🔥🔥 following functions are added by Shichao 🔥🔥🔥
-
+  closeTooltip = () => {
+    console.log('关闭收藏提示')
+    this.setState({
+      tooltipHeight: 0,
+    })
+  }
 
 
 
@@ -359,21 +364,12 @@ class Home extends Component {
         <View className='title-filler' style={{ height: this.state.titleHeight + 'px' }}></View>
         
 
-
-
-
-
-        {/* <View className='tooltip' style={{ height: this.state.tooltipHeight + 'px', lineHeight:  this.state.tooltipHeight + 'px'}}>
-          <Text className='tooltip-text'>喜欢懒人抠图，就点击 </Text>
-          <Image src={icon_collect} style='height: 14px; width: 24px;'></Image>
-          <Text className='tooltip-text'> 添加到我的小程序吧！</Text> */}
-
-          {/* TODO 待上 */}
-          {/* <Image src={icon_close} style='height: 14px; width: 14px; float: right;'></Image> */}
-        {/* </View> */}
-
         <View className='tooltip' style={{ height: this.state.tooltipHeight + 'px'}}>
-          <Image src={tooltip_pic} style='width: 100%;' mode='widthFix'></Image>
+
+        {this.state.tooltipHeight === 0 ?
+                    <View></View>
+                    : <Image src={tooltip_pic} style='width: 100%;' mode='widthFix' onClick={this.closeTooltip}></Image>}
+
         </View>
 
 
@@ -385,22 +381,19 @@ class Home extends Component {
           
           <View className='nav-filler'></View>
 
-          <View className='nav-label'>🔥🔥</View>
-          <View className='nav-label'>🔥🔥</View>
-          <View className='nav-label'>🔥🔥</View>
-          <View className='nav-label'>🔥🔥</View>
-          <View className='nav-label'>🔥🔥</View>
-          <View className='nav-label'>🔥🔥</View>
-          <View className='nav-label'>🔥🔥</View>
-          <View className='nav-label'>🔥🔥</View>
-          <View className='nav-label'>🔥🔥</View>
-          <View className='nav-label'>🔥🔥</View>
-          <View className='nav-label'>🔥🔥</View>
-          <View className='nav-label'>🔥🔥</View>
-          <View className='nav-label'>🔥🔥</View>
-          <View className='nav-label'>🔥🔥</View>
-          <View className='nav-label'>🔥🔥</View>
-          <View className='nav-label'>🔥🔥</View>
+          <View className='nav-label'><Text className='nav-label-text'>今日</Text></View>
+          <View className='nav-label-2'><Text className='nav-label-2-text'>动漫</Text></View>
+          <View className='nav-label-2'><Text className='nav-label-2-text'>证件照</Text></View>
+          <View className='nav-label-2'><Text className='nav-label-2-text'>明星</Text></View>
+          <View className='nav-label-2'><Text className='nav-label-2-text'>游戏</Text></View>
+          <View className='nav-label-2'><Text className='nav-label-2-text'>头像</Text></View>
+          <View className='nav-label-2'><Text className='nav-label-2-text'>壁纸</Text></View>
+          <View className='nav-label-2'><Text className='nav-label-2-text'>表情包</Text></View>
+          <View className='nav-label-2'><Text className='nav-label-2-text'>旅游</Text></View>
+          <View className='nav-label-2'><Text className='nav-label-2-text'>P图大赛</Text></View>
+          <View className='nav-label-2'><Text className='nav-label-2-text'>动漫</Text></View>
+          <View className='nav-label-2'><Text className='nav-label-2-text'>证件照</Text></View>
+          <View className='nav-label-2'><Text className='nav-label-2-text'>明星</Text></View>
 
           <View className='nav-filler'></View>
 

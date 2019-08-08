@@ -1,6 +1,6 @@
 import { ComponentClass } from 'react'
 import Taro, { Component, Config } from '@tarojs/taro'
-import { View, Image, Button } from '@tarojs/components'
+import { View, Image, Button, ScrollView } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 import { getSystemInfo } from '@/model/actions/global'
 import work from '@/utils/work'
@@ -354,12 +354,84 @@ class Home extends Component {
 
         <View className='title-filler' style={{ height: this.state.titleHeight + 'px' }}></View>
         
-        <View className='tooltip' style={{ height: this.state.tooltipHeight + 'px' }}>Blah blah blah</View>
+        <View className='tooltip' style={{ height: this.state.tooltipHeight + 'px' }}>🔥🔥🔥🔥</View>
 
-        <View className='nav-bar' style={{ height: this.state.screenHeight - this.state.titleHeight - this.state.tooltipHeight + 'px' }}></View>
+        <ScrollView className='nav-bar' scrollY style={{ height: this.state.screenHeight - this.state.titleHeight - this.state.tooltipHeight + 'px' }}>
+          
+          <View className='nav-filler'></View>
 
-        <View className='items-window' style={{ height: this.state.screenHeight - this.state.titleHeight - this.state.tooltipHeight + 'px' }}></View>
+          <View className='nav-label'>🔥🔥</View>
+          <View className='nav-label'>🔥🔥</View>
+          <View className='nav-label'>🔥🔥</View>
+          <View className='nav-label'>🔥🔥</View>
+          <View className='nav-label'>🔥🔥</View>
+          <View className='nav-label'>🔥🔥</View>
+          <View className='nav-label'>🔥🔥</View>
+          <View className='nav-label'>🔥🔥</View>
+          <View className='nav-label'>🔥🔥</View>
+          <View className='nav-label'>🔥🔥</View>
+          <View className='nav-label'>🔥🔥</View>
+          <View className='nav-label'>🔥🔥</View>
+          <View className='nav-label'>🔥🔥</View>
+          <View className='nav-label'>🔥🔥</View>
+          <View className='nav-label'>🔥🔥</View>
+          <View className='nav-label'>🔥🔥</View>
+
+          <View className='nav-filler'></View>
+
+        </ScrollView>
+
+
+
+
+
+        <ScrollView className='items-window' scrollY style={{ height: this.state.screenHeight - this.state.titleHeight - this.state.tooltipHeight + 'px' }}>
+          
+          <View className='window-divider'>🔥🔥🔥🔥</View>
+
+          <View className='window-container'>
+            <View className='item-block'><View className='item'></View></View>
+            <View className='item-block'><View className='item'></View></View>
+            <View className='item-block'><View className='item'></View></View>
+            <View className='item-block'><View className='item'></View></View>
+            <View className='item-block'><View className='item'></View></View>
+          </View>
+
+          <View className='window-divider'>🔥🔥🔥🔥</View>
+
+          <View className='window-container'>
+            <View className='item-block'><View className='item'></View></View>
+            <View className='item-block'><View className='item'></View></View>
+            <View className='item-block'><View className='item'></View></View>
+            <View className='item-block'><View className='item'></View></View>
+          </View>
+
+          <View className='window-divider'>🔥🔥🔥🔥</View>
+
+          <View className='window-container'>
+            <View className='item-block'><View className='item'></View></View>
+            <View className='item-block'><View className='item'></View></View>
+            <View className='item-block'><View className='item'></View></View>
+          </View>
+
+          <View className='window-divider'>🔥🔥🔥🔥</View>
+
+          <View className='window-container'>
+            <View className='item-block'><View className='item'></View></View>
+            <View className='item-block'><View className='item'></View></View>
+          </View>
+
+          <View className='window-divider'>🔥🔥🔥🔥</View>  
+
+        </ScrollView>
         
+
+
+
+
+
+
+
 
 
         {/* <View className="main">

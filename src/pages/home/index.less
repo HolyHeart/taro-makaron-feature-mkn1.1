@@ -12,17 +12,66 @@
   .tooltip {
     width: 100%;
     background-color: orange;
+    text-align: center;
   }
   .nav-bar {
     width: 20%;
     background-color: yellow;
     float: left;
+    .nav-filler {
+      width: 100%;
+      height: 30px;
+    }
+    .nav-label {
+      height: 70px;
+      width: 90%;
+      margin-top: 20px;
+      margin-bottom: 20px;
+      background-color: aquamarine;
+    }
+    ::-webkit-scrollbar{
+      width: 0;
+      height: 0;
+      color: transparent;
+    }
   }
   .items-window {
     width: 80%;
     background-color: green;
     float: right;
+    .window-divider {
+      width: 100%;
+      height: 80px;
+      background-color: blue;
+      text-align: center;
+    }
+    .window-container {
+      height: auto;
+      margin-left: 20px;
+      margin-right: 20px;
+      margin-top: 10px;
+      margin-bottom: 10px;
+      display: flex;
+      flex-direction:row;
+      flex-wrap:wrap;
+      .item-block {
+        width: 50%;
+        padding-bottom: 50%;
+        height: 0;
+        .item {
+          background-color: purple;
+          width: 90%;
+          padding-bottom: 90%;
+          height: 0;
+          box-shadow:4rpx 4rpx 8rpx rgba(0,0,0,0.5);
+          margin-left: 5%;
+          margin-top: 5%;
+        }
+      }
+    }
   }
+
+  
 
   // .main {
   //   position:relative;

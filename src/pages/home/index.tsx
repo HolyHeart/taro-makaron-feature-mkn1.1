@@ -130,19 +130,18 @@ class Home extends Component {
 
 
 
-    console.log('🔥初始化高度🔥')
+    console.log('🔥初始化高度🔥', '屏幕高度：', systemInfo.screenHeight, '屏幕宽度：', systemInfo.screenWidth, '系统参数：', systemInfo)
     this.setState({
       screenHeight: systemInfo.screenHeight,
       screenWidth: systemInfo.screenWidth,
-      tooltipHeight: 90 
+      tooltipHeight: 45 
     })
   }
   componentDidMount() {
     this._initPage()
 
-
     this.setState({
-      titleHeight: globalData.totalTopHeight * 2 + 20
+      titleHeight: globalData.totalTopHeight
     })
   }
   componentWillReceiveProps(nextProps) {
@@ -353,12 +352,13 @@ class Home extends Component {
           }
         >懒人抠图</Title>
 
-        <View className='title-filler' style={{ height: this.state.titleHeight + 'rpx' }}></View>
-        <View className='tooltip' style={{ height: this.state.tooltipHeight + 'rpx' }}>Blah blah blah</View>
+        <View className='title-filler' style={{ height: this.state.titleHeight + 'px' }}></View>
+        
+        <View className='tooltip' style={{ height: this.state.tooltipHeight + 'px' }}>Blah blah blah</View>
 
-        <View className='nav-bar' style={{ height: this.state.screenHeight * 2 - this.state.titleHeight - this.state.tooltipHeight + 'rpx' }}></View>
+        <View className='nav-bar' style={{ height: this.state.screenHeight - this.state.titleHeight - this.state.tooltipHeight + 'px' }}></View>
 
-        <View className='items-window' style={{ height: this.state.screenHeight * 2 - this.state.titleHeight - this.state.tooltipHeight + 'rpx', width: this.state.screenWidth * 2 - 140 + 'rpx'}}></View>
+        <View className='items-window' style={{ height: this.state.screenHeight - this.state.titleHeight - this.state.tooltipHeight + 'px' }}></View>
         
 
 

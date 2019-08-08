@@ -13,11 +13,12 @@
   background-color: orange;
 }
 .page-home .nav-bar {
-  width: 140rpx;
+  width: 20%;
   background-color: yellow;
   float: left;
 }
 .page-home .items-window {
+  width: 80%;
   background-color: green;
   float: right;
 }

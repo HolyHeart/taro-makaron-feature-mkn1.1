@@ -1,6 +1,6 @@
 import { ComponentClass } from 'react'
 import Taro, { Component, Config } from '@tarojs/taro'
-import { View, Image, Button, ScrollView } from '@tarojs/components'
+import { View, Image, Button, ScrollView, Text } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 import { getSystemInfo } from '@/model/actions/global'
 import work from '@/utils/work'
@@ -23,6 +23,9 @@ import pic_loading_3 from '@/assets/images/3@2x.png'
 import pic_loading_4 from '@/assets/images/4@2x.png'
 import pic_loading_5 from '@/assets/images/5@2x.png'
 import pic_loading_6 from '@/assets/images/6@2x.png'
+import homepage_logo from '@/assets/images/logo@2x.png'
+import icon_collect from '@/assets/images/icon_collect@2x.png'
+import icon_close from '@/assets/images/icon_nofollow_close@2x.png'
 import './index.less'
 
 const default_column = [
@@ -134,7 +137,7 @@ class Home extends Component {
     this.setState({
       screenHeight: systemInfo.screenHeight,
       screenWidth: systemInfo.screenWidth,
-      tooltipHeight: 45 
+      tooltipHeight: 40 
     })
   }
   componentDidMount() {
@@ -354,7 +357,22 @@ class Home extends Component {
 
         <View className='title-filler' style={{ height: this.state.titleHeight + 'px' }}></View>
         
-        <View className='tooltip' style={{ height: this.state.tooltipHeight + 'px' }}>🔥🔥🔥🔥</View>
+
+
+
+
+
+        <View className='tooltip' style={{ height: this.state.tooltipHeight + 'px', lineHeight:  this.state.tooltipHeight + 'px'}}>
+          <Text className='tooltip-text'>喜欢懒人抠图，就点击 </Text>
+          <Image src={icon_collect} style='height: 14px; width: 24px;'></Image>
+          <Text className='tooltip-text'> 添加到我的小程序吧！</Text>
+
+          {/* TODO 待上 */}
+          {/* <Image src={icon_close} style='height: 14px; width: 14px; float: right;'></Image> */}
+        </View>
+
+
+
 
         <ScrollView className='nav-bar' scrollY style={{ height: this.state.screenHeight - this.state.titleHeight - this.state.tooltipHeight + 'px' }}>
           
@@ -387,7 +405,7 @@ class Home extends Component {
 
         <ScrollView className='items-window' scrollY style={{ height: this.state.screenHeight - this.state.titleHeight - this.state.tooltipHeight + 'px' }}>
           
-          <View className='window-divider'>🔥🔥🔥🔥</View>
+          <View className='window-divider'><Text className='window-divider-text'>- </Text><Image className='window-divider-icon' src={homepage_logo}/><Text className='window-divider-text'>马卡龙玩图倾力出品 -</Text></View>
 
           <View className='window-container'>
             <View className='item-block'><View className='item'></View></View>
@@ -397,7 +415,7 @@ class Home extends Component {
             <View className='item-block'><View className='item'></View></View>
           </View>
 
-          <View className='window-divider'>🔥🔥🔥🔥</View>
+          <View className='window-divider'><Text className='window-divider-text'>- 动漫 -</Text></View>
 
           <View className='window-container'>
             <View className='item-block'><View className='item'></View></View>
@@ -406,7 +424,7 @@ class Home extends Component {
             <View className='item-block'><View className='item'></View></View>
           </View>
 
-          <View className='window-divider'>🔥🔥🔥🔥</View>
+          <View className='window-divider'><Text className='window-divider-text'>- 证件照 -</Text></View>
 
           <View className='window-container'>
             <View className='item-block'><View className='item'></View></View>
@@ -414,14 +432,25 @@ class Home extends Component {
             <View className='item-block'><View className='item'></View></View>
           </View>
 
-          <View className='window-divider'>🔥🔥🔥🔥</View>
+          <View className='window-divider'><Text className='window-divider-text'>- 明星 -</Text></View>
 
           <View className='window-container'>
             <View className='item-block'><View className='item'></View></View>
             <View className='item-block'><View className='item'></View></View>
           </View>
 
-          <View className='window-divider'>🔥🔥🔥🔥</View>  
+
+
+
+          <View className='window-divider'><Text className='window-divider-text'>- P图大赛 -</Text></View>
+
+          <View className='window-container'>
+            <View className='item-block'><View className='item'></View></View>
+            <View className='item-block'><View className='item'></View></View>
+          </View>
+
+
+          <View className='window-divider'><Text className='window-divider-text'>- 我是有底线的小程序 -</Text></View>  
 
         </ScrollView>
         

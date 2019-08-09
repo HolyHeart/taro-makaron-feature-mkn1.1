@@ -445,8 +445,8 @@ class Home extends Component {
           <View className='window-divider'><Text className='window-divider-text'>- P图大赛 -</Text></View>
 
           <View className='window-container'>
-            <View className='item-block'><View className='item'></View></View>
-            <View className='item-block'><View className='item'></View></View>
+            <View className='item-block-ps'><View className='item-ps'></View></View>
+            <View className='item-block-ps'><View className='item-ps'></View></View>
           </View>
 
 

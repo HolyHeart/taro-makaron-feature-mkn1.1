@@ -93,3 +93,17 @@
   margin-top: 5%;
   border-radius: 3%;
 }
+.page-home .items-window .window-container .item-block-ps {
+  width: 100%;
+  padding-bottom: 50%;
+  height: 0;
+}
+.page-home .items-window .window-container .item-block-ps .item-ps {
+  background-color: #FF3366;
+  width: 95%;
+  padding-bottom: 45%;
+  height: 0;
+  box-shadow: 4rpx 4rpx 8rpx rgba(0, 0, 0, 0.5);
+  margin-left: 2.5%;
+  border-radius: 3%;
+}

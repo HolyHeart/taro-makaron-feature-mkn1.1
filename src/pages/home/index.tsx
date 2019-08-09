@@ -405,38 +405,38 @@ class Home extends Component {
 
         <ScrollView className='items-window' scrollY style={{ height: this.state.screenHeight - this.state.titleHeight - this.state.tooltipHeight + 'px' }}>
           
-          <View className='window-divider'><Text className='window-divider-text'>- </Text><Image className='window-divider-icon' src={homepage_logo}/><Text className='window-divider-text'>马卡龙玩图倾力出品 -</Text></View>
+          <View className='window-divider'><Text className='window-divider-text'>- </Text><Image className='window-divider-icon' src={homepage_logo}/><Text className='window-divider-text'> 马卡龙玩图倾力出品 -</Text></View>
 
           <View className='window-container'>
-            <View className='item-block'><View className='item'></View></View>
-            <View className='item-block'><View className='item'></View></View>
-            <View className='item-block'><View className='item'></View></View>
-            <View className='item-block'><View className='item'></View></View>
-            <View className='item-block'><View className='item'></View></View>
+            <View className='item-block'><View className='item' hoverClass="item-hover"></View></View>
+            <View className='item-block'><View className='item' hoverClass="item-hover"></View></View>
+            <View className='item-block'><View className='item' hoverClass="item-hover"></View></View>
+            <View className='item-block'><View className='item' hoverClass="item-hover"></View></View>
+            <View className='item-block'><View className='item' hoverClass="item-hover"></View></View>
           </View>
 
           <View className='window-divider'><Text className='window-divider-text'>- 动漫 -</Text></View>
 
           <View className='window-container'>
-            <View className='item-block'><View className='item'></View></View>
-            <View className='item-block'><View className='item'></View></View>
-            <View className='item-block'><View className='item'></View></View>
-            <View className='item-block'><View className='item'></View></View>
+            <View className='item-block'><View className='item' hoverClass="item-hover"></View></View>
+            <View className='item-block'><View className='item' hoverClass="item-hover"></View></View>
+            <View className='item-block'><View className='item' hoverClass="item-hover"></View></View>
+            <View className='item-block'><View className='item' hoverClass="item-hover"></View></View>
           </View>
 
           <View className='window-divider'><Text className='window-divider-text'>- 证件照 -</Text></View>
 
           <View className='window-container'>
-            <View className='item-block'><View className='item'></View></View>
-            <View className='item-block'><View className='item'></View></View>
-            <View className='item-block'><View className='item'></View></View>
+            <View className='item-block'><View className='item' hoverClass="item-hover"></View></View>
+            <View className='item-block'><View className='item' hoverClass="item-hover"></View></View>
+            <View className='item-block'><View className='item' hoverClass="item-hover"></View></View>
           </View>
 
           <View className='window-divider'><Text className='window-divider-text'>- 明星 -</Text></View>
 
           <View className='window-container'>
-            <View className='item-block'><View className='item'></View></View>
-            <View className='item-block'><View className='item'></View></View>
+            <View className='item-block'><View className='item' hoverClass="item-hover"></View></View>
+            <View className='item-block'><View className='item' hoverClass="item-hover"></View></View>
           </View>
 
 
@@ -445,8 +445,8 @@ class Home extends Component {
           <View className='window-divider'><Text className='window-divider-text'>- P图大赛 -</Text></View>
 
           <View className='window-container'>
-            <View className='item-block-ps'><View className='item-ps'></View></View>
-            <View className='item-block-ps'><View className='item-ps'></View></View>
+            <View className='item-block-single'><View className='item-single' hoverClass="item-single-hover"></View></View>
+            <View className='item-block-single'><View className='item-single' hoverClass="item-single-hover"></View></View>
           </View>
 
 

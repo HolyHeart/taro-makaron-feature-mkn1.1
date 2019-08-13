@@ -294,6 +294,7 @@ class Editor extends Component {
   // 初始化场景信息
   initSceneData = async (callback) => {
     // 全局主题数据
+    console.log('11')
     if (!globalData.themeData) {
       const themeId = globalData.themeId || appConfig.themeId
       const res = await service.core.theme(themeId)
@@ -306,6 +307,7 @@ class Editor extends Component {
     console.log(this.themeData.originalImage)
     this.themeData.originalCompleteImageUrl =this.themeData.originalImage.originalCompleteImageUrl
     this.themeData.imageLayer = JSON.parse(this.themeData.originalImage.imageLayer)
+    console.log(this.themeData.imageLayer)
     // this.themeData.imageLayer =
     this.themeData.preBackGroundList = work.getPreBgList(this.themeData.originalImage.preBackGroundList)
     const currentScene = this.themeData.preBackGroundList[0]

@@ -117,7 +117,7 @@ class Home extends Component {
     titleHeight: 0,
     tooltipHeight: 0,
     picHeight: 0,
-    
+
     currentCategoryName: ''
   }
 
@@ -358,7 +358,9 @@ class Home extends Component {
   }
   goScene = (scene,type) => {
     if(type==='challange'){
-      Taro.navigateTo({ url: `/pages/psChallenge/index?imageId=${scene.imageId}&activityId=${scene.activityId}` })
+      globalData.themeData= {}
+      globalData.themeData.originalImageList =scene
+      Taro.navigateTo({ url: `/pages/browser/index` })
     }else{
       // sceneType
       globalData.sceneConfig = scene
@@ -439,9 +441,9 @@ class Home extends Component {
                     {
                       // item.showStyle === 0 ?
                       item.originalImageList ? item.originalImageList.map((scene) => {
-                        return item.showStyle === 0 ? <View className='item-block' onClick={() => this.goScene(scene,'challange')}><View className='item' hoverClass="item-hover">
+                        return item.showStyle === 0 ? <View className='item-block' onClick={() => this.goScene(item.originalImageList,'challange')}><View className='item' hoverClass="item-hover">
                           <Image src={scene.originalImageUrl} mode="aspectFill" style={{ height:this.state.picHeight + 1 + 'px', width: this.state.picHeight + 'px', borderRadius: '3%'}} /></View></View> :
-                          <View className='item-block-single'><View className='item-single' onClick={() => this.goScene(scene,'challange')} hoverClass="item-single-hover">
+                          <View className='item-block-single'><View className='item-single' onClick={() => this.goScene(item.originalImageList,'challange')} hoverClass="item-single-hover">
                             <Image src={scene.originalImageUrl} mode="aspectFill" style="width:100%;height:100%" /></View></View>
                       }) :item.sceneInfoList && item.sceneInfoList.map((scene) => {
                         return item.showStyle === 0 ? <View className='item-block' onClick={() => this.goScene(scene,'editor')}><View className='item' hoverClass="item-hover">
@@ -463,7 +465,7 @@ class Home extends Component {
 
 
 
-        
+
         {/* <View className="main">
           <View className="main-bg">
             <Image src={bg} mode="widthFix" style="width:100%;height:100%" />

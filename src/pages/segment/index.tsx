@@ -75,6 +75,7 @@ class Segment extends Component {
   }
 
   state = {
+    chooseText:'添加人像照片',
     rawImage: {
       localUrl: '',
       remoteUrl: ''
@@ -181,14 +182,15 @@ class Segment extends Component {
   }
 
   _initPage = async () => {
-    this.calFrameRect()
-    this.initRawImage()
+
+    // this.initRawImage()
     await Session.set()
     this.initSceneData(() => {
+      this.calFrameRect()
     })
-    const separateResult = globalData.separateResult = await this.initSegment()
-    // console.log('separateResult', separateResult)
-    await this.initSeparateData(separateResult)
+    // const separateResult = globalData.separateResult = await this.initSegment()
+    // // console.log('separateResult', separateResult)
+    // await this.initSeparateData(separateResult)
   }
 
   _refreshPage = async (path) => {
@@ -245,6 +247,16 @@ class Segment extends Component {
           left: rect.left,
           top: rect.top,
         }
+      },()=>{
+        if(Taro.getStorageSync('lastSeparateImage')){
+          const {foreground} = this.state
+          this.setState({
+            foreground: {
+              ...foreground,
+              remoteUrl: Taro.getStorageSync('lastSeparateImage')
+            }
+          })
+        }
       })
     })
   }
@@ -275,25 +287,10 @@ class Segment extends Component {
   // 初始化场景信息
   initSceneData = async (callback) => {
     // 全局主题数据
-    if (!globalData.themeData) {
-      const themeId = globalData.themeId || appConfig.themeId
-      const res = await service.core.theme(themeId)
-      globalData.themeData = res.result && res.result.result
-    }
-    const themeData = globalData.themeData || {sceneList: []}
-    this.themeData.sceneList = work.getSceneList(themeData.sceneList || [])
-    // 去除sceneConfig属性
-    const sceneList = this.themeData.sceneList.map((v:object = {}) => {
-      const {sceneConfig, ...rest} = v
-      return {
-        ...rest
-      }
-    })
-    const currentScene = sceneList[0]
     this.setState({
-      sceneList: sceneList,
-      currentScene: currentScene
+      currentScene: globalData.sceneConfig || {}
     }, () => {
+      // console.log('state', this.state)
       typeof callback === 'function' && callback()
     })
   }
@@ -305,16 +302,9 @@ class Segment extends Component {
         type: -1,
         loading: true,
         showLoading: () => {
-          // console.log('showLoading')
-          // Taro.showLoading({
-          //   title: '照片变身中...',
-          //   mask: true,
-          // })
           this.showLoading()
         },
         hideLoading: () => {
-          // console.log('hideLoading')
-          // Taro.hideLoading()
           if (this.state.foreground.loaded) {
             this.hideLoading()
           }
@@ -338,6 +328,7 @@ class Segment extends Component {
     const { currentScene } = this.state
     this.changeSceneChooseSegment(currentScene, separateResult, (res = {}) => {
       // console.log('changeSceneChooseSegment', res)
+      Taro.setStorageSync('lastSeparateImage',res.separateUrl)
       this.setState({
         foreground: {
           ...this.state.foreground,
@@ -346,7 +337,6 @@ class Segment extends Component {
       })
     })
   }
-
   // 根据场景决定头像
   changeSceneChooseSegment = async (currentScene, separateResult = {}, callback) => {
     const { imageHost } = appConfig
@@ -619,10 +609,10 @@ class Segment extends Component {
   calcForegroundSize = () => {
     const {currentScene, sceneList, foreground, frame} = this.state
     const {originWidth, originHeight} = foreground
-    const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
+    // const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
 
     const imageRatio = originWidth / originHeight
-    const params = tool.JSON_parse(sceneInfo.sceneConfig)
+    const params = tool.JSON_parse(currentScene.sceneConfig)
     const autoScale = parseFloat(params.size.default)
 
     const result = {
@@ -651,11 +641,11 @@ class Segment extends Component {
     const {originWidth, originHeight} = foreground
     width = width || foreground.width
     height = height || foreground.height
-    const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
+    // const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
 
     const boxWidth = frame.width
     const boxHeight = frame.height
-    const sceneConfig = tool.JSON_parse(sceneInfo.sceneConfig)
+    const sceneConfig = tool.JSON_parse(currentScene.sceneConfig)
     const {position} = sceneConfig
     const type = position.place || '0'
     const result = {
@@ -788,7 +778,26 @@ class Segment extends Component {
       return result
     }
   }
-
+  todo = () => {
+    work.chooseImage({
+      onTap: (index) => {
+        // console.log('tap index', index)
+        if (index === 0) {
+          this.app.aldstat.sendEvent('编辑页面选择拍摄照片', '选择拍摄')
+        } else if (index === 1) {
+          this.app.aldstat.sendEvent('编辑页面选择相册照片', '选择相册')
+        }
+      },
+      onSuccess: async (path) => {
+        console.log('choosedImage', path, globalData)
+        this.app.aldstat.sendEvent('编辑页面人像成功', '上传成功')
+        globalData.choosedImage = path
+        const separateResult = globalData.separateResult = await this.initSegment()
+        console.log('separateResult', separateResult)
+        await this.initSeparateData(separateResult)
+      }
+    })
+}
   render () {
     const { loading, rawImage, frame, foreground, result, canvas } = this.state
     return (
@@ -805,7 +814,7 @@ class Segment extends Component {
             <View className={`raw ${(foreground.remoteUrl && foreground.loaded) ? 'hidden' : ''}`}>
               <Image src={rawImage.localUrl} style="width:100%;height:100%" mode="aspectFit"/>
             </View>
-            <View className={`crop ${(foreground.remoteUrl && foreground.loaded) ? '' : 'hidden'}`} id="crop">
+            <View className={`crop`} id="crop">
               <View className="layer-bg" onClick={this.handleBackgroundClick}></View>
               <Sticker
                 ref="foreground"
@@ -820,8 +829,14 @@ class Segment extends Component {
             </View>
           </View>
           <MarginTopWrap config={{large: 80, small: 60, default: 50}}>
-            <Button className="custom-button pink" hoverClass="btn-hover" onClick={this.handleOpenResult}>保存透明底图片(PNG)</Button>
+          <View style="display:flex;margin-top:100rpx">
+              <Button style='flex:1' className="custom-button pink" hoverClass="btn-hover" onClick={this.todo}>{this.state.chooseText}</Button>
+              <Button style='flex:1;margin-left:10px' className="custom-button white" openType="getUserInfo"  hoverClass="btn-hover" onClick={this.handleOpenResult}>保存透明底图片(PNG)</Button>
+            </View>
           </MarginTopWrap>
+          {/* <MarginTopWrap config={{large: 80, small: 60, default: 50}}>
+            <Button className="custom-button pink" hoverClass="btn-hover" onClick={this.handleOpenResult}>保存透明底图片(PNG)</Button>
+          </MarginTopWrap> */}
         </View>
         <View class="canvas-wrap">
           <Canvas

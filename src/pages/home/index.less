@@ -23,7 +23,7 @@
     .nav-label {
       height: 70px;
       line-height: 70px;
-      width: 90%;
+      width: 100%;
       margin-top: 20px;
       margin-bottom: 20px;
       background-color: #FF3366;
@@ -80,8 +80,11 @@
     }
     .window-container {
       height: auto;
-      margin-left: 20px;
-      margin-right: 20px;
+      width: 94%;
+      margin-left: 3%;
+      margin-right: 3%;
+      // margin-left: 20px;
+      // margin-right: 20px;
       margin-top: 10px;
       margin-bottom: 10px;
       display: flex;
@@ -89,15 +92,20 @@
       flex-wrap:wrap;
       .item-block {
         width: 50%;
-        height: 240rpx;
+        // height: 240rpx;
+        padding-bottom: 50%;
+        height: 0;
         .item {
           background-color: #FF3366;
           width: 90%;
-          height: 240rpx;
+          //height: 240rpx;
+          padding-bottom: 90%;
+          height: 0;
           //box-shadow:4rpx 4rpx 8rpx rgba(0,0,0,0.5);
           margin-left: 5%;
           margin-top: 5%;
           border-radius: 3%;
+          position: relative;
           &.item-hover {
             transform: scale(0.95)
           }

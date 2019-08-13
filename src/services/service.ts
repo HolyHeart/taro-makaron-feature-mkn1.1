@@ -1,6 +1,6 @@
 // http服务
 import Taro from '@tarojs/taro'
-import {commonRequest, request} from './http'
+import { commonRequest, request } from './http'
 import { api } from './api.config'
 import { appId } from './config'
 import tool from '@/utils/tool'
@@ -34,7 +34,7 @@ export const base = {
       }
     })
   },
-  async getUploadToken () {
+  async getUploadToken() {
     let token = Taro.getStorageSync('token')
     if (token && token.expire > Date.now()) {
       return token
@@ -48,14 +48,14 @@ export const base = {
       console.log('get uploadToken fail', err)
     }
   },
-  async upload (localFilePath, type?:string) {
+  async upload(localFilePath, type?: string) {
     // 上传图片
     let imageType = type || 'png'
     const token = await base.getUploadToken()
     const imgName = tool.createImgName(16)
     const prefix = token.prefix // 'upload/prod/image/'
     token.params.key = `${prefix}${imgName}.${imageType}`
-    let {data} = await Taro.uploadFile({
+    let { data } = await Taro.uploadFile({
       filePath: localFilePath,
       name: 'file',
       url: token.host,
@@ -77,7 +77,7 @@ export const base = {
       url: ''
     }
   },
-  auth (data) {
+  auth(data) {
     return commonRequest({
       url: api.base.auth,
       method: 'POST',
@@ -101,8 +101,8 @@ export const base = {
     }
     return request(reqData)
   },
-  downloadFile (url) {
-    return Taro.downloadFile({url: url})
+  downloadFile(url) {
+    return Taro.downloadFile({ url: url })
   },
   // Immigrated from StyleTransfer MiniApp
   timeout: function (interval, toReject) {
@@ -120,8 +120,8 @@ export const base = {
   }
 }
 export const core = {
-  segment: function (remoteImgUrl, segmentType?:number) {
-    let postData:segmentData = {
+  segment: function (remoteImgUrl, segmentType?: number) {
+    let postData: segmentData = {
       clientType: 'qq-mini-program',
       timestamp: Date.now().toString(),
       imageUrl: remoteImgUrl,
@@ -132,11 +132,11 @@ export const core = {
     return request({
       url: api.core.segment,
       method: 'POST',
-      header: {'content-type': 'application/x-www-form-urlencoded'},
+      header: { 'content-type': 'application/x-www-form-urlencoded' },
       data: postData,
     })
   },
-  column (data?:object) {
+  column(data?: object) {
     return request({
       url: api.core.column,
       method: 'GET',
@@ -172,7 +172,7 @@ export const core = {
     return request({
       url: api.core.reportFormId,
       method: 'POST',
-      header: {'content-type': 'application/x-www-form-urlencoded'},
+      header: { 'content-type': 'application/x-www-form-urlencoded' },
       data: postData,
     })
   },
@@ -186,7 +186,7 @@ export const core = {
       }, time)
     })
   },
-  separateLocalImg:  async function (localImgPath:string = '', options:separateOptionsData = {}) {
+  separateLocalImg: async function (localImgPath: string = '', options: separateOptionsData = {}) {
     // 上传本地图片并分割图片
     // options = { type, loading, showLoading, hideLoading, }
     // 判断是否在缓存里
@@ -220,7 +220,7 @@ export const core = {
         if (options.loading) {
           typeof options.showLoading === 'function' && options.showLoading()
         }
-        const {picurl} = await base.upload(localImgPath, 'png')
+        const { picurl } = await base.upload(localImgPath, 'png')
         remoteImageUrl = cacheImg.set(cacheRemoteUrlKey, picurl)
       } catch (err) {
         console.log('上传图片失败', err)
@@ -229,7 +229,7 @@ export const core = {
     if (typeof options.beforeSeparate === 'function') {
       options.beforeSeparate(remoteImageUrl)
     }
-     // 最后进行人景分离
+    // 最后进行人景分离
     let separateData
     try {
       if (options.loading) {
@@ -260,7 +260,7 @@ export const core = {
       ...separateData.result
     })
   },
-  filterConvertVideo: function (videoParams:string = '') {
+  filterConvertVideo: function (videoParams: string = '') {
     let postData = {
       clientType: 'qq-mini-program',
       timestamp: Date.now().toString(),
@@ -269,7 +269,7 @@ export const core = {
     return request({
       url: api.core.filterConvertVideo,
       method: 'POST',
-      header: {'content-type': 'application/x-www-form-urlencoded'},
+      header: { 'content-type': 'application/x-www-form-urlencoded' },
       data: postData,
     })
   }
@@ -293,9 +293,9 @@ export const core = {
 //  风格迁移
 export const styleTransfer = {
   demo: function (option) {
-    const {query = {}, data = {}} = option || {}
-      // url = getUrl(url,params)
-      // return http.httpGet(url)
+    const { query = {}, data = {} } = option || {}
+    // url = getUrl(url,params)
+    // return http.httpGet(url)
     const map = ['MA==', 'MQo=', 'Mg==', 'Mw==', 'NA==', 'NQ==', 'Ng==', 'Nw==', 'OA==', 'OQ==']
     const queryData = Object.assign({
       time: 1,
@@ -323,7 +323,7 @@ export const styleTransfer = {
       method: 'POST',
       // url: `${getHost()}/image/render/segment`,
       url: api.style.segment,
-      header: {'content-type': 'application/x-www-form-urlencoded'},
+      header: { 'content-type': 'application/x-www-form-urlencoded' },
       data: {
         clientType: 'mini-program',
         timestamp: Date.parse(new Date().toString()),
@@ -384,7 +384,7 @@ export const browser = {
     const reqData = {
       method: 'GET',
       url: api.browser.psWorkList,
-      header: {"Accept": "*/*"},
+      header: { "Accept": "*/*" },
       data: {
         activityId: activityID,
         page: page,
@@ -396,7 +396,7 @@ export const browser = {
     const reqData = {
       method: 'GET',
       url: api.browser.getWorkList,
-      header: {"Accept": "*/*"},
+      header: { "Accept": "*/*" },
       data: {
         activityId: activityID,
         from: page,
@@ -415,12 +415,12 @@ export const browser = {
    * @param renderSessionId 唯一id
    * @param userToken
    */
-  postNewWork:function(originPicture,renderPicture,worksType='pic',worksDesc='这图我能p',status=20,activityIds,renderSessionId,userToken,uid){
+  postNewWork: function (originPicture, renderPicture, worksType = 'pic', worksDesc = '这图我能p', status = 20, activityIds, renderSessionId, userToken, uid) {
     const reqData = {
       method: 'POST',
       // url: `${getHost()}/image/render/segment`,
       url: api.browser.postNewWork,
-      header: {'content-type': 'application/x-www-form-urlencoded'},
+      header: { 'content-type': 'application/x-www-form-urlencoded' },
       data: {
         originPicture: originPicture,
         renderPicture: renderPicture,
@@ -429,7 +429,7 @@ export const browser = {
         status,
         activityIds,
         renderSessionId,
-        userToken,uid
+        userToken, uid
       }
     }
     return request(reqData)
@@ -437,6 +437,66 @@ export const browser = {
 }
 
 
+export const home = {
+
+ /**
+  * 新版本首页
+  * @param miniProgramType 0:qq小程序，1:微信
+  */
+  getCateGoryAndScenes: function (miniProgramType:Number =0) {
+    const reqData = {
+      method: 'GET',
+      url: api.home.getCateGoryAndScenes,
+      header: { "Accept": "*/*" },
+      data: {
+        miniProgramType: miniProgramType,
+      }
+    }
+    return request(reqData)
+  },
+  getWorkList: function (activityID, page) {
+    const reqData = {
+      method: 'GET',
+      url: api.browser.getWorkList,
+      header: { "Accept": "*/*" },
+      data: {
+        activityId: activityID,
+        from: page,
+      }
+    }
+    return request(reqData)
+  },
+  /**
+   *
+   * @param originPicture 原图
+   * @param renderPicture  渲染图
+   * @param worksType  作品类型 pic  video
+   * @param worksDesc 发布作品说的话
+   * @param status 20 公开作品
+   * @param activityIds  挑战id
+   * @param renderSessionId 唯一id
+   * @param userToken
+   */
+  postNewWork: function (originPicture, renderPicture, worksType = 'pic', worksDesc = '这图我能p', status = 20, activityIds, renderSessionId, userToken, uid) {
+    const reqData = {
+      method: 'POST',
+      // url: `${getHost()}/image/render/segment`,
+      url: api.browser.postNewWork,
+      header: { 'content-type': 'application/x-www-form-urlencoded' },
+      data: {
+        originPicture: originPicture,
+        renderPicture: renderPicture,
+        worksType,
+        worksDesc,
+        status,
+        activityIds,
+        renderSessionId,
+        userToken, uid
+      }
+    }
+    return request(reqData)
+  }
+}
 
 
 export default {

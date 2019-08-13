@@ -35,6 +35,9 @@
         color: white;
         font-size: 30px;
         margin-left: 10px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
     }
     .nav-label-2 {
@@ -86,13 +89,11 @@
       flex-wrap:wrap;
       .item-block {
         width: 50%;
-        padding-bottom: 50%;
-        height: 0;
+        height: 240rpx;
         .item {
           background-color: #FF3366;
           width: 90%;
-          padding-bottom: 90%;
-          height: 0;
+          height: 240rpx;
           //box-shadow:4rpx 4rpx 8rpx rgba(0,0,0,0.5);
           margin-left: 5%;
           margin-top: 5%;
@@ -104,13 +105,12 @@
       }
       .item-block-single {
         width: 100%;
-        padding-bottom: 50%;
-        height: 0;
+        height: 240rpx;
+        padding-bottom:40rpx;
         .item-single {
           background-color: #FF3366;
           width: 95%;
-          padding-bottom: 45%;
-          height: 0;
+          height: 240rpx;
           //box-shadow:4rpx 4rpx 8rpx rgba(0,0,0,0.5);
           margin-left: 2.5%;
           //margin-top: 5%;
@@ -123,7 +123,7 @@
     }
   }
 
-  
+
 
   // .main {
   //   position:relative;

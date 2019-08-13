@@ -11,7 +11,7 @@ import CategoryItem from '@/components/CategoryItem'
 import AuthModal from '@/components/AuthModal'
 import Guide from "@/components/Guide";
 import globalData from '@/services/global_data'
-import { core, base } from '@/services/service'
+import { core, base, home } from '@/services/service'
 import Session from '@/services/session'
 import bg from '@/assets/images/BG@2x.png'
 import by from '@/assets/images/by@3x.png'
@@ -28,6 +28,7 @@ import icon_collect from '@/assets/images/icon_collect@2x.png'
 import icon_close from '@/assets/images/icon_nofollow_close@2x.png'
 import tooltip_pic from '@/assets/images/tips_collect@2x.png'
 import './index.less'
+import ResultModal from '@/components/ResultModal';
 
 const default_column = [
   {
@@ -107,8 +108,8 @@ class Home extends Component {
     categoryList: default_column,
     defaultThemeData: {},
     isScrollToTop: true,
-
-
+    totalScenes: [],
+    categories: [],
 
     // 🔥🔥🔥 following states are added by Shichao 🔥🔥🔥
     screenHeight: 0,
@@ -138,7 +139,7 @@ class Home extends Component {
     this.setState({
       screenHeight: systemInfo.screenHeight,
       screenWidth: systemInfo.screenWidth,
-      tooltipHeight: systemInfo.screenWidth/750 * 92,
+      tooltipHeight: systemInfo.screenWidth / 750 * 92,
     })
   }
   componentDidMount() {
@@ -202,17 +203,32 @@ class Home extends Component {
 
   _initPage = async () => {
     await Session.set()
-    if (globalData.columnList && globalData.columnList.length === 0) {
-      const columnData = await core.column()
-      globalData.columnList = (columnData.result && columnData.result.result) || []
-    }
-    this.setState({
-      categoryList: globalData.columnList
-    }, () => {
-      this.getDefaultTheme()
-    })
+    await this.getCateGoryAndScenes()
+    // if (globalData.columnList && globalData.columnList.length === 0) {
+    //   const columnData = await core.column()
+    //   globalData.columnList = (columnData.result && columnData.result.result) || []
+    // }
+    // this.setState({
+    //   categoryList: globalData.columnList
+    // }, () => {
+    //   this.getDefaultTheme()
+    // })
   }
 
+  getCateGoryAndScenes = async () => {
+    try {
+      const res = await await home.getCateGoryAndScenes()
+      const categories = res.result && res.result.result.map((item) => {
+        return item.categoryName
+      })
+      this.setState({
+        totalScenes: res.result && res.result.result,
+        categories: categories
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  }
   getDefaultTheme = async () => {
     const defaultTheme = globalData.columnList[0] && globalData.columnList[0].themeList[0]
     if (defaultTheme) {
@@ -246,14 +262,14 @@ class Home extends Component {
     }
     // 埋码
     this.app.aldstat.sendEvent('选择主题', { '主题名': item.themeName, '主题Id': item.themeId })
-    if(item.sceneType ===5){
+    if (item.sceneType === 5) {
       Taro.navigateTo({ url: `/pages/browser/index?themeId=${globalData.themeId}` })
     }
   }
 
   handleGetUserInfo = (data) => {
     // console.log('handleGetUserInfo', data)
-    const {detail: {userInfo}} = data
+    const { detail: { userInfo } } = data
     if (userInfo) {
       base.loginAuth(data.detail)
       globalData.userInfo = userInfo
@@ -335,11 +351,24 @@ class Home extends Component {
       tooltipHeight: 0,
     })
   }
-
-
-
-
-
+  goScene = (scene,type) => {
+    if(type==='challange'){
+      Taro.navigateTo({ url: `/pages/psChallenge/index?imageId=${scene.imageId}&activityId=${scene.activityId}` })
+    }else{
+      // sceneType
+      if (scene.sceneType === 1) {
+        Taro.navigateTo({ url: '/pages/filter/index' })
+      } else if (scene.sceneType === 2) {
+        Taro.navigateTo({ url: '/pages/dynamic/index' })
+      } else if (scene.sceneType === 3) {
+        Taro.navigateTo({ url: '/pages/segment/index' })
+      } else if (scene.sceneType === 4) {
+        Taro.navigateTo({ url: '/pages/crop/index' })
+      } else {
+        Taro.navigateTo({ url: '/pages/editor/index' })
+      }
+    }
+  }
   render() {
     const { categoryList } = this.state
     const { global = {} } = this.props
@@ -362,13 +391,13 @@ class Home extends Component {
         >懒人抠图</Title>
 
         <View className='title-filler' style={{ height: this.state.titleHeight + 'px' }}></View>
-        
 
-        <View className='tooltip' style={{ height: this.state.tooltipHeight + 'px'}}>
 
-        {this.state.tooltipHeight === 0 ?
-                    <View></View>
-                    : <Image src={tooltip_pic} style='width: 100%;' mode='widthFix' onClick={this.closeTooltip}></Image>}
+        <View className='tooltip' style={{ height: this.state.tooltipHeight + 'px' }}>
+
+          {this.state.tooltipHeight === 0 ?
+            <View></View>
+            : <Image src={tooltip_pic} style='width: 100%;' mode='widthFix' onClick={this.closeTooltip}></Image>}
 
         </View>
 
@@ -378,25 +407,11 @@ class Home extends Component {
 
 
         <ScrollView className='nav-bar' scrollY style={{ height: this.state.screenHeight - this.state.titleHeight - this.state.tooltipHeight + 'px' }}>
-          
           <View className='nav-filler'></View>
-
-          <View className='nav-label'><Text className='nav-label-text'>今日</Text></View>
-          <View className='nav-label-2'><Text className='nav-label-2-text'>动漫</Text></View>
-          <View className='nav-label-2'><Text className='nav-label-2-text'>证件照</Text></View>
-          <View className='nav-label-2'><Text className='nav-label-2-text'>明星</Text></View>
-          <View className='nav-label-2'><Text className='nav-label-2-text'>游戏</Text></View>
-          <View className='nav-label-2'><Text className='nav-label-2-text'>头像</Text></View>
-          <View className='nav-label-2'><Text className='nav-label-2-text'>壁纸</Text></View>
-          <View className='nav-label-2'><Text className='nav-label-2-text'>表情包</Text></View>
-          <View className='nav-label-2'><Text className='nav-label-2-text'>旅游</Text></View>
-          <View className='nav-label-2'><Text className='nav-label-2-text'>P图大赛</Text></View>
-          <View className='nav-label-2'><Text className='nav-label-2-text'>动漫</Text></View>
-          <View className='nav-label-2'><Text className='nav-label-2-text'>证件照</Text></View>
-          <View className='nav-label-2'><Text className='nav-label-2-text'>明星</Text></View>
-
+          {this.state.categories.map((item) => {
+            return <View className='nav-label'><Text className='nav-label-text'>{item}</Text></View>
+          })}
           <View className='nav-filler'></View>
-
         </ScrollView>
 
 
@@ -404,65 +419,34 @@ class Home extends Component {
 
 
         <ScrollView className='items-window' scrollY style={{ height: this.state.screenHeight - this.state.titleHeight - this.state.tooltipHeight + 'px' }}>
-          
-          <View className='window-divider'><Text className='window-divider-text'>- </Text><Image className='window-divider-icon' src={homepage_logo}/><Text className='window-divider-text'> 马卡龙玩图倾力出品 -</Text></View>
-
-          <View className='window-container'>
-            <View className='item-block'><View className='item' hoverClass="item-hover"></View></View>
-            <View className='item-block'><View className='item' hoverClass="item-hover"></View></View>
-            <View className='item-block'><View className='item' hoverClass="item-hover"></View></View>
-            <View className='item-block'><View className='item' hoverClass="item-hover"></View></View>
-            <View className='item-block'><View className='item' hoverClass="item-hover"></View></View>
-          </View>
-
-          <View className='window-divider'><Text className='window-divider-text'>- 动漫 -</Text></View>
-
-          <View className='window-container'>
-            <View className='item-block'><View className='item' hoverClass="item-hover"></View></View>
-            <View className='item-block'><View className='item' hoverClass="item-hover"></View></View>
-            <View className='item-block'><View className='item' hoverClass="item-hover"></View></View>
-            <View className='item-block'><View className='item' hoverClass="item-hover"></View></View>
-          </View>
-
-          <View className='window-divider'><Text className='window-divider-text'>- 证件照 -</Text></View>
-
-          <View className='window-container'>
-            <View className='item-block'><View className='item' hoverClass="item-hover"></View></View>
-            <View className='item-block'><View className='item' hoverClass="item-hover"></View></View>
-            <View className='item-block'><View className='item' hoverClass="item-hover"></View></View>
-          </View>
-
-          <View className='window-divider'><Text className='window-divider-text'>- 明星 -</Text></View>
-
-          <View className='window-container'>
-            <View className='item-block'><View className='item' hoverClass="item-hover"></View></View>
-            <View className='item-block'><View className='item' hoverClass="item-hover"></View></View>
-          </View>
-
-
-
-
-          <View className='window-divider'><Text className='window-divider-text'>- P图大赛 -</Text></View>
-
-          <View className='window-container'>
-            <View className='item-block-single'><View className='item-single' hoverClass="item-single-hover"></View></View>
-            <View className='item-block-single'><View className='item-single' hoverClass="item-single-hover"></View></View>
-          </View>
-
-
-          <View className='window-divider'><Text className='window-divider-text'>- 我是有底线的小程序 -</Text></View>  
-
+          <View className='window-divider'><Text className='window-divider-text'>- </Text><Image className='window-divider-icon' src={homepage_logo} /><Text className='window-divider-text'> 马卡龙玩图倾力出品 -</Text></View>
+          {
+            this.state.totalScenes.map((item, index) => {
+              return (
+                <View>
+                  {index !== 0 ? <View className='window-divider'><Text className='window-divider-text'>- {item.categoryName} -</Text></View> : ''}
+                  <View className='window-container'>
+                    {
+                      // item.showStyle === 0 ?
+                      item.originalImageList ? item.originalImageList.map((scene) => {
+                        return item.showStyle === 0 ? <View className='item-block' onClick={() => this.goScene(scene,'challange')}><View className='item' hoverClass="item-hover">
+                          <Image src={scene.originalImageUrl} mode="aspectFill" style="width:100%;height:100%" /></View></View> :
+                          <View className='item-block-single'><View className='item-single' onClick={() => this.goScene(scene,'challange')} hoverClass="item-single-hover">
+                            <Image src={scene.originalImageUrl} mode="aspectFill" style="width:100%;height:100%" /></View></View>
+                      }) :item.sceneInfoList && item.sceneInfoList.map((scene) => {
+                        return item.showStyle === 0 ? <View className='item-block' onClick={() => this.goScene(scene,'editor')}><View className='item' hoverClass="item-hover">
+                          <Image src={scene.thumbnailUrl && scene.thumbnailUrl} mode="aspectFill" style="width:100%;height:100%" /></View></View> :
+                          <View className='item-block-single'><View className='item-single' onClick={() => this.goScene(scene,'editor')} hoverClass="item-single-hover">
+                            <Image src={scene.thumbnailUrl && scene.thumbnailUrl} mode="aspectFill" style="width:100%;height:100%" /></View></View>
+                      })
+                    }
+                  </View>
+                </View>
+              )
+            })
+          }
+          <View className='window-divider'><Text className='window-divider-text'>- 到底了哦 -</Text></View>
         </ScrollView>
-        
-
-
-
-
-
-
-
-
-
         {/* <View className="main">
           <View className="main-bg">
             <Image src={bg} mode="widthFix" style="width:100%;height:100%" />

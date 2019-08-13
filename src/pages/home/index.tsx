@@ -423,8 +423,8 @@ class Home extends Component {
             // item === this.state.currentCategoryName ? => {}
             return (
             <View>
-              {item === this.state.currentCategoryName ? <View className='nav-label' onClick={this.chooseCategory.bind(this, item)}><Text className='nav-label-text'>{item}</Text></View>
-              : <View className='nav-label-2' onClick={this.chooseCategory.bind(this, item)}><Text className='nav-label-2-text'>{item}</Text></View>}
+              {item === this.state.currentCategoryName ? <View className='nav-label' onClick={this.chooseCategory.bind(this, item)} key={item}><Text className='nav-label-text'>{item}</Text></View>
+              : <View className='nav-label-2' onClick={this.chooseCategory.bind(this, item)} key={item}><Text className='nav-label-2-text'>{item}</Text></View>}
               
             </View>
             ) 

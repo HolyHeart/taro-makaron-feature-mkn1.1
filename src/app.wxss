@@ -20,6 +20,11 @@ button::after {
 .custom-button.dark {
   background: #333;
 }
+.custom-button.white {
+  background: #fff;
+  color: #FF3366;
+  border: 1px solid #FF3366;
+}
 .tooltip-item {
   width: 150px;
   height: 60px;

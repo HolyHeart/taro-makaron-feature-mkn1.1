@@ -356,6 +356,7 @@ class Home extends Component {
       Taro.navigateTo({ url: `/pages/psChallenge/index?imageId=${scene.imageId}&activityId=${scene.activityId}` })
     }else{
       // sceneType
+      globalData.sceneConfig = scene
       if (scene.sceneType === 1) {
         Taro.navigateTo({ url: '/pages/filter/index' })
       } else if (scene.sceneType === 2) {

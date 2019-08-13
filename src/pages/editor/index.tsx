@@ -105,6 +105,7 @@ class Editor extends Component {
       y: 0,
       rotate: 0,
     },
+    chooseText:'添加人像照片',
     foreground: {
       id: 'foreground',
       remoteUrl: '',
@@ -228,16 +229,16 @@ class Editor extends Component {
   }
 
   _initPage = async () => {
-    this.initRawImage()
+    // this.initRawImage()
     await Session.set()
     this.initSceneData(() => {
       this.initCoverData()
     })
-    const separateResult = globalData.separateResult = await this.initSegment()
-    console.log('separateResult', separateResult)
-    await this.initSeparateData(separateResult)
-  }
+    // const separateResult = globalData.separateResult = await this.initSegment()
+    // console.log('separateResult', separateResult)
+    // await this.initSeparateData(separateResult)
 
+  }
   test = async () => {
     // try {
     //   const result = await service.core.column()
@@ -285,6 +286,16 @@ class Editor extends Component {
           left: rect.left,
           top: rect.top,
         }
+      },()=>{
+        if(Taro.getStorageSync('lastSeparateImage')){
+          const {foreground} = this.state
+          this.setState({
+            foreground: {
+              ...foreground,
+              remoteUrl: Taro.getStorageSync('lastSeparateImage')
+            }
+          })
+        }
       })
     })
   }
@@ -301,24 +312,8 @@ class Editor extends Component {
   }
   // 初始化场景信息
   initSceneData = async (callback) => {
-    // 全局主题数据
-    if (!globalData.themeData) {
-      const themeId = globalData.themeId || appConfig.themeId
-      const res = await service.core.theme(themeId)
-      globalData.themeData = res.result && res.result.result
-    }
-    const themeData = globalData.themeData || {sceneList: []}
-    this.themeData.sceneList = work.getSceneList(themeData.sceneList || [])
-    // 去除sceneConfig属性
-    const sceneList = this.themeData.sceneList.map((v:object = {}) => {
-      const {sceneConfig, ...rest} = v
-      return {
-        ...rest
-      }
-    })
-    const currentScene = sceneList[0]
+    const currentScene = globalData.sceneConfig
     this.setState({
-      sceneList: sceneList,
       currentScene:{
         ...this.state.currentScene,
         ...currentScene,
@@ -331,8 +326,8 @@ class Editor extends Component {
   // 初始化贴纸
   initCoverData = () => {
     const {currentScene} = this.state
-    const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
-    const sceneConfig = tool.JSON_parse(sceneInfo.sceneConfig)
+    // const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
+    const sceneConfig = tool.JSON_parse(currentScene.sceneConfig)
     const {cover = {}} = sceneConfig
 
     this.themeData.rawCoverList = cover.list || []
@@ -384,13 +379,16 @@ class Editor extends Component {
   initSeparateData = async (separateResult) => {
     const { currentScene, foreground } = this.state
     this.changeSceneChooseSegment(currentScene, separateResult, (res = {}) => {
+      Taro.setStorageSync('lastSeparateImage',res.separateUrl)
       this.setState({
+        chooseText:'重新上传人像',
         foreground: {
           ...foreground,
           remoteUrl: res.separateUrl
         }
       })
     })
+
   }
 
   // 根据场景决定头像
@@ -704,7 +702,7 @@ class Editor extends Component {
     const {currentScene} = this.state
     const shareContent = currentScene.shareContent || (globalData.themeData && globalData.themeData.shareContent)
     qq.openQzonePublish({
-      text: shareContent, 
+      text: shareContent,
       media: [
         {
           type: 'photo',
@@ -969,19 +967,20 @@ class Editor extends Component {
   // 人物自适应
   foregroundAuto = (callback?:()=>void) => {
     // 先判断是否有缓存
+    console.log('1')
     const {currentScene} = this.state
-    const sceneId = currentScene.sceneId || 'demo_scene'
-    const cache_foreground = this.cache['foreground']
-    const scene_foreground_params = cache_foreground.get(sceneId)
+    // const sceneId = currentScene.sceneId || 'demo_scene'
+    // const cache_foreground = this.cache['foreground']
+    // const scene_foreground_params = cache_foreground.get(sceneId)
 
-    if ( scene_foreground_params ) {
-      this.setStateTarget('foreground', {
-        ...scene_foreground_params
-      }, () => {
-        typeof callback === 'function' && callback()
-      })
-      return
-    }
+    // if ( scene_foreground_params ) {
+    //   this.setStateTarget('foreground', {
+    //     ...scene_foreground_params
+    //   }, () => {
+    //     typeof callback === 'function' && callback()
+    //   })
+    //   return
+    // }
 
     const size = this.calcForegroundSize()
     const position = this.calcForegroundPosition(size)
@@ -996,10 +995,10 @@ class Editor extends Component {
   calcForegroundSize = () => {
     const {currentScene, sceneList, foreground, frame} = this.state
     const {originWidth, originHeight} = foreground
-    const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
+    // const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
 
     const imageRatio = originWidth / originHeight
-    const params = tool.JSON_parse(sceneInfo.sceneConfig)
+    const params = tool.JSON_parse(currentScene.sceneConfig)
     const autoScale = parseFloat(params.size.default)
 
     const result = {
@@ -1028,11 +1027,11 @@ class Editor extends Component {
     const {originWidth, originHeight} = foreground
     width = width || foreground.width
     height = height || foreground.height
-    const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
+    // const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
 
     const boxWidth = frame.width
     const boxHeight = frame.height
-    const sceneConfig = tool.JSON_parse(sceneInfo.sceneConfig)
+    const sceneConfig = tool.JSON_parse(currentScene.sceneConfig)
     const {position} = sceneConfig
     const type = position.place || '0'
     const result = {
@@ -1230,6 +1229,26 @@ class Editor extends Component {
 
     return result
   }
+  todo = () => {
+      work.chooseImage({
+        onTap: (index) => {
+          // console.log('tap index', index)
+          if (index === 0) {
+            this.app.aldstat.sendEvent('编辑页面选择拍摄照片', '选择拍摄')
+          } else if (index === 1) {
+            this.app.aldstat.sendEvent('编辑页面选择相册照片', '选择相册')
+          }
+        },
+        onSuccess: async (path) => {
+          console.log('choosedImage', path, globalData)
+          this.app.aldstat.sendEvent('编辑页面人像成功', '上传成功')
+          globalData.choosedImage = path
+          const separateResult = globalData.separateResult = await this.initSegment()
+          console.log('separateResult', separateResult)
+          await this.initSeparateData(separateResult)
+        }
+      })
+  }
   calcCoverPosition = (size = {}, cover = {}) => {
     const {width = 0, height = 0} = size
     const {frame} = this.state
@@ -1348,7 +1367,21 @@ class Editor extends Component {
     const cacheKey = `${sceneId}_${sticker.id}`
     this.cache['cover'].set(cacheKey, clone_cover)
   }
-
+  handleGetUserInfo = (data) => {
+    // console.log('handleGetUserInfo', data)
+    const { detail: { userInfo } } = data
+    if (userInfo) {
+      service.base.loginAuth(data.detail)
+      globalData.userInfo = userInfo
+      // this.todo()
+    } else {
+      Taro.showToast({
+        title: '请授权',
+        icon: 'success',
+        duration: 2000
+      })
+    }
+  }
   render () {
     const { loading, rawImage, frame, customBg, foreground, coverList, sceneList, currentScene, result, canvas } = this.state
     return (
@@ -1365,7 +1398,7 @@ class Editor extends Component {
             <View className={`raw ${(foreground.remoteUrl && foreground.loaded) ? 'hidden' : ''}`} style={{width:this.state.drawBoard.width,height:this.state.drawBoard.height}}>
               <Image src={rawImage.localUrl} style="width:100%;height:100%" mode="aspectFit"/>
             </View>
-            <View style={{width:this.state.drawBoard.width,height:this.state.drawBoard.height}} className={`crop ${(foreground.remoteUrl && foreground.loaded) ? '' : 'hidden'}`} id="crop">
+            <View style={{width:this.state.drawBoard.width,height:this.state.drawBoard.height}} className={`crop`} id="crop">
               {currentScene.type === 'recommend' &&
                 <View className="background-image">
                   <Image
@@ -1376,17 +1409,6 @@ class Editor extends Component {
                     onClick={this.handleBackgroundClick}
                   />
                 </View>
-              }
-              {currentScene.type === 'custom' &&
-                <CustomBg
-                  framePrams={frame}
-                  stylePrams={customBg}
-                  url={customBg.localUrl}
-                  onImageLoaded={this.onCustomBgLoaded}
-                  onChangeStyle={this.handleChangeCustomBgStyle}
-                  onTouchstart={this.handleCustomBgTouchstart}
-                  onTouchend={this.handleCustomBgTouchend}
-                />
               }
               <Sticker
                 ref="foreground"
@@ -1413,18 +1435,11 @@ class Editor extends Component {
               })}
             </View>
           </View>
-          <MarginTopWrap config={{large: 60, small: 40, default: 20}}>
-            <SceneList
-              list={sceneList}
-              customable={true}
-              currentScene={currentScene}
-              styleObj={{width: '720rpx', marginRight: '-60rpx'}}
-              onCustomClick={this.handleChooseCustom}
-              onClick={this.handleChooseScene}
-            />
-          </MarginTopWrap>
-          <MarginTopWrap config={{large: 60, small: 40, default: 20}}>
-            <Button className="custom-button pink" hoverClass="btn-hover" onClick={this.handleOpenResult}>保存</Button>
+          <MarginTopWrap config={{large: 60, small: 40, default: 20}} >
+            <View style="display:flex;margin-top:100rpx">
+              <Button style='flex:1' className="custom-button pink" hoverClass="btn-hover" onClick={this.todo}>{this.state.chooseText}</Button>
+              <Button style='flex:1;margin-left:10px' className="custom-button white" openType="getUserInfo"   onGetUserInfo={this.handleGetUserInfo}  hoverClass="btn-hover" onClick={this.handleOpenResult}>保存</Button>
+            </View>
           </MarginTopWrap>
         </View>
         <View class="canvas-wrap">
@@ -1445,7 +1460,7 @@ class Editor extends Component {
             cropWidth={this.state.drawBoard.width}
             renderButton={
               <View className="btn-wrap">
-                <Button className="custom-button pink btn-1" hoverClass="btn-hover" openType="share" >分享给好友</Button>
+                <Button className="custom-button pink btn-1" hoverClass="btn-hover"   openType="share" >分享给好友</Button>
                 <Button className="custom-button dark btn-2" hoverClass="btn-hover"  onClick={this.publishToQzone}>同步到说说</Button>
                 <Button className="custom-button dark btn-3" hoverClass="btn-hover"  onClick={this.handlePlayAgain}>再玩一次</Button>
               </View>

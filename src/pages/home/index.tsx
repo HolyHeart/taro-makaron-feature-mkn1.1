@@ -115,7 +115,10 @@ class Home extends Component {
     screenHeight: 0,
     screenWidth: 0,
     titleHeight: 0,
-    tooltipHeight: 0
+    tooltipHeight: 0,
+    picHeight: 0,
+    
+    currentCategoryName: ''
   }
 
   app = Taro.getApp()
@@ -140,6 +143,7 @@ class Home extends Component {
       screenHeight: systemInfo.screenHeight,
       screenWidth: systemInfo.screenWidth,
       tooltipHeight: systemInfo.screenWidth / 750 * 92,
+      picHeight: systemInfo.screenWidth * 0.8 * 0.94 * 0.5 * 0.9
     })
   }
   componentDidMount() {
@@ -223,7 +227,8 @@ class Home extends Component {
       })
       this.setState({
         totalScenes: res.result && res.result.result,
-        categories: categories
+        categories: categories,
+        currentCategoryName: categories[0]
       })
     } catch (error) {
       console.log(error)
@@ -370,6 +375,9 @@ class Home extends Component {
       }
     }
   }
+  chooseCategory = () => {
+    console.log(this.state.currentCategoryName)
+  }
   render() {
     const { categoryList } = this.state
     const { global = {} } = this.props
@@ -410,7 +418,8 @@ class Home extends Component {
         <ScrollView className='nav-bar' scrollY style={{ height: this.state.screenHeight - this.state.titleHeight - this.state.tooltipHeight + 'px' }}>
           <View className='nav-filler'></View>
           {this.state.categories.map((item) => {
-            return <View className='nav-label'><Text className='nav-label-text'>{item}</Text></View>
+            // item === this.state.currentCategoryName ? => {}
+            return <View className='nav-label' onClick={this.chooseCategory}><Text className='nav-label-text'>{item}</Text></View>
           })}
           <View className='nav-filler'></View>
         </ScrollView>
@@ -431,12 +440,12 @@ class Home extends Component {
                       // item.showStyle === 0 ?
                       item.originalImageList ? item.originalImageList.map((scene) => {
                         return item.showStyle === 0 ? <View className='item-block' onClick={() => this.goScene(scene,'challange')}><View className='item' hoverClass="item-hover">
-                          <Image src={scene.originalImageUrl} mode="aspectFill" style="width:100%;height:100%" /></View></View> :
+                          <Image src={scene.originalImageUrl} mode="aspectFill" style={{ height:this.state.picHeight + 1 + 'px', width: this.state.picHeight + 'px', borderRadius: '3%'}} /></View></View> :
                           <View className='item-block-single'><View className='item-single' onClick={() => this.goScene(scene,'challange')} hoverClass="item-single-hover">
                             <Image src={scene.originalImageUrl} mode="aspectFill" style="width:100%;height:100%" /></View></View>
                       }) :item.sceneInfoList && item.sceneInfoList.map((scene) => {
                         return item.showStyle === 0 ? <View className='item-block' onClick={() => this.goScene(scene,'editor')}><View className='item' hoverClass="item-hover">
-                          <Image src={scene.thumbnailUrl && scene.thumbnailUrl} mode="aspectFill" style="width:100%;height:100%" /></View></View> :
+                          <Image src={scene.thumbnailUrl && scene.thumbnailUrl} mode="aspectFill" style={{ height:this.state.picHeight + 1 + 'px', width: this.state.picHeight + 'px', borderRadius: '3%'}} /></View></View> :
                           <View className='item-block-single'><View className='item-single' onClick={() => this.goScene(scene,'editor')} hoverClass="item-single-hover">
                             <Image src={scene.thumbnailUrl && scene.thumbnailUrl} mode="aspectFill" style="width:100%;height:100%" /></View></View>
                       })
@@ -448,6 +457,13 @@ class Home extends Component {
           }
           <View className='window-divider'><Text className='window-divider-text'>- 到底了哦 -</Text></View>
         </ScrollView>
+
+
+
+
+
+
+        
         {/* <View className="main">
           <View className="main-bg">
             <Image src={bg} mode="widthFix" style="width:100%;height:100%" />

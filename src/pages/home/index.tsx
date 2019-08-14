@@ -509,7 +509,7 @@ class Home extends Component {
                               <Image src={scene.originalImageUrl} mode="aspectFill" style={{ height: this.state.picHeight + 'px', width: this.state.picHeight + 'px', borderRadius: '3%' }} /></View></Button> </View> :
                           <View className='item-block-single'><Button openType="getUserInfo" onGetUserInfo={(data) => { this.handleGetUserInfo(data, item.originalImageList, 'challange') }} className='sceneButton'><View className='item-single'
                             hoverClass="item-single-hover">
-                            <Image src={scene.originalImageUrl} mode="aspectFill" style="width:100%;height:100%" /></View></Button></View>
+                            <Image src={scene.originalImageUrl} mode="aspectFill" style="width:100%;height:100%;border-radius:3%" /></View></Button></View>
                       }) : item.sceneInfoList && item.sceneInfoList.map((scene) => {
                         return item.showStyle === 0 ? <View className='item-block'><Button openType="getUserInfo" onGetUserInfo={(data) => { this.handleGetUserInfo(data, scene, 'editor') }} className='sceneButton'><View className='item' hoverClass="item-hover">
                           <Image src={scene.thumbnailUrl && scene.thumbnailUrl} mode="aspectFill" style={{ height: this.state.picHeight + 'px', width: this.state.picHeight + 'px', borderRadius: '3%' }} /></View></Button></View> :

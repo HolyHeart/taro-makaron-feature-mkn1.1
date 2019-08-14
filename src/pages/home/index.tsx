@@ -29,42 +29,49 @@ import icon_close from '@/assets/images/icon_nofollow_close@2x.png'
 import tooltip_pic from '@/assets/images/tips_collect@2x.png'
 import './index.less'
 import ResultModal from '@/components/ResultModal';
-
 const default_column = [
   {
-    columnId: "189063862158151681",
+    showStyle :0,
+    categoryName: "分类1",
     columanName: "栏目1",
-    columnNum: 1,
-    themeList: [
+    sceneInfoList:[
       {
-        generalShowUrl: pic_loading_big
-      }
-    ]
-  },
-  {
-    columnId: "189063862158151680",
-    columanName: "栏目2",
-    columnNum: 2,
-    themeList: [
-      {
-        generalShowUrl: pic_loading_1
+        thumbnailUrl:pic_loading_1
       },
       {
-        generalShowUrl: pic_loading_2
+        thumbnailUrl:pic_loading_2
       },
       {
-        generalShowUrl: pic_loading_3
+        thumbnailUrl:pic_loading_3
       },
       {
-        generalShowUrl: pic_loading_4
+        thumbnailUrl:pic_loading_4
       },
       {
-        generalShowUrl: pic_loading_5
+        thumbnailUrl:pic_loading_5
       },
       {
-        generalShowUrl: pic_loading_6
+        thumbnailUrl:pic_loading_6
       },
-    ]
+      {
+        thumbnailUrl:pic_loading_1
+      },
+      {
+        thumbnailUrl:pic_loading_2
+      },
+      {
+        thumbnailUrl:pic_loading_3
+      },
+      {
+        thumbnailUrl:pic_loading_4
+      },
+      {
+        thumbnailUrl:pic_loading_5
+      },
+      {
+        thumbnailUrl:pic_loading_6
+      },
+    ],
   }
 ]
 type PageStateProps = {
@@ -108,7 +115,7 @@ class Home extends Component {
     categoryList: default_column,
     defaultThemeData: {},
     isScrollToTop: true,
-    totalScenes: [],
+    totalScenes: default_column,
     categories: [],
 
     // 🔥🔥🔥 following states are added by Shichao 🔥🔥🔥

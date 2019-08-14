@@ -89,6 +89,8 @@ class Dynamic extends Component {
       localUrl: '',
       remoteUrl: ''
     },
+    guiderTop: '',
+    hasGuide: false,
     frame: {
       width: 0,
       height: 0,
@@ -257,6 +259,19 @@ class Dynamic extends Component {
     this.initSceneData(() => {
       // this.initCoverData()
       this.calFrameRect()
+      const firstViewEditor = Taro.getStorageSync('firstViewEditor')
+      if(!firstViewEditor){
+        const query = qq.createSelectorQuery()
+        query.select('#addPhoto').boundingClientRect()
+        query.selectViewport().scrollOffset()
+        query.exec((res)=> {
+          this.setState({
+            hasGuide:true,
+            guiderTop: res[0].top-77-15
+          })
+        })
+        Taro.setStorageSync('firstViewEditor',true)
+      }
     })
   }
 
@@ -1257,12 +1272,15 @@ class Dynamic extends Component {
           </View>
           <MarginTopWrap config={{large: 60, small: 40, default: 20}}>
           <View style="display:flex;margin-top:100rpx">
-              <Button style='flex:1' className="custom-button pink" hoverClass="btn-hover" onClick={this.todo}>{this.state.chooseText}</Button>
+              <Button style='flex:1;z-index:2' id='addPhoto'  className="custom-button pink" hoverClass="btn-hover" onClick={this.todo}>{this.state.chooseText}</Button>
               <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.handleOpenResult}>保存</Button>
             </View>
           </MarginTopWrap>
         </View>
         <Loading visible={loading} />
+        <View className='newGuide' style={{ display: this.state.hasGuide === false ? 'none' : 'block' }}>
+          <Image src={addTips} alt="" className='tips' style={{ top: this.state.guiderTop+'px' }}/>
+        </View>
         <AuthModal />
         {result.show &&
           <ResultModal

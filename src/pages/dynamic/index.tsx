@@ -21,7 +21,7 @@ import service from '@/services/service'
 import { appConfig } from '@/services/config'
 import { createCache } from '@/services/cache'
 import './index.less'
-import addTips from "@/assets/images/tips_add pic@2x.png";
+import addTips from "@/assets/images/tips_addpic@2x.png";
 
 // const mock_path = 'https://static01.versa-ai.com/upload/783272fc1375/999deac02e85f3ea.png'
 // const mock_segment_url = 'https://static01.versa-ai.com/images/process/segment/2019/01/14/b4cf047a-17a5-11e9-817f-00163e001583.png'
@@ -1277,7 +1277,7 @@ class Dynamic extends Component {
             </View>
           </View>
           <MarginTopWrap config={{large: 60, small: 40, default: 20}}>
-          <View style="display:flex;margin-top:100rpx">
+          <View style="display:flex;margin-top:120rpx">
               <Button style='flex:1;z-index:2' id='addPhoto'  className="custom-button pink" hoverClass="btn-hover" onClick={this.todo}>{this.state.chooseText}</Button>
               <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.handleOpenResult}>保存</Button>
             </View>

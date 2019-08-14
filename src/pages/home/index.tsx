@@ -355,6 +355,9 @@ class Home extends Component {
 
 
   // 🔥🔥🔥 following functions are added by Shichao 🔥🔥🔥
+  scrollDetection = () => {
+    console.log('🔥Scrolling...🔥')
+  }
   closeTooltip = () => {
     console.log('关闭收藏提示')
     console.log('totalScene: ', this.state.totalScenes)
@@ -445,7 +448,7 @@ class Home extends Component {
 
 
 
-        <ScrollView className='items-window' scrollY scrollIntoView={'x' + this.state.currentCategoryId} style={{ height: this.state.screenHeight - this.state.titleHeight - this.state.tooltipHeight + 'px' }}>
+        <ScrollView className='items-window' scrollY onScroll={this.scrollDetection} scrollIntoView={'x' + this.state.currentCategoryId} scrollWithAnimation style={{ height: this.state.screenHeight - this.state.titleHeight - this.state.tooltipHeight + 'px' }}>
           <View className='window-divider' id={'x' + this.state.firstCategoryId}><Text className='window-divider-text'>- </Text><Image className='window-divider-icon' src={homepage_logo} /><Text className='window-divider-text'> 马卡龙玩图倾力出品 -</Text></View>
           {
             this.state.totalScenes.map((item, index) => {

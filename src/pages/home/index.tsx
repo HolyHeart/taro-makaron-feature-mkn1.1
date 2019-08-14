@@ -29,6 +29,7 @@ import icon_close from '@/assets/images/icon_nofollow_close@2x.png'
 import tooltip_pic from '@/assets/images/tips_collect@2x.png'
 import './index.less'
 import ResultModal from '@/components/ResultModal';
+import { element } from 'prop-types';
 
 const default_column = [
   {
@@ -119,7 +120,11 @@ class Home extends Component {
     picHeight: 0,
 
     currentCategoryId: '',
-    firstCategoryId: ''
+    firstCategoryId: '',
+    categoryIds: [],
+    previousCategoryId: '',
+    reverseIdList: [],
+    currentLabelId: ''
   }
 
   app = Taro.getApp()
@@ -209,15 +214,6 @@ class Home extends Component {
   _initPage = async () => {
     await Session.set()
     await this.getCateGoryAndScenes()
-    // if (globalData.columnList && globalData.columnList.length === 0) {
-    //   const columnData = await core.column()
-    //   globalData.columnList = (columnData.result && columnData.result.result) || []
-    // }
-    // this.setState({
-    //   categoryList: globalData.columnList
-    // }, () => {
-    //   this.getDefaultTheme()
-    // })
   }
 
   getCateGoryAndScenes = async () => {
@@ -232,13 +228,17 @@ class Home extends Component {
       this.setState({
         totalScenes: res.result && res.result.result,
         categories: categories,
+        categoryIds: categoryIds,
         currentCategoryId: categoryIds[0],
-        firstCategoryId: categoryIds[0]
+        firstCategoryId: categoryIds[0],
+        previousCategoryId: categoryIds[0],
+        reverseIdList: this.reverseList(categoryIds)
       })
     } catch (error) {
       console.log(error)
     }
   }
+
   getDefaultTheme = async () => {
     const defaultTheme = globalData.columnList[0] && globalData.columnList[0].themeList[0]
     if (defaultTheme) {
@@ -354,10 +354,44 @@ class Home extends Component {
 
 
 
+
+
+
   // 🔥🔥🔥 following functions are added by Shichao 🔥🔥🔥
   scrollDetection = () => {
     console.log('🔥Scrolling...🔥')
+
+    const titleHeight = this.state.tooltipHeight + this.state.titleHeight
+    const query = qq.createSelectorQuery()
+
+    var firstShownDom = []
+
+    this.state.reverseIdList.forEach(element => {
+      query.select('#x' + element).boundingClientRect(res => {
+        //console.log(res.top - titleHeight)
+        if (res.top - titleHeight < 5) {
+          firstShownDom.push(element)
+
+          this.setState({
+            currentCategoryId: firstShownDom[0]
+          }) 
+        }
+      })
+      query.exec()
+    })
   }
+
+  reverseList = (list) => {
+    var newList = []
+    for (let i=list.length-1; i>=0; i=i-1) {
+      newList.push(list[i])
+    }
+    return newList
+  }
+
+
+
+
   closeTooltip = () => {
     console.log('关闭收藏提示')
     console.log('totalScene: ', this.state.totalScenes)
@@ -389,7 +423,7 @@ class Home extends Component {
   chooseCategory = (item, e) => {
     console.log('点击分类', item)
     this.setState({
-      currentCategoryId: item
+      currentLabelId: item
     })
   }
   render() {
@@ -448,7 +482,8 @@ class Home extends Component {
 
 
 
-        <ScrollView className='items-window' scrollY onScroll={this.scrollDetection} scrollIntoView={'x' + this.state.currentCategoryId} scrollWithAnimation style={{ height: this.state.screenHeight - this.state.titleHeight - this.state.tooltipHeight + 'px' }}>
+        <ScrollView className='items-window' scrollY onScroll={this.scrollDetection} scrollIntoView={'x' + this.state.currentLabelId} scrollWithAnimation style={{ height: this.state.screenHeight - this.state.titleHeight - this.state.tooltipHeight + 'px' }}>
+        {/* <ScrollView className='items-window' scrollY onScroll={this.scrollDetection} scrollWithAnimation style={{ height: this.state.screenHeight - this.state.titleHeight - this.state.tooltipHeight + 'px' }}>   */}
           <View className='window-divider' id={'x' + this.state.firstCategoryId}><Text className='window-divider-text'>- </Text><Image className='window-divider-icon' src={homepage_logo} /><Text className='window-divider-text'> 马卡龙玩图倾力出品 -</Text></View>
           {
             this.state.totalScenes.map((item, index) => {

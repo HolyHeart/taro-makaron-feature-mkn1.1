@@ -1,6 +1,6 @@
 import { ComponentClass } from 'react'
 import Taro, { Component, Config } from '@tarojs/taro'
-import { View, Image, Button, ScrollView, Text } from '@tarojs/components'
+import { View, Image, Button, ScrollView, Text, Form } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 import { getSystemInfo } from '@/model/actions/global'
 import work from '@/utils/work'
@@ -167,7 +167,7 @@ class Home extends Component {
   }
   componentDidMount() {
     this._initPage()
-    Taro.setStorageSync('setTop',true)
+    Taro.setStorageSync('setTop', true)
     this.setState({
       titleHeight: globalData.totalTopHeight
     })
@@ -291,13 +291,13 @@ class Home extends Component {
     }
   }
 
-  handleGetUserInfo = (data, scene, type) => {
+  handleGetUserInfo = (data, scene, type, originalImage) => {
     // console.log('handleGetUserInfo', data)
     const { detail: { userInfo } } = data
     if (userInfo) {
       base.loginAuth(data.detail)
       globalData.userInfo = userInfo
-      this.goScene(scene, type)
+      this.goScene(scene, type, originalImage)
     } else {
       Taro.showToast({
         title: '请授权',
@@ -413,12 +413,12 @@ class Home extends Component {
       tooltipHeight: 0,
     })
   }
-  goScene = (scene, type) => {
+  goScene = (scene, type,originalImage) => {
 
     if (type === 'challange') {
       globalData.themeData = {}
       globalData.themeData.originalImageList = scene
-      Taro.navigateTo({ url: `/pages/browser/index` })
+      Taro.navigateTo({ url: `/pages/browser/index?activityId=${originalImage.activityId}&activityImgId=${originalImage.imageId}` })
     } else {
       // sceneType
       globalData.sceneConfig = scene
@@ -510,17 +510,17 @@ class Home extends Component {
                       // item.showStyle === 0 ?
                       item.originalImageList ? item.originalImageList.map((scene) => {
                         return item.showStyle === 0 ? <View className='item-block'
-                        > < Button
-                          openType="getUserInfo" onGetUserInfo={(data) => { this.handleGetUserInfo(data, item.originalImageList, 'challange') }} className='sceneButton'><View className='item' hoverClass="item-hover">
-                              <Image lazy-load={true} src={scene.originalImageUrl} mode="aspectFill" style={{ height: this.state.picHeight + 'px', width: this.state.picHeight + 'px', borderRadius: '5px' }} /></View></Button> </View> :
-                          <View className='item-block-single'><Button openType="getUserInfo" onGetUserInfo={(data) => { this.handleGetUserInfo(data, item.originalImageList, 'challange') }} className='sceneButton'><View className='item-single'
+                        > <Form onSubmit={this.handleFormSubmit} reportSubmit>< Button formType="submit"
+                          openType="getUserInfo" onGetUserInfo={(data) => { this.handleGetUserInfo(data, item.originalImageList, 'challange', scene) }} className='sceneButton'><View className='item' hoverClass="item-hover">
+                            <Image lazy-load={true} src={scene.originalImageUrl} mode="aspectFill" style={{ height: this.state.picHeight + 'px', width: this.state.picHeight + 'px', borderRadius: '5px' }} /></View></Button></Form> </View> :
+                          <View className='item-block-single'><Form onSubmit={this.handleFormSubmit} reportSubmit><Button formType="submit" openType="getUserInfo" onGetUserInfo={(data) => { this.handleGetUserInfo(data, item.originalImageList, 'challange', scene) }} className='sceneButton'><View className='item-single'
                             hoverClass="item-single-hover">
-                            <Image src={scene.originalImageUrl} lazy-load={true} mode="aspectFill" style="width:100%;height:100%;border-radius:5px" /></View></Button></View>
+                            <Image src={scene.originalImageUrl} lazy-load={true} mode="aspectFill" style="width:100%;height:100%;border-radius:5px" /></View></Button></Form></View>
                       }) : item.sceneInfoList && item.sceneInfoList.map((scene) => {
-                        return item.showStyle === 0 ? <View className='item-block'><Button openType="getUserInfo" onGetUserInfo={(data) => { this.handleGetUserInfo(data, scene, 'editor') }} className='sceneButton'><View className='item' hoverClass="item-hover">
-                          <Image lazy-load={true} src={scene.thumbnailUrl && scene.thumbnailUrl} mode="aspectFill" style={{ height: this.state.picHeight + 'px', width: this.state.picHeight + 'px', borderRadius: '5px' }} /></View></Button></View> :
-                          <View className='item-block-single'><Button openType="getUserInfo" onGetUserInfo={(data) => { this.handleGetUserInfo(data, scene, 'editor') }} className='sceneButton'><View className='item-single' hoverClass="item-single-hover">
-                            <Image lazy-load={true} src={scene.thumbnailUrl && scene.thumbnailUrl} mode="aspectFill" style="width:100%;height:100%;border-radius:5px" /></View></Button></View>
+                        return item.showStyle === 0 ? <View className='item-block'><Form onSubmit={this.handleFormSubmit} reportSubmit><Button formType="submit" openType="getUserInfo" onGetUserInfo={(data) => { this.handleGetUserInfo(data, scene, 'editor') }} className='sceneButton'><View className='item' hoverClass="item-hover">
+                          <Image lazy-load={true} src={scene.thumbnailUrl && scene.thumbnailUrl} mode="aspectFill" style={{ height: this.state.picHeight + 'px', width: this.state.picHeight + 'px', borderRadius: '5px' }} /></View></Button></Form></View> :
+                          <View className='item-block-single'><Form onSubmit={this.handleFormSubmit} reportSubmit><Button formType="submit" openType="getUserInfo" onGetUserInfo={(data) => { this.handleGetUserInfo(data, scene, 'editor') }} className='sceneButton'><View className='item-single' hoverClass="item-single-hover">
+                            <Image lazy-load={true} src={scene.thumbnailUrl && scene.thumbnailUrl} mode="aspectFill" style="width:100%;height:100%;border-radius:5px" /></View></Button></Form></View>
                       })
                     }
                   </View>

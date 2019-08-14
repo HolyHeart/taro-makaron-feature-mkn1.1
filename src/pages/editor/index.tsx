@@ -203,7 +203,7 @@ class Editor extends Component {
     this.app.aldstat.sendEvent('生成页分享', { '场景名': this.state.currentScene.sceneName, '场景Id': this.state.currentScene.sceneId })
     const { currentScene, result = {} } = this.state
     const { shareImage = {} } = result
-    const shareContent = currentScene.shareContent || (globalData.themeData && globalData.themeData.shareContent)
+    const shareContent = currentScene.shareContent || ''
     const shareImageUrl = `${shareImage.remoteUrl}?x-oss-process=image/resize,m_pad,h_420,w_525`
     const data = {
       shareSource: shareImage.remoteUrl,
@@ -237,17 +237,17 @@ class Editor extends Component {
     await Session.set()
     this.initSceneData(() => {
       const firstViewEditor = Taro.getStorageSync('firstViewEditor')
-      if(!firstViewEditor){
+      if (!firstViewEditor) {
         const query = qq.createSelectorQuery()
         query.select('#addPhoto').boundingClientRect()
         query.selectViewport().scrollOffset()
-        query.exec((res)=> {
+        query.exec((res) => {
           this.setState({
-            hasGuide:true,
-            guiderTop: res[0].top-77-15
+            hasGuide: true,
+            guiderTop: res[0].top - 77 - 15
           })
         })
-        Taro.setStorageSync('firstViewEditor',true)
+        Taro.setStorageSync('firstViewEditor', true)
       }
 
     })
@@ -1234,9 +1234,9 @@ class Editor extends Component {
     return result
   }
   todo = () => {
-    if(this.state.hasGuide===true){
+    if (this.state.hasGuide === true) {
       this.setState({
-        hasGuide:false
+        hasGuide: false
       })
     }
     work.chooseImage({
@@ -1459,7 +1459,7 @@ class Editor extends Component {
         </View>
         <Loading visible={loading} />
         <View className='newGuide' style={{ display: this.state.hasGuide === false ? 'none' : 'block' }}>
-          <Image src={addTips} alt="" className='tips' style={{ top: this.state.guiderTop+'px' }}/>
+          <Image src={addTips} alt="" className='tips' style={{ top: this.state.guiderTop + 'px' }} />
         </View>
         <AuthModal />
         {result.show &&

@@ -210,7 +210,7 @@ class Dynamic extends Component {
     this.app.aldstat.sendEvent('生成页分享', {'场景名': this.state.currentScene.sceneName, '场景Id': this.state.currentScene.sceneId})
     const {currentScene, result = {}} = this.state
     const {shareVideo = {}, shareImage = {}} = result
-    const shareContent = currentScene.shareContent || (globalData.themeData && globalData.themeData.shareContent)
+    const shareContent = currentScene.shareContent || ""
     const shareImageUrl = `${shareImage.remoteUrl}?x-oss-process=image/resize,m_pad,h_420,w_525`
     const data = {
       shareSource: shareVideo.remoteUrl,
@@ -1190,6 +1190,11 @@ class Dynamic extends Component {
     }
   }
   todo = () => {
+    if(this.state.hasGuide===true){
+      this.setState({
+        hasGuide:false
+      })
+    }
     work.chooseImage({
       onTap: (index) => {
         // console.log('tap index', index)

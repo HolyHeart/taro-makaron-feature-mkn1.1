@@ -266,7 +266,9 @@ class Browser extends Component {
   app = Taro.getApp()
 
   pageToHome () {
-    if(this.activityId!=0){
+    console.log(this.activityId+'1111')
+    if(this.activityId!=0 && this.activityId!==undefined){
+      console.log(this.activityId+'1111')
       Taro.navigateTo({ url: '/pages/home/index' })
     }else{
       Taro.navigateBack({ delta: 1 })

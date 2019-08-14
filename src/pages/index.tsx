@@ -182,11 +182,7 @@ class Share extends Component {
       globalData.userInfo = userInfo
       service.base.loginAuth(e.detail)
       console.log(themeData)
-      if (themeData.sceneType === 5) {
-        Taro.navigateTo({ url: `/pages/browser/index?themeId=${globalData.themeId}` })
-      } else {
-        this.todo()
-      }
+      Taro.navigateTo({ url: `/pages/home/index` })
     } else {
       Taro.showToast({
         title: '请授权',
@@ -312,21 +308,21 @@ class Share extends Component {
                 openType="getUserInfo"
                 onGetUserInfo={this.handleGetUserInfo}
                 onClick={this.handleMainButton}
-                formType='submit'>我来P图</Button>
+                formType='submit'>我也要玩</Button>
             </View> : <Form onSubmit={this.handleFormSubmit} reportSubmit>
                 {isFromApp ?
                   <Button
-                    className="button animation-btn"
+                    className="custom-button pink"
                     hoverClass="btnhover"
                     onClick={this.pageToHome}
-                  >限时用同款</Button> :
+                  >我也要玩</Button> :
                   <Button
-                    className="button animation-btn"
+                    className="custom-button pink"
                     hoverClass="btnhover"
                     openType="getUserInfo"
                     onGetUserInfo={this.handleGetUserInfo}
                     onClick={this.handleMainButton}
-                    formType='submit'>限时用同款</Button>
+                    formType='submit'>我也要玩</Button>
                 }
               </Form>
           }

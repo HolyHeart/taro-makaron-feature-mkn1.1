@@ -831,7 +831,7 @@ class Segment extends Component {
           <MarginTopWrap config={{large: 80, small: 60, default: 50}}>
           <View style="display:flex;margin-top:100rpx">
               <Button style='flex:1' className="custom-button pink" hoverClass="btn-hover" onClick={this.todo}>{this.state.chooseText}</Button>
-              <Button style='flex:1;margin-left:10px' className="custom-button white" openType="getUserInfo"  hoverClass="btn-hover" onClick={this.handleOpenResult}>保存透明底图片(PNG)</Button>
+              <Button style='flex:1;margin-left:10px' className="custom-button white"   hoverClass="btn-hover" onClick={this.handleOpenResult}>保存透明底图片(PNG)</Button>
             </View>
           </MarginTopWrap>
           {/* <MarginTopWrap config={{large: 80, small: 60, default: 50}}>

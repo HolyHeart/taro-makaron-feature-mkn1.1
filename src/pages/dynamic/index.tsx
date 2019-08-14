@@ -255,7 +255,7 @@ class Dynamic extends Component {
   _initPage = async () => {
     await Session.set()
     this.initSceneData(() => {
-      this.initCoverData()
+      // this.initCoverData()
       this.calFrameRect()
     })
   }
@@ -300,6 +300,7 @@ class Dynamic extends Component {
           top: rect.top,
         }
       },()=>{
+        this.initCoverData()
         if(Taro.getStorageSync('lastSeparateImage')){
           const {foreground} = this.state
           this.setState({
@@ -1257,7 +1258,7 @@ class Dynamic extends Component {
           <MarginTopWrap config={{large: 60, small: 40, default: 20}}>
           <View style="display:flex;margin-top:100rpx">
               <Button style='flex:1' className="custom-button pink" hoverClass="btn-hover" onClick={this.todo}>{this.state.chooseText}</Button>
-              <Button style='flex:1;margin-left:10px' className="custom-button white" openType="getUserInfo"  hoverClass="btn-hover" onClick={this.handleOpenResult}>保存</Button>
+              <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.handleOpenResult}>保存</Button>
             </View>
           </MarginTopWrap>
         </View>

@@ -21,6 +21,7 @@ import service from '@/services/service'
 import { appConfig } from '@/services/config'
 import { createCache } from '@/services/cache'
 import './index.less'
+import addTips from "@/assets/images/tips_add pic@2x.png";
 
 // const mock_path = 'https://static01.versa-ai.com/upload/783272fc1375/999deac02e85f3ea.png'
 // const mock_segment_url = 'https://static01.versa-ai.com/images/process/segment/2019/01/14/b4cf047a-17a5-11e9-817f-00163e001583.png'

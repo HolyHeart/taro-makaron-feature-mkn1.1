@@ -33,45 +33,45 @@ import ResultModal from '@/components/ResultModal';
 import { element } from 'prop-types';
 const default_column = [
   {
-    showStyle :0,
-    categoryName: "分类1",
-    columanName: "栏目1",
-    sceneInfoList:[
+    showStyle: 0,
+    categoryName: "",
+    columanName: "",
+    sceneInfoList: [
       {
-        thumbnailUrl:pic_loading_1
+        thumbnailUrl: pic_loading_1
       },
       {
-        thumbnailUrl:pic_loading_2
+        thumbnailUrl: pic_loading_2
       },
       {
-        thumbnailUrl:pic_loading_3
+        thumbnailUrl: pic_loading_3
       },
       {
-        thumbnailUrl:pic_loading_4
+        thumbnailUrl: pic_loading_4
       },
       {
-        thumbnailUrl:pic_loading_5
+        thumbnailUrl: pic_loading_5
       },
       {
-        thumbnailUrl:pic_loading_6
+        thumbnailUrl: pic_loading_6
       },
       {
-        thumbnailUrl:pic_loading_1
+        thumbnailUrl: pic_loading_1
       },
       {
-        thumbnailUrl:pic_loading_2
+        thumbnailUrl: pic_loading_2
       },
       {
-        thumbnailUrl:pic_loading_3
+        thumbnailUrl: pic_loading_3
       },
       {
-        thumbnailUrl:pic_loading_4
+        thumbnailUrl: pic_loading_4
       },
       {
-        thumbnailUrl:pic_loading_5
+        thumbnailUrl: pic_loading_5
       },
       {
-        thumbnailUrl:pic_loading_6
+        thumbnailUrl: pic_loading_6
       },
     ],
   }
@@ -151,18 +151,23 @@ class Home extends Component {
     getSystemInfo(systemInfo)
 
 
+    const setTop = Taro.getStorageSync('setTop')
+    let tooltipHeight = 0
 
+    if (!setTop) {
+      tooltipHeight = systemInfo.screenWidth / 750 * 92
+    }
     console.log('🔥初始化高度🔥', '屏幕高度：', systemInfo.screenHeight, '屏幕宽度：', systemInfo.screenWidth, '系统参数：', systemInfo)
     this.setState({
       screenHeight: systemInfo.screenHeight,
       screenWidth: systemInfo.screenWidth,
-      tooltipHeight: systemInfo.screenWidth / 750 * 92,
+      tooltipHeight: tooltipHeight,
       picHeight: systemInfo.screenWidth * 0.8 * 0.94 * 0.5 * 0.9 + 1
     })
   }
   componentDidMount() {
     this._initPage()
-
+    Taro.setStorageSync('setTop',true)
     this.setState({
       titleHeight: globalData.totalTopHeight
     })
@@ -221,6 +226,7 @@ class Home extends Component {
 
   _initPage = async () => {
     await Session.set()
+
     await this.getCateGoryAndScenes()
   }
 
@@ -391,7 +397,7 @@ class Home extends Component {
 
   reverseList = (list) => {
     var newList = []
-    for (let i=list.length-1; i>=0; i=i-1) {
+    for (let i = list.length - 1; i >= 0; i = i - 1) {
       newList.push(list[i])
     }
     return newList
@@ -491,8 +497,8 @@ class Home extends Component {
 
 
 
-        <ScrollView className='items-window' scrollY onScroll={this.scrollDetection} scrollIntoView={'x' + this.state.currentLabelId} scrollWithAnimation style={{ height: this.state.screenHeight - this.state.titleHeight - this.state.tooltipHeight + 'px' }}>
-        {/* <ScrollView className='items-window' scrollY onScroll={this.scrollDetection} scrollWithAnimation style={{ height: this.state.screenHeight - this.state.titleHeight - this.state.tooltipHeight + 'px' }}>   */}
+        <ScrollView enableBackToTop={true} className='items-window' scrollY onScroll={this.scrollDetection} scrollIntoView={'x' + this.state.currentLabelId} scrollWithAnimation style={{ height: this.state.screenHeight - this.state.titleHeight - this.state.tooltipHeight + 'px' }}>
+          {/* <ScrollView className='items-window' scrollY onScroll={this.scrollDetection} scrollWithAnimation style={{ height: this.state.screenHeight - this.state.titleHeight - this.state.tooltipHeight + 'px' }}>   */}
           <View className='window-divider' id={'x' + this.state.firstCategoryId}><Text className='window-divider-text'>- </Text><Image className='window-divider-icon' src={homepage_logo} /><Text className='window-divider-text'> 马卡龙玩图倾力出品 -</Text></View>
           {
             this.state.totalScenes.map((item, index) => {
@@ -506,15 +512,15 @@ class Home extends Component {
                         return item.showStyle === 0 ? <View className='item-block'
                         > < Button
                           openType="getUserInfo" onGetUserInfo={(data) => { this.handleGetUserInfo(data, item.originalImageList, 'challange') }} className='sceneButton'><View className='item' hoverClass="item-hover">
-                              <Image src={scene.originalImageUrl} mode="aspectFill" style={{ height: this.state.picHeight + 'px', width: this.state.picHeight + 'px', borderRadius: '3%' }} /></View></Button> </View> :
+                              <Image lazy-load={true} src={scene.originalImageUrl} mode="aspectFill" style={{ height: this.state.picHeight + 'px', width: this.state.picHeight + 'px', borderRadius: '5px' }} /></View></Button> </View> :
                           <View className='item-block-single'><Button openType="getUserInfo" onGetUserInfo={(data) => { this.handleGetUserInfo(data, item.originalImageList, 'challange') }} className='sceneButton'><View className='item-single'
                             hoverClass="item-single-hover">
-                            <Image src={scene.originalImageUrl} mode="aspectFill" style="width:100%;height:100%;border-radius:3%" /></View></Button></View>
+                            <Image src={scene.originalImageUrl} lazy-load={true} mode="aspectFill" style="width:100%;height:100%;border-radius:5px" /></View></Button></View>
                       }) : item.sceneInfoList && item.sceneInfoList.map((scene) => {
                         return item.showStyle === 0 ? <View className='item-block'><Button openType="getUserInfo" onGetUserInfo={(data) => { this.handleGetUserInfo(data, scene, 'editor') }} className='sceneButton'><View className='item' hoverClass="item-hover">
-                          <Image src={scene.thumbnailUrl && scene.thumbnailUrl} mode="aspectFill" style={{ height: this.state.picHeight + 'px', width: this.state.picHeight + 'px', borderRadius: '3%' }} /></View></Button></View> :
+                          <Image lazy-load={true} src={scene.thumbnailUrl && scene.thumbnailUrl} mode="aspectFill" style={{ height: this.state.picHeight + 'px', width: this.state.picHeight + 'px', borderRadius: '5px' }} /></View></Button></View> :
                           <View className='item-block-single'><Button openType="getUserInfo" onGetUserInfo={(data) => { this.handleGetUserInfo(data, scene, 'editor') }} className='sceneButton'><View className='item-single' hoverClass="item-single-hover">
-                            <Image src={scene.thumbnailUrl && scene.thumbnailUrl} mode="aspectFill" style="width:100%;height:100%;border-radius:3%" /></View></Button></View>
+                            <Image lazy-load={true} src={scene.thumbnailUrl && scene.thumbnailUrl} mode="aspectFill" style="width:100%;height:100%;border-radius:5px" /></View></Button></View>
                       })
                     }
                   </View>
@@ -524,51 +530,6 @@ class Home extends Component {
           }
           <View className='window-divider'><Text className='window-divider-text'>- 到底了哦 -</Text></View>
         </ScrollView>
-
-
-
-
-
-
-
-        {/* <View className="main">
-          <View className="main-bg">
-            <Image src={bg} mode="widthFix" style="width:100%;height:100%" />
-          </View>
-          <View className={`main-container ${isIphoneX ? 'iphoneX' : ''}`} onClick={this.handleClickMain}>
-            {
-              categoryList.map(column => {
-                return (
-                  <View className='category-wrap' key={column.columnId}>
-                    {
-                      (column.themeList).map(item => {
-                        return <CategoryItem
-                          sceneType={item.sceneType }
-                          column={column.columnNum}
-                          onGetUserInfo={this.handleGetUserInfo}
-                          key={item.themeId}
-                          url={item.generalShowUrl || ''}
-                          onClick={this.handleChooseTheme.bind(this, item)}
-                          onFormSubmit={this.handleFormSubmit}
-                        />
-                      })
-                    }
-                  </View>
-                )
-              })
-            }
-            <View className="bottomInfo" style='margin-top:50rpx;font-size:10px'>
-              - 到底了哦 -
-            </View>
-            <View className="bottomInfo" style='margin-top:30rpx;'>
-              <Image src={by} mode="widthFix" style="width:266rpx" />
-            </View>
-          </View>
-        </View> */}
-
-
-
-
         <AuthModal />
         <Guide />
       </View>

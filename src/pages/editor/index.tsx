@@ -697,7 +697,16 @@ class Editor extends Component {
   // 再玩一次
   handlePlayAgain = () => {
     this.app.aldstat.sendEvent('生成页再玩一次', '再玩一次')
-    this.pageToHome()
+    // this.pageToHome()
+    this.setState({
+      result: {
+        show: false,
+        shareImage: {
+          remoteUrl: '',
+          localUrl: '',
+        },
+      }
+    })
   }
 
   // 发布到QQ空间

@@ -497,7 +497,7 @@ class Home extends Component {
                         return item.showStyle === 0 ? <View className='item-block' onClick={() => this.goScene(item.originalImageList,'challange')}><View className='item' hoverClass="item-hover">
                           <Image src={scene.originalImageUrl} mode="aspectFill" style={{ height:this.state.picHeight + 'px', width: this.state.picHeight + 'px', borderRadius: '3%'}} /></View></View> :
                           <View className='item-block-single'><View className='item-single' onClick={() => this.goScene(item.originalImageList,'challange')} hoverClass="item-single-hover">
-                            <Image src={scene.originalImageUrl} mode="aspectFill" style="width:100%;height:100%" /></View></View>
+                            <Image src={scene.originalImageUrl} mode="aspectFill" style="width:100%;height:100%;border-radius:3%" /></View></View>
                       }) :item.sceneInfoList && item.sceneInfoList.map((scene) => {
                         return item.showStyle === 0 ? <View className='item-block' onClick={() => this.goScene(scene,'editor')}><View className='item' hoverClass="item-hover">
                           <Image src={scene.thumbnailUrl && scene.thumbnailUrl} mode="aspectFill" style={{ height:this.state.picHeight + 'px', width: this.state.picHeight + 'px', borderRadius: '3%'}} /></View></View> :

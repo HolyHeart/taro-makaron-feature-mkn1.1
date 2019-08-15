@@ -69,10 +69,11 @@
 .page-home .items-window .window-divider .window-divider-text {
   font-size: 24px;
   color: #999999;
+  vertical-align: middle;
 }
 .page-home .items-window .window-divider .window-divider-icon {
-  height: 26px;
-  width: 26px;
+  height: 24px;
+  width: 24px;
 }
 .page-home .items-window .window-container {
   height: auto;
@@ -91,13 +92,12 @@
   height: 0;
 }
 .page-home .items-window .window-container .item-block .item {
-  background-color: #FF3366;
   width: 90%;
   padding-bottom: 90%;
   height: 0;
   margin-left: 5%;
   margin-top: 5%;
-  border-radius: 3%;
+  border-radius: 5px;
   position: relative;
 }
 .page-home .items-window .window-container .item-block .item.item-hover {
@@ -109,12 +109,19 @@
   padding-bottom: 40rpx;
 }
 .page-home .items-window .window-container .item-block-single .item-single {
-  background-color: #FF3366;
   width: 95%;
   height: 240rpx;
   margin-left: 2.5%;
-  border-radius: 3%;
+  border-radius: 5px;
 }
 .page-home .items-window .window-container .item-block-single .item-single.item-single-hover {
   transform: scale(0.95);
+}
+.page-home .sceneButton {
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  border-radius: 5px;
+  background: transparent;
+  transition: all 0.2s;
 }

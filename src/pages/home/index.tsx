@@ -479,7 +479,7 @@ class Home extends Component {
 
 
         <ScrollView className='nav-bar' scrollY style={{ height: this.state.screenHeight - this.state.titleHeight - this.state.tooltipHeight + 'px' }}>
-          <View className='nav-filler'></View>
+          <View className='nav-filler' style='height:5px'></View>
           {this.state.totalScenes.map((item) => {
             return (
               <View>
@@ -496,7 +496,7 @@ class Home extends Component {
 
 
 
-        <ScrollView enableBackToTop={true} className='items-window' scrollY onScroll={this.scrollDetection} scrollIntoView={'x' + this.state.currentLabelId} scrollWithAnimation style={{ height: this.state.screenHeight - this.state.titleHeight - this.state.tooltipHeight + 'px' }}>
+        <ScrollView enableBackToTop={true} className='items-window' scrollY onScroll={this.scrollDetection} scrollIntoView={'x' + this.state.currentLabelId} style={{ height: this.state.screenHeight - this.state.titleHeight - this.state.tooltipHeight + 'px' }}>
           {/* <ScrollView className='items-window' scrollY onScroll={this.scrollDetection} scrollWithAnimation style={{ height: this.state.screenHeight - this.state.titleHeight - this.state.tooltipHeight + 'px' }}>   */}
           <View className='window-divider' id={'x' + this.state.firstCategoryId}><Text className='window-divider-text'>- </Text><Image className='window-divider-icon' src={homepage_logo} /><Text className='window-divider-text'> 马卡龙玩图倾力出品 -</Text></View>
           {

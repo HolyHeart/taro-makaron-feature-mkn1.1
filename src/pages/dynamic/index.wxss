@@ -82,3 +82,6 @@ page {
   width: 49%;
   float: right;
 }
+.page-dynamic .btn-wrap .btn-4 {
+  margin-top: 30rpx;
+}

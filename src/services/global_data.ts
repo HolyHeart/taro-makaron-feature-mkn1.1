@@ -10,7 +10,9 @@ interface GlobalProps {
   sceneType: number,
   themeData: any,
   separateResult: object,
-  styleInfoList:Array<object>
+  styleInfoList:Array<object>,
+  originalImageList:Array<object>,
+  sceneConfig:object
 }
 
 class GlobalObj implements GlobalProps {
@@ -23,7 +25,9 @@ class GlobalObj implements GlobalProps {
   sceneType = 0
   themeData = null
   separateResult = {}
+  originalImageList =[]
   styleInfoList:[]
+  sceneConfig ={}
   constructor (name) {
     this.name = name
   }

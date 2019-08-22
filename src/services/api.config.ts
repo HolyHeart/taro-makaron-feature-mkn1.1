@@ -52,6 +52,9 @@ export const api = {
     psWorkList: `${getHost('qq_miniapi', ENV)}/activity/works/top/likes`,
     postNewWork:`${getHost('qq_miniapi',ENV)}/community/works`,
     getWorkList :`${getHost('qq_miniapi', ENV)}/activity/works/rank/likes`
+  },
+  home: {
+    getCateGoryAndScenes :`${getHost('qq_miniapi', ENV)}/miniProgram/category`,
   }
 }
 export default {

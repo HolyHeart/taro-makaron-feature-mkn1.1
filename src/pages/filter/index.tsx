@@ -86,6 +86,7 @@ class Filter extends Component {
   }
 
   state = {
+    chooseText:'添加人像照片',
     rawImage: {
       localUrl: '',
       remoteUrl: ''
@@ -264,7 +265,6 @@ class Filter extends Component {
   }
 
   _initPage = async () => {
-    globalData.choosedImage = globalData.choosedImage || 'http://tmp/wxcfe56965f4d986f0.o6zAJsztn2DIgXEGteELseHpiOtU.6gRGsIZIvyytf45cffd60a62912bada466d51e03f6fa.jpg'
     this.calFrameRect()
     this.initRawImage()
     await Session.set()
@@ -272,9 +272,9 @@ class Filter extends Component {
       this.initFilterData()
       this.initCoverData()
     })
-    const separateResult = globalData.separateResult = await this.initSegment()
-    console.log('separateResult', separateResult)
-    await this.initSeparateData(separateResult)
+    // const separateResult = globalData.separateResult = await this.initSegment()
+    // console.log('separateResult', separateResult)
+    // await this.initSeparateData(separateResult)
   }
 
   test = async () => {
@@ -527,43 +527,21 @@ class Filter extends Component {
   // 初始化场景信息
   initSceneData = async (callback) => {
     // 全局主题数据
-    if (!globalData.themeData) {
-      const themeId = globalData.themeId || appConfig.themeId
-      const res = await service.core.theme(themeId)
-      globalData.themeData = res.result && res.result.result
-    }
-    const themeData = globalData.themeData || {sceneList: []}
-    this.themeData.sceneList = work.getSceneList(themeData.sceneList || [])
-
-    // 去除sceneConfig属性
-    const sceneList = this.themeData.sceneList.map((v:object) => {
-      const {sceneConfig, ...rest} = v
-      return {
-        ...rest
-      }
-    })
-
-    const {sceneId} = this.$router.params
-    let currentScene
-    if (sceneId) {
-      currentScene = sceneList.find(v => v.sceneId === sceneId) || {}
-    } else {
-      currentScene = sceneList[0]
-    }
-
+    const currentScene = globalData.sceneConfig
     this.setState({
-      sceneList: sceneList,
-      currentScene: currentScene || {}
+      currentScene:{
+        ...this.state.currentScene,
+        ...currentScene,
+      }
     }, () => {
-      // console.log('state', this.state)
       typeof callback === 'function' && callback()
     })
   }
   // 初始化夹层滤镜
   initFilterData = () => {
     const { currentScene } = this.state
-    const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
-    const sceneConfig = tool.JSON_parse(sceneInfo.sceneConfig)
+    // const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
+    const sceneConfig = tool.JSON_parse(currentScene.sceneConfig)
     const {filter = {}} = sceneConfig
     const remoteUrl = filter.imageUrls[0]
     const loaded = false
@@ -584,8 +562,8 @@ class Filter extends Component {
   // 初始化贴纸
   initCoverData = () => {
     const {currentScene} = this.state
-    const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
-    const sceneConfig = tool.JSON_parse(sceneInfo.sceneConfig)
+    // const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
+    const sceneConfig = tool.JSON_parse(currentScene.sceneConfig)
     const {cover = {}} = sceneConfig
     this.themeData.rawCoverList = cover.list || []
     const coverList = work.formatRawCoverList(this.themeData.rawCoverList)
@@ -597,8 +575,7 @@ class Filter extends Component {
   // 初始化音乐
   initMusicData () {
     const { currentScene } = this.state
-    const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId') || {}
-    const sceneConfig = tool.JSON_parse(sceneInfo.sceneConfig)
+    const sceneConfig = tool.JSON_parse(currentScene.sceneConfig)
     const remoteUrl = sceneConfig.music && sceneConfig.music.fileUrl
     if (remoteUrl) {
       this.createAudio(remoteUrl)
@@ -1143,7 +1120,26 @@ class Filter extends Component {
     const cacheKey = `${sceneId}_${sticker.id}`
     this.cache['cover'].set(cacheKey, clone_cover)
   }
-
+  todo = () => {
+    work.chooseImage({
+      onTap: (index) => {
+        // console.log('tap index', index)
+        if (index === 0) {
+          this.app.aldstat.sendEvent('编辑页面选择拍摄照片', '选择拍摄')
+        } else if (index === 1) {
+          this.app.aldstat.sendEvent('编辑页面选择相册照片', '选择相册')
+        }
+      },
+      onSuccess: async (path) => {
+        console.log('choosedImage', path, globalData)
+        this.app.aldstat.sendEvent('编辑页面人像成功', '上传成功')
+        globalData.choosedImage = path
+        const separateResult = globalData.separateResult = await this.initSegment()
+        console.log('separateResult', separateResult)
+        await this.initSeparateData(separateResult)
+      }
+    })
+}
   render () {
     const { loading, rawImage, frame, background, filter, foreground, coverList, sceneList, currentScene, result, music } = this.state
     return (
@@ -1157,11 +1153,7 @@ class Filter extends Component {
         >懒人抠图</Title>
         <View className="main">
           <View className="pic-section">
-            <View className={`raw ${(foreground.remoteUrl && foreground.loaded) ? 'hidden' : ''}`}>
-              <Image src={rawImage.localUrl} style="width:100%; height:100%"
-                mode="aspectFit"/>
-            </View>
-            <View className={`crop ${(foreground.remoteUrl && foreground.loaded) ? '' : 'hidden'}`} id="crop">
+            <View className={`crop`} id="crop">
               <View
                 className='play-section'
                 style={{width: `${background.width}px`, height: `${background.height}px`, left: `${background.x}px`, top: `${background.y}px`}}
@@ -1211,16 +1203,11 @@ class Filter extends Component {
               </View>
             </View>
           </View>
-          <MarginTopWrap config={{large: 60, small: 40, default: 20}}>
-            <SceneList
-              list={sceneList}
-              currentScene={currentScene}
-              styleObj={{width: '720rpx', marginRight: '-60rpx'}}
-              onClick={this.handleChooseScene}
-            />
-          </MarginTopWrap>
-          <MarginTopWrap config={{large: 60, small: 40, default: 20}}>
-            <Button className="custom-button pink" hoverClass="btn-hover" onClick={this.handleOpenResult}>保存</Button>
+          <MarginTopWrap config={{large: 60, small: 40, default: 20}} >
+            <View style="display:flex;margin-top:100rpx">
+              <Button style='flex:1' className="custom-button pink" hoverClass="btn-hover" onClick={this.todo}>{this.state.chooseText}</Button>
+              <Button style='flex:1;margin-left:10px' className="custom-button white" openType="getUserInfo"   hoverClass="btn-hover" onClick={this.handleOpenResult}>保存</Button>
+            </View>
           </MarginTopWrap>
         </View>
         <Loading visible={loading} />

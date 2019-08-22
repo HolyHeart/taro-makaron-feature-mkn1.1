@@ -21,6 +21,7 @@ import service from '@/services/service'
 import { appConfig } from '@/services/config'
 import { createCache } from '@/services/cache'
 import './index.less'
+import addTips from "@/assets/images/tips_addpic@2x.png";
 
 // const mock_path = 'https://static01.versa-ai.com/upload/783272fc1375/999deac02e85f3ea.png'
 // const mock_segment_url = 'https://static01.versa-ai.com/images/process/segment/2019/01/14/b4cf047a-17a5-11e9-817f-00163e001583.png'
@@ -89,12 +90,15 @@ class Dynamic extends Component {
       localUrl: '',
       remoteUrl: ''
     },
+    guiderTop: '',
+    hasGuide: false,
     frame: {
       width: 0,
       height: 0,
       left: 0,
       top: 0,
     },
+    chooseText:'添加人像照片',
     foreground: {
       id: 'foreground',
       remoteUrl: '',
@@ -208,7 +212,7 @@ class Dynamic extends Component {
     this.app.aldstat.sendEvent('生成页分享', {'场景名': this.state.currentScene.sceneName, '场景Id': this.state.currentScene.sceneId})
     const {currentScene, result = {}} = this.state
     const {shareVideo = {}, shareImage = {}} = result
-    const shareContent = currentScene.shareContent || (globalData.themeData && globalData.themeData.shareContent)
+    const shareContent = currentScene.shareContent || ""
     const shareImageUrl = `${shareImage.remoteUrl}?x-oss-process=image/resize,m_pad,h_420,w_525`
     const data = {
       shareSource: shareVideo.remoteUrl,
@@ -243,13 +247,13 @@ class Dynamic extends Component {
     const {currentScene} = this.state
     const shareContent = currentScene.shareContent || (globalData.themeData && globalData.themeData.shareContent)
     qq.openQzonePublish({
-      text: shareContent, 
+      text: shareContent,
       media: [
         {
           type: 'video',
           path: globalData.videoQQZonePublishLocalUrl
         }
-      ] 
+      ]
     })
   }
 
@@ -266,27 +270,27 @@ class Dynamic extends Component {
   } 
 
   _initPage = async () => {
-    globalData.choosedImage = globalData.choosedImage || 'http://tmp/wxcfe56965f4d986f0.o6zAJsztn2DIgXEGteELseHpiOtU.6gRGsIZIvyytf45cffd60a62912bada466d51e03f6fa.jpg'
-    this.calFrameRect()
-    this.initRawImage()
     await Session.set()
     this.initSceneData(() => {
-      this.initCoverData()
+      // this.initCoverData()
+      this.calFrameRect()
+      const firstViewEditor = Taro.getStorageSync('firstViewEditor')
+      if(!firstViewEditor){
+        const query = qq.createSelectorQuery()
+        query.select('#addPhoto').boundingClientRect()
+        query.selectViewport().scrollOffset()
+        query.exec((res)=> {
+          this.setState({
+            hasGuide:true,
+            guiderTop: res[0].top-77-15
+          })
+        })
+        Taro.setStorageSync('firstViewEditor',true)
+      }
     })
-    const separateResult = globalData.separateResult = await this.initSegment()
-    console.log('separateResult', separateResult)
-    await this.initSeparateData(separateResult)
   }
 
   test = async () => {
-    // try {
-    //   const result = await service.core.column()
-    //   console.log('result', result)
-    // } catch(err) {
-    //   console.log('catch', err)
-    // }
-    //   const uploadResult = await service.base.upload(mock_path, 'png')
-    //   console.log('uploadResult', uploadResult)
   }
   // 公共方法
   pageToHome = () => {
@@ -324,6 +328,17 @@ class Dynamic extends Component {
           height: rect.height,
           left: rect.left,
           top: rect.top,
+        }
+      },()=>{
+        this.initCoverData()
+        if(Taro.getStorageSync('lastSeparateImage')){
+          const {foreground} = this.state
+          this.setState({
+            foreground: {
+              ...foreground,
+              remoteUrl: Taro.getStorageSync('lastSeparateImage')
+            }
+          })
         }
       })
     })
@@ -496,6 +511,7 @@ class Dynamic extends Component {
   initSeparateData = async (separateResult) => {
     const { currentScene, foreground } = this.state
     this.setSegmentTypeByScene(currentScene, separateResult, (res = {}) => {
+      Taro.setStorageSync('lastSeparateImage',res.separateUrl)
       this.setState({
         foreground: {
           ...foreground,
@@ -506,34 +522,8 @@ class Dynamic extends Component {
   }
   // 初始化场景信息
   initSceneData = async (callback) => {
-    // 全局主题数据
-    if (!globalData.themeData) {
-      const themeId = globalData.themeId || appConfig.themeId
-      const res = await service.core.theme(themeId)
-      globalData.themeData = res.result && res.result.result
-    }
-    const themeData = globalData.themeData || {sceneList: []}
-    this.themeData.sceneList = work.getSceneList(themeData.sceneList || [])
-
-    // 去除sceneConfig属性
-    const sceneList = this.themeData.sceneList.map((v:object) => {
-      const {sceneConfig, ...rest} = v
-      return {
-        ...rest
-      }
-    })
-
-    const {sceneId} = this.$router.params
-    let currentScene
-    if (sceneId) {
-      currentScene = sceneList.find(v => v.sceneId === sceneId) || {}
-    } else {
-      currentScene = sceneList[0]
-    }
-
     this.setState({
-      sceneList: sceneList,
-      currentScene: currentScene || {}
+      currentScene: globalData.sceneConfig || {}
     }, () => {
       // console.log('state', this.state)
       typeof callback === 'function' && callback()
@@ -542,8 +532,8 @@ class Dynamic extends Component {
   // 初始化贴纸
   initCoverData = () => {
     const {currentScene} = this.state
-    const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
-    const sceneConfig = tool.JSON_parse(sceneInfo.sceneConfig)
+    // const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
+    const sceneConfig = tool.JSON_parse(currentScene.sceneConfig)
     const {cover = {}} = sceneConfig
     this.themeData.rawCoverList = cover.list || []
     const coverList = work.formatRawCoverList(this.themeData.rawCoverList)
@@ -555,8 +545,8 @@ class Dynamic extends Component {
   // 初始化音乐
   initMusicData () {
     const { currentScene } = this.state
-    const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
-    const sceneConfig = tool.JSON_parse(sceneInfo.sceneConfig)
+    // const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
+    const sceneConfig = tool.JSON_parse(currentScene.sceneConfig)
     const remoteUrl = sceneConfig.music && sceneConfig.music.fileUrl
     if (remoteUrl) {
       this.createAudio(remoteUrl)
@@ -855,18 +845,18 @@ class Dynamic extends Component {
   foregroundAuto = (callback?:()=>void) => {
     // 先判断是否有缓存
     const {currentScene} = this.state
-    const sceneId = currentScene.sceneId || 'demo_scene'
-    const cache_foreground = this.cache['foreground']
-    const scene_foreground_params = cache_foreground.get(sceneId)
+    // const sceneId = currentScene.sceneId || 'demo_scene'
+    // const cache_foreground = this.cache['foreground']
+    // const scene_foreground_params = cache_foreground.get(sceneId)
 
-    if ( scene_foreground_params ) {
-      this.setStateTarget('foreground', {
-        ...scene_foreground_params
-      }, () => {
-        typeof callback === 'function' && callback()
-      })
-      return
-    }
+    // if ( scene_foreground_params ) {
+    //   this.setStateTarget('foreground', {
+    //     ...scene_foreground_params
+    //   }, () => {
+    //     typeof callback === 'function' && callback()
+    //   })
+    //   return
+    // }
 
     const size = this.calcForegroundSize()
     const position = this.calcForegroundPosition(size)
@@ -879,12 +869,12 @@ class Dynamic extends Component {
   }
   // 计算人物尺寸
   calcForegroundSize = () => {
-    const {currentScene, sceneList, foreground, frame} = this.state
+    const {currentScene, foreground, frame} = this.state
     const {originWidth, originHeight} = foreground
-    const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
+    // const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
 
     const imageRatio = originWidth / originHeight
-    const params = tool.JSON_parse(sceneInfo.sceneConfig)
+    const params = tool.JSON_parse(currentScene.sceneConfig)
     const autoScale = parseFloat(params.size.default)
 
     const result = {
@@ -909,15 +899,15 @@ class Dynamic extends Component {
   }
   // 计算人物位置
   calcForegroundPosition = ({width, height} = {}) => {
-    const {currentScene, sceneList, foreground, frame} = this.state
+    const {currentScene, foreground, frame} = this.state
     const {originWidth, originHeight} = foreground
     width = width || foreground.width
     height = height || foreground.height
-    const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
+    // const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
 
     const boxWidth = frame.width
     const boxHeight = frame.height
-    const sceneConfig = tool.JSON_parse(sceneInfo.sceneConfig)
+    const sceneConfig = tool.JSON_parse(currentScene.sceneConfig)
     const {position} = sceneConfig
     const type = position.place || '0'
     const result = {
@@ -1213,6 +1203,31 @@ class Dynamic extends Component {
       return result
     }
   }
+  todo = () => {
+    if(this.state.hasGuide===true){
+      this.setState({
+        hasGuide:false
+      })
+    }
+    work.chooseImage({
+      onTap: (index) => {
+        // console.log('tap index', index)
+        if (index === 0) {
+          this.app.aldstat.sendEvent('编辑页面选择拍摄照片', '选择拍摄')
+        } else if (index === 1) {
+          this.app.aldstat.sendEvent('编辑页面选择相册照片', '选择相册')
+        }
+      },
+      onSuccess: async (path) => {
+        console.log('choosedImage', path, globalData)
+        this.app.aldstat.sendEvent('编辑页面人像成功', '上传成功')
+        globalData.choosedImage = path
+        const separateResult = globalData.separateResult = await this.initSegment()
+        console.log('separateResult', separateResult)
+        await this.initSeparateData(separateResult)
+      }
+    })
+}
   // 缓存贴纸信息
   storeCoverInfo = (sticker) => {
     const {currentScene} = this.state
@@ -1237,10 +1252,10 @@ class Dynamic extends Component {
         >懒人抠图</Title>
         <View className="main">
           <View className="pic-section">
-            <View className={`raw ${(foreground.remoteUrl && foreground.loaded) ? 'hidden' : ''}`}>
+            {/* <View className={`raw ${(foreground.remoteUrl && foreground.loaded) ? 'hidden' : ''}`}>
               <Image src={rawImage.localUrl} style="width:100%;height:100%" mode="aspectFit"/>
-            </View>
-            <View className={`crop ${(foreground.remoteUrl && foreground.loaded) ? '' : 'hidden'}`} id="crop">
+            </View> */}
+            <View className={`crop`} id="crop">
               <View className="background-image">
                 <Image
                   src={currentScene.bgUrl}
@@ -1276,18 +1291,16 @@ class Dynamic extends Component {
             </View>
           </View>
           <MarginTopWrap config={{large: 60, small: 40, default: 20}}>
-            <SceneList
-              list={sceneList}
-              currentScene={currentScene}
-              styleObj={{width: '720rpx', marginRight: '-60rpx'}}
-              onClick={this.handleChooseScene}
-            />
-          </MarginTopWrap>
-          <MarginTopWrap config={{large: 60, small: 40, default: 20}}>
-            <Button className="custom-button pink" hoverClass="btn-hover" onClick={this.handleOpenResult}>保存</Button>
+          <View style="display:flex;margin-top:120rpx">
+              <Button style='flex:1;z-index:2' id='addPhoto'  className="custom-button pink" hoverClass="btn-hover" onClick={this.todo}>{this.state.chooseText}</Button>
+              <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.handleOpenResult}>保存</Button>
+            </View>
           </MarginTopWrap>
         </View>
         <Loading visible={loading} />
+        <View className='newGuide' style={{ display: this.state.hasGuide === false ? 'none' : 'block' }}>
+          <Image src={addTips} alt="" className='tips' style={{ top: this.state.guiderTop+'px' }}/>
+        </View>
         <AuthModal />
         {result.show &&
           <ResultModal

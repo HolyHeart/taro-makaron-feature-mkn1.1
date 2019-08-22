@@ -135,7 +135,7 @@ class Teleport extends Component {
           userName: res.userInfo.nickName
         })
       }
-    })
+    }).catch((e) => {})
   }
 
   // 分享页面

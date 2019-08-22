@@ -7,15 +7,11 @@ import work from '@/utils/work'
 import Title from '@/components/Title'
 import Tooltip from '@/components/Tooltip'
 import CustomIcon from '@/components/Icon'
-import CategoryItem from '@/components/CategoryItem'
 import AuthModal from '@/components/AuthModal'
 import Guide from "@/components/Guide";
 import globalData from '@/services/global_data'
 import { core, base, home } from '@/services/service'
 import Session from '@/services/session'
-import bg from '@/assets/images/BG@2x.png'
-import by from '@/assets/images/by@3x.png'
-import pic_loading_big from '@/assets/images/0@2x.png'
 import pic_feedback from '@/assets/images/feedback.png'
 import pic_loading_1 from '@/assets/images/1@2x.png'
 import pic_loading_2 from '@/assets/images/2@2x.png'
@@ -24,13 +20,8 @@ import pic_loading_4 from '@/assets/images/4@2x.png'
 import pic_loading_5 from '@/assets/images/5@2x.png'
 import pic_loading_6 from '@/assets/images/6@2x.png'
 import homepage_logo from '@/assets/images/logo@2x.png'
-import icon_collect from '@/assets/images/icon_collect@2x.png'
-import icon_close from '@/assets/images/icon_nofollow_close@2x.png'
 import tooltip_pic from '@/assets/images/tips_collect@2x.png'
 import './index.less'
-import ResultModal from '@/components/ResultModal';
-
-import { element } from 'prop-types';
 const default_column = [
   {
     showStyle: 0,

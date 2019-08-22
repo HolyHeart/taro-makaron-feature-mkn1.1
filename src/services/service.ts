@@ -498,10 +498,26 @@ export const home = {
   }
 }
 
+// 传送门接口
+export const teleport = {
+  getResultImage: function (sessionId, sceneId) {
+    const reqData = {
+      method: 'GET',
+      url: api.teleport.getResultImage,
+      header: {"Accept": "*/*"},
+      data: {
+        sessionId: sessionId,
+        sceneId: sceneId,
+      }
+    }
+    return request(reqData)
+  }
+}
 
 export default {
   base,
   core,
   styleTransfer,
   browser,
+  teleport
 }

@@ -38,8 +38,8 @@ class _App extends Component {
       'pages/waiting/index',
       'pages/style/index',
       'pages/index',
-
-      'pages/psChallenge/index'
+      'pages/psChallenge/index',
+      'pages/teleport/index'
     ],
     window: {
       backgroundTextStyle: 'light',

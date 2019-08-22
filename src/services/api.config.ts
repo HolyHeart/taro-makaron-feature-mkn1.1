@@ -31,8 +31,8 @@ export const api = {
   base: {
     uploadToken: `${getHost('miniapi', ENV)}/upload/uploadPolicy`,
     upload: `${getHost('miniapi', ENV)}/upload`,
-    auth: `${getHost('miniapi', ENV)}/user/auth/session/qq/mini`,
-    loginAuth: `${getHost('miniapi', ENV)}/user/auth/qqMiniProgram`,
+    auth: `${getHost('miniapi', ENV)}/user/auth/wechat/mini`,
+    loginAuth: `${getHost('miniapi', ENV)}/user/auth/miniProgram`,
   },
   core: {
     segment: `${getHost('miniapi', ENV)}/segment/instance/original`,
@@ -40,7 +40,7 @@ export const api = {
     theme: `${getHost('miniapi', ENV)}/bg/:themeId/themeData`,
     recommend: `${getHost('miniapi', ENV)}/scene/recommend`,
     filterConvertVideo: `${getHost('miniapi', ENV)}/video/merge`,
-    reportFormId: `${getHost('miniapi', ENV)}/user/miniProgram/qq/report`,
+    reportFormId: `${getHost('miniapi', ENV)}/user/miniProgram/report`,
   },
   // Style Transfer
   style: {
@@ -55,6 +55,9 @@ export const api = {
   },
   home: {
     getCateGoryAndScenes :`${getHost('miniapi', ENV)}/miniProgram/category`,
+  },
+  teleport: {
+    getResultImage:`${getHost('miniapi', ENV)}/miniProgram/getResultImage`,
   }
 }
 export default {

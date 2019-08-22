@@ -258,13 +258,13 @@ class Dynamic extends Component {
   }
 
   canIShareToQQZone = () => {
-    if (qq.canIUse('openQzonePublish')) {
+    if (wx.canIUse('openQzonePublish')) {
       console.log('🔥🔥🔥可以分享到空间')
       this.setState({
         ableToShareToQZone: true
       })
     } else {
-      console.log('QQ版本低，不支持分享到空间')
+      console.log('微信版本小程序不支持分享到QQ空间')
     }
   } 
 
@@ -275,7 +275,7 @@ class Dynamic extends Component {
       this.calFrameRect()
       const firstViewEditor = Taro.getStorageSync('firstViewEditor')
       if(!firstViewEditor){
-        const query = qq.createSelectorQuery()
+        const query = wx.createSelectorQuery()
         query.select('#addPhoto').boundingClientRect()
         query.selectViewport().scrollOffset()
         query.exec((res)=> {

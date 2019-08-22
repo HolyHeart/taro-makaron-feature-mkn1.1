@@ -376,7 +376,7 @@ class Home extends Component {
     console.log('🔥Scrolling...🔥')
 
     const titleHeight = this.state.tooltipHeight + this.state.titleHeight
-    const query = qq.createSelectorQuery()
+    const query = wx.createSelectorQuery()
 
     var firstShownDom = []
 

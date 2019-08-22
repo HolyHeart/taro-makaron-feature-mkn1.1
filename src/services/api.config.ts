@@ -29,32 +29,32 @@ function getHost(type = 'miniapi', ENV = 'dev') {
 }
 export const api = {
   base: {
-    uploadToken: `${getHost('qq_miniapi', ENV)}/upload/uploadPolicy`,
-    upload: `${getHost('qq_miniapi', ENV)}/upload`,
-    auth: `${getHost('qq_miniapi', ENV)}/user/auth/session/qq/mini`,
-    loginAuth: `${getHost('qq_miniapi', ENV)}/user/auth/qqMiniProgram`,
+    uploadToken: `${getHost('miniapi', ENV)}/upload/uploadPolicy`,
+    upload: `${getHost('miniapi', ENV)}/upload`,
+    auth: `${getHost('miniapi', ENV)}/user/auth/session/qq/mini`,
+    loginAuth: `${getHost('miniapi', ENV)}/user/auth/qqMiniProgram`,
   },
   core: {
-    segment: `${getHost('qq_miniapi', ENV)}/segment/instance/original`,
-    column: `${getHost('qq_miniapi', ENV)}/bg/column/theme/list`,
-    theme: `${getHost('qq_miniapi', ENV)}/bg/:themeId/themeData`,
-    recommend: `${getHost('qq_miniapi', ENV)}/scene/recommend`,
-    filterConvertVideo: `${getHost('qq_miniapi', ENV)}/video/merge`,
-    reportFormId: `${getHost('qq_miniapi', ENV)}/user/miniProgram/qq/report`,
+    segment: `${getHost('miniapi', ENV)}/segment/instance/original`,
+    column: `${getHost('miniapi', ENV)}/bg/column/theme/list`,
+    theme: `${getHost('miniapi', ENV)}/bg/:themeId/themeData`,
+    recommend: `${getHost('miniapi', ENV)}/scene/recommend`,
+    filterConvertVideo: `${getHost('miniapi', ENV)}/video/merge`,
+    reportFormId: `${getHost('miniapi', ENV)}/user/miniProgram/qq/report`,
   },
   // Style Transfer
   style: {
-    segment: `${getHost('qq_miniapi', ENV)}/image/render/segment`,
-    featureTagOrder: `${getHost('qq_miniapi', ENV)}/feature/featureTagOrder`,
-    featureDetail: `${getHost('qq_miniapi', ENV)}/feature/featureDetail`,
+    segment: `${getHost('miniapi', ENV)}/image/render/segment`,
+    featureTagOrder: `${getHost('miniapi', ENV)}/feature/featureTagOrder`,
+    featureDetail: `${getHost('miniapi', ENV)}/feature/featureDetail`,
   },
   browser: {
-    psWorkList: `${getHost('qq_miniapi', ENV)}/activity/works/top/likes`,
+    psWorkList: `${getHost('miniapi', ENV)}/activity/works/top/likes`,
     postNewWork:`${getHost('qq_miniapi',ENV)}/community/works`,
-    getWorkList :`${getHost('qq_miniapi', ENV)}/activity/works/rank/likes`
+    getWorkList :`${getHost('miniapi', ENV)}/activity/works/rank/likes`
   },
   home: {
-    getCateGoryAndScenes :`${getHost('qq_miniapi', ENV)}/miniProgram/category`,
+    getCateGoryAndScenes :`${getHost('miniapi', ENV)}/miniProgram/category`,
   }
 }
 export default {

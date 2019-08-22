@@ -149,11 +149,8 @@ class Home extends Component {
       systemInfo.isIphoneX = false
     }
     getSystemInfo(systemInfo)
-
-
     const setTop = Taro.getStorageSync('setTop')
     let tooltipHeight = 0
-
     if (!setTop) {
       tooltipHeight = systemInfo.screenWidth / 750 * 92
     }
@@ -164,13 +161,19 @@ class Home extends Component {
       tooltipHeight: tooltipHeight,
       picHeight: systemInfo.screenWidth * 0.8 * 0.94 * 0.5 * 0.9 + 1
     })
+    let totalTopHeight = 72
+    if (systemInfo.model.indexOf('iPhone X') !== -1) {
+      totalTopHeight = 85
+    } else if (systemInfo.model.indexOf('iPhone') !== -1) {
+      totalTopHeight = 62
+    }
+    this.setState({
+      titleHeight: totalTopHeight
+    })
   }
   componentDidMount() {
     this._initPage()
     Taro.setStorageSync('setTop', true)
-    this.setState({
-      titleHeight: globalData.totalTopHeight
-    })
   }
   componentWillReceiveProps(nextProps) {
     // console.log(this.props, nextProps)

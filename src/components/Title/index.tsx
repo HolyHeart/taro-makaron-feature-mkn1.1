@@ -46,7 +46,6 @@ class Title extends Component {
       totalTopHeight = 62
     }
     const titleBarHeight = totalTopHeight - statusBarHeight
-    globalData.totalTopHeight = totalTopHeight
     this.setState({
       statusBarHeight,
       titleBarHeight

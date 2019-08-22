@@ -59,6 +59,8 @@ class Browser extends Component {
 
     activityName: '',
 
+    totalTopHeight: 0,
+
   }
 
   onShareAppMessage (res) {
@@ -141,6 +143,17 @@ class Browser extends Component {
     this.themeId = this.$router.params.themeId
     this.activityId = this.$router.params.activityId
     this.activityImgId = this.$router.params.activityImgId
+
+    const systemInfo = Taro.getSystemInfoSync()
+    let totalTopHeight = 72
+    if (systemInfo.model.indexOf('iPhone X') !== -1) {
+      totalTopHeight = 85
+    } else if (systemInfo.model.indexOf('iPhone') !== -1) {
+      totalTopHeight = 62
+    }
+    this.setState({
+      totalTopHeight: totalTopHeight
+    })
   }
 
   componentDidMount() {
@@ -164,8 +177,8 @@ class Browser extends Component {
 
   initParameters() {
     this.setState({
-      waterfallTopMargin: globalData.totalTopHeight * 2 + this.activityImgWidthL + 40 + 32 + 'rpx',
-      titleAndNavHeight: globalData.totalTopHeight * 2 + 20 + 'rpx',
+      waterfallTopMargin: this.state.totalTopHeight * 2 + this.activityImgWidthL + 40 + 32 + 'rpx',
+      titleAndNavHeight: this.state.totalTopHeight * 2 + 20 + 'rpx',
     })
   }
   getThemeData = async (callback) => {

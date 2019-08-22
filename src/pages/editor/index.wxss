@@ -89,6 +89,3 @@ page {
   width: 49%;
   float: right;
 }
-.page-editor .btn-wrap .btn-4 {
-  margin-top: 30rpx;
-}

@@ -164,11 +164,10 @@ class Editor extends Component {
         localUrl: '',
       },
     },
-    drawBoard:{
-      width:'690rpx',
-      height:'920rpx'
-    },
-    ableToShareToQZone: false
+    drawBoard: {
+      width: '690rpx',
+      height: '920rpx'
+    }
   }
 
   app = Taro.getApp()
@@ -187,11 +186,9 @@ class Editor extends Component {
 
   isSaving = false // 是否正在保存
 
-  componentWillMount () {
-  }
-  componentDidMount () {
+  componentWillMount() { }
+  componentDidMount() {
     this._initPage()
-    this.canIShareToQQZone()
   }
   componentWillReceiveProps(nextProps) {
     // console.log(this.props, nextProps)
@@ -255,18 +252,7 @@ class Editor extends Component {
 
     })
 
-  // qq空间分享兼容性检测
-  canIShareToQQZone = () => {
-    if (qq.canIUse('openQzonePublish')) {
-      console.log('🔥🔥🔥可以分享到空间')
-      this.setState({
-        ableToShareToQZone: true
-      })
-    } else {
-      console.log('QQ版本低，不支持分享到空间')
-    }
-  } 
-
+  }
   test = async () => {
   }
   // 公共方法
@@ -1416,8 +1402,6 @@ class Editor extends Component {
   }
   render() {
     const { loading, rawImage, frame, customBg, foreground, coverList, sceneList, currentScene, result, canvas } = this.state
-
-
     return (
       <View className='page-editor'>
         <Title
@@ -1498,13 +1482,8 @@ class Editor extends Component {
             renderButton={
               <View className="btn-wrap">
                 <Button className="custom-button pink btn-1" hoverClass="btn-hover" openType="share" >分享给好友</Button>
-                {this.state.ableToShareToQZone ? 
-                <View>
-                  <Button className="custom-button dark btn-2" hoverClass="btn-hover"  onClick={this.publishToQzone}>同步到说说</Button>
-                  <Button className="custom-button dark btn-3" hoverClass="btn-hover"  onClick={this.handlePlayAgain}>再玩一次</Button>
-                </View>: <View>
-                  <Button className="custom-button dark btn-4" hoverClass="btn-hover"  onClick={this.handlePlayAgain}>再玩一次</Button>
-                </View>}
+                <Button className="custom-button dark btn-2" hoverClass="btn-hover" onClick={this.publishToQzone}>同步到说说</Button>
+                <Button className="custom-button dark btn-3" hoverClass="btn-hover" onClick={this.handlePlayAgain}>再玩一次</Button>
               </View>
             }
           />

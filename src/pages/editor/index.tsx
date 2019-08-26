@@ -265,7 +265,7 @@ class Editor extends Component {
       console.log('微信版本小程序不支持分享到QQ空间')
     }
   } 
-  
+
 
   // 公共方法
   pageToHome = () => {
@@ -1494,7 +1494,7 @@ class Editor extends Component {
             renderButton={
               <View className="btn-wrap">
                 <Button className="custom-button pink btn-1" hoverClass="btn-hover" openType="share" >分享给好友</Button>
-                {this.state.ableToShareToQZone ? 
+                {this.state.ableToShareToQZone ?
                 <View>
                   <Button className="custom-button dark btn-2" hoverClass="btn-hover"  onClick={this.publishToQzone}>同步到说说</Button>
                   <Button className="custom-button dark btn-3" hoverClass="btn-hover"  onClick={this.handlePlayAgain}>再玩一次</Button>

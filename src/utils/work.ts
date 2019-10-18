@@ -299,7 +299,57 @@ const chooseImage = async ({onTap, onSuccess}:chooseImageOptions) => {
     }
   }).catch(err => console.log(err))
 }
-
+const chooseImageBg = async ({onTap, onSuccess}:chooseImageOptions) => {
+  
+  Taro.showActionSheet({
+    itemList: ([
+      '拍摄照片',
+      '从相册选择图片作为背景',
+    ]),
+    success: function ({tapIndex}) {
+      typeof onTap === 'function' && onTap(tapIndex)
+      if (tapIndex === 0) {
+        Taro.authorize({
+          scope: "scope.camera",
+        }).then(res => {
+          Taro.chooseImage({
+            count: 1,
+            sourceType: ['camera'],
+            sizeType: ['compressed'],
+          }).then(({tempFilePaths: [path]}) => {
+            typeof onSuccess === 'function' && onSuccess(path)
+          })
+        }, err => {
+          Taro.getSetting().then(authSetting => {
+            if (authSetting['scope.camera']) {
+            } else {
+              Taro.showModal({
+                title: '拍摄图片需要授权',
+                content: '拍摄图片需要授权\n可以授权吗？',
+                confirmText: "允许",
+                cancelText: "拒绝",
+              }).then(res => {
+                if (res.confirm) {
+                  Taro.authModal({
+                    open: true
+                  })
+                }
+              })
+            }
+          })
+        })
+      } else if (tapIndex === 1) {
+        Taro.chooseImage({
+          count: 1,
+          sourceType: ['album'],
+        }).then(({tempFilePaths: [path]}) => {
+          typeof onSuccess === 'function' && onSuccess(path)
+          
+        })
+      }
+    }
+  }).catch(err => console.log(err))
+}
 const work = {
   pageToHome,
   pageToError,
@@ -313,6 +363,7 @@ const work = {
   calcVideoSize,
   chooseImage,
   getPreBgList,
-  formatIcanPsCoverList
+  formatIcanPsCoverList,
+  chooseImageBg
 }
 export default work

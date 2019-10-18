@@ -364,6 +364,7 @@ class Sticker extends Component {
   handleImageLoaded = (e) => {
     const { onImageLoaded, stylePrams } = this.props
     onImageLoaded && onImageLoaded(e.detail, stylePrams)
+    console.log(e,"123123")
   }
 
   handleDeleteSticker = () => {

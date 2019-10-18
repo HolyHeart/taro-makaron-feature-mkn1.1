@@ -424,6 +424,8 @@ class Home extends Component {
         Taro.navigateTo({ url: '/pages/segment/index' })
       } else if (scene.sceneType === 4) {
         Taro.navigateTo({ url: '/pages/crop/index' })
+      } else if (scene.sceneType === 5){
+        Taro.navigateTo({ url: '/pages/myBackground/index' })
       } else {
         Taro.navigateTo({ url: '/pages/editor/index' })
       }
@@ -516,7 +518,7 @@ class Home extends Component {
                             <Image lazy-load={true} src={scene.thumbnailUrl && scene.thumbnailUrl} mode="aspectFill" style="width:100%;height:100%;border-radius:5px" /></View></Button></Form></View>
                       })
                     }
-                  </View>
+                  </View> 
                 </View>
               )
             })

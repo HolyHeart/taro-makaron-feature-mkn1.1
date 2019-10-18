@@ -1412,6 +1412,10 @@ class Editor extends Component {
       })
     }
   }
+  changeNav(){
+    this.app.aldstat.sendEvent('保存后返回首页', '回到首页')
+    Taro.navigateTo({ url: '/pages/home/index'})
+  }
   render() {
     const { loading, rawImage, frame, customBg, foreground, coverList, sceneList, currentScene, result, canvas } = this.state
     return (
@@ -1468,7 +1472,7 @@ class Editor extends Component {
           <MarginTopWrap config={{ large: 60, small: 40, default: 20 }} >
             <View style="display:flex;margin-top:120rpx">
               <Button style='flex:1;z-index:2' id='addPhoto' className="custom-button pink" hoverClass="btn-hover" onClick={this.todo}>{this.state.chooseText}</Button>
-              <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.handleOpenResult}>保存</Button>
+              <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.handleOpenResult} openType="share">分享并保存</Button>
             </View>
           </MarginTopWrap>
         </View>
@@ -1493,13 +1497,13 @@ class Editor extends Component {
             cropWidth={this.state.drawBoard.width}
             renderButton={
               <View className="btn-wrap">
-                <Button className="custom-button pink btn-1" hoverClass="btn-hover" openType="share" >分享给好友</Button>
+                <Button className="custom-button pink btn-1" hoverClass="btn-hover" id="btnNav" openType="share">继续分享</Button>
                 {this.state.ableToShareToQZone ?
                 <View>
                   <Button className="custom-button dark btn-2" hoverClass="btn-hover"  onClick={this.publishToQzone}>同步到说说</Button>
                   <Button className="custom-button dark btn-3" hoverClass="btn-hover"  onClick={this.handlePlayAgain}>再玩一次</Button>
                 </View>: <View>
-                  <Button className="custom-button dark btn-4" hoverClass="btn-hover"  onClick={this.handlePlayAgain}>再玩一次</Button>
+                  <Button className="custom-button dark btn-4" hoverClass="btn-hover"  onClick={this.changeNav}>回到首页</Button>
                 </View>}
               </View>
             }

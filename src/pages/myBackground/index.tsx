@@ -56,7 +56,7 @@ type PageState = {
 
 type IProps = PageStateProps & PageDispatchProps & PageOwnProps
 
-interface Segment {
+interface MyBackground {
   props: IProps;
 }
 
@@ -67,7 +67,7 @@ interface Segment {
     dispatch(getSystemInfo(data))
   }
 }))
-class Segment extends Component {
+class MyBackground extends Component {
   config: Config = {
     navigationBarTitleText: '懒人抠图',
     disableScroll: true,
@@ -75,7 +75,10 @@ class Segment extends Component {
   }
 
   state = {
+    bgImg:'',
     chooseText:'添加人像照片',
+    bgText:"添加自定义背景",
+    coverList:[],
     rawImage: {
       localUrl: '',
       remoteUrl: ''
@@ -111,6 +114,10 @@ class Segment extends Component {
       ratio: 3
     },
     loading: false,
+    drawBoard: {
+      width: '690rpx',
+      height: '920rpx'
+    },
     result: {
       show: false,
       shareImage: {
@@ -248,6 +255,7 @@ class Segment extends Component {
           top: rect.top,
         }
       },()=>{
+        this.initCoverData()
         if(Taro.getStorageSync('lastSeparateImage')){
           const {foreground} = this.state
           this.setState({
@@ -257,7 +265,15 @@ class Segment extends Component {
             }
           })
         }
+        this.foregroundAuto()
       })
+    })
+    const {foreground} = this.state
+    this.setState({
+      foreground: {
+        ...foreground,
+        remoteUrl: Taro.getStorageSync('lastSeparateImage')
+      }
     })
   }
   setResultModalStatus = (flag = false, callback?:()=>void) => {
@@ -310,6 +326,7 @@ class Segment extends Component {
           }
         }
       })
+      console.log(separateRes,"11111")
       const {cateImageDict = {}} = separateRes.result || {}
       if (!cateImageDict['16'] && !cateImageDict['16-1']) {
         console.log('技术犯规了')
@@ -323,7 +340,6 @@ class Segment extends Component {
     }
     return (separateRes && separateRes.result) || {}
   }
-
   initSeparateData = async (separateResult) => {
     const { currentScene } = this.state
     this.changeSceneChooseSegment(currentScene, separateResult, (res = {}) => {
@@ -337,7 +353,7 @@ class Segment extends Component {
       })
     })
   }
-  // 根据场景决定头像
+  // 根据场景决定头像   //separateResult = '地址',
   changeSceneChooseSegment = async (currentScene, separateResult = {}, callback) => {
     const { imageHost } = appConfig
     if (!separateResult.cateImageDict) {
@@ -357,11 +373,66 @@ class Segment extends Component {
       separateUrl,
       separateMaskUrl
     })
+    console.log(separateMaskUrl,999999999)
+  }
+  //初始化贴纸
+  initCoverData = () => {
+    const { currentScene } = this.state
+    // const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
+    const sceneConfig = tool.JSON_parse(currentScene.sceneConfig)
+    const { cover = {} } = sceneConfig
+
+    this.themeData.rawCoverList = cover.list || []
+    const coverList = work.formatRawCoverList(this.themeData.rawCoverList)
+
+    this.setState({
+      coverList: coverList
+    })
+    console.log('initCoverData cover', cover, coverList)
+  }
+  //更换场景
+  handleChooseScene = (scene) => {
+    const { currentScene } = this.state
+    if (currentScene.sceneId === scene.sceneId) {
+      return
+    }
+    this.setState({
+      bgImg:scene.choosedImage,
+      
+    }, () => {
+      // console.log('handleChooseScene', this.state.currentScene)
+
+      console.log(this.state.currentScene,"cs8889999")  
+      this.foregroundAuto()
+      this.initCoverData()
+      this.app.aldstat.sendEvent('选择场景', { '场景名': this.state.currentScene.sceneName, '场景Id': this.state.currentScene.sceneId })
+    })
+  }
+  setCoverListActiveStatus = (options = {}, value = false) => {
+    const { type, ids = [] } = options
+    const { coverList } = this.state
+    if (type === 'all') {
+      coverList.forEach(v => {
+        v['isActive'] = value
+      })
+    } else {
+      coverList.forEach(v => {
+        if (ids.indexOf(v.id) > -1) {
+          v['isActive'] = value
+        } else {
+          v['isActive'] = !value
+        }
+      })
+    }
+    this.setState({
+      coverList
+    })
   }
 
   // 背景
   handleBackgroundClick = () => {
     this.setForegroundActiveStatus(false)
+    this.setCoverListActiveStatus({ type: 'all' }, false)
   }
   // 人物
   onForegroundLoaded = (detail:object, item?:any) => {
@@ -388,11 +459,25 @@ class Segment extends Component {
   }
   handleForegroundTouchstart = (sticker) => {
     this.setForegroundActiveStatus(true)
+    this.setCoverListActiveStatus({ type: 'all' }, false)
+  }
+  handleCoverTouchstart = (sticker) => {
+    // console.log('handleCoverTouchstart', sticker)
+    this.setCoverListActiveStatus({ type: 'some', ids: [sticker.id] }, true)
+    this.setForegroundActiveStatus(false)
   }
   handleForegroundTouchend = () => { }
 
   // 保存
   handleOpenResult = async () => {
+    if(!this.state.bgImg){
+      Taro.showToast({
+        title: '请先上传背景图片！',
+        icon: "none",
+        mask: true
+      })
+      return
+    }
     if (!this.state.foreground.remoteUrl) {
       return
     }
@@ -406,6 +491,7 @@ class Segment extends Component {
     })
     this.isSaving = true
     const canvasImageUrl = await this.createCanvas()
+    console.log(canvasImageUrl,"chenzhenhuceshi2222",this.state.bgImg)
     Taro.hideLoading()
     this.isSaving = false
     this.setState({
@@ -418,6 +504,7 @@ class Segment extends Component {
       }
     }, async () => {
       const {url} = await service.base.upload(canvasImageUrl)
+      console.log(url,'111',canvasImageUrl)
       this.setState({
         result: {
           show: this.state.result.show,
@@ -480,7 +567,7 @@ class Segment extends Component {
       const { foreground, frame, canvas} = this.state
       const context = Taro.createCanvasContext(canvas.id, this)
       const { ratio = 3 } = canvas
-
+      console.log(canvas,context.drawImage,context.draw,"chenzhenhuceshi1111")
       // 绘制元素
       await this.canvasDrawElement(context, ratio)
       //绘制图片
@@ -493,6 +580,7 @@ class Segment extends Component {
           success: function (res) {
             let tempFilePath = res.tempFilePath
             resolve(tempFilePath)
+            console.log(tempFilePath,"chenzhenhuceshi333")
           },
           fail: function (res) {
             reject(res)
@@ -501,11 +589,12 @@ class Segment extends Component {
           }
         });
       }, 400)
+      
     })
   }
   // 绘制贴纸，文字，覆盖层所有元素
   canvasDrawElement = async (context, ratio) => {
-    const { foreground } = this.state
+    const { foreground,coverList = [],frame} = this.state
     // 收集所有元素进行排序
     let elements:Array<any> = []
     const element_foreground = {
@@ -521,6 +610,21 @@ class Segment extends Component {
     }
     // 收集人物
     elements.push(element_foreground)
+    //
+    coverList.filter(v => !v.deleted).forEach(v => {
+      const element_cover = {
+        type: 'cover',
+        zIndex: v.zIndex,
+        id: v.id,
+        remoteUrl: v.remoteUrl,
+        width: v.width * ratio,
+        height: v.height * ratio,
+        x: v.x * ratio,
+        y: v.y * ratio,
+        rotate: v.rotate,
+      }
+      elements.push(element_cover)
+    })
     // 对元素进行排序
     elements.sort((a, b) => {
       return a.zIndex - b.zIndex
@@ -530,7 +634,11 @@ class Segment extends Component {
       const element = elements[i]
       try {
         const localImagePath = await this.downloadRemoteImage(element.remoteUrl)
+        element.bgImg = this.state.bgImg
         element.localUrl = localImagePath
+        console.log(localImagePath,"chenzhenhuceshi66666")
+
+        context.drawImage(element.bgImg,  0, 0, frame.width * ratio,  frame.height * ratio)
         drawElement(element)
       } catch (err) {
         console.log('下载贴纸图片失败', err)
@@ -542,7 +650,7 @@ class Segment extends Component {
       context.save()
       context.translate(x + 0.5 * width, y + 0.5 * height)
       context.rotate(rotate * Math.PI / 180)
-      context.drawImage(localUrl,  -0.5 * width, -0.5 * height, width, height)
+      context.drawImage(localUrl, -0.5 * width, -0.5 * height, width, height)
       context.restore()
       context.stroke()
     }
@@ -583,6 +691,7 @@ class Segment extends Component {
     } else {
       try {
         const result = await service.base.downloadFile(remoteUrl)
+        console.log(result,"888888")
         localImagePath = result.tempFilePath
       } catch (err) {
         console.log('下载图片失败', err)
@@ -778,32 +887,99 @@ class Segment extends Component {
       return result
     }
   }
-  todo = () => {
-    work.chooseImage({
-      onTap: (index) => {
-        // console.log('tap index', index)
-        if (index === 0) {
-          this.app.aldstat.sendEvent('编辑页面选择拍摄照片', '选择拍摄')
-        } else if (index === 1) {
-          this.app.aldstat.sendEvent('编辑页面选择相册照片', '选择相册')
+  handleBgLoaded = ({ detail }) => {
+    console.log(detail)
+    if ((detail.width / detail.height) >= (3 / 4)) {
+      this.setState({
+        drawBoard: {
+          width: '690rpx',
+          height: `${detail.height * 345 / detail.width * 2}rpx`
         }
-      },
-      onSuccess: async (path) => {
-        console.log('choosedImage', path, globalData)
-        this.app.aldstat.sendEvent('编辑页面人像成功', '上传成功')
-        globalData.choosedImage = path
-        const separateResult = globalData.separateResult = await this.initSegment()
-        console.log('separateResult', separateResult)
-        await this.initSeparateData(separateResult)
-      }
-    })
+      }, () => {
+        setTimeout(() => {
+          this.calFrameRect()
+        }, 250);
+      })
+    } else {
+      this.setState({
+        drawBoard: {
+          height: '920rpx',
+          width: `${detail.width * 460 / detail.height * 2}rpx`
+        }
+      }, () => {
+        setTimeout(() => {
+          this.calFrameRect()
+        }, 250);
+      })
+    }
+  }
+  todo = (ev) => {
+    if(ev.currentTarget.id === 'custom-btn'){
+      work.chooseImage({
+      
+        onTap: (index) => {
+          // console.log('tap index', index)
+          if (index === 0) {
+            this.app.aldstat.sendEvent('编辑页面选择拍摄照片', '选择拍摄')
+          } else if (index === 1) {
+            this.app.aldstat.sendEvent('编辑页面选择相册照片', '选择相册')
+          }
+        },
+        onSuccess: async (path) => {
+          console.log('choosedImage', path, globalData)
+          this.app.aldstat.sendEvent('编辑页面人像成功', '上传成功')
+          globalData.choosedImage = path
+          const separateResult = globalData.separateResult = await this.initSegment()
+          console.log('separateResult', separateResult)
+          await this.initSeparateData(separateResult)
+        }
+      })
+    }else{
+      work.chooseImageBg({
+        
+        onTap: (index) => {
+          // console.log('tap index', index)
+          if (index === 0) {
+            this.app.aldstat.sendEvent('编辑页面选择拍摄照片', '选择拍摄')
+          } else if (index === 1) {
+            this.app.aldstat.sendEvent('编辑页面选择相册照片', '选择相册')
+          }
+        },
+        onSuccess: async (path) => {
+          console.log('choosedImage', path, globalData)
+          this.app.aldstat.sendEvent('编辑页面人像成功', '上传成功')
+          globalData.choosedImage = path
+          // const separateResult = globalData.separateResult = await this.initSegment()
+          // console.log('separateResult', separateResult)
+          // await this.initSeparateData(path)
+          // this.setState({
+          //   bgImg:path
+          // })
+          this.handleChooseScene(globalData)
+        }
+      })
+      
+    }
+    
   }
   changeNav(){
       this.app.aldstat.sendEvent('保存后返回首页', '回到首页')
       Taro.navigateTo({ url: '/pages/home/index'})
   }
+  handleChangeCoverStyle = (data) => {
+    const { id } = data
+    const { coverList } = this.state
+    coverList.forEach((v, i) => {
+      if (v.id === id) {
+        coverList[i] = data
+      }
+    })
+    this.setState({
+      coverList: coverList
+    })
+  }
   render () {
-    const { loading, rawImage, frame, foreground, result, canvas } = this.state
+    const { loading, rawImage, frame, foreground, result, canvas ,coverList} = this.state
     return (
       <View className='page-segment'>
         <Title
@@ -815,11 +991,18 @@ class Segment extends Component {
         >懒人抠图</Title>
         <View className="main">
           <View className="pic-section">
-            <View className={`raw ${(foreground.remoteUrl && foreground.loaded) ? 'hidden' : ''}`}>
+            <View className={`raw ${(foreground.remoteUrl && foreground.loaded) ? 'hidden' : ''}`} style={{ width: this.state.drawBoard.width, height: this.state.drawBoard.height }}>
               <Image src={rawImage.localUrl} style="width:100%;height:100%" mode="aspectFit"/>
             </View>
-            <View className={`crop`} id="crop">
-              <View className="layer-bg" onClick={this.handleBackgroundClick}></View>
+            <View className={`crop`} id="crop" style={{ width: this.state.drawBoard.width, height: this.state.drawBoard.height }}>
+              { 
+                this.state.bgImg === ''?
+                <View className="layer-bg" onClick={this.handleBackgroundClick}>
+                </View>:
+                <View className="background-image" >
+                    <Image src={this.state.bgImg} style="height:100%;width:100%;" mode="scaleToFill" onLoad={this.handleBgLoaded} onClick={this.handleBackgroundClick}/> 
+                </View>
+              }
               <Sticker
                 ref="foreground"
                 url={foreground.remoteUrl}
@@ -830,13 +1013,32 @@ class Segment extends Component {
                 onTouchstart={this.handleForegroundTouchstart}
                 onTouchend={this.handleForegroundTouchend}
               />
+              {coverList.map(item => {
+                return <Sticker
+                  key={item.id}
+                  url={item.remoteUrl}
+                  stylePrams={item}
+                  framePrams={frame}
+                  onChangeStyle={this.handleChangeCoverStyle}
+                  onImageLoaded={this.onCoverLoaded}
+                  onTouchstart={this.handleCoverTouchstart}
+                  onTouchend={this.handleCoverTouchend}
+                  onDeleteSticker={this.handleDeleteCover.bind(this, item)}
+                />
+              })}
             </View>
           </View>
           <MarginTopWrap config={{large: 80, small: 60, default: 50}}>
-          <View style="display:flex;margin-top:100rpx">
-              <Button style='flex:1' className="custom-button pink" hoverClass="btn-hover" onClick={this.todo}>{this.state.chooseText}</Button>
-              <Button style='flex:1;margin-left:10px' className="custom-button white"   hoverClass="btn-hover" openType="share"  onClick={this.handleOpenResult}>分享保存透明底</Button>
-            </View>
+          <View style="display:flex;">
+            <Button style='flex:1' id="custom-btn" className="custom-button white" hoverClass="btn-hover" onClick={this.todo}>{this.state.chooseText}</Button>
+            <Button style='flex:1;margin-left:10px' className="custom-button pink" hoverClass="btn-hover" onClick={this.todo}>{this.state.bgText}</Button>
+             
+          </View>
+          <View style="display:flex;margin-top:30rpx">
+            {this.state.bgImg === '' ? <Button style='flex:1;' className="custom-button white"   hoverClass="btn-hover" onClick={this.handleOpenResult} >分享并保存</Button>
+            : <Button style='flex:1;' className="custom-button white"   hoverClass="btn-hover" onClick={this.handleOpenResult} openType="share" >分享并保存</Button>}
+            
+          </View>
           </MarginTopWrap>
           {/* <MarginTopWrap config={{large: 80, small: 60, default: 50}}>
             <Button className="custom-button pink" hoverClass="btn-hover" onClick={this.handleOpenResult}>保存透明底图片(PNG)</Button>
@@ -854,13 +1056,16 @@ class Segment extends Component {
         {result.show &&
           <ResultModal
             type='image'
+            bgImg={this.state.bgImg}
             image={{
               url: result.shareImage.localUrl,
             }}
             layer={true}
+            cropHeight={this.state.drawBoard.height}
+            cropWidth={this.state.drawBoard.width}
             renderButton={
               <View className="btn-wrap">
-                <Button className="custom-button pink btn-1" id="btnNav" hoverClass="btn-hover" openType="share">继续分享</Button>
+                <Button className="custom-button pink btn-1" hoverClass="btn-hover" openType="share">继续分享</Button>
                 <Button className="custom-button dark btn-2" hoverClass="btn-hover"  onClick={this.changeNav}>回到首页</Button>
               </View>
             }
@@ -871,4 +1076,4 @@ class Segment extends Component {
   }
 }
 
-export default Segment as ComponentClass<PageOwnProps, PageState>
+export default MyBackground as ComponentClass<PageOwnProps, PageState>

@@ -39,7 +39,8 @@ class _App extends Component {
       'pages/style/index',
       'pages/index',
       'pages/psChallenge/index',
-      'pages/teleport/index'
+      'pages/teleport/index',
+      'pages/myBackground/index'
     ],
     window: {
       backgroundTextStyle: 'light',

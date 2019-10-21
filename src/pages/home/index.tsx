@@ -1,6 +1,6 @@
 import { ComponentClass } from 'react'
 import Taro, { Component, Config } from '@tarojs/taro'
-import { View, Image, Button, ScrollView, Text, Form } from '@tarojs/components'
+import { View, Image, Button, ScrollView, Text, Form, Ad } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 import { getSystemInfo } from '@/model/actions/global'
 import work from '@/utils/work'
@@ -110,7 +110,7 @@ class Home extends Component {
     isScrollToTop: true,
     totalScenes: default_column,
     categories: [],
-
+    display: 'flex',
     // 🔥🔥🔥 following states are added by Shichao 🔥🔥🔥
     screenHeight: 0,
     screenWidth: 0,
@@ -359,8 +359,7 @@ class Home extends Component {
       })
     }
   }
-
-
+ 
 
 
 
@@ -499,6 +498,7 @@ class Home extends Component {
             this.state.totalScenes.map((item, index) => {
               return (
                 <View>
+                  {index === 2 ? <View className="banner" style={{display:this.state.display}}><Ad unitId="adunit-eb384f1b62ad0d21" ad-intervals={60} onLoad={()=>{console.log('加载成功')}} onError={()=>{this.setState({display:'none'});console.log('广告错误')}} onClose={()=>{console.log('关闭广告');this.setState({display:'none'})}} onTouchStart={()=>{console.log(111)}}/></View> : ''}
                   {index !== 0 ? <View className='window-divider' id={'x' + item.categoryId} key={item.categoryId}><Text className='window-divider-text'>- {item.categoryName} -</Text></View> : ''}
                   <View className='window-container'>
                     {

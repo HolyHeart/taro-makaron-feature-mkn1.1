@@ -24,7 +24,7 @@ import './index.less'
 import image_code from '@/assets/images/code.png'
 import image_versa from '@/assets/images/versa.png'
 import addTips from "@/assets/images/tips_addpic@2x.png";
-
+import Dialog from '@/components/Dialog'
 
 // const mock_path = 'https://static01.versa-ai.com/upload/783272fc1375/999deac02e85f3ea.png'
 // const mock_segment_url = 'https://static01.versa-ai.com/images/process/segment/2019/01/14/b4cf047a-17a5-11e9-817f-00163e001583.png'
@@ -86,6 +86,10 @@ class Editor extends Component {
       localUrl: '',
       remoteUrl: ''
     },
+    content: '',
+​    isshow: false,
+​    cancelText: '取消',
+​    confirmText: '看广告',
     frame: {
       width: 0,
       height: 0,
@@ -186,11 +190,27 @@ class Editor extends Component {
   }
 
   isSaving = false // 是否正在保存
-
+  saveNumber = {
+    number: 0,
+    date: 0,
+  }
   componentWillMount() { }
   componentDidMount() {
     this._initPage()
     this.canIShareToQQZone()
+​    if(Taro.getStorageSync('saveNumber') === '' || Taro.getStorageSync('saveNumber').number === 0){
+  ​      Taro.setStorageSync('saveNumber',this.saveNumber)
+  ​      console.log(Taro.getStorageSync('saveNumber'))
+  ​  }
+    const date1 = new Date()
+    console.log('chenzhenhu0909090')
+    if(date1.getTime() - Taro.getStorageSync('saveNumber').date > 86400000){
+      this.saveNumber = {
+        number: 0,
+        date: date1.getTime()
+      }
+      Taro.setStorageSync('saveNumber',this.saveNumber)
+    }
   }
   componentWillReceiveProps(nextProps) {
     // console.log(this.props, nextProps)
@@ -655,6 +675,11 @@ class Editor extends Component {
       title: '照片生成中...',
       mask: true,
     })
+    const mySaveNumber = {
+      number: Taro.getStorageSync('saveNumber').number + 1,
+      date: Taro.getStorageSync('saveNumber').date
+    }
+    Taro.setStorageSync('saveNumber',mySaveNumber)
     this.isSaving = true
     const canvasImageUrl = await this.createCanvas()
     Taro.hideLoading()
@@ -1412,6 +1437,39 @@ class Editor extends Component {
       })
     }
   }
+  handelVideoAd(){
+    //.catch((err)=>{console.log(err)})
+    this.setState({
+      isshow: false
+    })
+    this.videoAd = wx.createRewardedVideoAd({adUnitId: 'adunit-7815bc095ad4a222'})
+    this.videoAd.onLoad(()=>{console.log('广告拉取成功')})
+    this.videoAd.onError((err)=>{console.log(err)})
+    this.videoAd.onClose((res)=>{
+      console.log(res)
+      if(res.isEnded){
+        this.handleOpenResult()
+      }
+    })
+  
+    if(this.videoAd){
+      this.videoAd.load().then(()=>{
+        this.videoAd.show()
+      })
+    }
+  }
+  saveImg(){
+    this.setState({
+      isshow: true,
+      content:'观看完整的视频广告后，才可以保存这张图片哦~',
+    })
+  }
+  handelCancel(){
+    this.setState({
+      isshow: false
+    })
+    
+  }
   changeNav(){
     this.app.aldstat.sendEvent('保存后返回首页', '回到首页')
     Taro.navigateTo({ url: '/pages/home/index'})
@@ -1472,9 +1530,25 @@ class Editor extends Component {
           <MarginTopWrap config={{ large: 60, small: 40, default: 20 }} >
             <View style="display:flex;margin-top:120rpx">
               <Button style='flex:1;z-index:2' id='addPhoto' className="custom-button pink" hoverClass="btn-hover" onClick={this.todo}>{this.state.chooseText}</Button>
-              <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.handleOpenResult} openType="share">分享并保存</Button>
+              {Taro.getStorageSync('saveNumber').number ===0 ? <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.handleOpenResult} openType="share">分享并保存</Button> :<Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.saveImg}>保存</Button>}
             </View>
           </MarginTopWrap>
+          {this.state.isshow === true ? <Dialog 
+            content={this.state.content}
+            cancelText={this.state.cancelText}
+            confirmText={this.state.confirmText}
+            isshow={this.state.isshow}
+            renderButton ={
+              <View className="wx-dialog-footer" style="display:flex;margin-bottom:30rpx">
+                <Button className="wx-dialog-btn" onClick={this.handelCancel} style="flex:1">
+                    {this.state.cancelText}
+                </Button>
+                <Button className="wx-dialog-btn" onClick={this.handelVideoAd}  style="flex:1">
+                    {this.state.confirmText}
+                </Button>
+              </View>
+            }
+          /> : ''}
         </View>
         <View class="canvas-wrap">
           <Canvas

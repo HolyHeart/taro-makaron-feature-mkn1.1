@@ -21,7 +21,7 @@ import { createCache } from '@/services/cache'
 import './index.less'
 import image_code from '@/assets/images/code.png'
 import image_versa from '@/assets/images/versa.png'
-
+import Dialog from '@/components/Dialog'
 type PageStateProps = {
   global: {
     system: object
@@ -79,6 +79,10 @@ class MyBackground extends Component {
     chooseText:'添加人像照片',
     bgText:"添加自定义背景",
     coverList:[],
+    content: '',
+    cancelText: '取消',
+    confirmText: '看广告',
+    isshow: false,
     rawImage: {
       localUrl: '',
       remoteUrl: ''
@@ -89,6 +93,7 @@ class MyBackground extends Component {
       left: 0,
       top: 0,
     },
+    isshow: false,
     foreground: {
       id: 'foreground',
       remoteUrl: '',
@@ -134,13 +139,13 @@ class MyBackground extends Component {
     sceneList: [],
     rawCoverList: [], // 原始贴纸数据
   }
-
+  userName = ''
   cache = {
     foreground: createCache('foreground'),
     cover: createCache('cover'),
     source: createCache('source'),
   }
-
+  videoAd = null //定义视频广告
   isSaving = false // 是否正在保存
 
   componentWillMount () {}
@@ -962,9 +967,63 @@ class MyBackground extends Component {
     }
     
   }
+
   changeNav(){
       this.app.aldstat.sendEvent('保存后返回首页', '回到首页')
       Taro.navigateTo({ url: '/pages/home/index'})
+  }
+  handelVideoAd(){
+      //.catch((err)=>{console.log(err)})
+      this.setState({
+        isshow: false
+      })
+      this.videoAd = wx.createRewardedVideoAd({adUnitId: 'adunit-7815bc095ad4a222'})
+      this.videoAd.onLoad(()=>{console.log('广告拉取成功')})
+      this.videoAd.onError((err)=>{console.log(err)})
+      this.videoAd.onClose((res)=>{
+        console.log(res)
+        if(res.isEnded){
+          this.handleOpenResult()
+        }
+      })
+    
+    if(this.videoAd){
+      this.videoAd.load().then(()=>{
+        this.videoAd.show()
+      })
+    }
+  }
+  saveImg(){
+    if(!this.state.bgImg){
+      Taro.showToast({
+        title: '请先上传背景图片！',
+        icon: "none",
+        mask: true
+      })
+      return
+    }else{
+      //  wx.getUserInfo({
+      //   success:(res)=>{
+      //     console.log(res.userInfo.nickName)
+      //     this.setState({
+      //       userNickName:res.userInfo.nickName
+      //     })
+      //   }
+      // })
+      
+        this.setState({
+          isshow: true,
+          content:'观看完整的视频广告后，才可以保存这张图片哦~',
+        })
+      
+      
+    }
+  }
+  handelCancel(){
+    this.setState({
+      isshow: false
+    })
+    
   }
   handleChangeCoverStyle = (data) => {
     const { id } = data
@@ -1035,11 +1094,27 @@ class MyBackground extends Component {
              
           </View>
           <View style="display:flex;margin-top:30rpx">
-            {this.state.bgImg === '' ? <Button style='flex:1;' className="custom-button white"   hoverClass="btn-hover" onClick={this.handleOpenResult} >分享并保存</Button>
-            : <Button style='flex:1;' className="custom-button white"   hoverClass="btn-hover" onClick={this.handleOpenResult} openType="share" >分享并保存</Button>}
+            {this.state.bgImg === '' ? <Button style='flex:1;' className="custom-button white"   hoverClass="btn-hover" onClick={this.saveImg} >保存</Button>
+            : <Button style='flex:1;' className="custom-button white"   hoverClass="btn-hover" onClick={this.saveImg}  >保存</Button>}
             
           </View>
           </MarginTopWrap>
+          {this.state.isshow === true ? <Dialog 
+            content={this.state.content}
+            cancelText={this.state.cancelText}
+            confirmText={this.state.confirmText}
+            isshow={this.state.isshow}
+            renderButton ={
+              <View className="wx-dialog-footer" style="display:flex;margin-bottom:30rpx">
+                <Button className="wx-dialog-btn" onClick={this.handelCancel} style="flex:1">
+                    {this.state.cancelText}
+                </Button>
+                <Button className="wx-dialog-btn" onClick={this.handelVideoAd}  style="flex:1">
+                    {this.state.confirmText}
+                </Button>
+              </View>
+            }
+          /> : ''}
           {/* <MarginTopWrap config={{large: 80, small: 60, default: 50}}>
             <Button className="custom-button pink" hoverClass="btn-hover" onClick={this.handleOpenResult}>保存透明底图片(PNG)</Button>
           </MarginTopWrap> */}

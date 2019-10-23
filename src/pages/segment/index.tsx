@@ -21,7 +21,7 @@ import { createCache } from '@/services/cache'
 import './index.less'
 import image_code from '@/assets/images/code.png'
 import image_versa from '@/assets/images/versa.png'
-
+import Dialog from '@/components/Dialog'
 type PageStateProps = {
   global: {
     system: object
@@ -80,6 +80,10 @@ class Segment extends Component {
       localUrl: '',
       remoteUrl: ''
     },
+    isshow : false,
+    content: '',
+    cancelText: '取消',
+    confirmText: '看广告',
     frame: {
       width: 0,
       height: 0,
@@ -798,6 +802,47 @@ class Segment extends Component {
       }
     })
   }
+  handelVideoAd(){
+    //.catch((err)=>{console.log(err)})
+    this.setState({
+      isshow: false
+    })
+    this.videoAd = wx.createRewardedVideoAd({adUnitId: 'adunit-7815bc095ad4a222'})
+    this.videoAd.onLoad(()=>{console.log('广告拉取成功')})
+    this.videoAd.onError((err)=>{console.log(err)})
+    this.videoAd.onClose((res)=>{
+      console.log(res)
+      if(res.isEnded){
+        this.handleOpenResult()
+      }
+    })
+  
+    if(this.videoAd){
+      this.videoAd.load().then(()=>{
+        this.videoAd.show()
+      })
+    }
+  }
+  handelCancel(){
+    this.setState({
+      isshow: false
+    })
+    
+  }
+  saveImg(){
+    if(this.state.foreground.remoteUrl == ''){
+      Taro.showToast({
+        title: '请先上传人像图片！',
+        icon: "none",
+        mask: true
+      })
+      return
+    }
+    this.setState({
+      isshow: true,
+      content: '观看完整的视频广告后，才可以保存这张图片哦~'
+    })
+  }
   changeNav(){
       this.app.aldstat.sendEvent('保存后返回首页', '回到首页')
       Taro.navigateTo({ url: '/pages/home/index'})
@@ -835,9 +880,27 @@ class Segment extends Component {
           <MarginTopWrap config={{large: 80, small: 60, default: 50}}>
           <View style="display:flex;margin-top:100rpx">
               <Button style='flex:1' className="custom-button pink" hoverClass="btn-hover" onClick={this.todo}>{this.state.chooseText}</Button>
-              <Button style='flex:1;margin-left:10px' className="custom-button white"   hoverClass="btn-hover" openType="share"  onClick={this.handleOpenResult}>分享保存透明底</Button>
+              <Button style='flex:1;margin-left:10px' className="custom-button white"   hoverClass="btn-hover"  onClick={this.saveImg}>保存透明底图片</Button>
             </View>
           </MarginTopWrap>
+          {
+            this.state.isshow === true ? <Dialog 
+            content={this.state.content}
+            cancelText={this.state.cancelText}
+            confirmText={this.state.confirmText}
+            isshow={this.state.isshow}
+            renderButton ={
+              <View className="wx-dialog-footer" style="display:flex;margin-bottom:30rpx">
+                <Button className="wx-dialog-btn" onClick={this.handelCancel} style="flex:1">
+                    {this.state.cancelText}
+                </Button>
+                <Button className="wx-dialog-btn" onClick={this.handelVideoAd}  style="flex:1">
+                    {this.state.confirmText}
+                </Button>
+              </View>
+            }
+            /> : ''
+          }
           {/* <MarginTopWrap config={{large: 80, small: 60, default: 50}}>
             <Button className="custom-button pink" hoverClass="btn-hover" onClick={this.handleOpenResult}>保存透明底图片(PNG)</Button>
           </MarginTopWrap> */}

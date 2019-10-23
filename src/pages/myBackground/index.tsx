@@ -182,7 +182,6 @@ class MyBackground extends Component {
         imageUrl: currentScene.thumbnailUrl,
       }
     }
-    console.log(title, path, shareImageUrl)
     return {
       title: title,
       path: path,
@@ -331,7 +330,6 @@ class MyBackground extends Component {
           }
         }
       })
-      console.log(separateRes,"11111")
       const {cateImageDict = {}} = separateRes.result || {}
       if (!cateImageDict['16'] && !cateImageDict['16-1']) {
         console.log('技术犯规了')
@@ -378,7 +376,6 @@ class MyBackground extends Component {
       separateUrl,
       separateMaskUrl
     })
-    console.log(separateMaskUrl,999999999)
   }
   //初始化贴纸
   initCoverData = () => {
@@ -407,7 +404,6 @@ class MyBackground extends Component {
     }, () => {
       // console.log('handleChooseScene', this.state.currentScene)
 
-      console.log(this.state.currentScene,"cs8889999")  
       this.foregroundAuto()
       this.initCoverData()
       this.app.aldstat.sendEvent('选择场景', { '场景名': this.state.currentScene.sceneName, '场景Id': this.state.currentScene.sceneId })
@@ -496,7 +492,6 @@ class MyBackground extends Component {
     })
     this.isSaving = true
     const canvasImageUrl = await this.createCanvas()
-    console.log(canvasImageUrl,"chenzhenhuceshi2222",this.state.bgImg)
     Taro.hideLoading()
     this.isSaving = false
     this.setState({
@@ -509,7 +504,6 @@ class MyBackground extends Component {
       }
     }, async () => {
       const {url} = await service.base.upload(canvasImageUrl)
-      console.log(url,'111',canvasImageUrl)
       this.setState({
         result: {
           show: this.state.result.show,
@@ -572,7 +566,6 @@ class MyBackground extends Component {
       const { foreground, frame, canvas} = this.state
       const context = Taro.createCanvasContext(canvas.id, this)
       const { ratio = 3 } = canvas
-      console.log(canvas,context.drawImage,context.draw,"chenzhenhuceshi1111")
       // 绘制元素
       await this.canvasDrawElement(context, ratio)
       //绘制图片
@@ -585,7 +578,6 @@ class MyBackground extends Component {
           success: function (res) {
             let tempFilePath = res.tempFilePath
             resolve(tempFilePath)
-            console.log(tempFilePath,"chenzhenhuceshi333")
           },
           fail: function (res) {
             reject(res)
@@ -641,7 +633,6 @@ class MyBackground extends Component {
         const localImagePath = await this.downloadRemoteImage(element.remoteUrl)
         element.bgImg = this.state.bgImg
         element.localUrl = localImagePath
-        console.log(localImagePath,"chenzhenhuceshi66666")
 
         context.drawImage(element.bgImg,  0, 0, frame.width * ratio,  frame.height * ratio)
         drawElement(element)
@@ -696,7 +687,6 @@ class MyBackground extends Component {
     } else {
       try {
         const result = await service.base.downloadFile(remoteUrl)
-        console.log(result,"888888")
         localImagePath = result.tempFilePath
       } catch (err) {
         console.log('下载图片失败', err)
@@ -981,7 +971,6 @@ class MyBackground extends Component {
       this.videoAd.onLoad(()=>{console.log('广告拉取成功')})
       this.videoAd.onError((err)=>{console.log(err)})
       this.videoAd.onClose((res)=>{
-        console.log(res)
         if(res.isEnded){
           this.handleOpenResult()
         }

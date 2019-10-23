@@ -200,10 +200,8 @@ class Editor extends Component {
     this.canIShareToQQZone()
 ​    if(Taro.getStorageSync('saveNumber') === '' || Taro.getStorageSync('saveNumber').number === 0){
   ​      Taro.setStorageSync('saveNumber',this.saveNumber)
-  ​      console.log(Taro.getStorageSync('saveNumber'))
   ​  }
     const date1 = new Date()
-    console.log('chenzhenhu0909090')
     if(date1.getTime() - Taro.getStorageSync('saveNumber').date > 86400000){
       this.saveNumber = {
         number: 0,
@@ -1017,7 +1015,6 @@ class Editor extends Component {
   // 人物自适应
   foregroundAuto = (callback?: () => void) => {
     // 先判断是否有缓存
-    console.log('1')
     const { currentScene } = this.state
     // const sceneId = currentScene.sceneId || 'demo_scene'
     // const cache_foreground = this.cache['foreground']
@@ -1446,7 +1443,6 @@ class Editor extends Component {
     this.videoAd.onLoad(()=>{console.log('广告拉取成功')})
     this.videoAd.onError((err)=>{console.log(err)})
     this.videoAd.onClose((res)=>{
-      console.log(res)
       if(res.isEnded){
         this.handleOpenResult()
       }

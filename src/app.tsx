@@ -55,8 +55,9 @@ class _App extends Component {
 
   async componentDidMount  () {
     const {openId} = await Session.getOpId()
-    wx.dsp.setOpenid(openId)
-    console.log(openId)
+    if(openId){
+      wx.dsp.setOpenid(openId)
+    }
   }
 
   componentDidShow () {}
@@ -65,8 +66,9 @@ class _App extends Component {
   }
   async componentWillUnmount () {
     const {openId} = await Session.getOpId()
-    wx.dsp.setOpenid(openId)
-    console.log(openId)
+    if(openId){
+      wx.dsp.setOpenid(openId)
+    }
   }
   componentCatchError () {}
 

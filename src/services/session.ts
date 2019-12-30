@@ -9,6 +9,24 @@ const Session = {
   get () {
     return Taro.getStorageSync(this.storageKey)
   },
+  async getOpId(){
+    const loginInfo = await Taro.login()
+    const {appId} = config
+    const {code} = loginInfo
+    try {
+      const data = await service.base.getOpId({
+        code, appId
+      })
+      const {statusCode, result} = data
+      if (statusCode === 200 && result.responseCode === '0000') {
+        return result.result
+      } else {
+        console.log('auth fail!(get sessionId)', data)
+      }
+    } catch (err) {
+      console.log('auth fail!(get sessionId)', err)
+    }
+  },
   async set () {
     const loginInfo = await Taro.login()
     const {appId} = config

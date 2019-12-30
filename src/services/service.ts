@@ -84,6 +84,13 @@ export const base = {
       data: data
     })
   },
+  getOpId(data){
+    return commonRequest({
+      url: api.base.getOpid,
+      method: 'GET',
+      data: data
+    })
+  },
   // 用户授权后向后端请求auth, 上传用户信息
   loginAuth: function (detail) {
     const data = {}

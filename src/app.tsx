@@ -1,8 +1,10 @@
 import './utils/ald-stat'
+import  './utils/dsp_sdk'
 import '@tarojs/async-await'
 import Taro, { Component, Config } from '@tarojs/taro'
 import { Provider } from '@tarojs/redux'
 import Index from './pages/index'
+import Session from '@/services/session'
 
 import configStore from './model/store'
 
@@ -51,12 +53,21 @@ class _App extends Component {
     }
   }
 
-  componentDidMount () {}
+  async componentDidMount  () {
+    const {openId} = await Session.getOpId()
+    wx.dsp.setOpenid(openId)
+    console.log(openId)
+  }
 
   componentDidShow () {}
 
-  componentDidHide () {}
-
+  componentDidHide () {
+  }
+  async componentWillUnmount () {
+    const {openId} = await Session.getOpId()
+    wx.dsp.setOpenid(openId)
+    console.log(openId)
+  }
   componentCatchError () {}
 
   componentDidCatchError () {}

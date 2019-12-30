@@ -300,10 +300,30 @@ class Home extends Component {
       })
     }
   }
-
+  subscribeMessage(){
+    wx.requestSubscribeMessage({
+      tmplIds: ['eAj0pOYsLUn2bo-VXJZLid6bDSh_poG-MGPbdRsVpa0'],
+      success:(res)=> { 
+        console.log('11')
+        console.log(res)
+      },
+      fail:(res)=>{
+        console.log('12')
+        console.log(res)
+      },
+      complete:(res)=>{
+        console.log('13')
+        console.log(res)
+      }
+    })
+  }
   handleFormSubmit = (e) => {
     const { detail: { formId } } = e
+    console.log('注册')
+   
+
     if (formId) {
+
       core.reportFormId(formId)
 
     }
@@ -505,7 +525,7 @@ class Home extends Component {
                       // item.showStyle === 0 ?
                       item.originalImageList ? item.originalImageList.map((scene) => {
                         return item.showStyle === 0 ? <View className='item-block'
-                        > <Form onSubmit={this.handleFormSubmit} reportSubmit>< Button formType="submit" key={scene.sceneId}
+                        > <Form onSubmit={this.handleFormSubmit} reportSubmit>< Button formType="submit" key={scene.sceneId} 
                           openType="getUserInfo" onGetUserInfo={(data) => { this.handleGetUserInfo(data, item.originalImageList, 'challange', scene) }} className='sceneButton'><View className='item' hoverClass="item-hover">
                             <Image lazy-load={true} src={scene.originalImageUrl} mode="aspectFill" style={{ height: this.state.picHeight + 'px', width: this.state.picHeight + 'px', borderRadius: '5px' }} /></View></Button></Form> </View> :
                           <View className='item-block-single'><Form onSubmit={this.handleFormSubmit} reportSubmit><Button formType="submit" key={scene.sceneId} openType="getUserInfo" onGetUserInfo={(data) => { this.handleGetUserInfo(data, item.originalImageList, 'challange', scene) }} className='sceneButton'><View className='item-single'

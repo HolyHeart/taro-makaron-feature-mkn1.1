@@ -1,5 +1,5 @@
 import './utils/ald-stat'
-import  './utils/dsp_sdk'
+import './utils/dsp_sdk'
 import '@tarojs/async-await'
 import Taro, { Component, Config } from '@tarojs/taro'
 import { Provider } from '@tarojs/redux'
@@ -49,34 +49,43 @@ class _App extends Component {
       navigationBarBackgroundColor: '#fff',
       navigationBarTitleText: 'wechat',
       navigationStyle: 'custom',
-      navigationBarTextStyle:"black"
+      navigationBarTextStyle: "black"
     }
   }
 
-  async componentDidMount  () {
-    const {openId} = await Session.getOpId()
-    if(openId){
-      wx.dsp.setOpenid(openId)
+  async componentDidMount() {
+    try {
+      const { openId } = await Session.getOpId()
+      if (openId) {
+        wx.dsp.setOpenid(openId)
+      }
+    } catch (error) {
+
     }
   }
 
-  componentDidShow () {}
+  componentDidShow() { }
 
-  componentDidHide () {
+  componentDidHide() {
   }
-  async componentWillUnmount () {
-    const {openId} = await Session.getOpId()
-    if(openId){
-      wx.dsp.setOpenid(openId)
+  async componentWillUnmount() {
+    try {
+      const { openId } = await Session.getOpId()
+      if (openId) {
+        wx.dsp.setOpenid(openId)
+      }
+    } catch (error) {
+
     }
-  }
-  componentCatchError () {}
 
-  componentDidCatchError () {}
+  }
+  componentCatchError() { }
+
+  componentDidCatchError() { }
 
   // 在 App 类中的 render() 函数没有实际作用
   // 请勿修改此函数
-  render () {
+  render() {
     return (
       <Provider store={store}>
         <Index />

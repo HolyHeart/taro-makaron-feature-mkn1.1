@@ -1,5 +1,6 @@
 import './utils/ald-stat'
 import './utils/dsp_sdk'
+import './utils/xhtad_sdk.min'
 import '@tarojs/async-await'
 import Taro, { Component, Config } from '@tarojs/taro'
 import { Provider } from '@tarojs/redux'

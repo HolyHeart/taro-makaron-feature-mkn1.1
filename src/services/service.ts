@@ -160,6 +160,16 @@ export const core = {
       }
     })
   },
+  checkImage:function(imageUrl){
+    return request({
+      url: api.core.checkImage,
+      method: 'GET',
+      data: {
+        imageUrl:imageUrl
+      },
+      
+    })
+  },
   recommend: function () {
     // 获取推荐主题信息
     return request({
@@ -236,6 +246,15 @@ export const core = {
     if (typeof options.beforeSeparate === 'function') {
       options.beforeSeparate(remoteImageUrl)
     }
+    const checkResult = await core.checkImage(remoteImageUrl)
+    if(checkResult.status==='success'){
+       if(checkResult.result.result.suggestion==='block'){
+         return {
+           result:{}
+         }
+       }
+    }
+    console.log(checkResult)
     // 最后进行人景分离
     let separateData
     try {

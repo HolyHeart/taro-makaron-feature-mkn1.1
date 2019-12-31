@@ -42,6 +42,7 @@ export const api = {
     recommend: `${getHost('miniapi', ENV)}/scene/recommend`,
     filterConvertVideo: `${getHost('miniapi', ENV)}/video/merge`,
     reportFormId: `${getHost('miniapi', ENV)}/user/miniProgram/report`,
+    checkImage:`${getHost('miniapi', ENV)}/upload/media/check`
   },
   // Style Transfer
   style: {

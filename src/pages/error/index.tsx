@@ -60,7 +60,7 @@ class Error extends Component {
             </View>
             <View class='error-tip'>
               <View>技术犯规惹, </View>
-              <View>请选择一张带<Text class='red'>人像</Text>的照片</View>
+              <View>请选择一张带<Text class='red'>人像或者合规</Text>的照片</View>
             </View>
           </View>
           <Button className="custom-button pink" hoverClass="btn-hover" onClick={this.pageToHome}>再试一次</Button>

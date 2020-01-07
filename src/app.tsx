@@ -10,6 +10,7 @@ import Session from '@/services/session'
 import configStore from './model/store'
 
 import './app.less'
+import {appId} from "@/services/config";
 
 // 如果需要在 h5 环境中开启 React Devtools
 // 取消以下注释：
@@ -58,6 +59,7 @@ class _App extends Component {
     try {
       const { openId } = await Session.getOpId()
       if (openId) {
+        Taro.setStorageSync('openId',openId)
         wx.dsp.setOpenid(openId)
       }
     } catch (error) {

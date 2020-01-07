@@ -33,7 +33,8 @@ export const api = {
     upload: `${getHost('miniapi', ENV)}/upload`,
     auth: `${getHost('miniapi', ENV)}/user/auth/wechat/mini`,
     loginAuth: `${getHost('miniapi', ENV)}/user/auth/miniProgram`,
-    getOpid:`${getHost('miniapi', ENV)}/user/auth/wechat/mini/base`
+    getOpid:`${getHost('miniapi', ENV)}/user/auth/wechat/mini/base`,
+    subScribe:`${getHost('miniapi', ENV)}/user/miniProgram/auth/template`
   },
   core: {
     segment: `${getHost('miniapi', ENV)}/segment/instance/original`,

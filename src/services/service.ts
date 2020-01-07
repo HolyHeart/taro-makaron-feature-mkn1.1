@@ -22,6 +22,14 @@ interface separateOptionsData {
 }
 
 export const base = {
+  subScribe :function(data){
+    return request({
+      url: api.base.subScribe,
+      method: 'POST',
+      dataType: 'json',
+      data: data
+    })
+  },
   uploadToken: function () {
     return request({
       url: api.base.uploadToken,
@@ -167,7 +175,7 @@ export const core = {
       data: {
         imageUrl:imageUrl
       },
-      
+
     })
   },
   recommend: function () {

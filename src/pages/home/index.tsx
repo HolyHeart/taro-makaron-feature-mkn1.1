@@ -289,14 +289,22 @@ class Home extends Component {
     wx.requestSubscribeMessage({
       tmplIds: ['eAj0pOYsLUn2bo-VXJZLiU01P7_PJH_BoiEczQgdhec'],
       success: (res) => {
-        console.log(res)
+         console.log(res)
+          if(res['eAj0pOYsLUn2bo-VXJZLiU01P7_PJH_BoiEczQgdhec'] ==='accept'){
+            base.subScribe({
+              "appId": 'wxcfe56965f4d986f0',
+              "openId": Taro.getStorageSync('openId'),
+              "templateIds": [
+                "eAj0pOYsLUn2bo-VXJZLiU01P7_PJH_BoiEczQgdhec"
+              ]
+            })
+          }
         this.goScene(scene, type, originalImage)
       },
       fail:(res)=>{
         this.goScene(scene, type, originalImage)
       }
     })
-    console.log('request subscribe')
   }
   subscribeMessage(){
     wx.requestSubscribeMessage({
@@ -504,11 +512,6 @@ class Home extends Component {
           })}
           <View className='nav-filler'></View>
         </ScrollView>
-
-
-
-
-
         <ScrollView enableBackToTop={true} className='items-window' scrollY onScroll={this.scrollDetection} scrollIntoView={'x' + this.state.currentLabelId} style={{ height: this.state.screenHeight - this.state.titleHeight - this.state.tooltipHeight + 'px' }}>
           {/* <ScrollView className='items-window' scrollY onScroll={this.scrollDetection} scrollWithAnimation style={{ height: this.state.screenHeight - this.state.titleHeight - this.state.tooltipHeight + 'px' }}>   */}
           <View className='window-divider' id={'x' + this.state.firstCategoryId}><Text className='window-divider-text'>- </Text><Image className='window-divider-icon' src={homepage_logo} /><Text className='window-divider-text'> 马卡龙玩图倾力出品 -</Text></View>
@@ -521,19 +524,18 @@ class Home extends Component {
                   <View className='window-container'>
                     {
                       // item.showStyle === 0 ?
-
                       item.originalImageList ? item.originalImageList.map((scene) => {
                         return item.showStyle === 0 ? <View className='item-block'
-                        > <Form onSubmit={this.handleFormSubmit} reportSubmit>< Button formType="submit" key={scene.sceneId}
-                          openType="getUserInfo" onGetUserInfo={() => { this.handleGetUserInfo(item.originalImageList, 'challange', scene) }} className='sceneButton'><View className='item' hoverClass="item-hover">
+                        > <Form onSubmit={this.handleFormSubmit} reportSubmit>< Button  key={scene.sceneId}
+                          onClick={() => { this.handleGetUserInfo(item.originalImageList, 'challange', scene) }} className='sceneButton'><View className='item' hoverClass="item-hover">
                             <Image lazy-load={true} src={scene.originalImageUrl} mode="aspectFill" style={{ height: this.state.picHeight + 'px', width: this.state.picHeight + 'px', borderRadius: '5px' }} /></View></Button></Form> </View> :
-                          <View className='item-block-single'><Form onSubmit={this.handleFormSubmit} reportSubmit><Button formType="submit" key={scene.sceneId} openType="getUserInfo" onGetUserInfo={(data) => { this.handleGetUserInfo(data, item.originalImageList, 'challange', scene) }} className='sceneButton'><View className='item-single'
+                          <View className='item-block-single'><Form onSubmit={this.handleFormSubmit} reportSubmit><Button  key={scene.sceneId}  onClick={(data) => { this.handleGetUserInfo(item.originalImageList, 'challange', scene) }} className='sceneButton'><View className='item-single'
                             hoverClass="item-single-hover">
                             <Image src={scene.originalImageUrl} lazy-load={true} mode="aspectFill" style="width:100%;height:100%;border-radius:5px" /></View></Button></Form></View>
                       }) : item.sceneInfoList && item.sceneInfoList.map((scene) => {
                         return item.showStyle === 0 ? <View className='item-block'><Form onSubmit={this.handleFormSubmit} reportSubmit><Button  key={scene.sceneId}  onClick={(data) => { this.handleGetUserInfo(scene, 'editor') }} className='sceneButton'><View className='item' hoverClass="item-hover">
                           <Image lazy-load={true} src={scene.thumbnailUrl && scene.thumbnailUrl} mode="aspectFill" style={{ height: this.state.picHeight + 'px', width: this.state.picHeight + 'px', borderRadius: '5px' }} /></View></Button></Form></View> :
-                          <View className='item-block-single'><Form onSubmit={this.handleFormSubmit} reportSubmit><Button formType="submit" key={scene.sceneId} openType="getUserInfo" onGetUserInfo={(data) => { this.handleGetUserInfo(data, scene, 'editor') }} className='sceneButton'><View className='item-single' hoverClass="item-single-hover">
+                          <View className='item-block-single'><Form onSubmit={this.handleFormSubmit} reportSubmit><Button  key={scene.sceneId}  onClick={(data) => { this.handleGetUserInfo(scene, 'editor') }} className='sceneButton'><View className='item-single' hoverClass="item-single-hover">
                             <Image lazy-load={true} src={scene.thumbnailUrl && scene.thumbnailUrl} mode="aspectFill" style="width:100%;height:100%;border-radius:5px" /></View></Button></Form></View>
                       })
                     }

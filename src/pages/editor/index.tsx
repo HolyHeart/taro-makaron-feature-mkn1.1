@@ -1276,30 +1276,42 @@ class Editor extends Component {
 
     return result
   }
-  todo = () => {
-    if (this.state.hasGuide === true) {
-      this.setState({
-        hasGuide: false
+  todo = (data) => {
+    const {detail: {userInfo}} = data   
+    if (userInfo) {
+      service.base.loginAuth(data.detail)
+      globalData.userInfo = userInfo
+      if (this.state.hasGuide === true) {
+        this.setState({
+          hasGuide: false
+        })
+      }
+      work.chooseImage({
+        onTap: (index) => {
+          // console.log('tap index', index)
+          if (index === 0) {
+            this.app.aldstat.sendEvent('编辑页面选择拍摄照片', '选择拍摄')
+          } else if (index === 1) {
+            this.app.aldstat.sendEvent('编辑页面选择相册照片', '选择相册')
+          }
+        },
+        onSuccess: async (path) => {
+          console.log('choosedImage', path, globalData)
+          this.app.aldstat.sendEvent('编辑页面人像成功', '上传成功')
+          globalData.choosedImage = path
+          const separateResult = globalData.separateResult = await this.initSegment()
+          console.log('separateResult', separateResult)
+          await this.initSeparateData(separateResult)
+        }
+      })
+    } else {
+      Taro.showToast({
+        title: '请授权',
+        icon: 'success',
+        duration: 2000
       })
     }
-    work.chooseImage({
-      onTap: (index) => {
-        // console.log('tap index', index)
-        if (index === 0) {
-          this.app.aldstat.sendEvent('编辑页面选择拍摄照片', '选择拍摄')
-        } else if (index === 1) {
-          this.app.aldstat.sendEvent('编辑页面选择相册照片', '选择相册')
-        }
-      },
-      onSuccess: async (path) => {
-        console.log('choosedImage', path, globalData)
-        this.app.aldstat.sendEvent('编辑页面人像成功', '上传成功')
-        globalData.choosedImage = path
-        const separateResult = globalData.separateResult = await this.initSegment()
-        console.log('separateResult', separateResult)
-        await this.initSeparateData(separateResult)
-      }
-    })
+
   }
   calcCoverPosition = (size = {}, cover = {}) => {
     const { width = 0, height = 0 } = size

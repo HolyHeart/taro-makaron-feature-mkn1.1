@@ -24,9 +24,9 @@ interface separateOptionsData {
 export const base = {
   subScribe :function(data){
     return request({
-      url: `${api.base.subScribe}?sessionId=${data.sessionId}`,
+      url: `${api.base.subScribe}`,
+      header: { 'content-type': 'application/x-www-form-urlencoded' },
       method: 'POST',
-      dataType: 'json',
       data: data
     })
   },

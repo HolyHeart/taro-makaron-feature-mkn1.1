@@ -291,14 +291,11 @@ class Home extends Component {
       success: (res) => {
          console.log(res)
           if(res['eAj0pOYsLUn2bo-VXJZLiU01P7_PJH_BoiEczQgdhec'] ==='accept'){
-
             base.subScribe({
               "appId": 'wxcfe56965f4d986f0',
               "sessionId":Taro.getStorageSync('session'),
               "openId": Taro.getStorageSync('openId'),
-              "templateIds": [
-                "eAj0pOYsLUn2bo-VXJZLiU01P7_PJH_BoiEczQgdhec"
-              ]
+              "templateIds": "eAj0pOYsLUn2bo-VXJZLiU01P7_PJH_BoiEczQgdhec"
             })
           }
         this.goScene(scene, type, originalImage)
@@ -404,12 +401,14 @@ class Home extends Component {
     this.state.reverseIdList.forEach(element => {
       query.select('#x' + element).boundingClientRect(res => {
         //console.log(res.top - titleHeight)
-        if (res.top - titleHeight < 5) {
-          firstShownDom.push(element)
-
-          this.setState({
-            currentCategoryId: firstShownDom[0]
-          })
+        if(res.top){
+          if (res.top - titleHeight < 5) {
+            firstShownDom.push(element)
+  
+            this.setState({
+              currentCategoryId: firstShownDom[0]
+            })
+          }
         }
       })
       query.exec()

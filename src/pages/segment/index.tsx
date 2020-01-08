@@ -782,25 +782,38 @@ class Segment extends Component {
       return result
     }
   }
-  todo = () => {
-    work.chooseImage({
-      onTap: (index) => {
-        // console.log('tap index', index)
-        if (index === 0) {
-          this.app.aldstat.sendEvent('编辑页面选择拍摄照片', '选择拍摄')
-        } else if (index === 1) {
-          this.app.aldstat.sendEvent('编辑页面选择相册照片', '选择相册')
+  todo = (data) => {
+
+    const {detail: {userInfo}} = data   
+    if (userInfo) {
+      service.base.loginAuth(data.detail)
+      globalData.userInfo = userInfo
+      work.chooseImage({
+        onTap: (index) => {
+          // console.log('tap index', index)
+          if (index === 0) {
+            this.app.aldstat.sendEvent('编辑页面选择拍摄照片', '选择拍摄')
+          } else if (index === 1) {
+            this.app.aldstat.sendEvent('编辑页面选择相册照片', '选择相册')
+          }
+        },
+        onSuccess: async (path) => {
+          console.log('choosedImage', path, globalData)
+          this.app.aldstat.sendEvent('编辑页面人像成功', '上传成功')
+          globalData.choosedImage = path
+          const separateResult = globalData.separateResult = await this.initSegment()
+          console.log('separateResult', separateResult)
+          await this.initSeparateData(separateResult)
         }
-      },
-      onSuccess: async (path) => {
-        console.log('choosedImage', path, globalData)
-        this.app.aldstat.sendEvent('编辑页面人像成功', '上传成功')
-        globalData.choosedImage = path
-        const separateResult = globalData.separateResult = await this.initSegment()
-        console.log('separateResult', separateResult)
-        await this.initSeparateData(separateResult)
-      }
-    })
+      })
+    } else {
+      Taro.showToast({
+        title: '请授权',
+        icon: 'success',
+        duration: 2000
+      })
+    }
+ 
   }
   handelVideoAd(){
     //.catch((err)=>{console.log(err)})
@@ -879,7 +892,7 @@ class Segment extends Component {
           </View>
           <MarginTopWrap config={{large: 80, small: 60, default: 50}}>
           <View style="display:flex;margin-top:100rpx">
-              <Button style='flex:1' className="custom-button pink" hoverClass="btn-hover" onClick={this.todo}>{this.state.chooseText}</Button>
+              <Button style='flex:1' className="custom-button pink" openType="getUserInfo"  hoverClass="btn-hover" onGetUserInfo={this.todo}>{this.state.chooseText}</Button>
               <Button style='flex:1;margin-left:10px' className="custom-button white"   hoverClass="btn-hover"  onClick={this.saveImg}>保存透明底图片</Button>
             </View>
           </MarginTopWrap>

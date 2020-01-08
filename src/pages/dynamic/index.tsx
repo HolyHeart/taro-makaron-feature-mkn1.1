@@ -1202,30 +1202,41 @@ class Dynamic extends Component {
       return result
     }
   }
-  todo = () => {
-    if(this.state.hasGuide===true){
-      this.setState({
-        hasGuide:false
+  todo = (data) => {
+    const {detail: {userInfo}} = data   
+    if (userInfo) {
+      service.base.loginAuth(data.detail)
+      globalData.userInfo = userInfo
+      if(this.state.hasGuide===true){
+        this.setState({
+          hasGuide:false
+        })
+      }
+      work.chooseImage({
+        onTap: (index) => {
+          // console.log('tap index', index)
+          if (index === 0) {
+            this.app.aldstat.sendEvent('编辑页面选择拍摄照片', '选择拍摄')
+          } else if (index === 1) {
+            this.app.aldstat.sendEvent('编辑页面选择相册照片', '选择相册')
+          }
+        },
+        onSuccess: async (path) => {
+          console.log('choosedImage', path, globalData)
+          this.app.aldstat.sendEvent('编辑页面人像成功', '上传成功')
+          globalData.choosedImage = path
+          const separateResult = globalData.separateResult = await this.initSegment()
+          console.log('separateResult', separateResult)
+          await this.initSeparateData(separateResult)
+        }
+      })
+    } else {
+      Taro.showToast({
+        title: '请授权',
+        icon: 'success',
+        duration: 2000
       })
     }
-    work.chooseImage({
-      onTap: (index) => {
-        // console.log('tap index', index)
-        if (index === 0) {
-          this.app.aldstat.sendEvent('编辑页面选择拍摄照片', '选择拍摄')
-        } else if (index === 1) {
-          this.app.aldstat.sendEvent('编辑页面选择相册照片', '选择相册')
-        }
-      },
-      onSuccess: async (path) => {
-        console.log('choosedImage', path, globalData)
-        this.app.aldstat.sendEvent('编辑页面人像成功', '上传成功')
-        globalData.choosedImage = path
-        const separateResult = globalData.separateResult = await this.initSegment()
-        console.log('separateResult', separateResult)
-        await this.initSeparateData(separateResult)
-      }
-    })
 }
   // 缓存贴纸信息
   storeCoverInfo = (sticker) => {
@@ -1291,7 +1302,7 @@ class Dynamic extends Component {
           </View>
           <MarginTopWrap config={{large: 60, small: 40, default: 20}}>
           <View style="display:flex;margin-top:120rpx">
-              <Button style='flex:1;z-index:2' id='addPhoto'  className="custom-button pink" hoverClass="btn-hover" onClick={this.todo}>{this.state.chooseText}</Button>
+              <Button style='flex:1;z-index:2' id='addPhoto' openType="getUserInfo"  className="custom-button pink" hoverClass="btn-hover" onGetUserInfo={this.todo}>{this.state.chooseText}</Button>
               <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.handleOpenResult}>保存</Button>
             </View>
           </MarginTopWrap>

@@ -291,8 +291,10 @@ class Home extends Component {
       success: (res) => {
          console.log(res)
           if(res['eAj0pOYsLUn2bo-VXJZLiU01P7_PJH_BoiEczQgdhec'] ==='accept'){
+
             base.subScribe({
               "appId": 'wxcfe56965f4d986f0',
+              "sessionId":Taro.getStorageSync('session'),
               "openId": Taro.getStorageSync('openId'),
               "templateIds": [
                 "eAj0pOYsLUn2bo-VXJZLiU01P7_PJH_BoiEczQgdhec"

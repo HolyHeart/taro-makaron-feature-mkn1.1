@@ -287,27 +287,32 @@ class Home extends Component {
 
   handleGetUserInfo = (scene, type, originalImage) => {
     this.app.aldstat.sendEvent('授权订阅', '开启授权订阅')
-    wx.requestSubscribeMessage({
-      tmplIds: ['eAj0pOYsLUn2bo-VXJZLiU01P7_PJH_BoiEczQgdhec'],
-      success: (res) => {
-         console.log(res)
-          if(res['eAj0pOYsLUn2bo-VXJZLiU01P7_PJH_BoiEczQgdhec'] ==='accept'){
-            this.app.aldstat.sendEvent('授权订阅', '允许授权订阅')
-            base.subScribe({
-              "appId": 'wxcfe56965f4d986f0',
-              "sessionId":Taro.getStorageSync('session'),
-              "openId": Taro.getStorageSync('openId'),
-              "templateIds": "eAj0pOYsLUn2bo-VXJZLiU01P7_PJH_BoiEczQgdhec"
-            })
-          }else{
-            this.app.aldstat.sendEvent('授权订阅', '不允许授权订阅')
-          }
-        this.goScene(scene, type, originalImage)
-      },
-      fail:(res)=>{
-        this.goScene(scene, type, originalImage)
-      }
-    })
+    if(wx.requestSubscribeMessage){
+      wx.requestSubscribeMessage({
+        tmplIds: ['eAj0pOYsLUn2bo-VXJZLiU01P7_PJH_BoiEczQgdhec'],
+        success: (res) => {
+           console.log(res)
+            if(res['eAj0pOYsLUn2bo-VXJZLiU01P7_PJH_BoiEczQgdhec'] ==='accept'){
+              this.app.aldstat.sendEvent('授权订阅', '允许授权订阅')
+              base.subScribe({
+                "appId": 'wxcfe56965f4d986f0',
+                "sessionId":Taro.getStorageSync('session'),
+                "openId": Taro.getStorageSync('openId'),
+                "templateIds": "eAj0pOYsLUn2bo-VXJZLiU01P7_PJH_BoiEczQgdhec"
+              })
+            }else{
+              this.app.aldstat.sendEvent('授权订阅', '不允许授权订阅')
+            }
+          this.goScene(scene, type, originalImage)
+        },
+        fail:(res)=>{
+          this.goScene(scene, type, originalImage)
+        }
+      })
+    }else{
+      this.goScene(scene, type, originalImage)
+    }
+  
   }
   subscribeMessage(){
     wx.requestSubscribeMessage({

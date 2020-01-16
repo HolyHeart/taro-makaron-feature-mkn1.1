@@ -226,7 +226,7 @@ class Home extends Component {
 
   getCateGoryAndScenes = async () => {
     try {
-      const res = await await home.getCateGoryAndScenes()
+      const res = await await home.getCateGoryAndScenes(1)
       const categories = res.result && res.result.result.map((item) => {
         return item.categoryName
       })
@@ -312,7 +312,7 @@ class Home extends Component {
     }else{
       this.goScene(scene, type, originalImage)
     }
-  
+
   }
   subscribeMessage(){
     wx.requestSubscribeMessage({
@@ -413,7 +413,7 @@ class Home extends Component {
         if(res.top){
           if (res.top - titleHeight < 5) {
             firstShownDom.push(element)
-  
+
             this.setState({
               currentCategoryId: firstShownDom[0]
             })

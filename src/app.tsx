@@ -52,7 +52,10 @@ class _App extends Component {
       navigationBarTitleText: 'wechat',
       navigationStyle: 'custom',
       navigationBarTextStyle: "black"
-    }
+    },
+    navigateToMiniProgramAppIdList:[
+      'wx37543a814ef773a5'
+    ]
   }
 
   async componentDidMount() {

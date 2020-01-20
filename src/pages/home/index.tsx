@@ -433,7 +433,14 @@ class Home extends Component {
   }
 
 
-
+  goMiniProgram=()=>{
+    wx.navigateToMiniProgram({
+      appId: 'wx37543a814ef773a5',
+      success(res) {
+        // 打开成功
+      }
+    })
+  }
 
   closeTooltip = () => {
     console.log('关闭收藏提示')
@@ -548,6 +555,10 @@ class Home extends Component {
                           <View className='item-block-single'><Form onSubmit={this.handleFormSubmit} reportSubmit><Button  key={scene.sceneId}  onClick={(data) => { this.handleGetUserInfo(scene, 'editor') }} className='sceneButton'><View className='item-single' hoverClass="item-single-hover">
                             <Image lazy-load={true} src={scene.thumbnailUrl && scene.thumbnailUrl} mode="aspectFill" style="width:100%;height:100%;border-radius:5px" /></View></Button></Form></View>
                       })
+                    }
+                    {
+                      index ===0 ? <View style={{marginTop:'10px'}} className='item-block-single'><Button  onClick={() => { this.goMiniProgram() }} className='sceneButton'><View className='item-single' hoverClass="item-single-hover">
+                        <Image lazy-load={true} src={'https://static01.versa-ai.com/upload/4d575a027a7f/2f90997a-005a-4884-83b3-d428549987eb.jpg'} mode="aspectFill" style="width:100%;height:100%;border-radius:5px" /></View></Button></View>:<View></View>
                     }
                   </View>
                 </View>

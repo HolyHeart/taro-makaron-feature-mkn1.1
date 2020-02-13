@@ -441,6 +441,14 @@ class Home extends Component {
       }
     })
   }
+  goMiniProgram2=()=>{
+    wx.navigateToMiniProgram({
+      appId: 'wxe1faaac6a4477320',
+      success(res) {
+        // 打开成功
+      }
+    })
+  }
 
   closeTooltip = () => {
     console.log('关闭收藏提示')
@@ -557,7 +565,11 @@ class Home extends Component {
                       })
                     }
                     {
-                      index ===0 ? <View style={{marginTop:'10px'}} className='item-block-single'><Button  onClick={() => { this.goMiniProgram() }} className='sceneButton'><View className='item-single' hoverClass="item-single-hover">
+                      index ===0 ? <View style={{marginTop:'10px'}} className='item-block-single'><Button  onClick={() => { this.goMiniProgram2() }} className='sceneButton'><View className='item-single' hoverClass="item-single-hover">
+                        <Image lazy-load={true} src={'https://static01.versa-ai.com/upload/9ed91dc5fba5/fd02bb3f-e28e-40b2-a42f-a7f80502cc2d.jpg'} mode="aspectFill" style="width:100%;height:100%;border-radius:5px" /></View></Button></View>:<View></View>
+                    }
+                    {
+                      index ===0 ? <View style={{marginTop:'1px'}} className='item-block-single'><Button  onClick={() => { this.goMiniProgram() }} className='sceneButton'><View className='item-single' hoverClass="item-single-hover">
                         <Image lazy-load={true} src={'https://static01.versa-ai.com/upload/4d575a027a7f/2f90997a-005a-4884-83b3-d428549987eb.jpg'} mode="aspectFill" style="width:100%;height:100%;border-radius:5px" /></View></Button></View>:<View></View>
                     }
                   </View>

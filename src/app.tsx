@@ -54,7 +54,8 @@ class _App extends Component {
       navigationBarTextStyle: "black"
     },
     navigateToMiniProgramAppIdList:[
-      'wx37543a814ef773a5'
+      'wx37543a814ef773a5',
+      'wxe1faaac6a4477320'
     ]
   }
 

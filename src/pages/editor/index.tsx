@@ -1291,7 +1291,9 @@ class Editor extends Component {
           // console.log('tap index', index)
           if (index === 0) {
             this.app.aldstat.sendEvent('编辑页面选择拍摄照片', '选择拍摄')
+            console.log(index)
           } else if (index === 1) {
+            console.log(index)
             this.app.aldstat.sendEvent('编辑页面选择相册照片', '选择相册')
           }
         },

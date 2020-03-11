@@ -1,0 +1,104 @@
+.wx-mask{
+  position: fixed;
+    z-index: 1000;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.65);
+}
+.wx-dialog{
+    position: fixed;
+    z-index: 5000;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    // background-color: #FFFFFF;
+    text-align: center;
+    // border-radius: 3px;
+    overflow: hidden;
+    // border-radius: 30rpx
+}
+.wx-dialog-title{
+    min-height: 150rpx;
+    padding: 0 15px ;
+    padding-top: 45px;
+    margin-top: 15px;
+    background: url('../../assets/images/titleImg.png') no-repeat center;
+    background-size: 30% 70%;
+    background-position: center;
+}
+.wx-dialog-content{
+    // margin: 45px 30px ;
+    // margin-top: 30px;
+    // height: 100%;
+    background-color: #FFFFFF;
+    width: 556rpx;
+    height: 858rpx;
+    font-size: 36px;
+    align-items: center;
+    word-wrap: break-word;
+    word-break: break-all;
+    color: #000;
+}
+.wx-dialog-footer{
+    display: flex;
+    align-items: center;
+    position: relative;
+    line-height: 38px;
+    font-size: 17px;
+    // z-index: 2;
+}
+// .wx-dialog-footer::before{
+//     content: '';
+//     position: absolute;
+//     left: 0;
+//     top: 0;
+//     right: 0;
+//     height: 1px;
+//     color: #D5D5D6;
+//     -webkit-transform-origin: 0 0;
+//     transform-origin: 0 0;
+//     -webkit-transform: scaleY(0.5);
+//     transform: scaleY(0.5);
+// }
+.wx-dialog-btn{
+    display: block;
+    -webkit-flex: 1;
+    flex: 1;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    position: relative;
+    color: #fff;
+    border-radius: 80rpx;
+    width: 448px;
+    height: 76rpx;
+    background: #FF3366;
+    border-radius: 20px;
+    line-height: 64rpx;
+    font-size: 30rpx;
+    font-family: PingFangSC-Semibold;
+    text-align: center;
+    -webkit-transition: all 0.2s;
+    -o-transition: all 0.2s;
+    transition: all 0.2s;
+}
+// .wx-dialog-footer .wx-dialog-btn:nth-of-type(2){
+//     margin-left: -10rpx;
+//     color: #fff;
+//     background-color: #ff005b;
+// }
+// .wx-dialog-footer .wx-dialog-btn:nth-of-type(2):after{
+//     content: " ";
+//     position: absolute;
+//     left: 0;
+//     top: 0;
+//     width: 1px;
+//     bottom: 0;
+//     border-left: 1px solid #D5D5D6;
+//     color: #D5D5D6;
+//     -webkit-transform-origin: 0 0;
+//     transform-origin: 0 0;
+//     -webkit-transform: scaleX(0.5);
+//     transform: scaleX(0.5);
+// }

@@ -1,7 +1,7 @@
 
 import { ComponentClass } from 'react'
 import Taro, { Component, Config } from '@tarojs/taro'
-import { View, Form, Button, Image, Video } from '@tarojs/components'
+import { View, Form, Button, Image, Video ,ScrollView} from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 import originalImageIcon from '@/assets/images/originalImage@2x.png'
 import Title from '@/components/Title'
@@ -9,6 +9,7 @@ import CustomIcon from '@/components/Icon'
 import RecommendList from '@/components/RecommendList'
 import AuthModal from '@/components/AuthModal'
 import BackApp from '@/components/BackApp'
+import ShareDialog from '@/components/ShareDialog'
 import { appConfig } from '@/services/config'
 import Session from '@/services/session'
 import service from '@/services/service'
@@ -16,6 +17,15 @@ import globalData from '@/services/global_data'
 import tool from '@/utils/tool'
 import work from '@/utils/work'
 import './index.less'
+
+import like from '@/assets/images/like@3x.png'
+import wx from '@/assets/images/wxicon@3x.png'
+import pyq from '@/assets/images/pyq@3x.png'
+import userImage from '@/assets/images/logo@2x.png'
+import bgImage from '@/assets/images/random-bg.png'
+
+import { AtModal, AtModalHeader, AtModalContent, AtModalAction } from "taro-ui"
+
 
 // const demo = 'https://static01.versa-ai.com/upload/201bae375f8b/18e62d91-fc04-46c6-8f21-7224b53eb4b7.mp4'
 type PageStateProps = {}
@@ -53,6 +63,8 @@ class Share extends Component {
     sceneId: '',
     themeData: {},
     sceneType: 0,
+    isshow: false,
+    confirmText:'好的，收下了'
   }
 
   app = Taro.getApp()
@@ -109,7 +121,7 @@ class Share extends Component {
   }
 
   processLoadData = () => {
-    console.log('share page index', this.$router.params) // 输出 { id: 2, type: 'test' }
+    console.log('share page', this.$router.params) // 输出 { id: 2, type: 'test' }
     let isFromApp, shareSourceType = 'image', videoPoster = '', shareVideoInfo = { width: 690, height: 920, }
     let { shareSource, themeId, sceneId, from, remoteURL = '', width = 690, height = 920, originalCompleteImageUrl } = this.$router.params
     if (from === 'app') {
@@ -167,11 +179,15 @@ class Share extends Component {
     typeof callback === 'function' && callback(themeData.result.result)
   }
 
+  // pageToHome = () => {
+  //   this.app.aldstat.sendEvent('分享页返回主页按钮', '分享页返回主页按钮')
+  //   Taro.redirectTo({
+  //     url: '/pages/home/index'
+  //   })
+  // }
+
   pageToHome = () => {
-    this.app.aldstat.sendEvent('分享页返回主页按钮', '分享页返回主页按钮')
-    Taro.redirectTo({
-      url: '/pages/home/index'
-    })
+    Taro.navigateBack({ delta: 1 })
   }
 
   handleGetUserInfo = (e) => {
@@ -259,6 +275,18 @@ class Share extends Component {
     this.app.aldstat.sendEvent('分享页打开app', '打开app')
   }
 
+  shareHandle = () => {
+    this.setState({
+      isshow: true
+    })
+  }
+
+  handelSave = () => {
+    this.setState({
+      isshow: false
+    })
+  }
+
   render() {
     const { isFromApp, shareSourceType, shareSource, videoPoster, width, height, recommendList, originalCompleteImageUrl } = this.state
     return (
@@ -266,17 +294,17 @@ class Share extends Component {
         <Title
           leftStyleObj={{ left: Taro.pxTransform(12) }}
           renderLeft={
-            <CustomIcon type="home" theme="dark" onClick={this.pageToHome} />
+            <CustomIcon type="back" theme="dark" onClick={this.pageToHome} />
           }
           color='#333'
         >懒人抠图</Title>
         <View className='main-section'>
-          {shareSourceType === 'image' &&
+          {/* {shareSourceType === 'image' &&
             <View className='pic-wrap'>
               {themeData.sceneType === 3 && <View class="share-bg"></View>}
               <View class="share-img">
-                <Image src={shareSource} style='width: 100%; height: 100%' mode='aspectFit' />
-                {/* <Image src={originalCompleteImageUrl} style='width: 100%; height: 100%' mode='aspectFit'/> */}
+                <Image src={shareSource} style='width: 100%; height: 100%' mode='aspectFit' /> */}
+                {/* <Image src={originalCompleteImageUrl} style='width: 100%; height: 100%' mode='aspectFit'/>
               </View>
             </View>
           }
@@ -293,6 +321,29 @@ class Share extends Component {
                 controls
               ></Video>
             </View>
+          } */}
+          <Image src={bgImage} style='width:100%;'/>
+          <View className="userMessage">
+            <Image className="user" src={userImage} style='width: 35px; height: 35px; padding-right:10px;'/>
+            <View className='userName' style="display:inline;height:auto;margin-right:140rpx; font-size: 15px;color: #333333;font-family: PingFangSC-Regular;">Yannie_琳</View>
+            <Image src={like} style='width: 18px; height: 15.4px;'/>
+            <View style="display:inline;font-size: 15px;color: #333333;font-family: PingFangSC-Regular;margin-left:10px;margin-right:50rpx;">9</View>
+            <Image src={wx} style='width: 23px; height: 18.6px;margin-right:50rpx;'/>
+            <Image src={pyq} style='width: 18px; height: 18px;float:right'  onClick={this.shareHandle}/>
+          </View>
+          {
+            this.state.isshow === true ? <ShareDialog
+            confirmText={this.state.confirmText}
+            renderButton ={
+              <View className="wx-dialog-footer">
+                <Button className="wx-dialog-btn" onClick={this.handelSave}  style="flex:1" >
+                    {this.state.confirmText}
+                </Button>
+                
+              </View>
+            }
+            />
+            : ''
           }
         </View>
         <View className='sub-section'>
@@ -327,7 +378,16 @@ class Share extends Component {
               </Form>
           }
           <View className='recommend-wrap'>
-            <View className='recommend-title'>你还可以玩：</View>
+            <View className='recommend-title'>热门作品</View>
+            <RecommendList
+              list={recommendList}
+              onGetUserInfo={this.handleGetUserInfo}
+              onFormSubmit={this.handleFormSubmit}
+              onClick={this.handleRecommendClick}
+            />
+          </View>
+          <View className='recommend-wrap'>
+            <View className='recommend-title'>更多好玩</View>
             <RecommendList
               list={recommendList}
               onGetUserInfo={this.handleGetUserInfo}

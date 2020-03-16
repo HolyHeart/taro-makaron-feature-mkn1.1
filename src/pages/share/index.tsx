@@ -92,6 +92,7 @@ class Share extends Component {
       y: 0,
       rotate: 0,
     },
+    bg:"https://static01.versa-ai.com/upload/61f6cb952e69/1055d4d8-2826-4855-a952-b6461c86d379.png"
   }
 
   app = Taro.getApp()
@@ -520,7 +521,8 @@ class Share extends Component {
               ></Video>
             </View>
           } */}
-          <Image src={bgImage} style='width:100%;height: 235px;'/>
+          <Image src={bgImage} className="bgImage"/>
+          {/* <View className="bgImage" style="background:url('{this.bg}')"></View> */}
           <View className="userMessage">
             <Image className="user" src={userImage} />
             <View className='userName'>Yannie_琳</View>

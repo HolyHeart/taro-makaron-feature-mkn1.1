@@ -8,19 +8,20 @@ type ComponentOwnProps = {
     cancelText ?: string,
     isshow ?: boolean,
     renderButton?: any,
+    saveTitle ?: string
 }
 type IProps = ComponentStateProps & ComponentOwnProps
 
-interface Dialog {
+interface ShareDialog {
     props: IProps;
   }
-class Dialog extends Component {
+class ShareDialog extends Component {
     static defaultProps = {
         content : '',
         confirmText: '',
         cancelText: '',
-        isshow:false
-        
+        isshow:false,
+        saveTitle:'图片已保存到手机相册'
       }
     showDia(){
         this.setState({
@@ -43,13 +44,13 @@ class Dialog extends Component {
             <View className="wx_dialog_container">           
                 <View className="wx-mask"></View>
                 <View className="wx-dialog">
+                    <View className="wx-dialog-save">{this.props.saveTitle}</View>
                     <View className="wx-dialog-content">{this.props.content}</View>
                     {this.props.renderButton}
-                    {console.log(88,this.props)}
                 </View>
             </View>
         );
     }
 }
 
-export default Dialog;
+export default ShareDialog;

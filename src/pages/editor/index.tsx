@@ -772,6 +772,7 @@ class Editor extends Component {
 
   createCanvas = async () => {
     return new Promise(async (resolve, reject) => {
+      console.log(666)
       const { currentScene, canvas } = this.state
       const context = Taro.createCanvasContext(canvas.id, this)
       if (currentScene.type === 'custom') {
@@ -903,6 +904,7 @@ class Editor extends Component {
   }
   // 绘制二维码和logo
   canvasDrawLogo = (context, ratio) => {
+    console.log(888)
     const { frame } = this.state
     // const localCodeImagePath = '../../assets/images/code.png'
     const codeWidth = 67.5 * 1.5
@@ -938,6 +940,7 @@ class Editor extends Component {
       try {
         const result = await service.base.downloadFile(remoteUrl)
         localImagePath = result.tempFilePath
+        console.log('url',localImagePath)
       } catch (err) {
         console.log('下载图片失败', err)
       }

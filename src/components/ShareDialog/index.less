@@ -10,7 +10,7 @@
 .wx-dialog{
     position: fixed;
     z-index: 5000;
-    top: 52%;
+    top: 50%;
     left: 50%;
     -webkit-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
@@ -35,21 +35,27 @@
     color: #FFFFFF;
     letter-spacing: 0;
     text-align: center;
-    line-height: 48px;
-    margin-bottom: 20px;
+    height: 48rpx;
+    line-height: 48rpx;
+    padding-bottom: 20rpx;
 }
 .wx-dialog-content{
     // margin: 45px 30px ;
     // margin-top: 30px;
     // height: 100%;
+    padding: 20rpx 20rpx 148rpx;
     background-color: #FFFFFF;
-    width: 556rpx;
-    height: 858rpx;
+    width: 516rpx;
+    height: 690rpx;
     font-size: 36px;
     align-items: center;
     word-wrap: break-word;
     word-break: break-all;
     color: #000;
+    .bgImage {
+      width: 516rpx;
+      height: 690rpx;
+    }
 }
 .wx-dialog-footer{
     display: flex;

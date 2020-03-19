@@ -1,7 +1,7 @@
 
 import { ComponentClass } from 'react'
 import Taro, { Component, Config } from '@tarojs/taro'
-import { View, Form, Button, Image, Video ,ScrollView, Canvas} from '@tarojs/components'
+import { View, Form, Button, Image, Video } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 import originalImageIcon from '@/assets/images/originalImage@2x.png'
 import Title from '@/components/Title'
@@ -9,7 +9,6 @@ import CustomIcon from '@/components/Icon'
 import RecommendList from '@/components/RecommendList'
 import AuthModal from '@/components/AuthModal'
 import BackApp from '@/components/BackApp'
-import ShareDialog from '@/components/ShareDialog'
 import { appConfig } from '@/services/config'
 import Session from '@/services/session'
 import service from '@/services/service'
@@ -18,14 +17,12 @@ import tool from '@/utils/tool'
 import work from '@/utils/work'
 import './index.less'
 
+import ShareDialog from '@/components/ShareDialog'
 import like from '@/assets/images/like@3x.png'
 import wx from '@/assets/images/wxicon@3x.png'
 import pyq from '@/assets/images/pyq@3x.png'
 import userImage from '@/assets/images/logo@2x.png'
 import bgImage from '@/assets/images/random-bg.png'
-
-import { AtModal, AtModalHeader, AtModalContent, AtModalAction } from "taro-ui"
-
 
 // const demo = 'https://static01.versa-ai.com/upload/201bae375f8b/18e62d91-fc04-46c6-8f21-7224b53eb4b7.mp4'
 type PageStateProps = {}
@@ -63,36 +60,8 @@ class Share extends Component {
     sceneId: '',
     themeData: {},
     sceneType: 0,
-    isshow: false,
+    isshow:false,
     confirmText:'好的，收下了',
-    canvas: {
-      id: 'shareCanvas',
-      ratio: 3
-    },
-    currentScene: {
-      type: 'recommend', // 'custom' 'recommend'
-    },
-    frame: {
-      width: 0,
-      height: 0,
-      left: 0,
-      top: 0,
-    },
-    customBg: {
-      localUrl: '',
-      remoteUrl: '',
-      originWidth: 0,
-      originHeight: 0,
-      autoScale: 1,
-      autoWidth: 0,
-      autoHeight: 0,
-      width: 0,
-      height: 0,
-      x: 0,
-      y: 0,
-      rotate: 0,
-    },
-    bg:"https://static01.versa-ai.com/upload/61f6cb952e69/1055d4d8-2826-4855-a952-b6461c86d379.png"
   }
 
   app = Taro.getApp()
@@ -149,7 +118,7 @@ class Share extends Component {
   }
 
   processLoadData = () => {
-    console.log('share page', this.$router.params) // 输出 { id: 2, type: 'test' }
+    console.log('share page index', this.$router.params) // 输出 { id: 2, type: 'test' }
     let isFromApp, shareSourceType = 'image', videoPoster = '', shareVideoInfo = { width: 690, height: 920, }
     let { shareSource, themeId, sceneId, from, remoteURL = '', width = 690, height = 920, originalCompleteImageUrl } = this.$router.params
     if (from === 'app') {
@@ -298,192 +267,37 @@ class Share extends Component {
   handleOpenApp = () => {
     this.app.aldstat.sendEvent('分享页打开app', '打开app')
   }
-
+  getUserInfo (e) {
+    console.log('e',e)
+    Taro.getSetting({
+      success (res) {
+        if (res.authSetting['scope.userInfo']) {
+          console.log('已授权',res)
+          Taro.getUserInfo({
+            success(res) {
+              console.log('获取用户信息',res)
+            },
+            fail(res) {
+              console.log('获取用户信息失败',res)
+            }
+          })
+        } else {
+          Taro.authorize ({
+            scope: 'scope.userInfo'
+          })
+        }
+      }
+    })
+  }
   shareHandle = () => {
     this.setState({
       isshow: true
     })
   }
-
   handelSave = () => {
     this.setState({
       isshow: false
     })
-  }
-
-  createCanvas = async () => {
-    return new Promise(async (resolve, reject) => {
-      const { currentScene, canvas } = this.state
-      const context = Taro.createCanvasContext(canvas.id, this)
-      if (currentScene.type === 'custom') {
-        await this.canvasDrawCustom(context)
-      } else if (currentScene.type === 'recommend') {
-        await this.canvasDrawRecommend(context)
-      }
-      //绘制图片
-      context.draw()
-      //将生成好的图片保存到本地，需要延迟一会，绘制期间耗时
-      setTimeout(function () {
-        Taro.canvasToTempFilePath({
-          canvasId: canvas.id,
-          fileType: 'jpg',
-          // 解决vivo手机模糊bug，强制图片质量为原图
-          quality: 1,
-          success: function (res) {
-            let tempFilePath = res.tempFilePath
-            resolve(tempFilePath)
-          },
-          fail: function (res) {
-            reject(res)
-          },
-          complete: function () {
-          }
-        });
-      }, 400)
-    })
-  }
-  canvasDrawRecommend = async (context) => {
-    const { currentScene, frame, canvas } = this.state
-    const postfix = '?x-oss-process=image/resize,h_748,w_560'
-    const { ratio = 3 } = canvas
-    const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
-    let sceneConfig = {}
-    try {
-      sceneConfig = tool.JSON_parse(sceneInfo.sceneConfig)
-    } catch (err) {
-      console.log('canvasDrawRecommend 解析sceneConfig JSON字符串失败', err)
-    }
-    // 下载远程背景图片
-    let localBgImagePath = ''
-    try {
-      const bgUrl = currentScene.bgUrl + postfix
-      localBgImagePath = await this.downloadRemoteImage(bgUrl)
-    } catch (err) {
-      console.log('下载背景图片失败', err)
-      return
-    }
-    //防止锯齿，绘的图片是所需图片的3倍
-    context.drawImage(localBgImagePath, 0, 0, frame.width * ratio, frame.height * ratio)
-    // 绘制元素
-    await this.canvasDrawElement(context, ratio)
-    // 绘制二维码
-    if (sceneConfig.watermark) {
-      this.canvasDrawLogo(context, ratio)
-    }
-  }
-  canvasDrawCustom = async (context) => {
-    const { customBg, canvas } = this.state
-    const { ratio = 3 } = canvas
-    // 自定义背景为本地图片，不需要下载
-    const localBgImagePath = customBg.localUrl
-    //防止锯齿，绘的图片是所需图片的3倍
-    context.drawImage(localBgImagePath, customBg.x * ratio, customBg.y * ratio, customBg.width * ratio, customBg.height * ratio)
-    // 绘制元素
-    await this.canvasDrawElement(context, ratio)
-    // 绘制二维码
-    this.canvasDrawLogo(context, ratio)
-  }
-  // 绘制贴纸，文字，覆盖层所有元素
-  canvasDrawElement = async (context, ratio) => {
-    const { currentScene, foreground, frame, canvas, coverList = [] } = this.state
-    // 收集所有元素进行排序
-    let elements: Array<any> = []
-    const element_foreground = {
-      type: 'foreground',
-      id: foreground.id,
-      zIndex: foreground.zIndex,
-      remoteUrl: foreground.remoteUrl,
-      width: foreground.width * ratio,
-      height: foreground.height * ratio,
-      x: foreground.x * ratio,
-      y: foreground.y * ratio,
-      rotate: foreground.rotate,
-    }
-    // 收集人物
-    elements.push(element_foreground)
-    // 收集贴纸
-    coverList.filter(v => !v.deleted).forEach(v => {
-      const element_cover = {
-        type: 'cover',
-        zIndex: v.zIndex,
-        id: v.id,
-        remoteUrl: v.remoteUrl,
-        width: v.width * ratio,
-        height: v.height * ratio,
-        x: v.x * ratio,
-        y: v.y * ratio,
-        rotate: v.rotate,
-      }
-      elements.push(element_cover)
-    })
-    // 对元素进行排序
-    elements.sort((a, b) => {
-      return a.zIndex - b.zIndex
-    })
-    // 下载成本地图片并绘制
-    for (let i = 0; i < elements.length; i++) {
-      const element = elements[i]
-      try {
-        const localImagePath = await this.downloadRemoteImage(element.remoteUrl)
-        element.localUrl = localImagePath
-        drawElement(element)
-      } catch (err) {
-        console.log('下载贴纸图片失败', err)
-        continue
-      }
-    }
-    // console.log('elements', elements)
-    function drawElement({ localUrl, width, height, x, y, rotate }) {
-      context.save()
-      context.translate(x + 0.5 * width, y + 0.5 * height)
-      context.rotate(rotate * Math.PI / 180)
-      context.drawImage(localUrl, -0.5 * width, -0.5 * height, width, height)
-      context.restore()
-      context.stroke()
-    }
-  }
-  // 绘制二维码和logo
-  canvasDrawLogo = (context, ratio) => {
-    const { frame } = this.state
-    // const localCodeImagePath = '../../assets/images/code.png'
-    const codeWidth = 67.5 * 1.5
-    const codeHeight = 67.5 * 1.5
-    const codeLeft = frame.width * ratio - codeWidth - 15
-    const codeTop = frame.height * ratio - codeHeight - 15
-    context.save()
-    context.drawImage(image_code, codeLeft, codeTop, codeWidth, codeHeight)
-    context.restore()
-    context.stroke()
-    // const localLogoImagePath = '../../assets/images/versa.png'
-    const logoWidth = 197 * 1.5
-    const logoHeight = 20 * 1.5
-    const logoLeft = frame.width * ratio * 0.5 - logoWidth * 0.5
-    const logoTop = frame.height * ratio - logoHeight - 8
-    context.save()
-    context.drawImage(image_versa, logoLeft, logoTop, logoWidth, logoHeight)
-    context.restore()
-    context.stroke()
-  }
-
-  downloadRemoteImage = async (remoteUrl = '') => {
-    // 判断是否在缓存里
-    const cacheKey = `${remoteUrl}_localPath`
-    const cache_source = this.cache['source']
-
-    let localImagePath = ''
-    if (cache_source.get(cacheKey)) {
-      // console.log('get-cache', cacheKey, cache_source.get(cacheKey))
-      return cache_source.get(cacheKey)
-    } else {
-      try {
-        const result = await service.base.downloadFile(remoteUrl)
-        localImagePath = result.tempFilePath
-        console.log('url',localImagePath)
-      } catch (err) {
-        console.log('下载图片失败', err)
-      }
-    }
-    return this.cache['source'].set(cacheKey, localImagePath)
   }
 
   render() {
@@ -498,13 +312,18 @@ class Share extends Component {
           color='#333'
         >懒人抠图</Title>
         <View className='main-section'>
-          {/* {shareSourceType === 'image' &&
-            <View className='pic-wrap'>
+          {console.log('state',this.state)}
+          {shareSourceType === 'image' &&
+            <View>
               {themeData.sceneType === 3 && <View class="share-bg"></View>}
-              <View class="share-img">
-                <Image src={shareSource} style='width: 100%; height: 100%' mode='aspectFit' /> */}
-                {/* <Image src={originalCompleteImageUrl} style='width: 100%; height: 100%' mode='aspectFit'/>
+              <View className="showImage">
+                <Image src={shareSource} style='width: 100%; height: 100%' mode='aspectFit' />
+                <Image src={originalCompleteImageUrl} style='width: 100%; height: 100%' mode='aspectFit'/>
               </View>
+              {/* <View className="showImage">
+                <View className="showImage blur"></View>
+                <Image src={bgImage} className="bgImage" mode="aspectFill"/>
+              </View> */}
             </View>
           }
           {shareSourceType === 'video' &&
@@ -520,20 +339,25 @@ class Share extends Component {
                 controls
               ></Video>
             </View>
-          } */}
-          <Image src={bgImage} className="bgImage"/>
-          {/* <View className="bgImage" style="background:url('{this.bg}')"></View> */}
+          }
           <View className="userMessage">
             <Image className="user" src={userImage} />
             <View className='userName'>Yannie_琳</View>
-            <Image src={like}  className="like"/>
+            <Button openType="getUserInfo" onGetUserInfo={this.getUserInfo} className="likeAuth">
+              <Image src={like}  className="like" />
+            </Button>
             <View style="" className="linkeNum">9</View>
-            <Image src={wx} className="wx"/>
+            <Button openType="share" className="likeAuth">
+              <Image src={wx} className="wx"/>
+            </Button>
+            {/* <Image src={wx} className="wx"/> */}
             <Image src={pyq} onClick={this.shareHandle} className="pyq"/>
+            {/* <Image src={pyq} onClick={this.handleOpenResult} className="pyq"/> */}
           </View>
           {
             this.state.isshow === true ? <ShareDialog
             confirmText={this.state.confirmText}
+            // content={shareSource}
             renderButton ={
               <View className="wx-dialog-footer">
                 <Button className="wx-dialog-btn" onClick={this.handelSave}  style="flex:1" >
@@ -545,12 +369,6 @@ class Share extends Component {
             />
             : ''
           }
-          <View class="canvas-wrap">
-            <Canvas
-              disable-scroll={true}
-              style={`width: ${frame.width * canvas.ratio}px; height: ${frame.height * canvas.ratio}px;`}
-              canvasId={canvas.id} />
-          </View>
         </View>
         <View className='sub-section'>
           {

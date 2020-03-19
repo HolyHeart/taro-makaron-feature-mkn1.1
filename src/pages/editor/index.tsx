@@ -230,7 +230,7 @@ class Editor extends Component {
       themeId: globalData.themeId || '',
       sceneId: currentScene.sceneId || '',
     }
-    const path = tool.formatQueryUrl('/pages/index', data)
+    const path = tool.formatQueryUrl('/pages/share/index', data)
     const { userInfo = {} } = globalData
     const title = `@${userInfo.nickName}：${shareContent}`
     if (!shareImage.remoteUrl) {
@@ -772,7 +772,6 @@ class Editor extends Component {
 
   createCanvas = async () => {
     return new Promise(async (resolve, reject) => {
-      console.log(666)
       const { currentScene, canvas } = this.state
       const context = Taro.createCanvasContext(canvas.id, this)
       if (currentScene.type === 'custom') {
@@ -904,7 +903,6 @@ class Editor extends Component {
   }
   // 绘制二维码和logo
   canvasDrawLogo = (context, ratio) => {
-    console.log(888)
     const { frame } = this.state
     // const localCodeImagePath = '../../assets/images/code.png'
     const codeWidth = 67.5 * 1.5
@@ -940,7 +938,6 @@ class Editor extends Component {
       try {
         const result = await service.base.downloadFile(remoteUrl)
         localImagePath = result.tempFilePath
-        console.log('url',localImagePath)
       } catch (err) {
         console.log('下载图片失败', err)
       }
@@ -1294,9 +1291,7 @@ class Editor extends Component {
           // console.log('tap index', index)
           if (index === 0) {
             this.app.aldstat.sendEvent('编辑页面选择拍摄照片', '选择拍摄')
-            console.log(index)
           } else if (index === 1) {
-            console.log(index)
             this.app.aldstat.sendEvent('编辑页面选择相册照片', '选择相册')
           }
         },
@@ -1543,7 +1538,9 @@ class Editor extends Component {
           <MarginTopWrap config={{ large: 60, small: 40, default: 20 }} >
             <View style="display:flex;margin-top:120rpx">
               <Button style='flex:1;z-index:2' id='addPhoto' openType="getUserInfo" className="custom-button pink" hoverClass="btn-hover" onGetUserInfo={this.todo}>{this.state.chooseText}</Button>
-              {Taro.getStorageSync('saveNumber').number ===0 ? <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.handleOpenResult} openType="share">分享并保存</Button> :<Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.saveImg}>保存</Button>}
+              {Taro.getStorageSync('saveNumber').number ===0 ? 
+              <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.handleOpenResult} openType="share">分享并保存</Button> 
+              :<Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.saveImg}>保存</Button>}
             </View>
           </MarginTopWrap>
           {this.state.isshow === true ? <Dialog 
@@ -1602,5 +1599,3 @@ class Editor extends Component {
 }
 
 export default Editor as ComponentClass<PageOwnProps, PageState>
-
-

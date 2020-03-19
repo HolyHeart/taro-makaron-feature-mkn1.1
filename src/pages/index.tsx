@@ -271,12 +271,13 @@ class Share extends Component {
           color='#333'
         >懒人抠图</Title>
         <View className='main-section'>
+          {console.log('state',this.state)}
           {shareSourceType === 'image' &&
             <View className='pic-wrap'>
               {themeData.sceneType === 3 && <View class="share-bg"></View>}
-              <View class="share-img">
+              <View className="share-img">
                 <Image src={shareSource} style='width: 100%; height: 100%' mode='aspectFit' />
-                {/* <Image src={originalCompleteImageUrl} style='width: 100%; height: 100%' mode='aspectFit'/> */}
+                <Image src={originalCompleteImageUrl} style='width: 100%; height: 100%' mode='aspectFit'/>
               </View>
             </View>
           }

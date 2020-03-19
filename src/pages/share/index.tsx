@@ -357,7 +357,7 @@ class Share extends Component {
           {
             this.state.isshow === true ? <ShareDialog
             confirmText={this.state.confirmText}
-            // content={shareSource}
+            content={shareSource}
             renderButton ={
               <View className="wx-dialog-footer">
                 <Button className="wx-dialog-btn" onClick={this.handelSave}  style="flex:1" >

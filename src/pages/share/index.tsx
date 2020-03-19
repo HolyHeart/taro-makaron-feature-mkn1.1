@@ -343,11 +343,11 @@ class Share extends Component {
           <View className="userMessage">
             <Image className="user" src={userImage} />
             <View className='userName'>Yannie_琳</View>
-            <Button openType="getUserInfo" onGetUserInfo={this.getUserInfo} className="likeAuth">
+            <Button openType="getUserInfo" onGetUserInfo={this.getUserInfo} className="likeAuth like">
               <Image src={like}  className="like" />
             </Button>
             <View style="" className="linkeNum">9</View>
-            <Button openType="share" className="likeAuth">
+            <Button openType="share" className="share wx">
               <Image src={wx} className="wx"/>
             </Button>
             {/* <Image src={wx} className="wx"/> */}

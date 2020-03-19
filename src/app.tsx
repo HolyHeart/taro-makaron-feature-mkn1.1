@@ -30,7 +30,7 @@ class _App extends Component {
    */
   config: Config = {
     pages: [
-      // 'pages/share/index',
+      'pages/share/index',
       'pages/home/index',
       'pages/browser/index',
       // 'pages/home/index',
@@ -41,7 +41,7 @@ class _App extends Component {
       'pages/error/index',
       'pages/crop/index',
       'pages/waiting/index',
-      'pages/share/index',
+      // 'pages/share/index',
       'pages/style/index',
       'pages/index',
       'pages/psChallenge/index',

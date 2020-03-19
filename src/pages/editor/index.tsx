@@ -680,6 +680,7 @@ class Editor extends Component {
     Taro.setStorageSync('saveNumber',mySaveNumber)
     this.isSaving = true
     const canvasImageUrl = await this.createCanvas()
+    console.log(2,canvasImageUrl)
     Taro.hideLoading()
     this.isSaving = false
     this.setState({
@@ -1538,9 +1539,7 @@ class Editor extends Component {
           <MarginTopWrap config={{ large: 60, small: 40, default: 20 }} >
             <View style="display:flex;margin-top:120rpx">
               <Button style='flex:1;z-index:2' id='addPhoto' openType="getUserInfo" className="custom-button pink" hoverClass="btn-hover" onGetUserInfo={this.todo}>{this.state.chooseText}</Button>
-              {Taro.getStorageSync('saveNumber').number ===0 ? 
-              <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.handleOpenResult} openType="share">分享并保存</Button> 
-              :<Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.saveImg}>保存</Button>}
+              {Taro.getStorageSync('saveNumber').number ===0 ? <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.handleOpenResult} openType="share">分享并保存</Button> :<Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.saveImg}>保存</Button>}
             </View>
           </MarginTopWrap>
           {this.state.isshow === true ? <Dialog 

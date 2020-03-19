@@ -12,6 +12,7 @@ type ComponentOwnProps = {
     renderButton?: any,
     saveTitle ?: string,
     savePoint ?: boolean
+    type ?: string
 }
 type IProps = ComponentStateProps & ComponentOwnProps
 
@@ -19,22 +20,18 @@ interface ShareDialog {
     props: IProps;
   }
 class ShareDialog extends Component {
-  state = {
-    result: {
-      show: false,
-      shareImage: {
-        remoteUrl: '',
-        localUrl: '',
-      },
-    },
-  }
+    state = {
+      savePoint: false,
+      type: 'image'
+    }
     static defaultProps = {
       content : '',
       confirmText: '',
       cancelText: '',
       isshow:false,
       saveTitle:'图片已保存到手机相册',
-      savePoint: false
+      savePoint: false,
+      type: 'image'
     }
     showDia(){
       this.setState({
@@ -62,34 +59,64 @@ class ShareDialog extends Component {
 
     handelConfirm(){
       // 保存图片到相册
-      work.saveSourceToPhotosAlbum({
-        location: 'local',
-        sourceUrl: this.props.content,
-        sourceType: 'image',
-        onSuccess: () => {
-          Taro.showToast({
-            title: '保存成功!',
-            icon: 'success',
-            duration: 2000
-          })
-          this.setState({
-            savePoint: true
-          })
-        },
-        onAuthFail: () => {
-          Taro.authModal({
-            open: true
-          })
-          this.setResultModalStatus(false)
-        },
-        onFail: () => {
-          Taro.showToast({
-            title: '保存失败!',
-            icon: 'success',
-            duration: 2000
-          })
-        }
-      })
+      if (this.state.type === this.props.type) {
+        work.saveSourceToPhotosAlbum({
+          location: 'remote',
+          sourceUrl: this.props.content,
+          sourceType: 'image',
+          onSuccess: () => {
+            Taro.showToast({
+              title: '保存成功!',
+              icon: 'success',
+              duration: 2000
+            })
+            this.setState({
+              savePoint: true
+            })
+            this.props.savePoint = true
+          },
+          onAuthFail: () => {
+            Taro.authModal({
+              open: true
+            })
+          },
+          onFail: () => {
+            Taro.showToast({
+              title: '保存失败!',
+              icon: 'success',
+              duration: 2000
+            })
+          }
+        })
+      } else {
+        work.saveSourceToPhotosAlbum({
+          location: 'remote',
+          sourceUrl: this.props.content,
+          sourceType: 'video',
+          onSuccess: () => {
+            Taro.hideLoading()           
+            Taro.showToast({
+              title: '保存成功!',
+              icon: 'success',
+              duration: 2000
+            })
+            this.props.savePoint = true
+          },
+          onAuthFail: () => {
+            Taro.authModal({
+              open: true
+            })
+          },
+          onFail: () => {
+            Taro.hideLoading()
+            Taro.showToast({
+              title: '保存失败!',
+              icon: 'success',
+              duration: 2000
+            })
+          }
+        })
+      }
     }
     render() {
         return (

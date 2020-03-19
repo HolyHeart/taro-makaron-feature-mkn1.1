@@ -91,13 +91,16 @@ class Share extends Component {
   componentDidShow() { }
   componentDidHide() { }
   onShareAppMessage(res) {
-    const themeData = globalData.themeData || { generalShowUrl: '', shareContent: '' }
-    const shareContent = themeData.shareContent || ''
-    const url = themeData.generalShowUrl
+    const shareContent = ''
+    const url = `${this.state.shareSource}?x-oss-process=image/resize,m_pad,h_420,w_525`
+    console.log(22,url)
+    const { userInfo = {} } = globalData
+    const title = `@${userInfo.nickName}：${shareContent}`
+    const path = `/pages/share/index?shareSource=${this.state.shareSource}`
     return {
-      title: shareContent,
-      path: '/pages/home/index',
-      imageUrl: `${url}?x-oss-process=image/resize,m_pad,h_420,w_525`,
+      title: title,
+      path: path,
+      imageUrl: url,
       success: () => {
         console.log('分享成功')
       },
@@ -317,20 +320,21 @@ class Share extends Component {
             <View>
               {themeData.sceneType === 3 && <View class="share-bg"></View>}
               <View className="showImage">
-                <Image src={shareSource} style='width: 100%; height: 100%' mode='aspectFit' />
-                <Image src={originalCompleteImageUrl} style='width: 100%; height: 100%' mode='aspectFit'/>
+                <View className="showImage blur" style='background:url(https://static01.versa-ai.com/upload/603758b1f31f/b56d56d8-743c-4af9-8b3b-7f38644628b4.jpg);' ></View>
+                <Image src={shareSource} mode='aspectFill' className="bgImage" />
+                <Image src={originalCompleteImageUrl}  mode='aspectFill' className="bgImage"/>
               </View>
               {/* <View className="showImage">
-                <View className="showImage blur"></View>
+                <View className="showImage blur" style='background:url(https://static01.versa-ai.com/upload/603758b1f31f/b56d56d8-743c-4af9-8b3b-7f38644628b4.jpg);'></View>
                 <Image src={bgImage} className="bgImage" mode="aspectFill"/>
               </View> */}
             </View>
           }
           {shareSourceType === 'video' &&
-            <View className='video-wrap'>
+            <View className='video-wrap showImage'>
               <Video
-                className="video"
-                style={{ width: Taro.pxTransform(width), height: Taro.pxTransform(height - 2) }}
+                className="video bgImage"
+                // style={{ width: Taro.pxTransform(width), height: Taro.pxTransform(height - 2) }}
                 loop
                 autoplay
                 src={shareSource}
@@ -355,9 +359,11 @@ class Share extends Component {
             {/* <Image src={pyq} onClick={this.handleOpenResult} className="pyq"/> */}
           </View>
           {
-            this.state.isshow === true ? <ShareDialog
+            this.state.isshow === true ?
+            <ShareDialog
             confirmText={this.state.confirmText}
             content={shareSource}
+            type={shareSourceType}
             renderButton ={
               <View className="wx-dialog-footer">
                 <Button className="wx-dialog-btn" onClick={this.handelSave}  style="flex:1" >

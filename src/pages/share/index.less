@@ -93,9 +93,8 @@
         .likeAuth {
           padding: 0;
           margin: 0;
-          background-color: #fff;
+          background-color:transparent;
           font-size: 0;
-          color: #fff;
           position: absolute;
           right: 246rpx;
         }
@@ -124,9 +123,8 @@
         .share {
           padding: 0;
           margin: 0;
-          background-color: #fff;
+          background-color:transparent;
           font-size: 0;
-          color: #fff;
           border-radius: 0;
           position: absolute;
           z-index: 2;
@@ -137,27 +135,89 @@
       //   width: 670px;
       //   height: 470px;
       // }
+      .wx-mask{
+        position: fixed;
+          z-index: 1000;
+          top: 0;
+          right: 0;
+          left: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.65);
+      }
+      .wx-dialog{
+          position: fixed;
+          z-index: 5000;
+          top: 50%;
+          left: 50%;
+          -webkit-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+          // background-color: #FFFFFF;
+          text-align: center;
+          // border-radius: 3px;
+          overflow: hidden;
+          // border-radius: 30rpx
+      }
+      .wx-dialog-title{
+          min-height: 150rpx;
+          padding: 0 15px ;
+          padding-top: 45px;
+          margin-top: 15px;
+          background: url('../../assets/images/titleImg.png') no-repeat center;
+          background-size: 30% 70%;
+          background-position: center;
+      }
+      .wx-dialog-save {
+          font-family: PingFangSC-Regular;
+          font-size: 30px;
+          color: #FFFFFF;
+          letter-spacing: 0;
+          text-align: center;
+          height: 48rpx;
+          line-height: 48rpx;
+          padding-bottom: 20rpx;
+      }
+      .wx-dialog-content{
+          padding: 20rpx 20rpx 148rpx;
+          background-color: #FFFFFF;
+          width: 516rpx;
+          height: 690rpx;
+          font-size: 36px;
+          align-items: center;
+          word-wrap: break-word;
+          word-break: break-all;
+          color: #000;
+          .bgImage {
+            width: 516rpx;
+            height: 690rpx;
+          }
+      }
+      .wx-dialog-footer{
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          width: 556px;
+          height: 76rpx;
+          margin-top: 30rpx;
+          position: relative;
+      }
       .wx-dialog-btn{
         display: block;
         -webkit-flex: 1;
         flex: 1;
         -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-        position: relative;
         color: #fff;
-        border-radius: 80rpx;
         width: 448px;
         height: 76rpx;
         background: #FF3366;
         border-radius: 40px;
         line-height: 76rpx;
-        margin-top: 30px;
         font-size: 30rpx;
         font-family: PingFangSC-Semibold;
         text-align: center;
         -webkit-transition: all 0.2s;
         -o-transition: all 0.2s;
-        transition: all 0.2s;
-    }
+        position: absolute;
+      }
     }
     .sub-section {
       width: 670rpx;

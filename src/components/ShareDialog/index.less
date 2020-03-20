@@ -43,10 +43,10 @@
     // margin: 45px 30px ;
     // margin-top: 30px;
     // height: 100%;
-    padding: 20rpx 20rpx 148rpx;
+    padding: 20rpx 20rpx 0rpx;
     background-color: #FFFFFF;
     width: 516rpx;
-    height: 690rpx;
+    height: 838rpx;
     font-size: 36px;
     align-items: center;
     word-wrap: break-word;
@@ -55,6 +55,50 @@
     .bgImage {
       width: 516rpx;
       height: 690rpx;
+    }
+    .userInfo {
+      height: 148rpx;
+      display: flex;
+      align-items: center;
+      position: relative;
+      .userimage {
+        width: 76px; 
+        height: 76px; 
+      }
+      .username {
+        position: absolute;
+        left: 92rpx;
+        .userwork {
+          height: 42rpx;
+          font-family: PingFangSC-Medium;
+          font-size: 30px;
+          color: #333333;
+          letter-spacing: 0;
+          text-align: center;
+        }
+        .seetwo {
+          height: 34rpx;
+          font-family: PingFangSC-Regular;
+          font-size: 24px;
+          color: #999999;
+          letter-spacing: 0;
+          text-align: center;
+        }
+      }
+      .two {
+        position: absolute;
+        right: 0;
+        .twoCode {
+          width: 84rpx;
+          height: 86rpx;
+        }
+        .logo {
+          height: 17rpx;
+          line-height: 17rpx;
+          color: #333333;
+          font-size: 20rpx;
+        }
+      }
     }
 }
 .wx-dialog-footer{

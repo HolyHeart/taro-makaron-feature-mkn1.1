@@ -2,6 +2,8 @@ import Taro, { Component } from "@tarojs/taro";
 import { View ,Button, Image} from "@tarojs/components";
 import work from '@/utils/work'
 import AuthModal from '@/components/AuthModal'
+import userImage from '@/assets/images/logo@2x.png'
+import image_code from '@/assets/images/code.png'
 import './index.less'
 type ComponentStateProps = {}
 type ComponentOwnProps = {
@@ -61,7 +63,7 @@ class ShareDialog extends Component {
       // 保存图片到相册
       if (this.state.type === this.props.type) {
         work.saveSourceToPhotosAlbum({
-          location: 'remote',
+          location: 'local',
           sourceUrl: this.props.content,
           sourceType: 'image',
           onSuccess: () => {
@@ -125,8 +127,22 @@ class ShareDialog extends Component {
             <View className="wx-dialog">
               {this.props.savePoint === true ? <View className="wx-dialog-save">{this.props.saveTitle}</View> : <View className="wx-dialog-save"></View>}
                 <View className="wx-dialog-content">
-                  {console.log(7,this.props)}
-                <Image src={this.props.content} style="width:100%; height:100%;" className="bgImage" mode="aspectFill" onClick={this.handelConfirm}/>
+                  <View className="bgImage">
+                    <Image src={this.props.content} className="bgImage" mode="aspectFill" onClick={this.handelConfirm}/>
+                  </View>
+                  <View className="userInfo">
+                    <Image className="userimage" src={userImage} />
+                    <View className="username">
+                      <View className="userwork">@叶小明的作品</View>
+                      {
+                        this.props.type === 'image' ? <View className="seetwo">长按识别二维码查看</View> : <View className="seetwo">长按识别二维码播放视频</View>
+                      }
+                    </View>
+                    <View className="two">
+                      <Image className="twoCode" src={image_code} />
+                      <View className="logo">Makaron</View>
+                    </View>
+                  </View>
                 <AuthModal />
               </View>
               {this.props.renderButton}

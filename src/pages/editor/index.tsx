@@ -680,7 +680,6 @@ class Editor extends Component {
     Taro.setStorageSync('saveNumber',mySaveNumber)
     this.isSaving = true
     const canvasImageUrl = await this.createCanvas()
-    console.log(2,canvasImageUrl)
     Taro.hideLoading()
     this.isSaving = false
     this.setState({

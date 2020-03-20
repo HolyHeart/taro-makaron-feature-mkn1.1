@@ -548,10 +548,38 @@ export const teleport = {
   }
 }
 
+//分享页热门作品
+export const share = {
+  getrecommendList: function (size) {
+    const reqData = {
+      method: 'GET',
+      url: api.share.getrecommendList,
+      header: { "Accept": "*/*" },
+      data: {
+        size: size
+      }
+    }
+    return commonRequest(reqData)
+  },
+
+  getHotList: function (templateCode) {
+    const reqData = {
+      method: 'GET',
+      url: api.share.getHotList,
+      header: { "Accept": "*/*" },
+      data: {
+        templateCode: templateCode
+      }
+    }
+    return commonRequest(reqData)
+  }
+}
+
 export default {
   base,
   core,
   styleTransfer,
   browser,
-  teleport
+  teleport,
+  share
 }

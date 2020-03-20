@@ -11,7 +11,7 @@ import AuthModal from '@/components/AuthModal'
 import BackApp from '@/components/BackApp'
 import { appConfig } from '@/services/config'
 import Session from '@/services/session'
-import service from '@/services/service'
+import service, { share } from '@/services/service'
 import globalData from '@/services/global_data'
 import tool from '@/utils/tool'
 import work from '@/utils/work'
@@ -61,7 +61,7 @@ class Share extends Component {
     sceneId: '',
     themeData: {},
     sceneType: 0,
-    isshow: true,
+    isshow: false,
     confirmText: '好的，收下了',
     saveTitle: '图片已保存到手机相册',
     savePoint: false,
@@ -156,7 +156,15 @@ class Share extends Component {
         localUrl: '',
       },
     },
-    
+    morePlayList: [{
+      themeId:'wxcfe56965f4d986f0',
+      recommendShowUrl:'https://static01.versa-ai.com/upload/f8b8cb0ff2e8/f0348bbf-6667-46d4-96eb-f34869a43867.png',
+      sort:1
+    },{
+      themeId:'wx21630a5d4651096a',
+      recommendShowUrl:'https://static01.versa-ai.com/upload/028e459b3c1a/1a48a5c5-b26a-49d1-bbf3-c597888c0f5a.png',
+      sort:2
+    }],
   }
 
   app = Taro.getApp()
@@ -181,6 +189,7 @@ class Share extends Component {
   }
 
   componentDidMount() {
+    this.getRecommendList()
     this._initPage()
     // Taro.showToast({
     //   title:this.$router.params.originalCompleteImageUrl
@@ -219,7 +228,6 @@ class Share extends Component {
         sceneType: themeData.sceneType
       })
     })
-    this.getRecommendList()
   }
 
   processLoadData = () => {
@@ -264,11 +272,13 @@ class Share extends Component {
   }
 
   getRecommendList = async () => {
-    const recommendData = await service.core.recommend()
-    // console.log('recommendData', recommendData.result.result)
-    this.setState({
-      recommendList: (recommendData.result && recommendData.result.result) || []
-    })
+    const recommendData1 = await share.getHotList(2)
+    const recommendData = await share.getrecommendList(6)
+    console.log('recommendData', recommendData)
+    console.log('recommendData', recommendData1)
+    // this.setState({
+    //   recommendList: (recommendData.result && recommendData.result.result) || []
+    // })
   }
 
   getThemeData = async (callback?: (data?) => void) => {
@@ -447,130 +457,72 @@ class Share extends Component {
   }
 
   canvasDrawRecommend = async (context) => {
-    const { frame, canvas, source } = this.state
+    const { frame, canvas, shareSource } = this.state
     const postfix = '?x-oss-process=image/resize,h_748,w_560'
     const { ratio = 3 } = canvas
     let localBgImagePath = ''
     try {
-      const bgUrl = source + postfix
+      const bgUrl = shareSource + postfix
       localBgImagePath = await this.downloadRemoteImage(bgUrl)
     } catch (err) {
       console.log('下载背景图片失败', err)
       return
     }
     //防止锯齿，绘的图片是所需图片的3倍
-    context.drawImage(localBgImagePath, 10 * ratio, 10 * ratio, 258 * ratio, 345 * ratio)
+    const codeWidth = frame.width * ratio - 20 * ratio 
+    const codeHeight = frame.height * ratio - 84 * ratio
+    context.drawImage(localBgImagePath, 10 * ratio, 10 * ratio, codeWidth, codeHeight)
     // 绘制元素
     // await this.canvasDrawElement(context, ratio)
     this.canvasDrawLogo(context, ratio)
   }
 
-  // 绘制贴纸，文字，覆盖层所有元素
-  // canvasDrawElement = async (context, ratio) => {
-  //   const { currentScene, frame, canvas} = this.state
-  //   // 收集所有元素进行排序
-  //   const coverList = work.formatRawCoverList(currentScene.coverList)
-  //   this.setState({
-  //     coverList: coverList
-  //   })
-  //   let elements: Array<any> = []
-  //   // 收集贴纸
-  //   coverList.filter(v => !v.deleted).forEach(v => {
-  //     const element_cover = {
-  //       type: 'cover',
-  //       zIndex: v.zIndex,
-  //       id: v.id,
-  //       remoteUrl: v.remoteUrl,
-  //       width: v.width * ratio,
-  //       height: v.height * ratio,
-  //       x: v.x * ratio,
-  //       y: v.y * ratio,
-  //       rotate: v.rotate,
-  //     }
-  //     elements.push(element_cover)
-  //   })
-  //   // 对元素进行排序
-  //   elements.sort((a, b) => {
-  //     return a.zIndex - b.zIndex
-  //   })
-
-  //   // 下载成本地图片并绘制
-  //   for (let i = 0; i < elements.length; i++) {
-  //     const element = elements[i]
-  //     console.log(555,element)
-  //     try {
-  //       const localImagePath = await this.downloadRemoteImage(element.remoteUrl)
-  //       console.log(999,localImagePath)
-  //       element.localUrl = localImagePath
-  //       drawElement(element)
-  //     } catch (err) {
-  //       console.log('下载贴纸图片失败', err)
-  //       continue
-  //     }
-  //   }
-  //   // console.log('elements', elements)
-  //   function drawElement({ localUrl, width, height, x, y, rotate }) {
-  //     console.log(888,{ localUrl, width, height, x, y, rotate })
-  //     context.save()
-  //     context.translate(x + 0.5 * width, y + 0.5 * height)
-  //     context.rotate(rotate * Math.PI / 180)
-  //     context.drawImage(localUrl, -0.5 * width, -0.5 * height, width, height)
-  //     context.restore()
-  //     context.stroke()
-  //   }
-  // }
-
   // 绘制二维码和logo
   canvasDrawLogo = (context, ratio) => {
-    console.log(1236,context)
-    console.log(1237,ratio)
     const { frame } = this.state
-    // console.log('frame',frame)
-    const codeWidth = 67.5 * 1.5
-    const codeHeight = 67.5 * 1.5
-    const codeLeft = frame.width * ratio - codeWidth - 15
-    const codeTop = frame.height * ratio - codeHeight - 15
+    const codeWidth = 42 * ratio
+    const codeHeight = 43 * ratio
+    const codeLeft = 226 * ratio
+    const codeTop = 365 * ratio
     context.save()
-    // context.drawImage(image_code, codeLeft, codeTop, codeWidth, codeHeight)
-    context.drawImage(image_code, 226, 365, 42, 43 )
+    context.drawImage(image_code, codeLeft, codeTop, codeWidth, codeHeight)
     context.restore()
     context.stroke()
 
+
+    const logoWidth = 38 * ratio
+    const logoHeight = 38 * ratio
+    const logoLeft = 10 * ratio 
+    const logoTop = 375 * ratio
     context.save()
-    context.drawImage(userImage, 10, 371, 38, 38 )
+    context.drawImage(userImage, logoLeft, logoTop, logoWidth, logoHeight)
     context.restore()
     context.stroke()
 
-    // const logoWidth = 197 * 1.5
-    // const logoHeight = 20 * 1.5
-    // const logoLeft = frame.width * ratio * 0.5 - logoWidth * 0.5
-    // const logoTop = frame.height * ratio - logoHeight - 8
-    // context.save()
-    // context.drawImage(userImage, logoLeft, logoTop, logoWidth, logoHeight)
-    // context.restore()
-    // context.stroke()
-    context.font = "15px 'PingFangSC-Medium'";
+    context.font = "30px 'PingFangSC-Medium'";
     context.fillStyle = "#333333";
-    // // 设置水平对齐方式
-    // context.textAlign = "center";
-    // // 设置垂直对齐方式
-    // context.textBaseline = "middle";
+    // 设置水平对齐方式
+    context.textAlign = "center";
+    // 设置垂直对齐方式
+    context.textBaseline = "middle";
     // 绘制文字（参数：要写的字，x坐标，y坐标）
-    context.fillText(this.state.currentScene.desc, 56, 388)
+    context.fillText(this.state.currentScene.desc,  frame.width * ratio / 3, 388 * ratio, 103 * ratio, 21 * ratio)
     // context.fillText(this.state.checkoutImage, 56, 405)
     this.canvasDrawText(context, ratio)
   }
   canvasDrawText = (context, ratio) => {
-    context.font = "12px 'PingFangSC-Medium'"
+    const { frame } = this.state
+    context.font = "24px 'PingFangSC-Medium'"
     context.fillStyle = "#999999"
-    context.fillText(this.state.checkoutImage, 56, 405)
+    context.fillText(this.state.checkoutImage, frame.width * ratio / 3, 405 * ratio)
     this.canvasDrawLogoText(context, ratio)
   }
 
   canvasDrawLogoText = (context, ratio) => {
-    context.font = "10px 'PingFangSC-Medium'"
+    const { frame } = this.state
+    context.font = "25px bold '黑体'"
     context.fillStyle = "#000000"
-    context.fillText(this.state.logoName, 227, 415)
+    context.fillText(this.state.logoName, frame.width * ratio - 96, 412 * ratio, 42 * ratio, 9  * ratio)
   }
 
   setResultModalStatus = (flag = false) => {
@@ -587,7 +539,7 @@ class Share extends Component {
     if (this.isSaving) {
       return
     }
-    this.app.aldstat.sendEvent('保存图片或视频', { '场景名': this.state.currentScene.sceneName, '场景Id': this.state.currentScene.sceneId })
+    // this.app.aldstat.sendEvent('保存图片或视频', { '场景名': this.state.currentScene.sceneName, '场景Id': this.state.currentScene.sceneId })
     Taro.showLoading({
       title: '照片生成中...',
       mask: true,
@@ -599,6 +551,7 @@ class Share extends Component {
     Taro.setStorageSync('saveNumber',mySaveNumber)
     this.isSaving = true
     const canvasImageUrl = await this.createCanvas()
+    console.log('canvas',canvasImageUrl)
     Taro.hideLoading()
     this.isSaving = false
     this.setState({
@@ -624,7 +577,7 @@ class Share extends Component {
     if (this.state.type === 'image') {
       // 保存图片到相册
       work.saveSourceToPhotosAlbum({
-        location: 'remote',
+        location: 'local',
         sourceUrl: canvasImageUrl,
         sourceType: 'image',
         onSuccess: () => {
@@ -656,7 +609,7 @@ class Share extends Component {
       })
     } else {
       work.saveSourceToPhotosAlbum({
-        location: 'remote',
+        location: 'local',
         sourceUrl: canvasImageUrl,
         sourceType: 'video',
         onSuccess: () => {
@@ -688,9 +641,23 @@ class Share extends Component {
     }
   }
 
+  handlePlayClick = (data) => {
+    console.log('data',data)
+    if (!data.themeId) {
+      console.log('why')
+      return
+    }
+    Taro.navigateToMiniProgram({
+      appId: data.themeId,
+      success(res) {
+        // 打开成功
+      }
+    })
+  }
+
   render() {
     const { isFromApp, shareSourceType, shareSource, videoPoster, width, height, recommendList, originalCompleteImageUrl, canvasInfo, confirmText, isshow, savePoint, 
-      saveTitle, source, type, currentScene, checkoutImage, checkoutVideo} = this.state
+      saveTitle, source, type, currentScene, checkoutImage, checkoutVideo, morePlayList} = this.state
     return (
       <View className='page-share'>
         <Title
@@ -704,15 +671,15 @@ class Share extends Component {
           {shareSourceType === 'image' &&
             <View>
               {themeData.sceneType === 3 && <View class="share-bg"></View>}
-              {/* <View className="showImage">
+              <View className="showImage">
                 <View className="showImage blur" style='background:url(https://static01.versa-ai.com/upload/603758b1f31f/b56d56d8-743c-4af9-8b3b-7f38644628b4.jpg);' ></View>
                 <Image src={shareSource} mode='aspectFill' className="bgImage" />
                 <Image src={originalCompleteImageUrl}  mode='aspectFill' className="bgImage"/>
-              </View> */}
-              <View className="showImage">
+              </View>
+              {/* <View className="showImage">
                 <View className="showImage blur" style='background:url(https://static01.versa-ai.com/upload/603758b1f31f/b56d56d8-743c-4af9-8b3b-7f38644628b4.jpg);'></View>
                 <Image src={source} className="bgImage" mode="aspectFill"/>
-              </View>
+              </View> */}
             </View>
           }
           {shareSourceType === 'video' &&
@@ -750,7 +717,7 @@ class Share extends Component {
                 {savePoint === true ? <View className="wx-dialog-save">{saveTitle}</View> : <View className="wx-dialog-save"></View>}
                 <View className="wx-dialog-content">
                     <View className="bgImage">
-                      <Image src={source} className="bgImage" mode="aspectFill" onClick={this.handelConfirm}/>
+                      <Image src={shareSource} className="bgImage" mode="aspectFill" onClick={this.handelConfirm}/>
                     </View>
                     <View className="userInfo">
                       <Image className="userimage" src={userImage} />
@@ -845,10 +812,8 @@ class Share extends Component {
           <View className='recommend-wrap'>
             <View className='recommend-title'>更多好玩</View>
             <RecommendList
-              list={recommendList}
-              onGetUserInfo={this.handleGetUserInfo}
-              onFormSubmit={this.handleFormSubmit}
-              onClick={this.handleRecommendClick}
+              list={morePlayList}
+              onClick={this.handlePlayClick}
             />
           </View>
         </View>

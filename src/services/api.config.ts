@@ -61,6 +61,10 @@ export const api = {
   },
   teleport: {
     getResultImage:`${getHost('miniapi', ENV)}/miniProgram/getResultImage`,
+  },
+  share: {
+    getrecommendList :`${getHost('miniapi', ENV)}/community/feed/recommend/works`,
+    getHotList :`${getHost('miniapi', ENV)}/community/works/hot/templates`,
   }
 }
 export default {

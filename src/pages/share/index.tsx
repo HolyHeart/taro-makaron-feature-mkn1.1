@@ -61,9 +61,9 @@ class Share extends Component {
     sceneId: '',
     themeData: {},
     sceneType: 0,
-    isshow:false,
-    confirmText:'好的，收下了',
-    saveTitle:'图片已保存到手机相册',
+    isshow: true,
+    confirmText: '好的，收下了',
+    saveTitle: '图片已保存到手机相册',
     savePoint: false,
     type: 'image',
     frame: {
@@ -149,10 +149,24 @@ class Share extends Component {
       left: 0,
       top: 0,
     },
-
+    result: {
+      show: false,
+      shareImage: {
+        remoteUrl: '',
+        localUrl: '',
+      },
+    },
+    
   }
 
   app = Taro.getApp()
+
+  isSaving = false // 是否正在保存
+
+  saveNumber = {
+    number: 0,
+    date: 0,
+  }
 
   componentWillMount() {
     // 兼容跳转使用
@@ -384,11 +398,11 @@ class Share extends Component {
     this.setState({
       isshow: true
     })
-    this.handelConfirm()
   }
   handelSave = () => {
     this.setState({
-      isshow: false
+      isshow: false,
+      savePoint: false
     })
   }
 
@@ -445,7 +459,7 @@ class Share extends Component {
       return
     }
     //防止锯齿，绘的图片是所需图片的3倍
-    context.drawImage(localBgImagePath, 10, 10, 258 , 345)
+    context.drawImage(localBgImagePath, 10 * ratio, 10 * ratio, 258 * ratio, 345 * ratio)
     // 绘制元素
     // await this.canvasDrawElement(context, ratio)
     this.canvasDrawLogo(context, ratio)
@@ -510,12 +524,12 @@ class Share extends Component {
   canvasDrawLogo = (context, ratio) => {
     console.log(1236,context)
     console.log(1237,ratio)
-    // const { frame } = this.state
+    const { frame } = this.state
     // console.log('frame',frame)
-    // const codeWidth = 67.5 * 1.5
-    // const codeHeight = 67.5 * 1.5
-    // const codeLeft = frame.width * ratio - codeWidth - 15
-    // const codeTop = frame.height * ratio - codeHeight - 15
+    const codeWidth = 67.5 * 1.5
+    const codeHeight = 67.5 * 1.5
+    const codeLeft = frame.width * ratio - codeWidth - 15
+    const codeTop = frame.height * ratio - codeHeight - 15
     context.save()
     // context.drawImage(image_code, codeLeft, codeTop, codeWidth, codeHeight)
     context.drawImage(image_code, 226, 365, 42, 43 )
@@ -559,14 +573,59 @@ class Share extends Component {
     context.fillText(this.state.logoName, 227, 415)
   }
 
+  setResultModalStatus = (flag = false) => {
+    const { result } = this.state
+    result.show = flag
+    this.setState({
+      result: {
+        ...result
+      }
+    })
+  }
+
   handelConfirm = async () => {
-    // 保存图片到相册
+    if (this.isSaving) {
+      return
+    }
+    this.app.aldstat.sendEvent('保存图片或视频', { '场景名': this.state.currentScene.sceneName, '场景Id': this.state.currentScene.sceneId })
+    Taro.showLoading({
+      title: '照片生成中...',
+      mask: true,
+    })
+    const mySaveNumber = {
+      number: Taro.getStorageSync('saveNumber').number + 1,
+      date: Taro.getStorageSync('saveNumber').date
+    }
+    Taro.setStorageSync('saveNumber',mySaveNumber)
+    this.isSaving = true
     const canvasImageUrl = await this.createCanvas()
-    console.log(666,canvasImageUrl)
-    // if (this.state.type === 'image') {
+    Taro.hideLoading()
+    this.isSaving = false
+    this.setState({
+      result: {
+        shareImage: {
+          localUrl: canvasImageUrl,
+          remoteUrl: '',
+        },
+        show: true
+      }
+    }, async () => {
+      const { url } = await service.base.upload(canvasImageUrl)
+      this.setState({
+        result: {
+          show: this.state.result.show,
+          shareImage: {
+            localUrl: canvasImageUrl,
+            remoteUrl: url,
+          }
+        }
+      })
+    })
+    if (this.state.type === 'image') {
+      // 保存图片到相册
       work.saveSourceToPhotosAlbum({
         location: 'remote',
-        sourceUrl: 'canvasImageUrl',
+        sourceUrl: canvasImageUrl,
         sourceType: 'image',
         onSuccess: () => {
           console.log(11111)
@@ -584,6 +643,7 @@ class Share extends Component {
           Taro.authModal({
             open: true
           })
+          this.setResultModalStatus(false)
         },
         onFail: () => {
           console.log(22222)
@@ -594,35 +654,38 @@ class Share extends Component {
           })
         }
       })
-    // } else {
-    //   work.saveSourceToPhotosAlbum({
-    //     location: 'remote',
-    //     sourceUrl: canvasImageUrl,
-    //     sourceType: 'video',
-    //     onSuccess: () => {
-    //       Taro.hideLoading()           
-    //       Taro.showToast({
-    //         title: '保存成功!',
-    //         icon: 'success',
-    //         duration: 2000
-    //       })
-    //       this.state.savePoint = true
-    //     },
-    //     onAuthFail: () => {
-    //       Taro.authModal({
-    //         open: true
-    //       })
-    //     },
-    //     onFail: () => {
-    //       Taro.hideLoading()
-    //       Taro.showToast({
-    //         title: '保存失败!',
-    //         icon: 'success',
-    //         duration: 2000
-    //       })
-    //     }
-    //   })
-    // }
+    } else {
+      work.saveSourceToPhotosAlbum({
+        location: 'remote',
+        sourceUrl: canvasImageUrl,
+        sourceType: 'video',
+        onSuccess: () => {
+          Taro.hideLoading()           
+          Taro.showToast({
+            title: '保存成功!',
+            icon: 'success',
+            duration: 2000
+          })
+          this.setState({
+            savePoint: true
+          })
+        },
+        onAuthFail: () => {
+          Taro.authModal({
+            open: true
+          })
+          this.setResultModalStatus(false)
+        },
+        onFail: () => {
+          Taro.hideLoading()
+          Taro.showToast({
+            title: '保存失败!',
+            icon: 'success',
+            duration: 2000
+          })
+        }
+      })
+    }
   }
 
   render() {
@@ -638,7 +701,6 @@ class Share extends Component {
           color='#333'
         >懒人抠图</Title>
         <View className='main-section'>
-          {console.log('state',this.state)}
           {shareSourceType === 'image' &&
             <View>
               {themeData.sceneType === 3 && <View class="share-bg"></View>}
@@ -680,7 +742,7 @@ class Share extends Component {
             <Image src={pyq} onClick={this.shareHandle} className="pyq"/>
             {/* <Image src={pyq} onClick={this.handleOpenResult} className="pyq"/> */}
           </View>
-          {/* {
+          {
             isshow === true ?
             <View className="wx_dialog_container">           
               <View className="wx-mask"></View>
@@ -688,14 +750,14 @@ class Share extends Component {
                 {savePoint === true ? <View className="wx-dialog-save">{saveTitle}</View> : <View className="wx-dialog-save"></View>}
                 <View className="wx-dialog-content">
                     <View className="bgImage">
-                      <Image src={source} className="bgImage" mode="aspectFill"/>
+                      <Image src={source} className="bgImage" mode="aspectFill" onClick={this.handelConfirm}/>
                     </View>
                     <View className="userInfo">
                       <Image className="userimage" src={userImage} />
                       <View className="username">
                         <View className="userwork">{currentScene.desc}</View>
                         {
-                          type === 'image' ? <View className="seetwo">{checkoutImage}</View> : <View className="seetwo">{checkoutVIdeo}</View>
+                          type === 'image' ? <View className="seetwo">{checkoutImage}</View> : <View className="seetwo">{checkoutVideo}</View>
                         }
                       </View>
                       <View className="two">
@@ -713,28 +775,14 @@ class Share extends Component {
               </View>
             </View>
             : ''
-          } */}
-          {
-            isshow === true ?
-            <View className="canvas-wrap">
-              <View className="wx-mask"></View>
-              <View className="wx-dialog">
-                {savePoint === true ? <View className="wx-dialog-save">{saveTitle}</View> : <View className="wx-dialog-save"></View>}
-                <Canvas
-                  // disable-scroll={true}
-                  onClick={this.handelConfirm}
-                  // style={`width: ${canvasInfo.width * canvas.ratio}px; height: ${canvasInfo.height * canvas.ratio}px;`}
-                  className="wx-dialog-content"
-                  canvasId={canvas.id} />
-                <View className="wx-dialog-footer">
-                  <Button className="wx-dialog-btn" onClick={this.handelSave}  style="flex:1" >
-                      {confirmText}
-                  </Button>
-                </View>
-              </View>
-            </View>
-           : ''
-          } 
+          }
+          <View class="canvas-wrap">
+            <Canvas
+              disable-scroll={true}
+              style={`width: ${frame.width * canvas.ratio}px; height: ${frame.height * canvas.ratio}px;`}
+              canvasId={canvas.id} />
+          </View>
+          
 
           {/* {
             this.state.isshow === true ?
@@ -754,7 +802,7 @@ class Share extends Component {
             : ''
           } */}
         </View>
-        {/* <View className='sub-section'>
+        <View className='sub-section'>
           {
             this.state.sceneType == 5 ? <View className='originalWrap'>
               <View className='ImageWrap'>
@@ -804,7 +852,7 @@ class Share extends Component {
             />
           </View>
         </View>
-        {isFromApp && <BackApp onClick={this.handleOpenApp} />} */}
+        {isFromApp && <BackApp onClick={this.handleOpenApp} />}
         <AuthModal />
       </View>
     )

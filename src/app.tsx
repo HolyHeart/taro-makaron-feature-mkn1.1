@@ -30,6 +30,7 @@ class _App extends Component {
    */
   config: Config = {
     pages: [
+      'pages/index',
       'pages/share/index',
       'pages/home/index',
       'pages/browser/index',
@@ -43,7 +44,7 @@ class _App extends Component {
       'pages/waiting/index',
       // 'pages/share/index',
       'pages/style/index',
-      'pages/index',
+      // 'pages/index',
       'pages/psChallenge/index',
       'pages/teleport/index',
       'pages/myBackground/index'
@@ -57,7 +58,8 @@ class _App extends Component {
     },
     navigateToMiniProgramAppIdList:[
       'wx37543a814ef773a5',
-      'wxe1faaac6a4477320'
+      'wxe1faaac6a4477320',
+      'wx21630a5d4651096a'
     ]
   }
 

@@ -559,7 +559,7 @@ export const share = {
         size: size
       }
     }
-    return commonRequest(reqData)
+    return request(reqData)
   },
 
   getHotList: function (templateCode) {
@@ -571,7 +571,41 @@ export const share = {
         templateCode: templateCode
       }
     }
-    return commonRequest(reqData)
+    return request(reqData)
+  },
+
+  getQrCode: function (page, width, worksId) {
+    const reqData = {
+      method: 'GET',
+      url: api.share.getQrCode,
+      header: { "Accept": "*/*" },
+      data: {
+        page: page,
+        width: width,
+        worksId: worksId
+      }
+    }
+    return request(reqData)
+  },
+
+  addLike: function (worksId) {
+    return commonRequest({
+      url: api.share.addLike + '?worksId=' + worksId,
+      header: { "content-Type": "application/x-www-form-urlencoded" },
+      method: 'POST',
+    })
+  },
+
+  deleteLike: function (worksId) {
+    const reqData = {
+      method: 'DELETE',
+      url: api.share.deleteLike,
+      header: { "Accept": "*/*" },
+      data: {
+        worksId: worksId
+      }
+    }
+    return request(reqData)
   }
 }
 

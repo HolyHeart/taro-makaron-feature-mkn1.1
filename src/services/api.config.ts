@@ -65,6 +65,9 @@ export const api = {
   share: {
     getrecommendList :`${getHost('miniapi', ENV)}/community/feed/recommend/works`,
     getHotList :`${getHost('miniapi', ENV)}/community/works/hot/templates`,
+    getQrCode :`${getHost('miniapi', ENV)}/wechat/mini/works/qrcode`,
+    addLike:`${getHost('miniapi', ENV)}/community/work/like`,
+    deleteLike:`${getHost('miniapi', ENV)}/community/work/like`,
   }
 }
 export default {

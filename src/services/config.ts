@@ -1,6 +1,6 @@
 // 配置文件
 // export const ENV:string = 'dev'  // 'dev' 测试
-export const ENV = 'prod'  // 'prod' 生产
+export const ENV = 'dev'  // 'prod' 生产
 export const appId:string = 'wxcfe56965f4d986f0'
 export const appConfig:object = {
   imageHost: 'https://static01.versa-ai.com/',

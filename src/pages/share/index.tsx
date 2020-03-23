@@ -7,11 +7,12 @@ import originalImageIcon from '@/assets/images/originalImage@2x.png'
 import Title from '@/components/Title'
 import CustomIcon from '@/components/Icon'
 import RecommendList from '@/components/RecommendList'
+import MorePlayList from '@/components/MorePlayList'
 import AuthModal from '@/components/AuthModal'
 import BackApp from '@/components/BackApp'
 import { appConfig } from '@/services/config'
 import Session from '@/services/session'
-import service, { share } from '@/services/service'
+import service from '@/services/service'
 import globalData from '@/services/global_data'
 import tool from '@/utils/tool'
 import work from '@/utils/work'
@@ -87,6 +88,11 @@ class Share extends Component {
     logoName: 'Makaron',
     source: 'https://static01.versa-ai.com/upload/e5a9c1751c84/1222ad34-a1f7-4720-a223-43aa29936087.jpg',
     coverList: [],
+    user: {
+      userImage: '',
+      userName: '',
+      likeNumber: 0
+    },
     currentScene: {
       bgUrl: 'https://static01.versa-ai.com/upload/e5a9c1751c84/1222ad34-a1f7-4720-a223-43aa29936087.jpg',
       desc: '@叶小明的作品',
@@ -157,14 +163,21 @@ class Share extends Component {
       },
     },
     morePlayList: [{
-      themeId:'wxcfe56965f4d986f0',
+      themeId: 'wxe1faaac6a4477320',
       recommendShowUrl:'https://static01.versa-ai.com/upload/f8b8cb0ff2e8/f0348bbf-6667-46d4-96eb-f34869a43867.png',
       sort:1
+    },
+    {
+      themeId:'wx37543a814ef773a5',
+      recommendShowUrl:'https://static01.versa-ai.com/upload/028e459b3c1a/1a48a5c5-b26a-49d1-bbf3-c597888c0f5a.png',
+      sort:2
     },{
       themeId:'wx21630a5d4651096a',
       recommendShowUrl:'https://static01.versa-ai.com/upload/028e459b3c1a/1a48a5c5-b26a-49d1-bbf3-c597888c0f5a.png',
-      sort:2
+      sort:3
     }],
+    // 'wx37543a814ef773a5',
+    //   'wxe1faaac6a4477320'
   }
 
   app = Taro.getApp()
@@ -195,6 +208,11 @@ class Share extends Component {
     //   title:this.$router.params.originalCompleteImageUrl
     // })
   }
+
+  onLoad = (query) => {
+    const scene = decodeURIComponent(query.uid)
+    console.log(2,scene)
+  }
   componentWillReceiveProps(nextProps) {
     // console.log(this.props, nextProps)
   }
@@ -206,8 +224,8 @@ class Share extends Component {
     const url = `${this.state.shareSource}?x-oss-process=image/resize,m_pad,h_420,w_525`
     console.log(22,url)
     const { userInfo = {} } = globalData
-    const title = `@${userInfo.nickName}：${shareContent}`
-    const path = `/pages/share/index?shareSource=${this.state.shareSource}`
+    const title = `@${userInfo.nickName}：${shareContent}` || `@${this.state.user.userName}：${shareContent}`
+    const path = `/pages/index?shareSource=${this.state.shareSource}`
     return {
       title: title,
       path: path,
@@ -234,6 +252,7 @@ class Share extends Component {
     console.log('share page index', this.$router.params) // 输出 { id: 2, type: 'test' }
     let isFromApp, shareSourceType = 'image', videoPoster = '', shareVideoInfo = { width: 690, height: 920, }
     let { shareSource, themeId, sceneId, from, remoteURL = '', width = 690, height = 920, originalCompleteImageUrl } = this.$router.params
+    console.log(345,sceneId)
     if (from === 'app') {
       isFromApp = true
       if (remoteURL.indexOf('versa-ai.com') > -1) {
@@ -258,6 +277,7 @@ class Share extends Component {
     }
     globalData.themeId = themeId
     globalData.sceneId = sceneId
+    console.log(123,globalData)
     this.setState({
       isFromApp,
       shareSourceType,
@@ -267,18 +287,23 @@ class Share extends Component {
       height: shareVideoInfo.height,
       themeId,
       sceneId,
-      originalCompleteImageUrl: decodeURIComponent(originalCompleteImageUrl)
+      originalCompleteImageUrl: decodeURIComponent(originalCompleteImageUrl),
+      user: {
+        userImage: globalData.userInfo.avatarUrl,
+        userName: globalData.userInfo.nickName,
+        likeNumber: 0
+      }
     })
   }
 
   getRecommendList = async () => {
-    const recommendData1 = await share.getHotList(2)
-    const recommendData = await share.getrecommendList(6)
+    // const recommendData1 = await service.share.getHotList(2)
+    const recommendData = await service.share.getrecommendList(6)
     console.log('recommendData', recommendData)
-    console.log('recommendData', recommendData1)
-    // this.setState({
-    //   recommendList: (recommendData.result && recommendData.result.result) || []
-    // })
+    // console.log('recommendData', recommendData1)
+    this.setState({
+      recommendList: (recommendData.result && recommendData.result.result) || []
+    })
   }
 
   getThemeData = async (callback?: (data?) => void) => {
@@ -352,14 +377,17 @@ class Share extends Component {
     })
   }
   handleRecommendClick = (data) => {
-    if (!data.themeId) {
-      return
-    }
-    globalData.themeData = null
-    globalData.themeId = data.themeId
-    globalData.sceneId = ''
-    this.getThemeData()
-    this.app.aldstat.sendEvent('选择推荐主题', { '主题名': data.themeName, '主题Id': data.themeId })
+    console.log('data',data)
+    this.setState({
+      shareSource : data.renderPictureInfo.url,
+      user: {
+        userImage: data.author.avatar,
+        userName: data.author.nickname,
+        likeNumber: data.likedAmount
+      }
+    })
+    const query = data
+    this.onLoad(query)
   }
   handleFormSubmit = (e) => {
     const { detail: { formId } } = e
@@ -651,13 +679,16 @@ class Share extends Component {
       appId: data.themeId,
       success(res) {
         // 打开成功
+      },
+      fail(res) {
+        console.log('打开失败')
       }
     })
   }
 
   render() {
     const { isFromApp, shareSourceType, shareSource, videoPoster, width, height, recommendList, originalCompleteImageUrl, canvasInfo, confirmText, isshow, savePoint, 
-      saveTitle, source, type, currentScene, checkoutImage, checkoutVideo, morePlayList} = this.state
+      saveTitle, source, type, currentScene, checkoutImage, checkoutVideo, morePlayList, user} = this.state
     return (
       <View className='page-share'>
         <Title
@@ -673,13 +704,9 @@ class Share extends Component {
               {themeData.sceneType === 3 && <View class="share-bg"></View>}
               <View className="showImage">
                 <View className="showImage blur" style='background:url(https://static01.versa-ai.com/upload/603758b1f31f/b56d56d8-743c-4af9-8b3b-7f38644628b4.jpg);' ></View>
-                <Image src={shareSource} mode='aspectFill' className="bgImage" />
+                <Image src={shareSource} mode='aspectFit' className="bgImage" />
                 <Image src={originalCompleteImageUrl}  mode='aspectFill' className="bgImage"/>
               </View>
-              {/* <View className="showImage">
-                <View className="showImage blur" style='background:url(https://static01.versa-ai.com/upload/603758b1f31f/b56d56d8-743c-4af9-8b3b-7f38644628b4.jpg);'></View>
-                <Image src={source} className="bgImage" mode="aspectFill"/>
-              </View> */}
             </View>
           }
           {shareSourceType === 'video' &&
@@ -697,17 +724,16 @@ class Share extends Component {
             </View>
           }
           <View className="userMessage">
-            <Image className="user" src={userImage} />
-            <View className='userName'>Yannie_琳</View>
+            <Image className="user" src={user.userImage} />
+            <View className='userName'>{user.userName}</View>
             <Button openType="getUserInfo" onGetUserInfo={this.getUserInfo} className="likeAuth like">
               <Image src={like}  className="like" />
             </Button>
-            <View style="" className="linkeNum">9</View>
+            <View style="" className="linkeNum">{user.likeNumber}</View>
             <Button openType="share" className="share wx">
               <Image src={wx} className="wx"/>
             </Button>
             <Image src={pyq} onClick={this.shareHandle} className="pyq"/>
-            {/* <Image src={pyq} onClick={this.handleOpenResult} className="pyq"/> */}
           </View>
           {
             isshow === true ?
@@ -717,12 +743,12 @@ class Share extends Component {
                 {savePoint === true ? <View className="wx-dialog-save">{saveTitle}</View> : <View className="wx-dialog-save"></View>}
                 <View className="wx-dialog-content">
                     <View className="bgImage">
-                      <Image src={shareSource} className="bgImage" mode="aspectFill" onClick={this.handelConfirm}/>
+                      <Image src={shareSource} className="bgImage" mode="aspectFit" onClick={this.handelConfirm}/>
                     </View>
                     <View className="userInfo">
-                      <Image className="userimage" src={userImage} />
+                      <Image className="userimage" src={user.userImage} />
                       <View className="username">
-                        <View className="userwork">{currentScene.desc}</View>
+                        <View className="userwork"><View className="name">@{user.userName}</View>的作品</View>
                         {
                           type === 'image' ? <View className="seetwo">{checkoutImage}</View> : <View className="seetwo">{checkoutVideo}</View>
                         }
@@ -804,14 +830,14 @@ class Share extends Component {
             <View className='recommend-title'>热门作品</View>
             <RecommendList
               list={recommendList}
-              onGetUserInfo={this.handleGetUserInfo}
-              onFormSubmit={this.handleFormSubmit}
+              // onGetUserInfo={this.handleGetUserInfo}
+              // onFormSubmit={this.handleFormSubmit}
               onClick={this.handleRecommendClick}
             />
           </View>
           <View className='recommend-wrap'>
             <View className='recommend-title'>更多好玩</View>
-            <RecommendList
+            <MorePlayList
               list={morePlayList}
               onClick={this.handlePlayClick}
             />

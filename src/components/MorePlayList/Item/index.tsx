@@ -47,9 +47,9 @@ class Item extends Component {
               formType='submit'>
                 <Image 
                   className='recommend-image' 
-                  src={data.renderPictureInfo.url} 
+                  src={data.recommendShowUrl} 
                   style='width: 100%; height: 100%' 
-                  mode='scaleToFit'
+                  mode='scaleToFill'
                 />   
               </Button>
           </Form>

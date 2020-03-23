@@ -83,12 +83,16 @@
           width: 70px; 
           height: 70px; 
           margin-right:16px;
+          border-radius: 50%;
         }
         .userName {
-          display:inline;
+          max-width: 210rpx;
           font-size: 30px;
           color: #333333;
           font-family: PingFangSC-Regular;
+          overflow: hidden;
+          text-overflow:ellipsis;
+          white-space: nowrap;
         }
         .likeAuth {
           padding: 0;
@@ -194,17 +198,27 @@
             .userimage {
               width: 76px; 
               height: 76px; 
+              border-radius: 50%;
             }
             .username {
               position: absolute;
               left: 92rpx;
               .userwork {
                 height: 42rpx;
+                width: 270rpx;
                 font-family: PingFangSC-Medium;
                 font-size: 30px;
                 color: #333333;
                 letter-spacing: 0;
-                text-align: center;
+                text-align: left;
+                .name {
+                  max-width: 150rpx;
+                  height: 42rpx;
+                  float: left;
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                  white-space: nowrap;
+                }
               }
               .seetwo {
                 height: 34rpx;
@@ -212,7 +226,7 @@
                 font-size: 24px;
                 color: #999999;
                 letter-spacing: 0;
-                text-align: center;
+                text-align: left
               }
             }
             .two {

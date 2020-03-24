@@ -49,7 +49,8 @@ class Item extends Component {
                   className='recommend-image' 
                   src={data.renderPictureInfo.url} 
                   style='width: 100%; height: 100%' 
-                  mode='scaleToFit'
+                  // mode='scaleToFit'
+                  mode="widthFix"
                 />   
               </Button>
           </Form>

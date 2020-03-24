@@ -589,21 +589,24 @@ export const share = {
   },
 
   addLike: function (worksId) {
-    return commonRequest({
-      url: api.share.addLike + '?worksId=' + worksId,
-      header: { "content-Type": "application/x-www-form-urlencoded" },
+    return request({
       method: 'POST',
+      url: api.share.addLike + '?worksId=' + worksId,
+      header: { "Content-Type": "application/x-www-form-urlencoded" },
+      // data: {
+      //   worksId: worksId
+      // }
     })
   },
 
   deleteLike: function (worksId) {
     const reqData = {
       method: 'DELETE',
-      url: api.share.deleteLike,
+      url: api.share.deleteLike + '?worksId=' + worksId,
       header: { "Accept": "*/*" },
-      data: {
-        worksId: worksId
-      }
+      // data: {
+      //   worksId: worksId
+      // }
     }
     return request(reqData)
   }

@@ -704,8 +704,7 @@ class Share extends Component {
               {themeData.sceneType === 3 && <View class="share-bg"></View>}
               <View className="showImage">
                 <View className="showImage blur" style='background:url(https://static01.versa-ai.com/upload/603758b1f31f/b56d56d8-743c-4af9-8b3b-7f38644628b4.jpg);' ></View>
-                <Image src={shareSource} mode='aspectFit' className="bgImage" />
-                <Image src={originalCompleteImageUrl}  mode='aspectFill' className="bgImage"/>
+                <Image src={shareSource} mode='aspectFill' className="bgImage" />
               </View>
             </View>
           }

@@ -30,7 +30,7 @@ class _App extends Component {
    */
   config: Config = {
     pages: [
-      'pages/index',
+      // 'pages/index',
       'pages/share/index',
       'pages/home/index',
       'pages/browser/index',

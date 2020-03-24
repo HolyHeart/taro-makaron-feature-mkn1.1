@@ -86,8 +86,6 @@ class Share extends Component {
     checkoutImage: '长按识别二维码查看',
     checkoutVideo: '长按识别二维码播放视频',
     logoName: 'Makaron',
-    source: 'https://static01.versa-ai.com/upload/e5a9c1751c84/1222ad34-a1f7-4720-a223-43aa29936087.jpg',
-    coverList: [],
     user: {
       userImage: '',
       userName: '',
@@ -99,58 +97,7 @@ class Share extends Component {
     currentScene: {
       bgUrl: 'https://static01.versa-ai.com/upload/e5a9c1751c84/1222ad34-a1f7-4720-a223-43aa29936087.jpg',
       desc: '@叶小明的作品',
-      title: '皮皮虾  骑上你  我们走',
-      coverList: [
-        {
-          "id": 1581308296098,
-          "imageUrl": "",
-          "zIndex": 3,
-          "fixed": false,
-          "isActive": true,
-          "size": {
-            "default": 0.28,
-            "zoomInMax": 1,
-            "zoomOutMin": 1
-          },
-          "rotate": 0,
-          "position": {
-            "place": "10",
-            "xAxis": {
-              "derection": "left",
-              "offset": 0.52
-            },
-            "yAxis": {
-              "derection": "top",
-              "offset": 0.26
-            }
-          }
-        },
-        {
-          "id": 1581308296093,
-          "imageUrl": "",
-          "zIndex": 3,
-          "fixed": false,
-          "isActive": true,
-          "size": {
-            "default": 0.25,
-            "zoomInMax": 1,
-            "zoomOutMin": 1
-          },
-          "rotate": 0,
-          "position": {
-            "place": "10",
-            "xAxis": {
-              "derection": "left",
-              "offset": 0.3
-            },
-            "yAxis": {
-              "derection": "top",
-              "offset": 0.4
-            }
-          }
-        },
-
-      ],
+      title: '皮皮虾  骑上你  我们走'
     },
     logoRect: {
       width: 300,
@@ -221,11 +168,11 @@ class Share extends Component {
   componentDidHide() { }
   onShareAppMessage(res) {
     const shareContent = ''
-    const url = `${this.state.shareSource}?x-oss-process=image/resize,m_pad,h_420,w_525`
+    const url = `${this.state.user.worksId}?x-oss-process=image/resize,m_pad,h_420,w_525`
     console.log(22,url)
     const { userInfo = {} } = globalData
     const title = `@${userInfo.nickName}：${shareContent}` || `@${this.state.user.userName}：${shareContent}`
-    const path = `/pages/index?shareSource=${this.state.shareSource}`
+    const path = `/pages/index?worksId=${this.state.user.worksId}`
     return {
       title: title,
       path: path,
@@ -739,8 +686,7 @@ class Share extends Component {
               {themeData.sceneType === 3 && <View class="share-bg"></View>}
               <View className="showImage">
                 <View className="showImage blur" style={{backgroundImage: `url(${shareSource})`}}></View>
-                <Image src={shareSource} mode="widthFix"  className="bgImage" />
-                <Image src={originalCompleteImageUrl}  mode='aspectFill' className="bgImage"/>
+                <Image src={shareSource} mode="aspectFill"  className="bgImage" />
               </View>
             </View>
           }
@@ -758,10 +704,6 @@ class Share extends Component {
               ></Video>
             </View>
           }
-          {
-            qrCode ? <Image className="twoCode" src={qrCode} /> : ''
-          }
-          
           <View className="userMessage">
             {
               user.userImage ? <Image className="user" src={user.userImage} /> : <Image className="user" src={titleImage} />
@@ -785,7 +727,7 @@ class Share extends Component {
                 {savePoint === true ? <View className="wx-dialog-save">{saveTitle}</View> : <View className="wx-dialog-save"></View>}
                 <View className="wx-dialog-content">
                     <View className="bgImage">
-                      <Image src={shareSource} className="bgImage" mode="aspectFit" onClick={this.handelConfirm}/>
+                      <Image src={shareSource} className="bgImage" mode="aspectFill" onClick={this.handelConfirm}/>
                     </View>
                     <View className="userInfo">
                       <Image className="userimage" src={user.userImage} />

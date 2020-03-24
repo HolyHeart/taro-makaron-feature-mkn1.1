@@ -87,12 +87,13 @@ class Share extends Component {
     checkoutVideo: '长按识别二维码播放视频',
     logoName: 'Makaron',
     user: {
-      userImage: '',
-      userName: '',
+      userImage: 'http://static01.versa-ai.com/upload/default/image/avatar/ebaff9ab-dd48-49b9-a6a8-9a1bcf5b3076.jpg',
+      userName: 'LUCYTAN0216',
       likeNumber: 0,
-      uid: '',
-      worksId: '',
-      liked: 0
+      uid: '71954781661089792',
+      worksId: '163297612538892288',
+      liked: 0,
+      templateCode: ''
     },
     currentScene: {
       bgUrl: 'https://static01.versa-ai.com/upload/e5a9c1751c84/1222ad34-a1f7-4720-a223-43aa29936087.jpg',
@@ -155,11 +156,16 @@ class Share extends Component {
   componentDidMount() {
     this.getRecommendList()
     this._initPage()
+    this.singleWorkList()
     // Taro.showToast({
     //   title:this.$router.params.originalCompleteImageUrl
     // })
   }
 
+  singleWorkList = async () => {
+    const singleWorkData = await service.share.singleWorkList(this.state.user.worksId)
+    console.log('singleWorkData', singleWorkData)
+  }
   componentWillReceiveProps(nextProps) {
     // console.log(this.props, nextProps)
   }
@@ -244,13 +250,19 @@ class Share extends Component {
   }
 
   getRecommendList = async () => {
-    // const recommendData1 = await service.share.getHotList(2)
-    const recommendData = await service.share.getrecommendList(6)
-    console.log('recommendData', recommendData)
-    // console.log('recommendData', recommendData1)
-    this.setState({
-      recommendList: (recommendData.result && recommendData.result.result) || []
-    })
+    if (this.state.user.templateCode !== '') {
+      const hotData = await service.share.getHotList(this.state.user.templateCode)
+      console.log('hotData', hotData)
+      this.setState({
+        recommendList: (hotData.result && hotData.result.result) || []
+      })
+    } else {
+      const recommendData = await service.share.getrecommendList(6)
+      console.log('recommendData', recommendData)
+      this.setState({
+        recommendList: (recommendData.result && recommendData.result.result) || []
+      })
+    }
   }
 
   getThemeData = async (callback?: (data?) => void) => {
@@ -312,9 +324,6 @@ class Share extends Component {
         } else {
           url = '/pages/editor/index'
         }
-        // } else {
-        //   url = '/pages/editor/index'
-        // }
         if (sceneId) {
           url = url + '?sceneId=' + sceneId
         }
@@ -323,7 +332,7 @@ class Share extends Component {
       }
     })
   }
-  handleRecommendClick = (data) => {
+  handleRecommendClick =  (data) => {
     console.log('data',data)
     this.setState({
       shareSource : data.renderPictureInfo.url,
@@ -335,21 +344,22 @@ class Share extends Component {
         worksId: data.worksId,
         liked: data.liked
       }
-    })
-    console.log(888,this.state.user)
-    this.onLoad()
+    },() => this.singleWorkList())
+    
+    // this.singleWorkList()
+    // this.onLoad()
   }
 
   onLoad = async() => {
-    const page = 'pages/index'
-    const width = 100
-    const worksId = this.state.user.worksId
-    console.log(999,this.state.user)
-    const scene = await service.share.getQrCode(page, width, worksId)
-    console.log(23,scene)
-    this.setState({
-      qrCode: scene.result
-    })
+    // const page = 'pages/index'
+    // const width = 100
+    // const worksId = this.state.user.worksId
+    // console.log(999,this.state.user)
+    // const scene = await service.share.getQrCode(page, width, worksId)
+    // console.log(23,scene)
+    // this.setState({
+    //   qrCode: scene.result
+    // })
   }
 
   handleFormSubmit = (e) => {

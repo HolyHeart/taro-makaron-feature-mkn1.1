@@ -588,16 +588,6 @@ export const share = {
     return request(reqData)
   },
 
-  // addLike: function (worksId) {
-  //   return request({
-  //     method: 'POST',
-  //     url: api.share.addLike + '?worksId=' + worksId,
-  //     header: { "Content-Type": "application/x-www-form-urlencoded" },
-  //     // data: {
-  //     //   worksId: worksId
-  //     // }
-  //   })
-  // },
   addLikeWork: function (worksId) {
     const reqData = {
       method: 'POST',
@@ -622,17 +612,18 @@ export const share = {
     return request(reqData)
   },
 
-  // deleteLike: function (worksId) {
-  //   const reqData = {
-  //     method: 'DELETE',
-  //     url: api.share.deleteLike + '?worksId=' + worksId,
-  //     header: { "Accept": "*/*" },
-  //     // data: {
-  //     //   worksId: worksId
-  //     // }
-  //   }
-  //   return request(reqData)
-  // }
+  singleWorkList: function (worksId) {
+    const reqData = {
+      method: 'GET',
+      url: api.share.singleWorkList,
+      header: { "Accept": "*/*" },
+      data: {
+        worksId: worksId
+      }
+    }
+    return request(reqData)
+  },
+
 }
 
 export default {

@@ -31,10 +31,8 @@ class _App extends Component {
   config: Config = {
     pages: [
       'pages/index',
-      // 'pages/share/index',
       'pages/home/index',
       'pages/browser/index',
-      // 'pages/home/index',
       'pages/filter/index',
       'pages/editor/index',
       'pages/segment/index',

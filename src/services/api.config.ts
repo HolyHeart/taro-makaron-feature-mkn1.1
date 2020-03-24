@@ -68,6 +68,7 @@ export const api = {
     getQrCode :`${getHost('miniapi', ENV)}/wechat/mini/works/qrcode`,
     addLikeWork:`${getHost('miniapi', ENV)}/community/work/like`,
     deleteLike:`${getHost('miniapi', ENV)}/community/work/like`,
+    singleWorkList:`${getHost('miniapi', ENV)}/community/works`,
   }
 }
 export default {

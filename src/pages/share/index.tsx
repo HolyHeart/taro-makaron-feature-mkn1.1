@@ -23,7 +23,7 @@ import like from '@/assets/images/like@3x.png'
 import wx from '@/assets/images/wxicon@3x.png'
 import pyq from '@/assets/images/pyq@3x.png'
 import userImage from '@/assets/images/logo@2x.png'
-// import bgImage from '@/assets/images/random-bg.png'
+import titleImage from '@/assets/images/touxiang@2x.jpg'
 import image_code from '@/assets/images/code.png'
 
 // const demo = 'https://static01.versa-ai.com/upload/201bae375f8b/18e62d91-fc04-46c6-8f21-7224b53eb4b7.mp4'
@@ -86,68 +86,18 @@ class Share extends Component {
     checkoutImage: '长按识别二维码查看',
     checkoutVideo: '长按识别二维码播放视频',
     logoName: 'Makaron',
-    source: 'https://static01.versa-ai.com/upload/e5a9c1751c84/1222ad34-a1f7-4720-a223-43aa29936087.jpg',
-    coverList: [],
     user: {
       userImage: '',
       userName: '',
-      likeNumber: 0
+      likeNumber: 0,
+      uid: '',
+      worksId: '',
+      liked: 0
     },
     currentScene: {
       bgUrl: 'https://static01.versa-ai.com/upload/e5a9c1751c84/1222ad34-a1f7-4720-a223-43aa29936087.jpg',
       desc: '@叶小明的作品',
-      title: '皮皮虾  骑上你  我们走',
-      coverList: [
-        {
-          "id": 1581308296098,
-          "imageUrl": "",
-          "zIndex": 3,
-          "fixed": false,
-          "isActive": true,
-          "size": {
-            "default": 0.28,
-            "zoomInMax": 1,
-            "zoomOutMin": 1
-          },
-          "rotate": 0,
-          "position": {
-            "place": "10",
-            "xAxis": {
-              "derection": "left",
-              "offset": 0.52
-            },
-            "yAxis": {
-              "derection": "top",
-              "offset": 0.26
-            }
-          }
-        },
-        {
-          "id": 1581308296093,
-          "imageUrl": "",
-          "zIndex": 3,
-          "fixed": false,
-          "isActive": true,
-          "size": {
-            "default": 0.25,
-            "zoomInMax": 1,
-            "zoomOutMin": 1
-          },
-          "rotate": 0,
-          "position": {
-            "place": "10",
-            "xAxis": {
-              "derection": "left",
-              "offset": 0.3
-            },
-            "yAxis": {
-              "derection": "top",
-              "offset": 0.4
-            }
-          }
-        },
-
-      ],
+      title: '皮皮虾  骑上你  我们走'
     },
     logoRect: {
       width: 300,
@@ -176,6 +126,7 @@ class Share extends Component {
       recommendShowUrl:'https://static01.versa-ai.com/upload/028e459b3c1a/1a48a5c5-b26a-49d1-bbf3-c597888c0f5a.png',
       sort:3
     }],
+    qrCode:'',
     // 'wx37543a814ef773a5',
     //   'wxe1faaac6a4477320'
   }
@@ -209,10 +160,6 @@ class Share extends Component {
     // })
   }
 
-  onLoad = (query) => {
-    const scene = decodeURIComponent(query.uid)
-    console.log(2,scene)
-  }
   componentWillReceiveProps(nextProps) {
     // console.log(this.props, nextProps)
   }
@@ -221,11 +168,11 @@ class Share extends Component {
   componentDidHide() { }
   onShareAppMessage(res) {
     const shareContent = ''
-    const url = `${this.state.shareSource}?x-oss-process=image/resize,m_pad,h_420,w_525`
+    const url = `${this.state.user.worksId}?x-oss-process=image/resize,m_pad,h_420,w_525`
     console.log(22,url)
     const { userInfo = {} } = globalData
     const title = `@${userInfo.nickName}：${shareContent}` || `@${this.state.user.userName}：${shareContent}`
-    const path = `/pages/index?shareSource=${this.state.shareSource}`
+    const path = `/pages/index?worksId=${this.state.user.worksId}`
     return {
       title: title,
       path: path,
@@ -383,12 +330,28 @@ class Share extends Component {
       user: {
         userImage: data.author.avatar,
         userName: data.author.nickname,
-        likeNumber: data.likedAmount
+        likeNumber: data.likedAmount,
+        uid: data.uid,
+        worksId: data.worksId,
+        liked: data.liked
       }
     })
-    const query = data
-    this.onLoad(query)
+    console.log(888,this.state.user)
+    this.onLoad()
   }
+
+  onLoad = async() => {
+    const page = 'pages/index'
+    const width = 100
+    const worksId = this.state.user.worksId
+    console.log(999,this.state.user)
+    const scene = await service.share.getQrCode(page, width, worksId)
+    console.log(23,scene)
+    this.setState({
+      qrCode: scene.result
+    })
+  }
+
   handleFormSubmit = (e) => {
     const { detail: { formId } } = e
     formId && service.core.reportFormId(formId)
@@ -431,6 +394,11 @@ class Share extends Component {
         }
       }
     })
+    if (this.state.user.liked === 0) {
+      this.addLike()
+    } else {
+      this.deleteLike()
+    }
   }
   shareHandle =  () => {
     this.setState({
@@ -686,9 +654,23 @@ class Share extends Component {
     })
   }
 
+  addLike = async () => {
+    try {
+      console.log(229)
+      const addLiked = await service.share.addLikeWork(this.state.user.worksId)
+      console.log(22,addLiked)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  deleteLike = () => {
+    const cancelLiked = service.share.deleteLike(this.state.user.worksId)
+    console.log(123,cancelLiked)
+  }
   render() {
     const { isFromApp, shareSourceType, shareSource, videoPoster, width, height, recommendList, originalCompleteImageUrl, canvasInfo, confirmText, isshow, savePoint, 
-      saveTitle, source, type, currentScene, checkoutImage, checkoutVideo, morePlayList, user} = this.state
+      saveTitle, source, type, currentScene, checkoutImage, checkoutVideo, morePlayList, user, qrCode} = this.state
     return (
       <View className='page-share'>
         <Title
@@ -703,8 +685,8 @@ class Share extends Component {
             <View>
               {themeData.sceneType === 3 && <View class="share-bg"></View>}
               <View className="showImage">
-                <View className="showImage blur" style='background:url(https://static01.versa-ai.com/upload/603758b1f31f/b56d56d8-743c-4af9-8b3b-7f38644628b4.jpg);' ></View>
-                <Image src={shareSource} mode='aspectFill' className="bgImage" />
+                <View className="showImage blur" style={{backgroundImage: `url(${shareSource})`}}></View>
+                <Image src={shareSource} mode="aspectFill"  className="bgImage" />
               </View>
             </View>
           }
@@ -723,12 +705,15 @@ class Share extends Component {
             </View>
           }
           <View className="userMessage">
-            <Image className="user" src={user.userImage} />
+            {
+              user.userImage ? <Image className="user" src={user.userImage} /> : <Image className="user" src={titleImage} />
+            }
+            
             <View className='userName'>{user.userName}</View>
-            <Button openType="getUserInfo" onGetUserInfo={this.getUserInfo} className="likeAuth like">
+            <Button openType="getUserInfo" onGetUserInfo={this.getUserInfo}  className="likeAuth like">
               <Image src={like}  className="like" />
             </Button>
-            <View style="" className="linkeNum">{user.likeNumber}</View>
+            <View style="" className="likeNum">{user.likeNumber}</View>
             <Button openType="share" className="share wx">
               <Image src={wx} className="wx"/>
             </Button>
@@ -742,7 +727,7 @@ class Share extends Component {
                 {savePoint === true ? <View className="wx-dialog-save">{saveTitle}</View> : <View className="wx-dialog-save"></View>}
                 <View className="wx-dialog-content">
                     <View className="bgImage">
-                      <Image src={shareSource} className="bgImage" mode="aspectFit" onClick={this.handelConfirm}/>
+                      <Image src={shareSource} className="bgImage" mode="aspectFill" onClick={this.handelConfirm}/>
                     </View>
                     <View className="userInfo">
                       <Image className="userimage" src={user.userImage} />
@@ -753,7 +738,7 @@ class Share extends Component {
                         }
                       </View>
                       <View className="two">
-                        <Image className="twoCode" src={image_code} />
+                        <Image className="twoCode" src={qrCode} />
                         <View className="logo">Makaron</View>
                       </View>
                     </View>

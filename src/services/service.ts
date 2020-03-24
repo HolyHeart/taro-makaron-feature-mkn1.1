@@ -588,28 +588,51 @@ export const share = {
     return request(reqData)
   },
 
-  addLike: function (worksId) {
-    return request({
+  // addLike: function (worksId) {
+  //   return request({
+  //     method: 'POST',
+  //     url: api.share.addLike + '?worksId=' + worksId,
+  //     header: { "Content-Type": "application/x-www-form-urlencoded" },
+  //     // data: {
+  //     //   worksId: worksId
+  //     // }
+  //   })
+  // },
+  addLikeWork: function (worksId) {
+    const reqData = {
       method: 'POST',
-      url: api.share.addLike + '?worksId=' + worksId,
-      header: { "Content-Type": "application/x-www-form-urlencoded" },
-      // data: {
-      //   worksId: worksId
-      // }
-    })
+      url: api.share.addLikeWork,
+      header: { 'content-type': 'application/x-www-form-urlencoded' },
+      data: {
+        worksId
+      }
+    }
+    return request(reqData)
   },
 
   deleteLike: function (worksId) {
     const reqData = {
-      method: 'DELETE',
-      url: api.share.deleteLike + '?worksId=' + worksId,
-      header: { "Accept": "*/*" },
-      // data: {
-      //   worksId: worksId
-      // }
+      method: 'POST',
+      url: api.share.deleteLike,
+      header: { 'content-type': 'application/x-www-form-urlencoded' },
+      data: {
+        worksId
+      }
     }
     return request(reqData)
-  }
+  },
+
+  // deleteLike: function (worksId) {
+  //   const reqData = {
+  //     method: 'DELETE',
+  //     url: api.share.deleteLike + '?worksId=' + worksId,
+  //     header: { "Accept": "*/*" },
+  //     // data: {
+  //     //   worksId: worksId
+  //     // }
+  //   }
+  //   return request(reqData)
+  // }
 }
 
 export default {

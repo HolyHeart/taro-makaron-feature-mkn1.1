@@ -93,7 +93,7 @@ class Share extends Component {
       likeNumber: 0,
       uid: '',
       worksId: '194770944672976896',
-      liked: 1,
+      liked: 0,
       templateCode: '',
       shareSource:'',
       userToken: ''

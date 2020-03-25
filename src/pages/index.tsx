@@ -391,7 +391,7 @@ class Share extends Component {
     this.app.aldstat.sendEvent('分享页主按钮', '分享页主按钮')
   }
   handleOpenApp = () => {
-    this.app.aldstat.sendEvent('分享页打开app', '打开app')
+    console.log('跳转到马卡龙APP')
   }
   getUserInfo = async (e) =>{
     const { detail: { userInfo } } = e
@@ -866,6 +866,7 @@ class Share extends Component {
           </View>
         </View>
         {isFromApp && <BackApp onClick={this.handleOpenApp} />}
+        {/* <BackApp onClick={this.handleOpenApp} /> */}
         <AuthModal />
       </View>
     )

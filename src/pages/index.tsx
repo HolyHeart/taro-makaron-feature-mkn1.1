@@ -718,6 +718,11 @@ class Share extends Component {
       console.log(error)
     }
   }
+
+  handleContact (e) {
+    console.log(e.detail)
+  }
+
   render() {
     const { isFromApp, shareSourceType, shareSource, videoPoster, width, height, recommendList, originalCompleteImageUrl, canvasInfo, confirmText, isshow, savePoint, 
       saveTitle, type, checkoutImage, checkoutVideo, morePlayList, user, qrCode, frame, canvas} = this.state
@@ -753,9 +758,6 @@ class Share extends Component {
                 controls
               ></Video>
             </View>
-          }
-          {
-            isFromApp ? <View className="app"><Image className="goApp" src={titleImage}/><View className="toApp">去往APP</View> </View>: ''
           }
           <View className="userMessage">
             {
@@ -833,9 +835,10 @@ class Share extends Component {
             </View> : <Form onSubmit={this.handleFormSubmit} reportSubmit>
                 {isFromApp ?
                   <Button
+                    open-type="contact"
                     className="custom-button pink"
                     hoverClass="btnhover"
-                    onClick={this.pageToHome}
+                    onClick={this.handleContact}
                   >制作同款作品</Button> :
                   <Button
                     className="custom-button pink"

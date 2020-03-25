@@ -24,7 +24,7 @@ import liked from '@/assets/images/liked@3x.png'
 import wx from '@/assets/images/wxicon@3x.png'
 import pyq from '@/assets/images/pyq@3x.png'
 import userImage from '@/assets/images/logo@2x.png'
-import titleImage from '@/assets/images/touxiang@2x.jpg'
+import titleImage from '@/assets/images/pic_mkl@3x.png'
 import image_code from '@/assets/images/code.png'
 
 // const demo = 'https://static01.versa-ai.com/upload/201bae375f8b/18e62d91-fc04-46c6-8f21-7224b53eb4b7.mp4'
@@ -91,11 +91,12 @@ class Share extends Component {
       userImage: 'http://static01.versa-ai.com/upload/default/image/avatar/ebaff9ab-dd48-49b9-a6a8-9a1bcf5b3076.jpg',
       userName: 'LUCYTAN0216',
       likeNumber: 0,
-      uid: '71954781661089792',
-      worksId: '163297612538892288',
+      uid: '336152122104795136',
+      worksId: '194770944672976896',
       liked: 0,
       templateCode: '',
-      shareSource:'http://static01.versa-ai.com/upload/default/image/5196FA1D-F4C2-4761-BAB5-1AFF7D44EE91.png'
+      shareSource:'http://static01.versa-ai.com/upload/default/image/5196FA1D-F4C2-4761-BAB5-1AFF7D44EE91.png',
+      token: 'j2oth0OlQNyBpW4XOic1-w'
     },
     currentScene: {
       bgUrl: 'https://static01.versa-ai.com/upload/e5a9c1751c84/1222ad34-a1f7-4720-a223-43aa29936087.jpg',
@@ -418,6 +419,7 @@ class Share extends Component {
   }
 
   downloadRemoteImage = async (remoteUrl = '') => {
+    console.log('456',remoteUrl)
     let localImagePath = ''
     try {
       console.log(678)
@@ -511,7 +513,9 @@ class Share extends Component {
     // 设置垂直对齐方式
     context.textBaseline = "middle";
     // 绘制文字（参数：要写的字，x坐标，y坐标）
-    context.fillText(this.state.currentScene.desc,  frame.width * ratio / 3, 388 * ratio, 103 * ratio, 21 * ratio)
+    const userName =this.state.user.userName
+    console.log('userName',userName)
+    context.fillText('@userName的作品',  frame.width * ratio / 3, 388 * ratio, 103 * ratio, 21 * ratio)
     // context.fillText(this.state.checkoutImage, 56, 405)
     this.canvasDrawText(context, ratio)
   }
@@ -665,18 +669,18 @@ class Share extends Component {
 
   addLike = async () => {
     try {
-      console.log(229)
-      const addLiked = await service.share.addLikeWork(this.state.user.worksId)
+      console.log(229,this.state.user.worksId)
+      const addLiked = await service.share.addLikeWork(this.state.user.worksId,this.state.user.uid,this.state.user.token)
       console.log(22,addLiked)
-      if (addLiked.status === 'success') {
-        const likeNum = this.state.user.likeNumber + 1
-        this.setState({
-          user: {
-            liked: 1,
-            likeNumber : likeNum
-          }
-        })
-      }
+      // if (addLiked.status === 'success') {
+      //   const likeNum = this.state.user.likeNumber + 1
+      //   this.setState({
+      //     user: {
+      //       liked: 1,
+      //       likeNumber : likeNum
+      //     }
+      //   })
+      // }
     } catch (error) {
       console.log(error)
     }
@@ -684,15 +688,15 @@ class Share extends Component {
 
   deleteLike = async () => {
     const cancelLiked = await service.share.deleteLike(this.state.user.worksId)
-    if (cancelLiked.status === 'success') {
-      const likeNum = this.state.user.likeNumber - 1
-      this.setState({
-        user: {
-          liked: 0,
-          likeNumber : likeNum
-        }
-      })
-    }
+    // if (cancelLiked.status === 'success') {
+    //   const likeNum = this.state.user.likeNumber - 1
+    //   this.setState({
+    //     user: {
+    //       liked: 0,
+    //       likeNumber : likeNum
+    //     }
+    //   })
+    // }
     console.log(123,cancelLiked)
   }
   render() {
@@ -730,6 +734,9 @@ class Share extends Component {
                 controls
               ></Video>
             </View>
+          }
+          {
+            isFromApp ? '': <View className="app"><Image className="goApp" src={titleImage}/><View className="toApp">去往APP</View> </View>
           }
           <View className="userMessage">
             {
@@ -811,7 +818,7 @@ class Share extends Component {
                     className="custom-button pink"
                     hoverClass="btnhover"
                     onClick={this.pageToHome}
-                  >我也要玩</Button> :
+                  >制作同款作品</Button> :
                   <Button
                     className="custom-button pink"
                     hoverClass="btnhover"

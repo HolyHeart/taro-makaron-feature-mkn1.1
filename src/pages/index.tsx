@@ -94,7 +94,7 @@ class Share extends Component {
       uid: '',
       worksId: '194770944672976896',
       liked: 0,
-      templateCode: '',
+      templateCode: '34567',
       shareSource:'',
       userToken: ''
     },
@@ -177,6 +177,7 @@ class Share extends Component {
           worksId: data.worksId,
           liked: data.liked,
           shareSource : data.renderPictureInfo.url,
+          templateCode: data.templateCode
         }
       })
     }
@@ -353,6 +354,7 @@ class Share extends Component {
         worksId: data.worksId,
         liked: data.liked,
         shareSource : data.renderPictureInfo.url,
+        templateCode: data.templateCode
       }
     }, () => {this.singleWorkList()})
     

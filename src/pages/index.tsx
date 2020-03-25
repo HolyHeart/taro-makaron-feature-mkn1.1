@@ -668,13 +668,31 @@ class Share extends Component {
       console.log(229)
       const addLiked = await service.share.addLikeWork(this.state.user.worksId)
       console.log(22,addLiked)
+      if (addLiked.status === 'success') {
+        const likeNum = this.state.user.likeNumber + 1
+        this.setState({
+          user: {
+            liked: 1,
+            likeNumber : likeNum
+          }
+        })
+      }
     } catch (error) {
       console.log(error)
     }
   }
 
-  deleteLike = () => {
-    const cancelLiked = service.share.deleteLike(this.state.user.worksId)
+  deleteLike = async () => {
+    const cancelLiked = await service.share.deleteLike(this.state.user.worksId)
+    if (cancelLiked.status === 'success') {
+      const likeNum = this.state.user.likeNumber - 1
+      this.setState({
+        user: {
+          liked: 0,
+          likeNumber : likeNum
+        }
+      })
+    }
     console.log(123,cancelLiked)
   }
   render() {

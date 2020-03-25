@@ -354,7 +354,7 @@ class Share extends Component {
         liked: data.liked,
         shareSource : data.renderPictureInfo.url,
       }
-    })
+    }, () => {this.singleWorkList()})
     
     // this.singleWorkList()
     // this.onLoad()

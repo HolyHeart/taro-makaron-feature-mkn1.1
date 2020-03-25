@@ -93,7 +93,8 @@ class Share extends Component {
       uid: '71954781661089792',
       worksId: '163297612538892288',
       liked: 0,
-      templateCode: ''
+      templateCode: '',
+      shareSource:'http://static01.versa-ai.com/upload/default/image/5196FA1D-F4C2-4761-BAB5-1AFF7D44EE91.png'
     },
     currentScene: {
       bgUrl: 'https://static01.versa-ai.com/upload/e5a9c1751c84/1222ad34-a1f7-4720-a223-43aa29936087.jpg',
@@ -128,8 +129,6 @@ class Share extends Component {
       sort:3
     }],
     qrCode:'',
-    // 'wx37543a814ef773a5',
-    //   'wxe1faaac6a4477320'
   }
 
   app = Taro.getApp()
@@ -240,12 +239,7 @@ class Share extends Component {
       height: shareVideoInfo.height,
       themeId,
       sceneId,
-      originalCompleteImageUrl: decodeURIComponent(originalCompleteImageUrl),
-      user: {
-        userImage: globalData.userInfo.avatarUrl,
-        userName: globalData.userInfo.nickName,
-        likeNumber: 0
-      }
+      originalCompleteImageUrl: decodeURIComponent(originalCompleteImageUrl)
     })
   }
 
@@ -335,31 +329,31 @@ class Share extends Component {
   handleRecommendClick =  (data) => {
     console.log('data',data)
     this.setState({
-      shareSource : data.renderPictureInfo.url,
       user: {
         userImage: data.author.avatar,
         userName: data.author.nickname,
         likeNumber: data.likedAmount,
         uid: data.uid,
         worksId: data.worksId,
-        liked: data.liked
+        liked: data.liked,
+        shareSource : data.renderPictureInfo.url,
       }
-    },() => this.singleWorkList())
+    })
     
     // this.singleWorkList()
     // this.onLoad()
   }
 
   onLoad = async() => {
-    // const page = 'pages/index'
-    // const width = 100
-    // const worksId = this.state.user.worksId
-    // console.log(999,this.state.user)
-    // const scene = await service.share.getQrCode(page, width, worksId)
-    // console.log(23,scene)
-    // this.setState({
-    //   qrCode: scene.result
-    // })
+    const page = 'pages/index'
+    const width = 100
+    const worksId = this.state.user.worksId
+    console.log(999,this.state.user)
+    const scene = await service.share.getQrCode(page, width, worksId)
+    console.log(23,scene)
+    this.setState({
+      qrCode: scene.result
+    })
   }
 
   handleFormSubmit = (e) => {
@@ -680,7 +674,8 @@ class Share extends Component {
   }
   render() {
     const { isFromApp, shareSourceType, shareSource, videoPoster, width, height, recommendList, originalCompleteImageUrl, canvasInfo, confirmText, isshow, savePoint, 
-      saveTitle, source, type, currentScene, checkoutImage, checkoutVideo, morePlayList, user, qrCode} = this.state
+      saveTitle, type, checkoutImage, checkoutVideo, morePlayList, user, qrCode, frame, canvas} = this.state
+      console.log('state', user)
     return (
       <View className='page-share'>
         <Title
@@ -695,8 +690,8 @@ class Share extends Component {
             <View>
               {themeData.sceneType === 3 && <View class="share-bg"></View>}
               <View className="showImage">
-                <View className="showImage blur" style={{backgroundImage: `url(${shareSource})`}}></View>
-                <Image src={shareSource} mode="aspectFill"  className="bgImage" />
+                <View className="showImage blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
+                <Image src={user.shareSource} mode="aspectFill"  className="bgImage" />
               </View>
             </View>
           }
@@ -737,7 +732,7 @@ class Share extends Component {
                 {savePoint === true ? <View className="wx-dialog-save">{saveTitle}</View> : <View className="wx-dialog-save"></View>}
                 <View className="wx-dialog-content">
                     <View className="bgImage">
-                      <Image src={shareSource} className="bgImage" mode="aspectFill" onClick={this.handelConfirm}/>
+                      <Image src={user.shareSource} className="bgImage" mode="aspectFill" onClick={this.handelConfirm}/>
                     </View>
                     <View className="userInfo">
                       <Image className="userimage" src={user.userImage} />
@@ -763,31 +758,13 @@ class Share extends Component {
             </View>
             : ''
           }
-          <View class="canvas-wrap">
+          <View className="canvas-wrap">
             <Canvas
               disable-scroll={true}
               style={`width: ${frame.width * canvas.ratio}px; height: ${frame.height * canvas.ratio}px;`}
               canvasId={canvas.id} />
           </View>
           
-
-          {/* {
-            this.state.isshow === true ?
-            <ShareDialog
-            confirmText={this.state.confirmText}
-            content={bgImage}
-            type={shareSourceType}
-            renderButton ={
-              <View className="wx-dialog-footer">
-                <Button className="wx-dialog-btn" onClick={this.handelSave}  style="flex:1" >
-                    {this.state.confirmText}
-                </Button>
-                
-              </View>
-            }
-            />
-            : ''
-          } */}
         </View>
         <View className='sub-section'>
           {

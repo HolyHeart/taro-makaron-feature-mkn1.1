@@ -602,7 +602,7 @@ export const share = {
 
   deleteLike: function (worksId) {
     const reqData = {
-      method: 'POST',
+      method: 'DELETE',
       url: api.share.deleteLike,
       header: { 'content-type': 'application/x-www-form-urlencoded' },
       data: {
@@ -618,7 +618,7 @@ export const share = {
       url: api.share.singleWorkList,
       header: { "Accept": "*/*" },
       data: {
-        worksId: worksId
+        worksId
       }
     }
     return request(reqData)

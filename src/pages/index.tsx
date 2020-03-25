@@ -719,9 +719,6 @@ class Share extends Component {
             }
             
             <View className='userName'>{user.userName}</View>
-            <Button openType="getUserInfo" onGetUserInfo={this.getUserInfo}  className="likeAuth like">
-              <Image src={like}  className="like" />
-            </Button>
             {
               user.liked === 0 ?
               <Button openType="getUserInfo" onGetUserInfo={this.getUserInfo}  className="likeAuth like">

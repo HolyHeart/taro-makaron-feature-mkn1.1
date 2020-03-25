@@ -591,13 +591,8 @@ export const share = {
   addLikeWork: function (worksId, uid, token) {
     const reqData = {
       method: 'POST',
-      url: api.share.addLikeWork + '?worksId=' + worksId,
+      url: api.share.addLikeWork + `?worksId=${worksId}&uid=${uid}&userToken=${token}`,
       header: { 'content-type': 'application/x-www-form-urlencoded' },
-      data: {
-        worksId: worksId,
-        uid: uid,
-        token: token
-      }
     }
     return request(reqData)
   },

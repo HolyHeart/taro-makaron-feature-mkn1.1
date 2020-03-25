@@ -49,7 +49,7 @@ class Share extends Component {
   config: Config = {
     navigationBarTitleText: '懒人抠图'
   }
-
+  userInfo:{}
   state = {
     isFromApp: false,
     shareSourceType: 'image', // 'video' 'image'
@@ -91,12 +91,12 @@ class Share extends Component {
       userImage: 'http://static01.versa-ai.com/upload/default/image/avatar/ebaff9ab-dd48-49b9-a6a8-9a1bcf5b3076.jpg',
       userName: 'LUCYTAN0216',
       likeNumber: 0,
-      uid: '336152122104795136',
+      uid: '',
       worksId: '194770944672976896',
       liked: 0,
       templateCode: '',
       shareSource:'http://static01.versa-ai.com/upload/default/image/5196FA1D-F4C2-4761-BAB5-1AFF7D44EE91.png',
-      token: 'j2oth0OlQNyBpW4XOic1-w'
+      userToken: ''
     },
     currentScene: {
       bgUrl: 'https://static01.versa-ai.com/upload/e5a9c1751c84/1222ad34-a1f7-4720-a223-43aa29936087.jpg',
@@ -285,7 +285,6 @@ class Share extends Component {
       const { themeData = {}, sceneId } = globalData
       globalData.userInfo = userInfo
       service.base.loginAuth(e.detail)
-      console.log(themeData)
       Taro.navigateTo({ url: `/pages/home/index` })
     } else {
       Taro.showToast({
@@ -379,32 +378,28 @@ class Share extends Component {
   handleOpenApp = () => {
     this.app.aldstat.sendEvent('分享页打开app', '打开app')
   }
-  getUserInfo (e) {
-    console.log('e',e)
-    Taro.getSetting({
-      success (res) {
-        if (res.authSetting['scope.userInfo']) {
-          console.log('已授权',res)
-          Taro.getUserInfo({
-            success(res) {
-              console.log('获取用户信息',res)
-            },
-            fail(res) {
-              console.log('获取用户信息失败',res)
-            }
-          })
-        } else {
-          Taro.authorize ({
-            scope: 'scope.userInfo'
-          })
-        }
+  getUserInfo = async (e) =>{
+    const { detail: { userInfo } } = e
+    if (userInfo) {
+      const { themeData = {}, sceneId } = globalData
+      globalData.userInfo = userInfo
+      const result = await service.base.loginAuth(e.detail)
+      
+      console.log(result)
+      this.userInfo = result.result.result
+      if (this.state.user.liked === 0) {
+        this.addLike()
+      } else {
+        this.deleteLike()
       }
-    })
-    if (this.state.user.liked === 0) {
-      this.addLike()
     } else {
-      this.deleteLike()
+      Taro.showToast({
+        title: '请授权',
+        icon: 'success',
+        duration: 2000
+      })
     }
+
   }
   shareHandle =  () => {
     this.setState({
@@ -669,18 +664,8 @@ class Share extends Component {
 
   addLike = async () => {
     try {
-      console.log(229,this.state.user.worksId)
-      const addLiked = await service.share.addLikeWork(this.state.user.worksId,this.state.user.uid,this.state.user.token)
-      console.log(22,addLiked)
-      // if (addLiked.status === 'success') {
-      //   const likeNum = this.state.user.likeNumber + 1
-      //   this.setState({
-      //     user: {
-      //       liked: 1,
-      //       likeNumber : likeNum
-      //     }
-      //   })
-      // }
+      console.log(this.userInfo)
+      const addLiked = await service.share.addLikeWork(this.state.user.worksId,this.userInfo.uid,this.userInfo.userToken)
     } catch (error) {
       console.log(error)
     }

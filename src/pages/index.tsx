@@ -20,6 +20,7 @@ import './index.less'
 
 // import ShareDialog from '@/components/ShareDialog'
 import like from '@/assets/images/like@3x.png'
+import liked from '@/assets/images/liked@3x.png'
 import wx from '@/assets/images/wxicon@3x.png'
 import pyq from '@/assets/images/pyq@3x.png'
 import userImage from '@/assets/images/logo@2x.png'
@@ -62,7 +63,7 @@ class Share extends Component {
     sceneId: '',
     themeData: {},
     sceneType: 0,
-    isshow: false,
+    isshow: true,
     confirmText: '好的，收下了',
     saveTitle: '图片已保存到手机相册',
     savePoint: false,
@@ -419,7 +420,9 @@ class Share extends Component {
   downloadRemoteImage = async (remoteUrl = '') => {
     let localImagePath = ''
     try {
+      console.log(678)
       const result = await service.base.downloadFile(remoteUrl)
+      console.log('result',result)
       localImagePath = result.tempFilePath
     } catch (err) {
       // console.log('下载图片失败', err)
@@ -457,13 +460,15 @@ class Share extends Component {
   }
 
   canvasDrawRecommend = async (context) => {
-    const { frame, canvas, shareSource } = this.state
+    const { frame, canvas, user} = this.state
     const postfix = '?x-oss-process=image/resize,h_748,w_560'
     const { ratio = 3 } = canvas
     let localBgImagePath = ''
     try {
-      const bgUrl = shareSource + postfix
+      const bgUrl = user.shareSource + postfix
+      console.log('bgUrl',bgUrl)
       localBgImagePath = await this.downloadRemoteImage(bgUrl)
+      console.log('bgImage',localBgImagePath)
     } catch (err) {
       console.log('下载背景图片失败', err)
       return
@@ -675,7 +680,6 @@ class Share extends Component {
   render() {
     const { isFromApp, shareSourceType, shareSource, videoPoster, width, height, recommendList, originalCompleteImageUrl, canvasInfo, confirmText, isshow, savePoint, 
       saveTitle, type, checkoutImage, checkoutVideo, morePlayList, user, qrCode, frame, canvas} = this.state
-      console.log('state', user)
     return (
       <View className='page-share'>
         <Title
@@ -718,6 +722,15 @@ class Share extends Component {
             <Button openType="getUserInfo" onGetUserInfo={this.getUserInfo}  className="likeAuth like">
               <Image src={like}  className="like" />
             </Button>
+            {
+              user.liked === 0 ?
+              <Button openType="getUserInfo" onGetUserInfo={this.getUserInfo}  className="likeAuth like">
+                <Image src={like}  className="like" />
+              </Button> :
+              <Button openType="getUserInfo" onGetUserInfo={this.getUserInfo}  className="likeAuth like">
+                <Image src={liked}  className="like" />
+              </Button>
+            }
             <View style="" className="likeNum">{user.likeNumber}</View>
             <Button openType="share" className="share wx">
               <Image src={wx} className="wx"/>

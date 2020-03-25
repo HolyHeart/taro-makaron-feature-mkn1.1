@@ -590,12 +590,10 @@ export const share = {
 
   addLikeWork: function (worksId) {
     const reqData = {
-      method: 'POST',
-      url: api.share.addLikeWork,
+      url: `${api.share.addLikeWork}`,
       header: { 'content-type': 'application/x-www-form-urlencoded' },
-      data: {
-        worksId
-      }
+      method: 'POST',
+      data: worksId
     }
     return request(reqData)
   },
@@ -603,11 +601,9 @@ export const share = {
   deleteLike: function (worksId) {
     const reqData = {
       method: 'DELETE',
-      url: api.share.deleteLike,
+      url: `${api.share.deleteLike}`,
       header: { 'content-type': 'application/x-www-form-urlencoded' },
-      data: {
-        worksId
-      }
+      data:  worksId,
     }
     return request(reqData)
   },

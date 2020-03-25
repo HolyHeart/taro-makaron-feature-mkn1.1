@@ -719,14 +719,11 @@ class Share extends Component {
             }
             
             <View className='userName'>{user.userName}</View>
-            {
-              user.liked === 0 ?
+            {            
               <Button openType="getUserInfo" onGetUserInfo={this.getUserInfo}  className="likeAuth like">
-                <Image src={like}  className="like" />
-              </Button> :
-              <Button openType="getUserInfo" onGetUserInfo={this.getUserInfo}  className="likeAuth like">
-                <Image src={liked}  className="like" />
-              </Button>
+                { user.liked === 0 ? <Image src={like}  className="like" /> : <Image src={liked}  className="like" />}
+              </Button> 
+              
             }
             <View style="" className="likeNum">{user.likeNumber}</View>
             <Button openType="share" className="share wx">

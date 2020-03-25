@@ -88,14 +88,14 @@ class Share extends Component {
     checkoutVideo: '长按识别二维码播放视频',
     logoName: 'Makaron',
     user: {
-      userImage: 'http://static01.versa-ai.com/upload/default/image/avatar/ebaff9ab-dd48-49b9-a6a8-9a1bcf5b3076.jpg',
-      userName: 'LUCYTAN0216',
+      userImage: '',
+      userName: '',
       likeNumber: 0,
       uid: '',
       worksId: '194770944672976896',
-      liked: 0,
+      liked: 1,
       templateCode: '',
-      shareSource:'http://static01.versa-ai.com/upload/default/image/5196FA1D-F4C2-4761-BAB5-1AFF7D44EE91.png',
+      shareSource:'',
       userToken: ''
     },
     currentScene: {
@@ -166,6 +166,21 @@ class Share extends Component {
   singleWorkList = async () => {
     const singleWorkData = await service.share.singleWorkList(this.state.user.worksId)
     console.log('singleWorkData', singleWorkData)
+    if (singleWorkData.status === 'success') {
+      const data = singleWorkData.result.result
+      this.setState({
+        user: {
+          userImage: data.author.avatar,
+          userName: data.author.nickname,
+          likeNumber: data.likedAmount,
+          uid: data.uid,
+          worksId: data.worksId,
+          liked: data.liked,
+          shareSource : data.renderPictureInfo.url,
+        }
+      })
+    }
+
   }
   componentWillReceiveProps(nextProps) {
     // console.log(this.props, nextProps)
@@ -388,9 +403,9 @@ class Share extends Component {
       console.log(result)
       this.userInfo = result.result.result
       if (this.state.user.liked === 0) {
-        this.addLike()
+        this.addLike(this.userInfo)
       } else {
-        this.deleteLike()
+        this.deleteLike(this.userInfo)
       }
     } else {
       Taro.showToast({
@@ -662,27 +677,46 @@ class Share extends Component {
     })
   }
 
-  addLike = async () => {
+  addLike = async (data) => {
     try {
-      console.log(this.userInfo)
-      const addLiked = await service.share.addLikeWork(this.state.user.worksId,this.userInfo.uid,this.userInfo.userToken)
+      console.log(789,data)
+      const addLiked = await service.share.addLikeWork(this.state.user.worksId,data.uid,data.userToken)
+      console.log('234',addLiked)
+      const worksId = this.state.user.worksId
+        if (addLiked.status === 'success') {
+          const likedNum = this.state.user.likeNumber + 1
+          this.setState({
+            user: {
+              liked: 1,
+              likeNumber : likedNum,
+              worksId: worksId
+            }
+          },()=>{this.singleWorkList()})
+        }
+        console.log(2,this.state.user.liked)
     } catch (error) {
       console.log(error)
     }
   }
 
-  deleteLike = async () => {
-    const cancelLiked = await service.share.deleteLike(this.state.user.worksId)
-    // if (cancelLiked.status === 'success') {
-    //   const likeNum = this.state.user.likeNumber - 1
-    //   this.setState({
-    //     user: {
-    //       liked: 0,
-    //       likeNumber : likeNum
-    //     }
-    //   })
-    // }
-    console.log(123,cancelLiked)
+  deleteLike = async (data) => {
+    try {
+      console.log('567',data)
+      const cancelLiked = await service.share.deleteLike(this.state.user.worksId,data.uid,data.userToken)
+      console.log('234',cancelLiked)
+      if (cancelLiked.status === 'success') {
+        const likeNum = this.state.user.likeNumber - 1
+        this.setState({
+          user: {
+            liked: 0,
+            likeNumber : likeNum
+          }
+        },()=>{this.singleWorkList()})
+      }
+      console.log(2,this.state.user.liked)
+    } catch (error) {
+      console.log(error)
+    }
   }
   render() {
     const { isFromApp, shareSourceType, shareSource, videoPoster, width, height, recommendList, originalCompleteImageUrl, canvasInfo, confirmText, isshow, savePoint, 
@@ -732,8 +766,7 @@ class Share extends Component {
             {            
               <Button openType="getUserInfo" onGetUserInfo={this.getUserInfo}  className="likeAuth like">
                 { user.liked === 0 ? <Image src={like}  className="like" /> : <Image src={liked}  className="like" />}
-              </Button> 
-              
+              </Button>               
             }
             <View style="" className="likeNum">{user.likeNumber}</View>
             <Button openType="share" className="share wx">
@@ -748,8 +781,8 @@ class Share extends Component {
               <View className="wx-dialog">
                 {savePoint === true ? <View className="wx-dialog-save">{saveTitle}</View> : <View className="wx-dialog-save"></View>}
                 <View className="wx-dialog-content">
-                    <View className="bgImage">
-                      <Image src={user.shareSource} className="bgImage" mode="aspectFill" onClick={this.handelConfirm}/>
+                    <View className="bgUrl">
+                      <Image src={user.shareSource} className="bgUrl" mode="aspectFill" onClick={this.handelConfirm}/>
                     </View>
                     <View className="userInfo">
                       <Image className="userimage" src={user.userImage} />
@@ -818,8 +851,6 @@ class Share extends Component {
             <View className='recommend-title'>热门作品</View>
             <RecommendList
               list={recommendList}
-              // onGetUserInfo={this.handleGetUserInfo}
-              // onFormSubmit={this.handleFormSubmit}
               onClick={this.handleRecommendClick}
             />
           </View>

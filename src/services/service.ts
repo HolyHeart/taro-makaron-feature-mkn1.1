@@ -597,14 +597,11 @@ export const share = {
     return request(reqData)
   },
 
-  deleteLike: function (worksId) {
+  deleteLike: function (worksId, uid, token) {
     const reqData = {
       method: 'DELETE',
-      url: `${api.share.deleteLike}`,
-      header: { 'content-type': 'application/x-www-form-urlencoded' },
-      data: {
-        worksId: worksId
-      }
+      url: api.share.deleteLike + `?worksId=${worksId}&uid=${uid}&userToken=${token}`,
+      header: { "Accept": "*/*" },
     }
     return request(reqData)
   },
@@ -612,11 +609,8 @@ export const share = {
   singleWorkList: function (worksId) {
     const reqData = {
       method: 'GET',
-      url: api.share.singleWorkList,
+      url: api.share.singleWorkList + `/${worksId}`,
       header: { "Accept": "*/*" },
-      data: {
-        worksId: worksId
-      }
     }
     return request(reqData)
   },

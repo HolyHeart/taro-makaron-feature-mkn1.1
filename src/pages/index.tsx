@@ -721,7 +721,7 @@ class Share extends Component {
             </View>
           }
           {
-            isFromApp ? '': <View className="app"><Image className="goApp" src={titleImage}/><View className="toApp">去往APP</View> </View>
+            isFromApp ? <View className="app"><Image className="goApp" src={titleImage}/><View className="toApp">去往APP</View> </View>: ''
           }
           <View className="userMessage">
             {

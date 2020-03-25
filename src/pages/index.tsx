@@ -63,7 +63,7 @@ class Share extends Component {
     sceneId: '',
     themeData: {},
     sceneType: 0,
-    isshow: true,
+    isshow: false,
     confirmText: '好的，收下了',
     saveTitle: '图片已保存到手机相册',
     savePoint: false,

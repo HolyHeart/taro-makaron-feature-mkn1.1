@@ -166,9 +166,7 @@ class Share extends Component {
 
   singleWorkList = async () => {
     const singleWorkData = await service.share.singleWorkList(this.state.user.worksId)
-    console.log('singleWorkData', singleWorkData)
     const deleteLike = Taro.getStorageSync('deleteLike')
-    console.log('deleteLike', deleteLike)
     if (singleWorkData.status === 'success') {
       const data = singleWorkData.result.result
       this.setState({
@@ -227,7 +225,6 @@ class Share extends Component {
     console.log('share page index', this.$router.params) // 输出 { id: 2, type: 'test' }
     let isFromApp, shareSourceType = 'image', videoPoster = '', shareVideoInfo = { width: 690, height: 920, }
     let { shareSource, themeId, sceneId, from, remoteURL = '', width = 690, height = 920, originalCompleteImageUrl } = this.$router.params
-    console.log(345,sceneId)
     if (from === 'app') {
       isFromApp = true
       if (remoteURL.indexOf('versa-ai.com') > -1) {
@@ -267,7 +264,6 @@ class Share extends Component {
   }
 
   getRecommendList = async () => {
-    console.log('23456',this.state.user.templateCode)
     if (this.state.user.templateCode) {
       console.log(333333)
       const hotData = await service.share.getHotList(this.state.user.templateCode)
@@ -277,7 +273,7 @@ class Share extends Component {
       })
     } else {
       const recommendData = await service.share.getrecommendList(6)
-      console.log('recommendData', recommendData)
+      // console.log('recommendData', recommendData)
       this.setState({
         recommendList: (recommendData.result && recommendData.result.result) || []
       })
@@ -353,7 +349,6 @@ class Share extends Component {
   handleRecommendClick =  (data) => {
     console.log('data',data)
     const deleteLike1 = Taro.getStorageSync('deleteLike')
-    console.log('deleteLike1', deleteLike1)
     this.setState({
       user: {
         userImage: data.author.avatar,
@@ -412,7 +407,7 @@ class Share extends Component {
       globalData.userInfo = userInfo
       const result = await service.base.loginAuth(e.detail)
       
-      console.log(result)
+      // console.log(result)
       this.userInfo = result.result.result
       if (this.state.user.liked === 0) {
         this.addLike(this.userInfo)
@@ -446,7 +441,7 @@ class Share extends Component {
     try {
       console.log(678)
       const result = await service.base.downloadFile(remoteUrl)
-      console.log('result',result)
+      console.log('result',result.tempFilePath)
       localImagePath = result.tempFilePath
     } catch (err) {
       // console.log('下载图片失败', err)

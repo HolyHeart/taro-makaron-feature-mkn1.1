@@ -91,12 +91,6 @@ class Share extends Component {
       left: 0,
       top: 0,
     } ,
-    canvasInfo: {
-      width: 278,
-      height: 429,
-      left: 0,
-      top: 0,
-    },
     canvas: {
       id: 'shareCanvas',
       ratio: 3
@@ -116,17 +110,6 @@ class Share extends Component {
       shareSource:'',
       userToken: '',
       sessionId: ''
-    },
-    currentScene: {
-      bgUrl: 'https://static01.versa-ai.com/upload/e5a9c1751c84/1222ad34-a1f7-4720-a223-43aa29936087.jpg',
-      desc: '@叶小明的作品',
-      title: '皮皮虾  骑上你  我们走'
-    },
-    logoRect: {
-      width: 300,
-      height: 50,
-      left: 0,
-      top: 0,
     },
     result: {
       show: false,
@@ -558,9 +541,11 @@ class Share extends Component {
     const logoLeft = 10 * ratio 
     const logoTop = 375 * ratio
     context.save()
+    // context.arc(logoWidth / 2 + logoLeft, logoHeight / 2 + logoTop, logoWidth / 2, 0, Math.PI * 2, false)
+    // context.clip()
+    context.drawImage(user.userImage, logoLeft, logoTop, logoWidth, logoHeight)
     context.arc(logoWidth / 2 + logoLeft, logoHeight / 2 + logoTop, logoWidth / 2, 0, Math.PI * 2, false)
     context.clip()
-    context.drawImage(user.userImage, logoLeft, logoTop, logoWidth, logoHeight)
     context.restore()
     context.stroke()
 
@@ -775,7 +760,7 @@ class Share extends Component {
   }
 
   render() {
-    const { isFromApp, shareSourceType, shareSource, videoPoster, width, height, recommendList, originalCompleteImageUrl, canvasInfo, confirmText, isshow, savePoint, 
+    const { isFromApp, shareSourceType, shareSource, videoPoster, width, height, recommendList, originalCompleteImageUrl, confirmText, isshow, savePoint, 
       saveTitle, type, checkoutImage, checkoutVideo, morePlayList, user, qrCode, frame, canvas} = this.state
     return (
       <View className='page-share'>

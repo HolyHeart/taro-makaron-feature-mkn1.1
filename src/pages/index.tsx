@@ -171,23 +171,21 @@ class Share extends Component {
     // }
     // const path = tool.formatQueryUrl('/pages/share/index', data)
     // Taro.redirectTo({url: path})
-    console.log(6789)
-      const systemInfo = Taro.getSystemInfoSync()
-      console.log('system',systemInfo)
-      if (/iphone x/i.test(systemInfo.model)) {
-        systemInfo.isIphoneX = true
-      } else {
-        systemInfo.isIphoneX = false
-      }
-      let totalTopHeight = 72
-      if (systemInfo.model.indexOf('iPhone X') !== -1) {
-        totalTopHeight = 40
-      } else if (systemInfo.model.indexOf('iPhone') !== -1) {
-        totalTopHeight = 0
-      }
-      this.setState({
-        titleHeight: totalTopHeight
-      })
+    const systemInfo = Taro.getSystemInfoSync()
+    if (/iphone x/i.test(systemInfo.model)) {
+      systemInfo.isIphoneX = true
+    } else {
+      systemInfo.isIphoneX = false
+    }
+    let totalTopHeight = 72
+    if (systemInfo.model.indexOf('iPhone X') !== -1) {
+      totalTopHeight = 40
+    } else if (systemInfo.model.indexOf('iPhone') !== -1) {
+      totalTopHeight = 0
+    }
+    this.setState({
+      titleHeight: totalTopHeight
+    })
   }
 
   componentDidMount() {
@@ -203,6 +201,10 @@ class Share extends Component {
     const deleteLike = Taro.getStorageSync('deleteLike')
     if (singleWorkData.status === 'success') {
       const data = singleWorkData.result.result
+      if ((data.renderPictureInfo.url).indexOf('https') === -1) {
+        var imageUrl = (data.renderPictureInfo.url).replace(/^http/,'https')
+        console.log('url',imageUrl)
+      }
       this.setState({
         user: {
           userImage: data.author.avatar,
@@ -211,7 +213,7 @@ class Share extends Component {
           uid: data.uid,
           worksId: data.worksId,
           liked: data.liked,
-          shareSource : data.renderPictureInfo.url,
+          shareSource : imageUrl,
           templateCode: data.schema,
           sessionId: deleteLike
         }
@@ -232,7 +234,6 @@ class Share extends Component {
     const { userInfo = {} } = globalData
     const title = `@${userInfo.nickName}：${shareContent}` || `@${this.state.user.userName}：${shareContent}`
     const path = `pages/index?worksId=${this.state.user.worksId}`
-    console.log(123456,path)
     return {
       title: title,
       path: path,
@@ -301,7 +302,7 @@ class Share extends Component {
     if (this.state.user.templateCode) {
       console.log(333333)
       const hotData = await service.share.getHotList(this.state.user.templateCode)
-      console.log('hotData', hotData)
+      // console.log('hotData', hotData)
       this.setState({
         recommendList: (hotData.result && hotData.result.result) || []
       })
@@ -518,8 +519,9 @@ class Share extends Component {
     const { ratio = 3 } = canvas
     let localBgImagePath = ''
     try {
-      const bgUrl = user.shareSource + postfix
+      const bgUrl = (user.shareSource + postfix)
       console.log('bgUrl',bgUrl)
+
       localBgImagePath = await this.downloadRemoteImage(bgUrl)
       console.log('bgImage',localBgImagePath)
     } catch (err) {

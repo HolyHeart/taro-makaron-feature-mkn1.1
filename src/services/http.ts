@@ -90,6 +90,11 @@ export const request = (options) => {
     options.data = {}
   }
   const session = Session.get()
+  // console.log('session',session)
+  Taro.setStorage({
+    key: "deleteLike",
+    data: session
+  })
   options.data[Session.headerKey] = session
   options.data['deviceId'] = tool.getDeviceId()
 

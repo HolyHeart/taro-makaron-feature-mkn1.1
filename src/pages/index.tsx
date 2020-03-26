@@ -96,7 +96,8 @@ class Share extends Component {
       liked: 0,
       templateCode: '',
       shareSource:'',
-      userToken: ''
+      userToken: '',
+      sessionId: ''
     },
     currentScene: {
       bgUrl: 'https://static01.versa-ai.com/upload/e5a9c1751c84/1222ad34-a1f7-4720-a223-43aa29936087.jpg',
@@ -166,6 +167,8 @@ class Share extends Component {
   singleWorkList = async () => {
     const singleWorkData = await service.share.singleWorkList(this.state.user.worksId)
     console.log('singleWorkData', singleWorkData)
+    const deleteLike = Taro.getStorageSync('deleteLike')
+    console.log('deleteLike', deleteLike)
     if (singleWorkData.status === 'success') {
       const data = singleWorkData.result.result
       this.setState({
@@ -177,7 +180,8 @@ class Share extends Component {
           worksId: data.worksId,
           liked: data.liked,
           shareSource : data.renderPictureInfo.url,
-          templateCode: data.templateCode
+          templateCode: data.templateCode,
+          sessionId: deleteLike
         }
       })
     }
@@ -346,6 +350,8 @@ class Share extends Component {
   }
   handleRecommendClick =  (data) => {
     console.log('data',data)
+    const deleteLike1 = Taro.getStorageSync('deleteLike')
+    console.log('deleteLike1', deleteLike1)
     this.setState({
       user: {
         userImage: data.author.avatar,
@@ -355,7 +361,8 @@ class Share extends Component {
         worksId: data.worksId,
         liked: data.liked,
         shareSource : data.renderPictureInfo.url,
-        templateCode: data.templateCode
+        templateCode: data.templateCode,
+        sessionId: deleteLike1
       }
     }, () => {this.singleWorkList()})
     
@@ -682,9 +689,7 @@ class Share extends Component {
 
   addLike = async (data) => {
     try {
-      console.log(789,data)
       const addLiked = await service.share.addLikeWork(this.state.user.worksId,data.uid,data.userToken)
-      console.log('234',addLiked)
       const worksId = this.state.user.worksId
         if (addLiked.status === 'success') {
           const likedNum = this.state.user.likeNumber + 1
@@ -696,29 +701,27 @@ class Share extends Component {
             }
           },()=>{this.singleWorkList()})
         }
-        console.log(2,this.state.user.liked)
     } catch (error) {
-      console.log(error)
+      console.log(222, error)
     }
   }
 
   deleteLike = async (data) => {
     try {
-      console.log('567',data)
-      const cancelLiked = await service.share.deleteLike(this.state.user.worksId,data.uid,data.userToken)
-      console.log('234',cancelLiked)
+      const cancelLiked = await service.share.deleteLike(this.state.user.worksId,data.uid,data.userToken,this.state.user.sessionId)
+      const worksId = this.state.user.worksId
       if (cancelLiked.status === 'success') {
         const likeNum = this.state.user.likeNumber - 1
         this.setState({
           user: {
             liked: 0,
-            likeNumber : likeNum
+            likeNumber : likeNum,
+            worksId: worksId
           }
         },()=>{this.singleWorkList()})
       }
-      console.log(2,this.state.user.liked)
     } catch (error) {
-      console.log(error)
+      console.log(222, error)
     }
   }
 

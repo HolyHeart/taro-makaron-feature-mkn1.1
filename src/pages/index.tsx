@@ -17,6 +17,7 @@ import globalData from '@/services/global_data'
 import tool from '@/utils/tool'
 import work from '@/utils/work'
 import './index.less'
+import { getSystemInfo } from '@/model/actions/global'
 
 // import ShareDialog from '@/components/ShareDialog'
 import like from '@/assets/images/like@3x.png'
@@ -28,9 +29,16 @@ import titleImage from '@/assets/images/pic_mkl@3x.png'
 import image_code from '@/assets/images/code.png'
 
 // const demo = 'https://static01.versa-ai.com/upload/201bae375f8b/18e62d91-fc04-46c6-8f21-7224b53eb4b7.mp4'
-type PageStateProps = {}
+type PageStateProps = {
+  global: {
+    system: object
+  }
+}
 
-type PageDispatchProps = {}
+// type PageDispatchProps = {}
+type PageDispatchProps = {
+  getSystemInfo: (data: object) => void
+}
 
 type PageOwnProps = {}
 
@@ -42,15 +50,24 @@ interface Share {
   props: IProps;
 }
 
-@connect(({ }) => ({
+// @connect(({ }) => ({
+// }), (dispatch) => ({
+// }))
+connect(({ global }) => ({
+  global
 }), (dispatch) => ({
+  getSystemInfo(data) {
+    dispatch(getSystemInfo(data))
+  }
 }))
+
 class Share extends Component {
   config: Config = {
     navigationBarTitleText: '懒人抠图'
   }
   userInfo:{}
   state = {
+    titleHeight: 0,
     isFromApp: false,
     shareSourceType: 'image', // 'video' 'image'
     shareSource: '',
@@ -154,6 +171,23 @@ class Share extends Component {
     // }
     // const path = tool.formatQueryUrl('/pages/share/index', data)
     // Taro.redirectTo({url: path})
+    console.log(6789)
+      const systemInfo = Taro.getSystemInfoSync()
+      console.log('system',systemInfo)
+      if (/iphone x/i.test(systemInfo.model)) {
+        systemInfo.isIphoneX = true
+      } else {
+        systemInfo.isIphoneX = false
+      }
+      let totalTopHeight = 72
+      if (systemInfo.model.indexOf('iPhone X') !== -1) {
+        totalTopHeight = 40
+      } else if (systemInfo.model.indexOf('iPhone') !== -1) {
+        totalTopHeight = 0
+      }
+      this.setState({
+        titleHeight: totalTopHeight
+      })
   }
 
   componentDidMount() {
@@ -738,7 +772,7 @@ class Share extends Component {
           }
           color='#333'
         >懒人抠图</Title>
-        <View className='main-section'>
+        <View className='main-section' style={{marginTop:this.state.titleHeight + 'rpx' }}>
           {shareSourceType === 'image' &&
             <View>
               {themeData.sceneType === 3 && <View class="share-bg"></View>}

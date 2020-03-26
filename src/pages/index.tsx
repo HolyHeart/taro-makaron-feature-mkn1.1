@@ -191,7 +191,7 @@ class Share extends Component {
   componentDidHide() { }
   onShareAppMessage(res) {
     const shareContent = ''
-    const url = `${this.state.user.worksId}?x-oss-process=image/resize,m_pad,h_420,w_525`
+    const url = `${this.state.user.shareSource}?x-oss-process=image/resize,m_pad,h_420,w_525`
     console.log(22,url)
     const { userInfo = {} } = globalData
     const title = `@${userInfo.nickName}：${shareContent}` || `@${this.state.user.userName}：${shareContent}`

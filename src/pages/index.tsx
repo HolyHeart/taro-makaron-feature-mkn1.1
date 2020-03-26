@@ -570,7 +570,7 @@ class Share extends Component {
     // 绘制文字（参数：要写的字，x坐标，y坐标）
     const userName ='@' + this.state.user.userName + '的作品'
     console.log('userName',userName)
-    context.fillText(userName,  frame.width * ratio / 3 + 46, 388 * ratio, 103 * ratio, 21 * ratio)
+    context.fillText(userName,  frame.width * ratio / 3 , 388 * ratio, 103 * ratio, 21 * ratio)
     // context.fillText(this.state.checkoutImage, 56, 405)
     this.canvasDrawText(context, ratio)
   }

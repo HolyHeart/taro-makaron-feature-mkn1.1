@@ -195,7 +195,8 @@ class Share extends Component {
     console.log(22,url)
     const { userInfo = {} } = globalData
     const title = `@${userInfo.nickName}：${shareContent}` || `@${this.state.user.userName}：${shareContent}`
-    const path = `/pages/index?worksId=${this.state.user.worksId}`
+    const path = `pages/index?worksId=${this.state.user.worksId}`
+    console.log(123456,path)
     return {
       title: title,
       path: path,

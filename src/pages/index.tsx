@@ -571,11 +571,18 @@ class Share extends Component {
     // 设置垂直对齐方式
     context.textBaseline = "middle";
     // 绘制文字（参数：要写的字，x坐标，y坐标）
-    const userName ='@' + this.state.user.userName + '的作品'
-    console.log('userName',userName)
-    context.fillText(userName,  frame.width * ratio / 3 , 388 * ratio, 103 * ratio, 21 * ratio)
-    // context.fillText(this.state.checkoutImage, 56, 405)
-    this.canvasDrawText(context, ratio)
+    if(this.state.user.userName.length > 6) {
+      var userName ='@' + (this.state.user.userName).substr(0,4) + '...的作品'
+      context.fillText(userName,  frame.width * ratio / 3  , 388 * ratio)
+      this.canvasDrawText(context, ratio)
+    } else {
+      const userName ='@' + this.state.user.userName + '的作品'
+      console.log('userName',userName)
+      // context.fillText(userName,  frame.width * ratio / 3  , 388 * ratio, 200 * ratio, 21 * ratio)
+      context.fillText(userName,  frame.width * ratio / 3  , 388 * ratio)
+      // context.fillText(this.state.checkoutImage, 56, 405)
+      this.canvasDrawText(context, ratio)
+    }
   }
   canvasDrawText = (context, ratio) => {
     const { frame } = this.state

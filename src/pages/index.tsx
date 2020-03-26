@@ -476,8 +476,8 @@ class Share extends Component {
     try {
       console.log(678)
       const result = await service.base.downloadFile(remoteUrl)
-      console.log('result',result.tempFilePath)
-      localImagePath = result.tempFilePath
+      console.log('result',result)
+      localImagePath = (result.tempFilePath)
     } catch (err) {
       // console.log('下载图片失败', err)
     }
@@ -539,7 +539,7 @@ class Share extends Component {
 
   // 绘制二维码和logo
   canvasDrawLogo = (context, ratio) => {
-    const { frame } = this.state
+    const { frame, user } = this.state
     const codeWidth = 42 * ratio
     const codeHeight = 43 * ratio
     const codeLeft = 226 * ratio
@@ -555,7 +555,9 @@ class Share extends Component {
     const logoLeft = 10 * ratio 
     const logoTop = 375 * ratio
     context.save()
-    context.drawImage(userImage, logoLeft, logoTop, logoWidth, logoHeight)
+    context.arc(logoWidth / 2 + logoLeft, logoHeight / 2 + logoTop, logoWidth / 2, 0, Math.PI * 2, false)
+    context.clip()
+    context.drawImage(user.userImage, logoLeft, logoTop, logoWidth, logoHeight)
     context.restore()
     context.stroke()
 
@@ -566,9 +568,9 @@ class Share extends Component {
     // 设置垂直对齐方式
     context.textBaseline = "middle";
     // 绘制文字（参数：要写的字，x坐标，y坐标）
-    const userName =this.state.user.userName
+    const userName ='@' + this.state.user.userName + '的作品'
     console.log('userName',userName)
-    context.fillText('@userName的作品',  frame.width * ratio / 3, 388 * ratio, 103 * ratio, 21 * ratio)
+    context.fillText(userName,  frame.width * ratio / 3 + 46, 388 * ratio, 103 * ratio, 21 * ratio)
     // context.fillText(this.state.checkoutImage, 56, 405)
     this.canvasDrawText(context, ratio)
   }

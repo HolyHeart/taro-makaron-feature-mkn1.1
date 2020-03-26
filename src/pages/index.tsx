@@ -172,20 +172,23 @@ class Share extends Component {
     // const path = tool.formatQueryUrl('/pages/share/index', data)
     // Taro.redirectTo({url: path})
     const systemInfo = Taro.getSystemInfoSync()
+    console.log('system',systemInfo)
     if (/iphone x/i.test(systemInfo.model)) {
       systemInfo.isIphoneX = true
     } else {
       systemInfo.isIphoneX = false
     }
-    let totalTopHeight = 72
+    let totalTopHeight = 0
     if (systemInfo.model.indexOf('iPhone X') !== -1) {
+      console.log(3333)
       totalTopHeight = 40
     } else if (systemInfo.model.indexOf('iPhone') !== -1) {
+      console.log(45678)
       totalTopHeight = 0
     }
     this.setState({
       titleHeight: totalTopHeight
-    })
+    },()=>{  console.log('8888',this.state.titleHeight) })
   }
 
   componentDidMount() {

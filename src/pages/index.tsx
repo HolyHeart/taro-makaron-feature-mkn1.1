@@ -92,7 +92,8 @@ class Share extends Component {
       userName: '',
       likeNumber: 0,
       uid: '',
-      worksId: '194770944672976896',
+      // worksId: '395180604612464640',
+      worksId:'194770944672976896',
       liked: 0,
       templateCode: '',
       shareSource:'',
@@ -156,7 +157,6 @@ class Share extends Component {
   }
 
   componentDidMount() {
-    this.getRecommendList()
     this._initPage()
     this.singleWorkList()
     // Taro.showToast({
@@ -180,10 +180,10 @@ class Share extends Component {
           worksId: data.worksId,
           liked: data.liked,
           shareSource : data.renderPictureInfo.url,
-          templateCode: data.templateCode,
+          templateCode: data.schema,
           sessionId: deleteLike
         }
-      })
+      },()=>{ this.getRecommendList() })
     }
 
   }
@@ -267,7 +267,9 @@ class Share extends Component {
   }
 
   getRecommendList = async () => {
-    if (this.state.user.templateCode !== '') {
+    console.log('23456',this.state.user.templateCode)
+    if (this.state.user.templateCode) {
+      console.log(333333)
       const hotData = await service.share.getHotList(this.state.user.templateCode)
       console.log('hotData', hotData)
       this.setState({
@@ -361,7 +363,7 @@ class Share extends Component {
         worksId: data.worksId,
         liked: data.liked,
         shareSource : data.renderPictureInfo.url,
-        templateCode: data.templateCode,
+        templateCode: data.schema,
         sessionId: deleteLike1
       }
     }, () => {this.singleWorkList()})

@@ -140,6 +140,7 @@ class Share extends Component {
       sort:3
     }],
     qrCode:'',
+    hotMarginTop: 0,
   }
 
   app = Taro.getApp()
@@ -162,7 +163,12 @@ class Share extends Component {
     // const path = tool.formatQueryUrl('/pages/share/index', data)
     // Taro.redirectTo({url: path})
     const systemInfo = Taro.getSystemInfoSync()
-    // console.log('system',systemInfo)
+    if (systemInfo.screenHeight > 568) {
+      this.setState({
+        hotMarginTop: 60
+      })
+    }
+    console.log('system',systemInfo)
     if (/iphone x/i.test(systemInfo.model)) {
       systemInfo.isIphoneX = true
     } else {
@@ -754,16 +760,26 @@ class Share extends Component {
   addLike = async (data) => {
     try {
       const addLiked = await service.share.addLikeWork(this.state.user.worksId,data.uid,data.userToken)
-      const worksId = this.state.user.worksId
         if (addLiked.status === 'success') {
           const likedNum = this.state.user.likeNumber + 1
+          const worksId = this.state.user.worksId
+          const userImage = this.state.user.userImage
+          const userName = this.state.user.userName
+          const uid = this.state.user.uid
+          const shareSource = this.state.user.shareSource
+          const sessionId = this.state.user.sessionId
           this.setState({
             user: {
               liked: 1,
               likeNumber : likedNum,
-              worksId: worksId
+              worksId: worksId,
+              userImage: userImage,
+              uid: uid,
+              userName: userName,
+              shareSource: shareSource,
+              sessionId: sessionId
             }
-          },()=>{this.singleWorkList()})
+          })
         }
     } catch (error) {
       console.log(222, error)
@@ -773,16 +789,26 @@ class Share extends Component {
   deleteLike = async (data) => {
     try {
       const cancelLiked = await service.share.deleteLike(this.state.user.worksId,data.uid,data.userToken,this.state.user.sessionId)
-      const worksId = this.state.user.worksId
       if (cancelLiked.status === 'success') {
         const likeNum = this.state.user.likeNumber - 1
+        const worksId = this.state.user.worksId
+        const userImage = this.state.user.userImage
+        const userName = this.state.user.userName
+        const uid = this.state.user.uid
+        const shareSource = this.state.user.shareSource
+        const sessionId = this.state.user.sessionId
         this.setState({
           user: {
             liked: 0,
             likeNumber : likeNum,
-            worksId: worksId
+            worksId: worksId,
+            userImage: userImage,
+            uid: uid,
+            userName: userName,
+            shareSource: shareSource,
+            sessionId: sessionId
           }
-        },()=>{this.singleWorkList()})
+        })
       }
     } catch (error) {
       console.log(222, error)
@@ -795,7 +821,7 @@ class Share extends Component {
 
   render() {
     const { isFromApp, shareSourceType, shareSource, videoPoster, width, height, recommendList, originalCompleteImageUrl, confirmText, isshow, savePoint, 
-      saveTitle, type, checkoutImage, checkoutVideo, morePlayList, user, userXcx, qrCode, frame, canvas} = this.state
+      saveTitle, type, checkoutImage, checkoutVideo, morePlayList, user, userXcx, qrCode, frame, canvas, hotMarginTop} = this.state
     return (
       <View className='page-share'>
         <Title
@@ -976,6 +1002,7 @@ class Share extends Component {
                     className="custom-button pink"
                     hoverClass="btnhover"
                     onClick={this.handleContact}
+                    style={{ marginTop: hotMarginTop + 'rpx'}}
                   >制作同款作品</Button> :
                   <Button
                     className="custom-button pink"
@@ -987,7 +1014,7 @@ class Share extends Component {
                 }
               </Form>
           }
-          <View className='recommend-wrap'>
+          <View className='recommend-wrap' style={{ marginTop: hotMarginTop + 'rpx'}}>
             <View className='recommend-title'>热门作品</View>
             <RecommendList
               list={recommendList}

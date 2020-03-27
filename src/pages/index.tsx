@@ -162,7 +162,7 @@ class Share extends Component {
     // const path = tool.formatQueryUrl('/pages/share/index', data)
     // Taro.redirectTo({url: path})
     const systemInfo = Taro.getSystemInfoSync()
-    console.log('system',systemInfo)
+    // console.log('system',systemInfo)
     if (/iphone x/i.test(systemInfo.model)) {
       systemInfo.isIphoneX = true
     } else {
@@ -187,6 +187,10 @@ class Share extends Component {
     //   title:this.$router.params.originalCompleteImageUrl
     // })
     this.getRecommendList()
+    if(this.state.isFromApp) {
+      console.log(3333333)
+      this.singleWorkList()
+    }
   }
 
   singleWorkList = async () => {
@@ -198,9 +202,13 @@ class Share extends Component {
         var imageUrl = (data.renderPictureInfo.url).replace(/^http/,'https')
         // console.log('url',imageUrl)
       }
+      if ((data.author.avatar).indexOf('https') === -1) {
+        var userImage = (data.author.avatar).replace(/^http/,'https')
+        // console.log('url',imageUrl)
+      }
       this.setState({
         user: {
-          userImage: data.author.avatar,
+          userImage: userImage,
           userName: data.author.nickname,
           likeNumber: data.likedAmount,
           uid: data.uid,
@@ -210,7 +218,7 @@ class Share extends Component {
           templateCode: data.schema,
           sessionId: deleteLike
         }
-      })
+      }, () => { console.log('single',this.state.user)})
     }
 
   }
@@ -221,40 +229,20 @@ class Share extends Component {
   componentDidShow() { }
   componentDidHide() { }
   onShareAppMessage(res) {
-
-    // if (this.state.isFromApp) {
-      const shareContent = ''
-      const url = `${this.state.user.shareSource}?x-oss-process=image/resize,m_pad,h_420,w_525`
-      console.log(22,url)
-      const { userInfo = {} } = globalData
-      console.log('userInfo',userInfo)
-      const title = `@${userInfo.nickName}：${shareContent}` || `@${this.state.user.userName}：${shareContent}`
-      const path = `pages/index?worksId=${this.state.user.worksId}`
-      return {
-        title: title,
-        path: path,
-        imageUrl: url,
-        success: () => {
-          console.log('分享成功')
-        },
-      }
-    // } else {
-      // const shareContent = ''
-      // const url = `${this.state.shareSource}?x-oss-process=image/resize,m_pad,h_420,w_525` || `${this.state.user.shareSource}?x-oss-process=image/resize,m_pad,h_420,w_525`
-      // const { userInfo = {} } = globalData
-      // const title = this.state.shareSource ?(`@${userInfo.nickName}：${shareContent}` || `@${this.state.userXcx.userName}：${shareContent}`) 
-      // : (`@${this.state.user.userName}：${shareContent}`)
-      // console.log('user',this.state.user.userName)
-      // const path = `/pages/index?shareSource=${this.state.shareSource}` || `pages/index?worksId=${this.state.user.worksId}`
-      // return {
-      //   title: title,
-      //   path: path,
-      //   imageUrl: url,
-      //   success: () => {
-      //     console.log('分享成功')
-      //   },
-      // }
-    // }
+    const shareContent = ''
+    const url = `${this.state.user.shareSource}?x-oss-process=image/resize,m_pad,h_420,w_525`
+    console.log(22,url)
+    const { userInfo = {} } = globalData
+    const title = `@${userInfo.nickName}：${shareContent}` || `@${this.state.user.userName}：${shareContent}`
+    const path = `pages/index?worksId=${this.state.user.worksId}`
+    return {
+      title: title,
+      path: path,
+      imageUrl: url,
+      success: () => {
+        console.log('分享成功')
+      },
+    }
   }
 
   _initPage = async () => {
@@ -286,6 +274,7 @@ class Share extends Component {
         }
       }, () => { this.singleWorkList() })
     } else {
+      this.singleWorkList()
       isFromApp = false
       if (shareSource) {
         shareSource = decodeURIComponent(shareSource)
@@ -405,9 +394,10 @@ class Share extends Component {
     })
   }
   handleRecommendClick =  (data) => {
-    console.log('data',data)
+    // console.log('data',data)
     const deleteLike1 = Taro.getStorageSync('deleteLike')
     this.setState({
+      isFromApp: false,
       user: {
         userImage: data.author.avatar,
         userName: data.author.nickname,
@@ -430,7 +420,7 @@ class Share extends Component {
       }
     }, () => {this.singleWorkList()})
     
-    this.onLoad()
+    // this.onLoad()
   }
 
   onLoad = async() => {
@@ -588,9 +578,8 @@ class Share extends Component {
     context.save()
     // context.arc(logoWidth / 2 + logoLeft, logoHeight / 2 + logoTop, logoWidth / 2, 0, Math.PI * 2, false)
     // context.clip()
+    console.log('8888888',this.state.user.userImage)
     context.drawImage(user.userImage, logoLeft, logoTop, logoWidth, logoHeight)
-    context.arc(logoWidth / 2 + logoLeft, logoHeight / 2 + logoTop, logoWidth / 2, 0, Math.PI * 2, false)
-    context.clip()
     context.restore()
     context.stroke()
 
@@ -816,9 +805,9 @@ class Share extends Component {
           }
           color='#333'
         >懒人抠图</Title>
-        {/* <Image src="https://mini-programdev.api.versa-ai.com/community/feed/recommend/works?size=6&sessionId=395306100738281472&deviceId=af5b862c-77b4-4744-a39a-e19404630545" style="width:200rpx;height:200rpx;"></Image> */}
-        {isFromApp ? 
-        (<View className='main-section' style={{marginTop:this.state.titleHeight + 'rpx' }}>
+
+        {/* {isFromApp ?  */}
+        <View className='main-section' style={{marginTop:this.state.titleHeight + 'rpx' }}>
           <View className="showImage">
             <View className="showImage blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
             <Image src={user.shareSource} mode="aspectFill"  className="bgImage" />
@@ -881,8 +870,9 @@ class Share extends Component {
               canvasId={canvas.id} />
           </View>
           
-        </View>) :
-        (<View className='main-section' style={{marginTop:this.state.titleHeight + 'rpx' }}>
+        </View> 
+        {/* :
+        <View className='main-section' style={{marginTop:this.state.titleHeight + 'rpx' }}>
         {shareSourceType === 'image' &&
           <View>
             {themeData.sceneType === 3 && <View class="share-bg"></View>}
@@ -917,7 +907,7 @@ class Share extends Component {
                 { user.liked === 0 ? <Image src={like}  className="like" /> : <Image src={liked}  className="like" />}
               </Button>               
             }
-          <View style="" className="likeNum">{user.likeNumber}</View>
+          <View style="" className="likeNum">{userXcx.likeNumber}</View>
           <Button openType="share" className="share wx">
             <Image src={wx} className="wx"/>
           </Button>
@@ -963,8 +953,8 @@ class Share extends Component {
             style={`width: ${frame.width * canvas.ratio}px; height: ${frame.height * canvas.ratio}px;`}
             canvasId={canvas.id} />
         </View>
-      </View>)
-        }
+      </View>
+        } */}
         <View className='sub-section'>
           {
             this.state.sceneType == 5 ? <View className='originalWrap'>
@@ -1021,3 +1011,4 @@ class Share extends Component {
 }
 
 export default Share as ComponentClass<PageOwnProps, PageState>
+

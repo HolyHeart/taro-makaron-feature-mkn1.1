@@ -51,14 +51,7 @@
 			"current": -1,
 			"list": [
 				{
-					"id": -1,
-					"name": "pages/index",
-					"pathName": "pages/index",
-					"query": "worksId",
-					"scene": null
-				},
-				{
-					"id": 1,
+					"id": 0,
 					"name": "pages/index",
 					"pathName": "pages/index",
 					"query": "remoteURL=https://static01.versa-ai.com/upload/29cbaea56c26/40713F9A3A097492E9CF5C831362FE97.jpg&from=app&workID=327570570734395392",

@@ -111,6 +111,14 @@ class Share extends Component {
       userToken: '',
       sessionId: ''
     },
+    userXcx: {
+      userImage: '',
+      userName: '',
+      likeNumber: 0,
+      uid: '',
+      worksId: '',
+      liked: 0
+    },
     result: {
       show: false,
       shareImage: {
@@ -171,7 +179,7 @@ class Share extends Component {
     }
     this.setState({
       titleHeight: totalTopHeight
-    },()=>{  console.log('8888',this.state.titleHeight) })
+    })
   }
 
   componentDidMount() {
@@ -189,7 +197,7 @@ class Share extends Component {
       const data = singleWorkData.result.result
       if ((data.renderPictureInfo.url).indexOf('https') === -1) {
         var imageUrl = (data.renderPictureInfo.url).replace(/^http/,'https')
-        console.log('url',imageUrl)
+        // console.log('url',imageUrl)
       }
       this.setState({
         user: {
@@ -214,20 +222,37 @@ class Share extends Component {
   componentDidShow() { }
   componentDidHide() { }
   onShareAppMessage(res) {
-    const shareContent = ''
-    const url = `${this.state.user.shareSource}?x-oss-process=image/resize,m_pad,h_420,w_525`
-    console.log(22,url)
-    const { userInfo = {} } = globalData
-    const title = `@${userInfo.nickName}：${shareContent}` || `@${this.state.user.userName}：${shareContent}`
-    const path = `pages/index?worksId=${this.state.user.worksId}`
-    return {
-      title: title,
-      path: path,
-      imageUrl: url,
-      success: () => {
-        console.log('分享成功')
-      },
-    }
+    // if (this.state.isFromApp) {
+      const shareContent = ''
+      const url = `${this.state.user.shareSource}?x-oss-process=image/resize,m_pad,h_420,w_525`
+      console.log(22,url)
+      const { userInfo = {} } = globalData
+      const title = `@${userInfo.nickName}：${shareContent}` || `@${this.state.user.userName}：${shareContent}`
+      const path = `pages/index?worksId=${this.state.user.worksId}`
+      return {
+        title: title,
+        path: path,
+        imageUrl: url,
+        success: () => {
+          console.log('分享成功')
+        },
+      }
+    // } else {
+      // const shareContent = ''
+      // const url = `${this.state.shareSource}?x-oss-process=image/resize,m_pad,h_420,w_525`
+      // console.log(22,url)
+      // const { userInfo = {} } = globalData
+      // const title = `@${userInfo.nickName}：${shareContent}` || `@${this.state.user.userName}：${shareContent}`
+      // const path = `/pages/index?shareSource=${this.state.shareSource}`
+      // return {
+      //   title: title,
+      //   path: path,
+      //   imageUrl: url,
+      //   success: () => {
+      //     console.log('分享成功')
+      //   },
+      // }
+    // }
   }
 
   _initPage = async () => {
@@ -280,7 +305,12 @@ class Share extends Component {
       height: shareVideoInfo.height,
       themeId,
       sceneId,
-      originalCompleteImageUrl: decodeURIComponent(originalCompleteImageUrl)
+      originalCompleteImageUrl: decodeURIComponent(originalCompleteImageUrl),
+      userXcx: {
+        userImage: globalData.userInfo.avatarUrl,
+        userName: globalData.userInfo.nickName,
+        likeNumber: 0
+      }
     })
   }
 
@@ -381,11 +411,19 @@ class Share extends Component {
         shareSource : data.renderPictureInfo.url,
         templateCode: data.schema,
         sessionId: deleteLike1
+      },
+      shareSource : data.renderPictureInfo.url,
+      userXcx: {
+        userImage: data.author.avatar,
+        userName: data.author.nickname,
+        likeNumber: data.likedAmount,
+        uid: data.uid,
+        worksId: data.worksId,
+        liked: data.liked
       }
     }, () => {this.singleWorkList()})
     
-    // this.singleWorkList()
-    // this.onLoad()
+    this.onLoad()
   }
 
   onLoad = async() => {
@@ -448,6 +486,7 @@ class Share extends Component {
     this.setState({
       isshow: true
     })
+    this.handelConfirm()
   }
   handelSave = () => {
     this.setState({
@@ -761,7 +800,7 @@ class Share extends Component {
 
   render() {
     const { isFromApp, shareSourceType, shareSource, videoPoster, width, height, recommendList, originalCompleteImageUrl, confirmText, isshow, savePoint, 
-      saveTitle, type, checkoutImage, checkoutVideo, morePlayList, user, qrCode, frame, canvas} = this.state
+      saveTitle, type, checkoutImage, checkoutVideo, morePlayList, user, userXcx, qrCode, frame, canvas} = this.state
     return (
       <View className='page-share'>
         <Title
@@ -771,6 +810,8 @@ class Share extends Component {
           }
           color='#333'
         >懒人抠图</Title>
+        {/* <Image src="https://mini-programdev.api.versa-ai.com/community/feed/recommend/works?size=6&sessionId=395306100738281472&deviceId=af5b862c-77b4-4744-a39a-e19404630545" style="width:200rpx;height:200rpx;"></Image> */}
+        {isFromApp ? 
         <View className='main-section' style={{marginTop:this.state.titleHeight + 'rpx' }}>
           {shareSourceType === 'image' &&
             <View>
@@ -820,7 +861,7 @@ class Share extends Component {
                 {savePoint === true ? <View className="wx-dialog-save">{saveTitle}</View> : <View className="wx-dialog-save"></View>}
                 <View className="wx-dialog-content">
                     <View className="bgUrl">
-                      <Image src={user.shareSource} className="bgUrl" mode="aspectFill" onClick={this.handelConfirm}/>
+                      <Image src={user.shareSource} className="bgUrl" mode="aspectFill" />
                     </View>
                     <View className="userInfo">
                       <Image className="userimage" src={user.userImage} />
@@ -853,7 +894,90 @@ class Share extends Component {
               canvasId={canvas.id} />
           </View>
           
+        </View> :
+        <View className='main-section' style={{marginTop:this.state.titleHeight + 'rpx' }}>
+        {shareSourceType === 'image' &&
+          <View>
+            {themeData.sceneType === 3 && <View class="share-bg"></View>}
+            <View className="showImage">
+              <View className="showImage blur" style={{backgroundImage: `url(${shareSource})`}}></View>
+              <Image src={shareSource} mode="aspectFill"  className="bgImage" />
+            </View>
+          </View>
+        }
+        {shareSourceType === 'video' &&
+          <View className='video-wrap showImage'>
+            <Video
+              className="video bgImage"
+              // style={{ width: Taro.pxTransform(width), height: Taro.pxTransform(height - 2) }}
+              loop
+              autoplay
+              src={shareSource}
+              poster={videoPoster}
+              objectFit='cover'
+              controls
+            ></Video>
+          </View>
+        }
+        <View className="userMessage">
+          {
+            userXcx.userImage ? <Image className="user" src={userXcx.userImage} /> : <Image className="user" src={titleImage} />
+          }
+          
+          <View className='userName'>{userXcx.userName}</View>
+          {            
+              <Button openType="getUserInfo" onGetUserInfo={this.getUserInfo}  className="likeAuth like">
+                { user.liked === 0 ? <Image src={like}  className="like" /> : <Image src={liked}  className="like" />}
+              </Button>               
+            }
+          <View style="" className="likeNum">{user.likeNumber}</View>
+          <Button openType="share" className="share wx">
+            <Image src={wx} className="wx"/>
+          </Button>
+          <Image src={pyq} onClick={this.shareHandle} className="pyq"/>
         </View>
+        {
+          isshow === true ?
+          <View className="wx_dialog_container">           
+            <View className="wx-mask"></View>
+            <View className="wx-dialog">
+              {savePoint === true ? <View className="wx-dialog-save">{saveTitle}</View> : <View className="wx-dialog-save"></View>}
+              <View className="wx-dialog-content">
+                  <View className="bgUrl">
+                    <Image src={shareSource} className="bgUrl" mode="aspectFill" onClick={this.handelConfirm}/>
+                  </View>
+                  <View className="userInfo">
+                    <Image className="userimage" src={userXcx.userImage} />
+                    <View className="username">
+                      <View className="userwork"><View className="name">@{userXcx.userName}</View>的作品</View>
+                      {
+                        type === 'image' ? <View className="seetwo">{checkoutImage}</View> : <View className="seetwo">{checkoutVideo}</View>
+                      }
+                    </View>
+                    <View className="two">
+                      <Image className="twoCode" src={qrCode} />
+                      <View className="logo">Makaron</View>
+                    </View>
+                  </View>
+                <AuthModal />
+              </View>
+              <View className="wx-dialog-footer">
+                <Button className="wx-dialog-btn" onClick={this.handelSave}  style="flex:1" >
+                    {confirmText}
+                </Button>
+              </View>
+            </View>
+          </View>
+          : ''
+        }
+        <View class="canvas-wrap">
+          <Canvas
+            disable-scroll={true}
+            style={`width: ${frame.width * canvas.ratio}px; height: ${frame.height * canvas.ratio}px;`}
+            canvasId={canvas.id} />
+        </View>
+      </View>
+        }
         <View className='sub-section'>
           {
             this.state.sceneType == 5 ? <View className='originalWrap'>

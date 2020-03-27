@@ -234,6 +234,7 @@ class Editor extends Component {
     const { userInfo = {} } = globalData
     const title = `@${userInfo.nickName}：${shareContent}`
     if (!shareImage.remoteUrl) {
+      console.log('shareImage.remoteUrl',shareImage.remoteUrl)
       return {
         title: title,
         path: '/pages/home/index',

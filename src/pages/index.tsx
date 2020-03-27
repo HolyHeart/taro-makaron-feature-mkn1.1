@@ -104,7 +104,8 @@ class Share extends Component {
       likeNumber: 0,
       uid: '',
       // worksId: '395180604612464640',
-      worksId:'194770944672976896',
+      worksId:'170903530965356544',
+      // worksId:'327570570734395392',
       liked: 0,
       templateCode: '',
       shareSource:'',
@@ -188,6 +189,7 @@ class Share extends Component {
     // Taro.showToast({
     //   title:this.$router.params.originalCompleteImageUrl
     // })
+    this.getRecommendList()
   }
 
   singleWorkList = async () => {
@@ -211,7 +213,7 @@ class Share extends Component {
           templateCode: data.schema,
           sessionId: deleteLike
         }
-      },()=>{ this.getRecommendList() })
+      })
     }
 
   }
@@ -222,6 +224,7 @@ class Share extends Component {
   componentDidShow() { }
   componentDidHide() { }
   onShareAppMessage(res) {
+
     // if (this.state.isFromApp) {
       const shareContent = ''
       const url = `${this.state.user.shareSource}?x-oss-process=image/resize,m_pad,h_420,w_525`
@@ -239,11 +242,12 @@ class Share extends Component {
       }
     // } else {
       // const shareContent = ''
-      // const url = `${this.state.shareSource}?x-oss-process=image/resize,m_pad,h_420,w_525`
-      // console.log(22,url)
+      // const url = `${this.state.shareSource}?x-oss-process=image/resize,m_pad,h_420,w_525` || `${this.state.user.shareSource}?x-oss-process=image/resize,m_pad,h_420,w_525`
       // const { userInfo = {} } = globalData
-      // const title = `@${userInfo.nickName}：${shareContent}` || `@${this.state.user.userName}：${shareContent}`
-      // const path = `/pages/index?shareSource=${this.state.shareSource}`
+      // const title = this.state.shareSource ?(`@${userInfo.nickName}：${shareContent}` || `@${this.state.userXcx.userName}：${shareContent}`) 
+      // : (`@${this.state.user.userName}：${shareContent}`)
+      // console.log('user',this.state.user.userName)
+      // const path = `/pages/index?shareSource=${this.state.shareSource}` || `pages/index?worksId=${this.state.user.worksId}`
       // return {
       //   title: title,
       //   path: path,
@@ -485,8 +489,7 @@ class Share extends Component {
   shareHandle =  () => {
     this.setState({
       isshow: true
-    })
-    this.handelConfirm()
+    },()=>{ this.handelConfirm()})
   }
   handelSave = () => {
     this.setState({

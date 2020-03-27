@@ -103,9 +103,7 @@ class Share extends Component {
       userName: '',
       likeNumber: 0,
       uid: '',
-      // worksId: '395180604612464640',
-      worksId:'170903530965356544',
-      // worksId:'327570570734395392',
+      worksId:'',
       liked: 0,
       templateCode: '',
       shareSource:'',
@@ -185,7 +183,6 @@ class Share extends Component {
 
   componentDidMount() {
     this._initPage()
-    this.singleWorkList()
     // Taro.showToast({
     //   title:this.$router.params.originalCompleteImageUrl
     // })
@@ -230,6 +227,7 @@ class Share extends Component {
       const url = `${this.state.user.shareSource}?x-oss-process=image/resize,m_pad,h_420,w_525`
       console.log(22,url)
       const { userInfo = {} } = globalData
+      console.log('userInfo',userInfo)
       const title = `@${userInfo.nickName}：${shareContent}` || `@${this.state.user.userName}：${shareContent}`
       const path = `pages/index?worksId=${this.state.user.worksId}`
       return {
@@ -274,7 +272,7 @@ class Share extends Component {
   processLoadData = () => {
     console.log('share page index', this.$router.params) // 输出 { id: 2, type: 'test' }
     let isFromApp, shareSourceType = 'image', videoPoster = '', shareVideoInfo = { width: 690, height: 920, }
-    let { shareSource, themeId, sceneId, from, remoteURL = '', width = 690, height = 920, originalCompleteImageUrl } = this.$router.params
+    let { shareSource, themeId, sceneId, from, remoteURL = '', width = 690, height = 920, originalCompleteImageUrl, workID} = this.$router.params
     if (from === 'app') {
       isFromApp = true
       if (remoteURL.indexOf('versa-ai.com') > -1) {
@@ -282,6 +280,11 @@ class Share extends Component {
       } else {
         shareSource = appConfig.imageHost + remoteURL
       }
+      this.setState({
+        user: {
+          worksId: workID
+        }
+      }, () => { this.singleWorkList() })
     } else {
       isFromApp = false
       if (shareSource) {
@@ -461,7 +464,7 @@ class Share extends Component {
     this.app.aldstat.sendEvent('分享页主按钮', '分享页主按钮')
   }
   handleOpenApp = () => {
-    console.log('跳转到马卡龙APP')
+    this.app.aldstat.sendEvent('分享页打开app', '打开app')
   }
   getUserInfo = async (e) =>{
     const { detail: { userInfo } } = e
@@ -815,30 +818,11 @@ class Share extends Component {
         >懒人抠图</Title>
         {/* <Image src="https://mini-programdev.api.versa-ai.com/community/feed/recommend/works?size=6&sessionId=395306100738281472&deviceId=af5b862c-77b4-4744-a39a-e19404630545" style="width:200rpx;height:200rpx;"></Image> */}
         {isFromApp ? 
-        <View className='main-section' style={{marginTop:this.state.titleHeight + 'rpx' }}>
-          {shareSourceType === 'image' &&
-            <View>
-              {themeData.sceneType === 3 && <View class="share-bg"></View>}
-              <View className="showImage">
-                <View className="showImage blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
-                <Image src={user.shareSource} mode="aspectFill"  className="bgImage" />
-              </View>
-            </View>
-          }
-          {shareSourceType === 'video' &&
-            <View className='video-wrap showImage'>
-              <Video
-                className="video bgImage"
-                // style={{ width: Taro.pxTransform(width), height: Taro.pxTransform(height - 2) }}
-                loop
-                autoplay
-                src={shareSource}
-                poster={videoPoster}
-                objectFit='cover'
-                controls
-              ></Video>
-            </View>
-          }
+        (<View className='main-section' style={{marginTop:this.state.titleHeight + 'rpx' }}>
+          <View className="showImage">
+            <View className="showImage blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
+            <Image src={user.shareSource} mode="aspectFill"  className="bgImage" />
+          </View>
           <View className="userMessage">
             {
               user.userImage ? <Image className="user" src={user.userImage} /> : <Image className="user" src={titleImage} />
@@ -897,8 +881,8 @@ class Share extends Component {
               canvasId={canvas.id} />
           </View>
           
-        </View> :
-        <View className='main-section' style={{marginTop:this.state.titleHeight + 'rpx' }}>
+        </View>) :
+        (<View className='main-section' style={{marginTop:this.state.titleHeight + 'rpx' }}>
         {shareSourceType === 'image' &&
           <View>
             {themeData.sceneType === 3 && <View class="share-bg"></View>}
@@ -979,7 +963,7 @@ class Share extends Component {
             style={`width: ${frame.width * canvas.ratio}px; height: ${frame.height * canvas.ratio}px;`}
             canvasId={canvas.id} />
         </View>
-      </View>
+      </View>)
         }
         <View className='sub-section'>
           {

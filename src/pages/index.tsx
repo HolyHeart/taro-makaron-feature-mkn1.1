@@ -165,7 +165,7 @@ class Share extends Component {
     const systemInfo = Taro.getSystemInfoSync()
     if (systemInfo.screenHeight > 568) {
       this.setState({
-        hotMarginTop: 60
+        hotMarginTop: 50
       })
     }
     console.log('system',systemInfo)
@@ -193,10 +193,6 @@ class Share extends Component {
     //   title:this.$router.params.originalCompleteImageUrl
     // })
     this.getRecommendList()
-    if(this.state.isFromApp) {
-      console.log(3333333)
-      this.singleWorkList()
-    }
   }
 
   singleWorkList = async () => {
@@ -236,12 +232,14 @@ class Share extends Component {
   componentDidHide() { }
   onShareAppMessage(res) {
     const shareContent = ''
-    const url = `${this.state.user.shareSource}?x-oss-process=image/resize,m_pad,h_420,w_525`
+    const url = `${this.state.user.shareSource}?x-oss-process=image/resize,m_pad,h_420,w_525` ||
+    `${this.state.user.shareSource}?x-oss-process=image/resize,m_pad,h_420,w_525`
     console.log(22,url)
     const { userInfo = {} } = globalData
     const title = `@${userInfo.nickName}：${shareContent}`
-    const path = `pages/index?worksId=${this.state.user.worksId}`
-    console.log('path',path)
+    const path = `pages/index?worksId=${this.state.user.worksId}` || `pages/index?shareSource=${this.state.shareSource}`
+    console.log('path345',path)
+    // Taro.navigateTo({ url: `/pages/index?worksId=${this.state.user.worksId}` })
     return {
       title: title,
       path: path,
@@ -281,12 +279,19 @@ class Share extends Component {
         }
       }, () => { this.singleWorkList() })
     } else {
-      // this.singleWorkList()
-      this.setState({
-        user: {
-          worksId: this.$router.params.worksId
-        }
-      }, () => { this.singleWorkList() })
+      console.log('12345',this.state.user.worksId)
+      if(this.state.user.worksId !== 'undefined') {
+        console.log('1234567890',this.state.user.worksId)
+        this.setState({
+          user: {
+            worksId: this.$router.params.worksId
+          }
+        }, () => { this.singleWorkList() })
+      } else {
+        this.setState({
+          shareSource: this.$router.params.shareSource
+        })
+      }
       isFromApp = false
       if (shareSource) {
         shareSource = decodeURIComponent(shareSource)
@@ -441,10 +446,12 @@ class Share extends Component {
     const worksId = this.state.user.worksId
     console.log(999,this.state.user)
     const scene = await service.share.getQrCode(page, width, worksId)
-    console.log(23,scene)
-    this.setState({
-      qrCode: scene.result
-    })
+    if (scene.status === 'success') {
+      console.log(23,scene)
+      this.setState({
+        qrCode: wx.arrayBufferToBase64(scene.result)
+      })
+    }
   }
 
   handleFormSubmit = (e) => {
@@ -839,7 +846,7 @@ class Share extends Component {
         >懒人抠图</Title>
         { console.log('2345',qrCode)}
         {/* {isFromApp ?  */}
-        <View className='main-section' style={{marginTop:(this.state.titleHeight + hotMarginTop/2) + 'rpx' }}>
+        {/* <View className='main-section' style={{marginTop:(this.state.titleHeight + hotMarginTop/2) + 'rpx' }}>
           <View className="showImage">
             <View className="showImage blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
             <Image src={user.shareSource} mode="aspectFill"  className="bgImage" />
@@ -903,8 +910,8 @@ class Share extends Component {
               canvasId={canvas.id} />
           </View>
           
-        </View> 
-        {/* :
+        </View>  */}
+        {/* : */}
         <View className='main-section' style={{marginTop:this.state.titleHeight + 'rpx' }}>
         {shareSourceType === 'image' &&
           <View>
@@ -987,7 +994,7 @@ class Share extends Component {
             canvasId={canvas.id} />
         </View>
       </View>
-        } */}
+        {/* } */}
         <View className='sub-section'>
           {
             this.state.sceneType == 5 ? <View className='originalWrap'>

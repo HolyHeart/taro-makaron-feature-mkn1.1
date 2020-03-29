@@ -584,7 +584,7 @@ export const share = {
         width: width,
         worksId: worksId
       },
-      responseType: 'arraybuffer'
+      // responseType: 'arraybuffer'
     }
     return request(reqData)
   },

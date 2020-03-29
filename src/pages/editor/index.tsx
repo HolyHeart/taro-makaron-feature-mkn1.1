@@ -231,6 +231,7 @@ class Editor extends Component {
       sceneId: currentScene.sceneId || '',
     }
     const path = `/pages/index?shareSource=${shareImageUrl}`
+    console.log('url',path)
     const { userInfo = {} } = globalData
     const title = `@${userInfo.nickName}：${shareContent}`
     if (!shareImage.remoteUrl) {
@@ -241,8 +242,8 @@ class Editor extends Component {
         imageUrl: currentScene.thumbnailUrl,
       }
     }
-    console.log(title, path, shareImageUrl)
-    // Taro.navigateTo({ url: `/pages/index?shareSource=${shareImageUrl}` })
+    console.log('789',title, path, shareImageUrl)
+    Taro.navigateTo({ url: `/pages/index?shareSource=${shareImageUrl}` })
     return {
       title: title,
       path: path,

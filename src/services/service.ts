@@ -583,7 +583,8 @@ export const share = {
         page: page,
         width: width,
         worksId: worksId
-      }
+      },
+      responseType: 'arraybuffer'
     }
     return request(reqData)
   },

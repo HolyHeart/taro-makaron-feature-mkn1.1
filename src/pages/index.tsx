@@ -1,6 +1,6 @@
 
 import { ComponentClass } from 'react'
-import Taro, { Component, Config } from '@tarojs/taro'
+import Taro, { Component, Config, base64ToArrayBuffer } from '@tarojs/taro'
 import { View, Form, Button, Image, Video, Canvas } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 import originalImageIcon from '@/assets/images/originalImage@2x.png'
@@ -239,8 +239,9 @@ class Share extends Component {
     const url = `${this.state.user.shareSource}?x-oss-process=image/resize,m_pad,h_420,w_525`
     console.log(22,url)
     const { userInfo = {} } = globalData
-    const title = `@${userInfo.nickName}：${shareContent}` || `@${this.state.user.userName}：${shareContent}`
+    const title = `@${userInfo.nickName}：${shareContent}`
     const path = `pages/index?worksId=${this.state.user.worksId}`
+    console.log('path',path)
     return {
       title: title,
       path: path,
@@ -280,7 +281,12 @@ class Share extends Component {
         }
       }, () => { this.singleWorkList() })
     } else {
-      this.singleWorkList()
+      // this.singleWorkList()
+      this.setState({
+        user: {
+          worksId: this.$router.params.worksId
+        }
+      }, () => { this.singleWorkList() })
       isFromApp = false
       if (shareSource) {
         shareSource = decodeURIComponent(shareSource)
@@ -426,7 +432,7 @@ class Share extends Component {
       }
     }, () => {this.singleWorkList()})
     
-    // this.onLoad()
+    this.onLoad()
   }
 
   onLoad = async() => {
@@ -831,13 +837,14 @@ class Share extends Component {
           }
           color='#333'
         >懒人抠图</Title>
-
+        { console.log('2345',qrCode)}
         {/* {isFromApp ?  */}
-        <View className='main-section' style={{marginTop:this.state.titleHeight + 'rpx' }}>
+        <View className='main-section' style={{marginTop:(this.state.titleHeight + hotMarginTop/2) + 'rpx' }}>
           <View className="showImage">
             <View className="showImage blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
             <Image src={user.shareSource} mode="aspectFill"  className="bgImage" />
           </View>
+          { qrCode ? <Image src="{{qrCode}}" style="width:100rpx;height:100rpx;"/> : ''}
           <View className="userMessage">
             {
               user.userImage ? <Image className="user" src={user.userImage} /> : <Image className="user" src={titleImage} />
@@ -1002,7 +1009,7 @@ class Share extends Component {
                     className="custom-button pink"
                     hoverClass="btnhover"
                     onClick={this.handleContact}
-                    style={{ marginTop: hotMarginTop + 'rpx'}}
+                    // style={{ marginTop: hotMarginTop + 'rpx'}}
                   >制作同款作品</Button> :
                   <Button
                     className="custom-button pink"

@@ -51,7 +51,7 @@ class Item extends Component {
                   className='recommend-image' 
                   src={data.renderPictureInfo.url} 
                   style='width: 100%; height: 100%' 
-                  mode='aspectFit'
+                  mode='aspectFill'
                 />
                   :
                   <Image 

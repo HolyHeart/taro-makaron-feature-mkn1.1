@@ -242,7 +242,7 @@ class Share extends Component {
     const title = `@${userInfo.nickName}：${shareContent}`
     const path = `pages/index?worksId=${this.state.user.worksId}`
     console.log('234',path)
-    Taro.navigateTo({ url: `/pages/index?worksId=${this.state.user.worksId}` })
+    // Taro.navigateTo({ url: `/pages/index?worksId=${this.state.user.worksId}` })
     return {
       title: title,
       path: path ,
@@ -535,7 +535,6 @@ class Share extends Component {
     console.log('456',remoteUrl)
     let localImagePath = ''
     try {
-      console.log(678)
       const result = await service.base.downloadFile(remoteUrl)
       console.log('result',result)
       localImagePath = (result.tempFilePath)
@@ -600,13 +599,13 @@ class Share extends Component {
 
   // 绘制二维码和logo
   canvasDrawLogo = (context, ratio) => {
-    const { frame, user } = this.state
+    const { frame, user ,qrCode} = this.state
     const codeWidth = 42 * ratio
     const codeHeight = 43 * ratio
     const codeLeft = 226 * ratio
     const codeTop = 365 * ratio
     context.save()
-    context.drawImage(image_code, codeLeft, codeTop, codeWidth, codeHeight)
+    context.drawImage(qrCode, codeLeft, codeTop, codeWidth, codeHeight)
     context.restore()
     context.stroke()
 
@@ -618,7 +617,6 @@ class Share extends Component {
     context.save()
     context.arc(logoWidth / 2 + logoLeft, logoHeight / 2 + logoTop, logoWidth / 2, 0, Math.PI * 2, false)
     context.clip()
-    console.log('8888888',this.state.user.userImage)
     context.drawImage(user.userImage, logoLeft, logoTop, logoWidth, logoHeight)
     context.restore()
     context.stroke()
@@ -714,7 +712,6 @@ class Share extends Component {
         sourceUrl: canvasImageUrl,
         sourceType: 'image',
         onSuccess: () => {
-          console.log(11111)
           Taro.showToast({
             title: '保存成功!',
             icon: 'success',

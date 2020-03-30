@@ -27,6 +27,7 @@ import pyq from '@/assets/images/pyq@3x.png'
 import userImage from '@/assets/images/logo@2x.png'
 import titleImage from '@/assets/images/pic_mkl@3x.png'
 import image_code from '@/assets/images/code.png'
+import session from 'dist/services/session'
 
 // const demo = 'https://static01.versa-ai.com/upload/201bae375f8b/18e62d91-fc04-46c6-8f21-7224b53eb4b7.mp4'
 type PageStateProps = {
@@ -109,6 +110,7 @@ class Share extends Component {
       shareSource:'',
       userToken: '',
       sessionId: '',
+      deviceId:'',
       worksType: 'pic'
     },
     userXcx: {
@@ -191,7 +193,6 @@ class Share extends Component {
     // Taro.showToast({
     //   title:this.$router.params.originalCompleteImageUrl
     // })
-    this.getRecommendList()
   }
 
   singleWorkList = async () => {
@@ -217,14 +218,15 @@ class Share extends Component {
           liked: data.liked,
           shareSource : imageUrl,
           templateCode: data.schema,
-          sessionId: deleteLike,
-          worksType: data.worksType
+          sessionId: deleteLike.sessionId,
+          worksType: data.worksType,
+          deviceId: deleteLike.deviceId
         }
       }, () => { 
         this.onLoad()
       })
     }
-
+    this.getRecommendList()
   }
   componentWillReceiveProps(nextProps) {
     // console.log(this.props, nextProps)
@@ -356,8 +358,8 @@ class Share extends Component {
         recommendList: (hotData.result && hotData.result.result) || []
       })
     } else {
-      const recommendData = await service.share.getrecommendList(6)
-      // console.log('recommendData', recommendData)
+      const size = 6
+      const recommendData = await service.share.getrecommendList(size)
       this.setState({
         recommendList: (recommendData.result && recommendData.result.result) || []
       })
@@ -463,14 +465,14 @@ class Share extends Component {
     const page = 'pages/index'
     const width = 100
     const worksId = this.state.user.worksId
+    const sessionId = this.state.user.sessionId
+    const deviceId = this.state.user.deviceId
     // console.log(999,this.state.user)
-    const scene = await service.share.getQrCode(page, width, worksId)
-    if (scene.status === 'success') {
-      console.log(23,scene)  
-      this.setState({
-        qrCode: scene.result
-      },() => {console.log('qrCode',this.state.qrCode)})
-    }
+    const scene = await service.share.getQrCode(page, width, worksId, sessionId, deviceId)
+    this.setState({
+      qrCode: scene
+    })
+    
   }
 
   handleFormSubmit = (e) => {
@@ -890,7 +892,6 @@ class Share extends Component {
 
               
           </View>
-          {/* { qrCode ? <Image src="{{qrCode}}" style="width:100rpx;height:100rpx;"/> : ''} */}
           <View className="userMessage">
             {
               user.userImage ? <Image className="user" src={user.userImage} /> : <Image className="user" src={titleImage} />

@@ -550,6 +550,16 @@ export const teleport = {
 
 //分享页热门作品
 export const share = {
+
+  singleWorkList: function (worksId) {
+    const reqData = {
+      method: 'GET',
+      url: api.share.singleWorkList + `/${worksId}`,
+      header: { "Accept": "*/*" },
+    }
+    return request(reqData)
+  },
+
   getrecommendList: function (size) {
     const reqData = {
       method: 'GET',
@@ -574,19 +584,8 @@ export const share = {
     return request(reqData)
   },
 
-  getQrCode: function (page, width, worksId) {
-    const reqData = {
-      method: 'GET',
-      url: api.share.getQrCode,
-      header: { "Accept": "*/*" },
-      data: {
-        page: page,
-        width: width,
-        worksId: worksId
-      },
-      // responseType: 'arraybuffer'
-    }
-    return request(reqData)
+  getQrCode: function (page, width, worksId,sessionId,deviceId) {
+    return api.share.getQrCode + `?page=${page}&index&width=${width}&worksId=${worksId}&sessionId=${sessionId}&deviceId=${deviceId}`
   },
 
   addLikeWork: function (worksId, uid, token) {
@@ -605,16 +604,7 @@ export const share = {
       header: { 'content-type': 'application/x-www-form-urlencoded' },
     }
     return request(reqData)
-  },
-
-  singleWorkList: function (worksId) {
-    const reqData = {
-      method: 'GET',
-      url: api.share.singleWorkList + `/${worksId}`,
-      header: { "Accept": "*/*" },
-    }
-    return request(reqData)
-  },
+  }
 
 }
 

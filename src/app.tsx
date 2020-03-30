@@ -40,7 +40,7 @@ class _App extends Component {
       'pages/error/index',
       'pages/crop/index',
       'pages/waiting/index',
-      // 'pages/share/index',
+      'pages/share/index',
       'pages/style/index',
       // 'pages/index',
       'pages/psChallenge/index',

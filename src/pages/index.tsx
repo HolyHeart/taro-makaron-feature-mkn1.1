@@ -168,14 +168,14 @@ class Share extends Component {
         hotMarginTop: 50
       })
     }
-    console.log('system',systemInfo)
+    // console.log('system',systemInfo)
     if (/iphone x/i.test(systemInfo.model)) {
       systemInfo.isIphoneX = true
     } else {
       systemInfo.isIphoneX = false
     }
     let totalTopHeight = 0
-    if (systemInfo.model.indexOf('iPhone X') !== -1) {)
+    if (systemInfo.model.indexOf('iPhone X') !== -1) {
       totalTopHeight = 40
     } else if (systemInfo.model.indexOf('iPhone') !== -1) {
       totalTopHeight = 0
@@ -230,22 +230,41 @@ class Share extends Component {
   componentDidHide() { }
   onShareAppMessage(res) {
     const shareContent = ''
-    const url = `${this.state.user.shareSource}?x-oss-process=image/resize,m_pad,h_420,w_525` ||
-    `${this.state.user.shareSource}?x-oss-process=image/resize,m_pad,h_420,w_525`
+    const url = `${this.state.user.shareSource}?x-oss-process=image/resize,m_pad,h_420,w_525` 
+    const urlXcx = `${this.state.shareSource}?x-oss-process=image/resize,m_pad,h_420,w_525` 
     console.log(22,url)
     const { userInfo = {} } = globalData
     const title = `@${userInfo.nickName}：${shareContent}`
-    const path = `pages/index?worksId=${this.state.user.worksId}` || `pages/index?shareSource=${this.state.shareSource}`
-    console.log('path345',path)
+    const path = `pages/index?worksId=${this.state.user.worksId}`
+    const pathXcx = `pages/share/index?shareSource=${shareSource}`
     // Taro.navigateTo({ url: `/pages/index?worksId=${this.state.user.worksId}` })
     return {
       title: title,
-      path: path,
-      imageUrl: url,
+      path: path || pathXcx,
+      imageUrl: url || urlXcx,
       success: () => {
         console.log('分享成功')
       },
     }
+
+    // const {shareSource} = this.state
+    // console.log('share',shareSource)
+    // const shareContent = ''
+    // const url = `${this.state.shareSource}?x-oss-process=image/resize,m_pad,h_420,w_525` 
+    // console.log(22,url)
+    // const { userInfo = {} } = globalData
+    // const title = `@${userInfo.nickName}：${shareContent}`
+    // const path = `pages/share/index?shareSource=${shareSource}`
+    // // console.log('path345',path)
+    // // Taro.navigateTo({ url: `/pages/share/index?shareSource=${shareSource}` })
+    // return {
+    //   title: title,
+    //   path: path,
+    //   imageUrl: url,
+    //   success: () => {
+    //     console.log('分享成功')
+    //   },
+    // }
   }
 
   _initPage = async () => {
@@ -440,15 +459,13 @@ class Share extends Component {
     const page = 'pages/index'
     const width = 100
     const worksId = this.state.user.worksId
-    console.log(999,this.state.user)
+    // console.log(999,this.state.user)
     const scene = await service.share.getQrCode(page, width, worksId)
     if (scene.status === 'success') {
-      console.log(23,scene)
-      console.log(23,scene.result)
-      console.log(23,)
+      console.log(23,scene)  
       this.setState({
         qrCode: scene.result
-      })
+      },() => {console.log('qrCode',this.state.qrCode)})
     }
   }
 
@@ -593,8 +610,8 @@ class Share extends Component {
     const logoLeft = 10 * ratio 
     const logoTop = 375 * ratio
     context.save()
-    // context.arc(logoWidth / 2 + logoLeft, logoHeight / 2 + logoTop, logoWidth / 2, 0, Math.PI * 2, false)
-    // context.clip()
+    context.arc(logoWidth / 2 + logoLeft, logoHeight / 2 + logoTop, logoWidth / 2, 0, Math.PI * 2, false)
+    context.clip()
     console.log('8888888',this.state.user.userImage)
     context.drawImage(user.userImage, logoLeft, logoTop, logoWidth, logoHeight)
     context.restore()

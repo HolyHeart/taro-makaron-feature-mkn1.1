@@ -198,12 +198,16 @@ class Share extends Component {
   componentDidShow() { }
   componentDidHide() { }
   onShareAppMessage(res) {
+    const {shareSource} = this.state
+    console.log('share',shareSource)
     const shareContent = ''
-    const url = `${this.state.user.worksId}?x-oss-process=image/resize,m_pad,h_420,w_525`
+    const url = `${this.state.shareSource}?x-oss-process=image/resize,m_pad,h_420,w_525` 
     console.log(22,url)
     const { userInfo = {} } = globalData
-    const title = `@${userInfo.nickName}：${shareContent}` || `@${this.state.user.userName}：${shareContent}`
-    const path = `/pages/index?worksId=${this.state.user.worksId}`
+    const title = `@${userInfo.nickName}：${shareContent}`
+    const path = `pages/share/index?shareSource=${shareSource}`
+    // console.log('path345',path)
+    // Taro.navigateTo({ url: `/pages/share/index?shareSource=${shareSource}` })
     return {
       title: title,
       path: path,
@@ -356,10 +360,18 @@ class Share extends Component {
   }
   handleRecommendClick = (data) => {
     console.log('data',data)
+    if ((data.renderPictureInfo.url || data.renderPictureInfo.firstFrame).indexOf('https') === -1) {
+      var imageUrl = (data.renderPictureInfo.url || data.renderPictureInfo.firstFrame).replace(/^http/,'https')
+      // console.log('url',imageUrl)
+    }
+    if ((data.author.avatar).indexOf('https') === -1) {
+      var userImage = (data.author.avatar).replace(/^http/,'https')
+      // console.log('url',imageUrl)
+    }
     this.setState({
-      shareSource : data.renderPictureInfo.url,
+      shareSource : imageUrl,
       user: {
-        userImage: data.author.avatar,
+        userImage: userImage,
         userName: data.author.nickname,
         likeNumber: data.likedAmount,
         uid: data.uid,
@@ -404,37 +416,33 @@ class Share extends Component {
   handleOpenApp = () => {
     this.app.aldstat.sendEvent('分享页打开app', '打开app')
   }
-  getUserInfo (e) {
-    console.log('e',e)
-    Taro.getSetting({
-      success (res) {
-        if (res.authSetting['scope.userInfo']) {
-          console.log('已授权',res)
-          Taro.getUserInfo({
-            success(res) {
-              console.log('获取用户信息',res)
-            },
-            fail(res) {
-              console.log('获取用户信息失败',res)
-            }
-          })
-        } else {
-          Taro.authorize ({
-            scope: 'scope.userInfo'
-          })
-        }
+  getUserInfo = async (e) =>{
+    const { detail: { userInfo } } = e
+    if (userInfo) {
+      const { themeData = {}, sceneId } = globalData
+      globalData.userInfo = userInfo
+      const result = await service.base.loginAuth(e.detail)
+      
+      // console.log(result)
+      this.userInfo = result.result.result
+      if (this.state.user.liked === 0) {
+        this.addLike(this.userInfo)
+      } else {
+        this.deleteLike(this.userInfo)
       }
-    })
-    if (this.state.user.liked === 0) {
-      this.addLike()
     } else {
-      this.deleteLike()
+      Taro.showToast({
+        title: '请授权',
+        icon: 'success',
+        duration: 2000
+      })
     }
+
   }
   shareHandle =  () => {
     this.setState({
       isshow: true
-    })
+    }, () => { this.handelConfirm()})
   }
   handelSave = () => {
     this.setState({
@@ -758,7 +766,7 @@ class Share extends Component {
                 {savePoint === true ? <View className="wx-dialog-save">{saveTitle}</View> : <View className="wx-dialog-save"></View>}
                 <View className="wx-dialog-content">
                     <View className="bgImage">
-                      <Image src={shareSource} className="bgImage" mode="aspectFill" onClick={this.handelConfirm}/>
+                      <Image src={shareSource} className="bgImage" mode="aspectFill" />
                     </View>
                     <View className="userInfo">
                       <Image className="userimage" src={user.userImage} />

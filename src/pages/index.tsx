@@ -108,7 +108,8 @@ class Share extends Component {
       templateCode: '',
       shareSource:'',
       userToken: '',
-      sessionId: ''
+      sessionId: '',
+      worksType: 'pic'
     },
     userXcx: {
       userImage: '',
@@ -216,10 +217,11 @@ class Share extends Component {
           liked: data.liked,
           shareSource : imageUrl,
           templateCode: data.schema,
-          sessionId: deleteLike
+          sessionId: deleteLike,
+          worksType: data.worksType
         }
       }, () => { 
-        // this.onLoad()
+        this.onLoad()
       })
     }
 
@@ -231,20 +233,18 @@ class Share extends Component {
   componentDidShow() { }
   componentDidHide() { }
   onShareAppMessage(res) {
-    // this.setState({
-    //   isFromApp: true
-    // })
     const shareContent = ''
     const url = `${this.state.user.shareSource}?x-oss-process=image/resize,m_pad,h_420,w_525` 
     console.log(22,url)
     const { userInfo = {} } = globalData
     const title = `@${userInfo.nickName}：${shareContent}`
     const path = `pages/index?worksId=${this.state.user.worksId}`
+    console.log('234',path)
     Taro.navigateTo({ url: `/pages/index?worksId=${this.state.user.worksId}` })
     return {
       title: title,
-      path: path || pathXcx,
-      imageUrl: url || urlXcx,
+      path: path ,
+      imageUrl: url ,
       success: () => {
         console.log('分享成功')
       },
@@ -444,7 +444,8 @@ class Share extends Component {
         liked: data.liked,
         shareSource : data.renderPictureInfo.url || data.renderPictureInfo.firstFrame,
         templateCode: data.schema,
-        sessionId: deleteLike1
+        sessionId: deleteLike1,
+        worksType: data.worksType
       },
       shareSource : data.renderPictureInfo.url || data.renderPictureInfo.firstFrame,
       userXcx: {
@@ -799,6 +800,7 @@ class Share extends Component {
           const uid = this.state.user.uid
           const shareSource = this.state.user.shareSource
           const sessionId = this.state.user.sessionId
+          const worksType = this.state.user.worksType
           this.setState({
             user: {
               liked: 1,
@@ -808,7 +810,8 @@ class Share extends Component {
               uid: uid,
               userName: userName,
               shareSource: shareSource,
-              sessionId: sessionId
+              sessionId: sessionId,
+              worksType: worksType
             }
           })
         }
@@ -828,6 +831,7 @@ class Share extends Component {
         const uid = this.state.user.uid
         const shareSource = this.state.user.shareSource
         const sessionId = this.state.user.sessionId
+        const worksType = this.state.user.worksType
         this.setState({
           user: {
             liked: 0,
@@ -837,7 +841,8 @@ class Share extends Component {
             uid: uid,
             userName: userName,
             shareSource: shareSource,
-            sessionId: sessionId
+            sessionId: sessionId,
+            worksType: worksType
           }
         })
       }
@@ -867,7 +872,23 @@ class Share extends Component {
         <View className='main-section' style={{marginTop:(this.state.titleHeight + hotMarginTop/2) + 'rpx' }}>
           <View className="showImage">
             <View className="showImage blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
-            <Image src={user.shareSource} mode="aspectFill"  className="bgImage" />
+            {
+              user.worksType === 'pic' && <Image src={user.shareSource} mode="aspectFill"  className="bgImage" /> 
+            }
+            { user.worksType === 'video' &&
+              <Video
+              className="video bgImage"
+              // style={{ width: Taro.pxTransform(width), height: Taro.pxTransform(height - 2) }}
+              loop
+              autoplay
+              src={user.shareSource}
+              poster={videoPoster}
+              objectFit='cover'
+              controls
+            ></Video>
+            }
+
+              
           </View>
           {/* { qrCode ? <Image src="{{qrCode}}" style="width:100rpx;height:100rpx;"/> : ''} */}
           <View className="userMessage">

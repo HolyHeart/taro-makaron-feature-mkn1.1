@@ -42,8 +42,6 @@ class Item extends Component {
             <Button
               className="recommend-button" 
               hoverClass="btn-hover"
-              openType="getUserInfo" 
-              onGetUserInfo={this.handleGetUserInfo}
               formType='submit'>
                 <Image 
                   className='recommend-image' 

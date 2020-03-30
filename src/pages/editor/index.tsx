@@ -230,9 +230,10 @@ class Editor extends Component {
       themeId: globalData.themeId || '',
       sceneId: currentScene.sceneId || '',
     }
-    const path = `/pages/index?shareSource=${shareImageUrl}`
-    console.log('url',path)
+    
     const { userInfo = {} } = globalData
+    const path = `/pages/index?shareSource=${shareImageUrl}&userInfo=${userInfo}`
+    console.log('url',path)
     const title = `@${userInfo.nickName}：${shareContent}`
     if (!shareImage.remoteUrl) {
       console.log('shareImage.remoteUrl',shareImage.remoteUrl)

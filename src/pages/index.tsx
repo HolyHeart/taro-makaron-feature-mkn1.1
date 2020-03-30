@@ -175,11 +175,9 @@ class Share extends Component {
       systemInfo.isIphoneX = false
     }
     let totalTopHeight = 0
-    if (systemInfo.model.indexOf('iPhone X') !== -1) {
-      console.log(3333)
+    if (systemInfo.model.indexOf('iPhone X') !== -1) {)
       totalTopHeight = 40
     } else if (systemInfo.model.indexOf('iPhone') !== -1) {
-      console.log(45678)
       totalTopHeight = 0
     }
     this.setState({
@@ -279,9 +277,9 @@ class Share extends Component {
         }
       }, () => { this.singleWorkList() })
     } else {
-      console.log('12345',this.state.user.worksId)
+      // console.log('12345',this.state.user.worksId)
       if(this.state.user.worksId !== 'undefined') {
-        console.log('1234567890',this.state.user.worksId)
+        // console.log('1234567890',this.state.user.worksId)
         this.setState({
           user: {
             worksId: this.$router.params.worksId
@@ -449,7 +447,7 @@ class Share extends Component {
     if (scene.status === 'success') {
       console.log(23,scene)
       this.setState({
-        qrCode: wx.arrayBufferToBase64(scene.result)
+        qrCode: scene.result
       })
     }
   }
@@ -844,7 +842,7 @@ class Share extends Component {
           }
           color='#333'
         >懒人抠图</Title>
-        { console.log('2345',qrCode)}
+        {/* { console.log('2345',qrCode)} */}
         {/* {isFromApp ?  */}
         <View className='main-section' style={{marginTop:(this.state.titleHeight + hotMarginTop/2) + 'rpx' }}>
           <View className="showImage">
@@ -944,7 +942,8 @@ class Share extends Component {
           <View className='userName'>{userXcx.userName}</View>
           {            
               <Button openType="getUserInfo" onGetUserInfo={this.getUserInfo}  className="likeAuth like">
-                { user.liked === 0 ? <Image src={like}  className="like" /> : <Image src={liked}  className="like" />}
+                { console.log('liked',userXcx.liked)}
+                { userXcx.liked === 0 ? <Image src={like}  className="like" /> : <Image src={liked}  className="like" />}
               </Button>               
             }
           <View style="" className="likeNum">{userXcx.likeNumber}</View>

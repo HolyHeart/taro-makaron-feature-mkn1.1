@@ -218,7 +218,9 @@ class Share extends Component {
           templateCode: data.schema,
           sessionId: deleteLike
         }
-      }, () => { this.onLoad()})
+      }, () => { 
+        // this.onLoad()
+      })
     }
 
   }
@@ -229,15 +231,16 @@ class Share extends Component {
   componentDidShow() { }
   componentDidHide() { }
   onShareAppMessage(res) {
+    // this.setState({
+    //   isFromApp: true
+    // })
     const shareContent = ''
     const url = `${this.state.user.shareSource}?x-oss-process=image/resize,m_pad,h_420,w_525` 
-    const urlXcx = `${this.state.shareSource}?x-oss-process=image/resize,m_pad,h_420,w_525` 
     console.log(22,url)
     const { userInfo = {} } = globalData
     const title = `@${userInfo.nickName}：${shareContent}`
     const path = `pages/index?worksId=${this.state.user.worksId}`
-    const pathXcx = `pages/share/index?shareSource=${shareSource}`
-    // Taro.navigateTo({ url: `/pages/index?worksId=${this.state.user.worksId}` })
+    Taro.navigateTo({ url: `/pages/index?worksId=${this.state.user.worksId}` })
     return {
       title: title,
       path: path || pathXcx,

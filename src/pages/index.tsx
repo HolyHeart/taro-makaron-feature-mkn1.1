@@ -849,7 +849,7 @@ class Share extends Component {
             <View className="showImage blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
             <Image src={user.shareSource} mode="aspectFill"  className="bgImage" />
           </View>
-          { qrCode ? <Image src="{{qrCode}}" style="width:100rpx;height:100rpx;"/> : ''}
+          {/* { qrCode ? <Image src="{{qrCode}}" style="width:100rpx;height:100rpx;"/> : ''} */}
           <View className="userMessage">
             {
               user.userImage ? <Image className="user" src={user.userImage} /> : <Image className="user" src={titleImage} />
@@ -1015,7 +1015,6 @@ class Share extends Component {
                     className="custom-button pink"
                     hoverClass="btnhover"
                     onClick={this.handleContact}
-                    // style={{ marginTop: hotMarginTop + 'rpx'}}
                   >制作同款作品</Button> :
                   <Button
                     className="custom-button pink"
@@ -1027,7 +1026,7 @@ class Share extends Component {
                 }
               </Form>
           }
-          <View className='recommend-wrap' style={{ marginTop: hotMarginTop + 'rpx'}}>
+          <View className='recommend-wrap' style={{ marginTop: hotMarginTop/2 + 'rpx'}}>
             <View className='recommend-title'>热门作品</View>
             <RecommendList
               list={recommendList}

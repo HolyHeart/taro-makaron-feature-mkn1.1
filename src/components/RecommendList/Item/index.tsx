@@ -45,12 +45,23 @@ class Item extends Component {
               openType="getUserInfo" 
               onGetUserInfo={this.handleGetUserInfo}
               formType='submit'>
-                <Image 
+                {
+                  data.worksType === 'pic' ? 
+                  <Image 
                   className='recommend-image' 
                   src={data.renderPictureInfo.url} 
                   style='width: 100%; height: 100%' 
                   mode='aspectFill'
-                />   
+                />
+                  :
+                  <Image 
+                  className='recommend-image' 
+                  src={data.renderPictureInfo.firstFrame} 
+                  style='width: 100%; height: 100%' 
+                  mode='aspectFill'
+                />
+                }
+                   
               </Button>
           </Form>
       </View>   

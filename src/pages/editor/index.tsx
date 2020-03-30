@@ -244,7 +244,7 @@ class Editor extends Component {
       }
     }
     console.log('789',title, path, shareImageUrl)
-    Taro.navigateTo({ url: `/pages/index?shareSource=${shareImageUrl}` })
+    // Taro.navigateTo({ url: `/pages/index?shareSource=${shareImageUrl}` })
     return {
       title: title,
       path: path,

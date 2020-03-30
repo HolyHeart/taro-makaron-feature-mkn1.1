@@ -198,8 +198,8 @@ class Share extends Component {
     const deleteLike = Taro.getStorageSync('deleteLike')
     if (singleWorkData.status === 'success') {
       const data = singleWorkData.result.result
-      if ((data.renderPictureInfo.url).indexOf('https') === -1) {
-        var imageUrl = (data.renderPictureInfo.url).replace(/^http/,'https')
+      if ((data.renderPictureInfo.url || data.renderPictureInfo.firstFrame).indexOf('https') === -1) {
+        var imageUrl = (data.renderPictureInfo.url || data.renderPictureInfo.firstFrame).replace(/^http/,'https')
         // console.log('url',imageUrl)
       }
       if ((data.author.avatar).indexOf('https') === -1) {
@@ -327,7 +327,7 @@ class Share extends Component {
 
   getRecommendList = async () => {
     if (this.state.user.templateCode) {
-      console.log(333333)
+      // console.log(333333)
       const hotData = await service.share.getHotList(this.state.user.templateCode)
       // console.log('hotData', hotData)
       this.setState({
@@ -420,11 +420,11 @@ class Share extends Component {
         uid: data.uid,
         worksId: data.worksId,
         liked: data.liked,
-        shareSource : data.renderPictureInfo.url,
+        shareSource : data.renderPictureInfo.url || data.renderPictureInfo.firstFrame,
         templateCode: data.schema,
         sessionId: deleteLike1
       },
-      shareSource : data.renderPictureInfo.url,
+      shareSource : data.renderPictureInfo.url || data.renderPictureInfo.firstFrame,
       userXcx: {
         userImage: data.author.avatar,
         userName: data.author.nickname,

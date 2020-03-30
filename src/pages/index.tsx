@@ -846,7 +846,7 @@ class Share extends Component {
         >懒人抠图</Title>
         { console.log('2345',qrCode)}
         {/* {isFromApp ?  */}
-        {/* <View className='main-section' style={{marginTop:(this.state.titleHeight + hotMarginTop/2) + 'rpx' }}>
+        <View className='main-section' style={{marginTop:(this.state.titleHeight + hotMarginTop/2) + 'rpx' }}>
           <View className="showImage">
             <View className="showImage blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
             <Image src={user.shareSource} mode="aspectFill"  className="bgImage" />
@@ -910,9 +910,9 @@ class Share extends Component {
               canvasId={canvas.id} />
           </View>
           
-        </View>  */}
+        </View> 
         {/* : */}
-        <View className='main-section' style={{marginTop:this.state.titleHeight + 'rpx' }}>
+        {/* <View className='main-section' style={{marginTop:this.state.titleHeight + 'rpx' }}>
         {shareSourceType === 'image' &&
           <View>
             {themeData.sceneType === 3 && <View class="share-bg"></View>}
@@ -993,7 +993,7 @@ class Share extends Component {
             style={`width: ${frame.width * canvas.ratio}px; height: ${frame.height * canvas.ratio}px;`}
             canvasId={canvas.id} />
         </View>
-      </View>
+      </View> */}
         {/* } */}
         <View className='sub-section'>
           {

@@ -218,7 +218,7 @@ class Share extends Component {
           templateCode: data.schema,
           sessionId: deleteLike
         }
-      }, () => { console.log('single',this.state.user)})
+      }, () => { this.onLoad()})
     }
 
   }
@@ -434,8 +434,6 @@ class Share extends Component {
         liked: data.liked
       }
     }, () => {this.singleWorkList()})
-    
-    this.onLoad()
   }
 
   onLoad = async() => {
@@ -446,6 +444,8 @@ class Share extends Component {
     const scene = await service.share.getQrCode(page, width, worksId)
     if (scene.status === 'success') {
       console.log(23,scene)
+      console.log(23,scene.result)
+      console.log(23,)
       this.setState({
         qrCode: scene.result
       })
@@ -1041,7 +1041,7 @@ class Share extends Component {
             />
           </View>
         </View>
-        {isFromApp && <BackApp onClick={this.handleOpenApp} />}
+        {isFromApp && <BackApp onClick={this.handleOpenApp} styleObj={{marginTop:(this.state.titleHeight + hotMarginTop/2) + 'rpx'} }/>}
         {/* <BackApp onClick={this.handleOpenApp} /> */}
         <AuthModal />
       </View>

@@ -28,6 +28,7 @@ class BackApp extends Component {
   render() {
     return (
       <View className='back-app' style={this.props.styleObj} onClick={this.handleClick}> 
+      {console.log('props',this.props)}
         <Button
           className='open-app'
           openType='launchApp'

@@ -38,7 +38,7 @@ class RecommendList extends Component {
 
   render() {
     const { styleObj, list, onGetUserInfo, onFormSubmit } = this.props
-    console.log('props',this.props)
+    // console.log('props',this.props)
     return (
       <View className="recommend" style={styleObj}>
         <ScrollView 

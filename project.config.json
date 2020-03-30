@@ -55,10 +55,7 @@
 					"name": "pages/index",
 					"pathName": "pages/index",
 					"query": "remoteURL=https://static01.versa-ai.com/upload/29cbaea56c26/40713F9A3A097492E9CF5C831362FE97.jpg&from=app&workID=194770944672976896",
-					"scene": 1069,
-					"referrerInfo": {
-						"appId": "wxce10b3ccd00fb766"
-					}
+					"scene": 1069
 				}
 			]
 		}

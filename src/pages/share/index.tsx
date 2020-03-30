@@ -21,6 +21,7 @@ import { getSystemInfo } from '@/model/actions/global'
 
 // import ShareDialog from '@/components/ShareDialog'
 import like from '@/assets/images/like@3x.png'
+import liked from '@/assets/images/liked@3x.png'
 import wx from '@/assets/images/wxicon@3x.png'
 import pyq from '@/assets/images/pyq@3x.png'
 import userImage from '@/assets/images/logo@2x.png'
@@ -164,7 +165,7 @@ class Share extends Component {
     // const path = tool.formatQueryUrl('/pages/share/index', data)
     // Taro.redirectTo({url: path})
     const systemInfo = Taro.getSystemInfoSync()
-    console.log('system',systemInfo)
+    // console.log('system',systemInfo)
     if (/iphone x/i.test(systemInfo.model)) {
       systemInfo.isIphoneX = true
     } else {
@@ -172,15 +173,13 @@ class Share extends Component {
     }
     let totalTopHeight = 0
     if (systemInfo.model.indexOf('iPhone X') !== -1) {
-      console.log(3333)
       totalTopHeight = 40
     } else if (systemInfo.model.indexOf('iPhone') !== -1) {
-      console.log(45678)
       totalTopHeight = 0
     }
     this.setState({
       titleHeight: totalTopHeight
-    },()=>{  console.log('8888',this.state.titleHeight) })
+    })
   }
 
   componentDidMount() {
@@ -234,7 +233,7 @@ class Share extends Component {
     console.log('share page index', this.$router.params) // 输出 { id: 2, type: 'test' }
     let isFromApp, shareSourceType = 'image', videoPoster = '', shareVideoInfo = { width: 690, height: 920, }
     let { shareSource, themeId, sceneId, from, remoteURL = '', width = 690, height = 920, originalCompleteImageUrl } = this.$router.params
-    console.log(345,sceneId)
+    // console.log(345,sceneId)
     if (from === 'app') {
       isFromApp = true
       if (remoteURL.indexOf('versa-ai.com') > -1) {
@@ -379,15 +378,15 @@ class Share extends Component {
         liked: data.liked
       }
     })
-    console.log(888,this.state.user)
-    this.onLoad()
+    // console.log(888,this.state.user)
+    this.onLoad().
   }
 
   onLoad = async() => {
     const page = 'pages/index'
     const width = 100
     const worksId = this.state.user.worksId
-    console.log(999,this.state.user)
+    // console.log(999,this.state.user)
     const scene = await service.share.getQrCode(page, width, worksId)
     console.log(23,scene)
     this.setState({
@@ -749,9 +748,11 @@ class Share extends Component {
             }
             
             <View className='userName'>{user.userName}</View>
-            <Button openType="getUserInfo" onGetUserInfo={this.getUserInfo}  className="likeAuth like">
-              <Image src={like}  className="like" />
-            </Button>
+            {            
+              <Button openType="getUserInfo" onGetUserInfo={this.getUserInfo}  className="likeAuth like">
+                { user.liked === 0 ? <Image src={like}  className="like" /> : <Image src={liked}  className="like" />}
+              </Button>               
+            }
             <View style="" className="likeNum">{user.likeNumber}</View>
             <Button openType="share" className="share wx">
               <Image src={wx} className="wx"/>

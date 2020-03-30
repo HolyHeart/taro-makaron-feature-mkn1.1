@@ -242,11 +242,12 @@ class Share extends Component {
     const title = `@${userInfo.nickName}：${shareContent}`
     const path = `pages/index?worksId=${this.state.user.worksId}`
     console.log('234',path)
-    // Taro.navigateTo({ url: `/pages/index?worksId=${this.state.user.worksId}` })
+    Taro.navigateTo({ url: `/pages/index?worksId=${this.state.user.worksId}` })
     return {
       title: title,
       path: path ,
       imageUrl: url ,
+      isFromApp: true,
       success: () => {
         console.log('分享成功')
       },
@@ -542,7 +543,7 @@ class Share extends Component {
       // console.log('下载图片失败', err)
     }
     // }
-    console.log(333,localImagePath)
+    // console.log(333,localImagePath)
     return localImagePath
   }
 

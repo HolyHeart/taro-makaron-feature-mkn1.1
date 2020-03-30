@@ -232,7 +232,7 @@ class Editor extends Component {
     }
     
     const { userInfo = {} } = globalData
-    const path = `/pages/index?shareSource=${shareImageUrl}&userInfo=${userInfo}`
+    const path = `/pages/share/index?shareSource=${shareImageUrl}&userInfo=${userInfo}`
     console.log('url',path)
     const title = `@${userInfo.nickName}：${shareContent}`
     if (!shareImage.remoteUrl) {
@@ -244,7 +244,7 @@ class Editor extends Component {
       }
     }
     console.log('789',title, path, shareImageUrl)
-    Taro.navigateTo({ url: `/pages/index?shareSource=${shareImageUrl}` })
+    // Taro.navigateTo({ url: `/pages/share/index?shareSource=${shareImageUrl}` })
     return {
       title: title,
       path: path,

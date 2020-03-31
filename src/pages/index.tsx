@@ -171,11 +171,14 @@ class Share extends Component {
         hotMarginTop: 50
       })
     }
-    // console.log('system',systemInfo)
     if (/iphone x/i.test(systemInfo.model)) {
       systemInfo.isIphoneX = true
     } else {
       systemInfo.isIphoneX = false
+      this.setState({
+        hotMarginTop: 0,
+        titleHeight: 0
+      })    
     }
     let totalTopHeight = 0
     if (systemInfo.model.indexOf('iPhone X') !== -1) {
@@ -242,7 +245,7 @@ class Share extends Component {
     const title = `@${userInfo.nickName}：${shareContent}`
     const path = `pages/index?worksId=${this.state.user.worksId}`
     console.log('234',path)
-    Taro.navigateTo({ url: `/pages/index?worksId=${this.state.user.worksId}` })
+    // Taro.navigateTo({ url: `/pages/index?worksId=${this.state.user.worksId}` })
     return {
       title: title,
       path: path ,
@@ -302,9 +305,7 @@ class Share extends Component {
         }
       }, () => { this.singleWorkList() })
     } else {
-      // console.log('12345',this.state.user.worksId)
       if(this.state.user.worksId !== 'undefined') {
-        // console.log('1234567890',this.state.user.worksId)
         this.setState({
           user: {
             worksId: this.$router.params.worksId
@@ -813,7 +814,7 @@ class Share extends Component {
               sessionId: sessionId,
               worksType: worksType
             }
-          })
+          },()=>{this.singleWorkList()})
         }
     } catch (error) {
       console.log(222, error)
@@ -873,7 +874,7 @@ class Share extends Component {
           <View className="showImage">
             <View className="showImage blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
             {
-              user.worksType === 'pic' && <Image src={user.shareSource} mode="aspectFill"  className="bgImage" /> 
+              user.worksType === 'pic' && <Image src={user.shareSource}   className="bgImage" /> 
             }
             { user.worksType === 'video' &&
               <Video

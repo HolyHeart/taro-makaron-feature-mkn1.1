@@ -874,7 +874,7 @@ class Share extends Component {
           <View className="showImage">
             <View className="showImage blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
             {
-              user.worksType === 'pic' && <Image src={user.shareSource}   className="bgImage" /> 
+              user.worksType === 'pic' && <Image src={user.shareSource}   className="bgImage" mode="aspectFill"/> 
             }
             { user.worksType === 'video' &&
               <Video

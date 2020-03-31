@@ -61,7 +61,7 @@ class Share extends Component {
   config: Config = {
     navigationBarTitleText: '懒人抠图'
   }
-
+  userInfo:{}
   state = {
     titleHeight: 0,
     isFromApp: false,
@@ -105,8 +105,14 @@ class Share extends Component {
       userName: '',
       likeNumber: 0,
       uid: '',
-      worksId: '',
-      liked: 0
+      worksId:'',
+      liked: 0,
+      templateCode: '',
+      shareSource:'',
+      userToken: '',
+      sessionId: '',
+      deviceId:'',
+      worksType: 'pic'
     },
     currentScene: {
       bgUrl: 'https://static01.versa-ai.com/upload/e5a9c1751c84/1222ad34-a1f7-4720-a223-43aa29936087.jpg',
@@ -205,8 +211,9 @@ class Share extends Component {
     const { userInfo = {} } = globalData
     const title = `@${userInfo.nickName}：${shareContent}`
     const path = `pages/share/index?shareSource=${shareSource}`
-    // console.log('path345',path)
+    // const path = `pages/share/index?worksId=${this.state.user.worksId}`
     // Taro.navigateTo({ url: `/pages/share/index?shareSource=${shareSource}` })
+    // Taro.navigateTo({ url: `/pages/share/index?worksId=${this.state.user.worksId}` })    
     return {
       title: title,
       path: path,
@@ -269,11 +276,11 @@ class Share extends Component {
       themeId,
       sceneId,
       originalCompleteImageUrl: decodeURIComponent(originalCompleteImageUrl),
-      user: {
-        userImage: globalData.userInfo.avatarUrl,
-        userName: globalData.userInfo.nickName,
-        likeNumber: 0
-      }
+      // user: {
+      //   userImage: globalData.userInfo.avatarUrl,
+      //   userName: globalData.userInfo.nickName,
+      //   likeNumber: 0
+      // }
     })
   }
 
@@ -357,6 +364,41 @@ class Share extends Component {
       }
     })
   }
+  singleWorkList = async () => {
+    const singleWorkData = await service.share.singleWorkList(this.state.user.worksId)
+    const deleteLike = Taro.getStorageSync('deleteLike')
+    if (singleWorkData.status === 'success') {
+      const data = singleWorkData.result.result
+      if ((data.renderPictureInfo.url || data.renderPictureInfo.firstFrame).indexOf('https') === -1) {
+        var imageUrl = (data.renderPictureInfo.url || data.renderPictureInfo.firstFrame).replace(/^http/,'https')
+        // console.log('url',imageUrl)
+      }
+      if ((data.author.avatar).indexOf('https') === -1) {
+        var userImage = (data.author.avatar).replace(/^http/,'https')
+        // console.log('url',imageUrl)
+      }
+      this.setState({
+        user: {
+          userImage: userImage,
+          userName: data.author.nickname,
+          likeNumber: data.likedAmount,
+          uid: data.uid,
+          worksId: data.worksId,
+          liked: data.liked,
+          shareSource : imageUrl,
+          templateCode: data.schema,
+          sessionId: deleteLike.sessionId,
+          worksType: data.worksType,
+          deviceId: deleteLike.deviceId
+        }
+      }, () => { 
+        console.log(888,this.state.user);
+        this.onLoad()
+      })
+    }
+    this.getRecommendList()
+  }
+
   handleRecommendClick = (data) => {
     console.log('data',data)
     if ((data.renderPictureInfo.url || data.renderPictureInfo.firstFrame).indexOf('https') === -1) {
@@ -377,21 +419,20 @@ class Share extends Component {
         worksId: data.worksId,
         liked: data.liked
       }
-    })
+    }, () =>{ console.log(999,this.state.user); this.singleWorkList() })
     // console.log(888,this.state.user)
-    this.onLoad().
   }
 
   onLoad = async() => {
-    const page = 'pages/index'
+    const page = 'pages/share/index'
     const width = 100
     const worksId = this.state.user.worksId
-    // console.log(999,this.state.user)
-    const scene = await service.share.getQrCode(page, width, worksId)
-    console.log(23,scene)
+    const sessionId = this.state.user.sessionId
+    const deviceId = this.state.user.deviceId
+    const scene = await service.share.getQrCode(page, width, worksId, sessionId, deviceId)
     this.setState({
-      qrCode: scene.result
-    })
+      qrCode: scene
+    })   
   }
 
   handleFormSubmit = (e) => {
@@ -692,19 +733,66 @@ class Share extends Component {
     })
   }
 
-  addLike = async () => {
+  addLike = async (data) => {
     try {
-      console.log(229)
-      const addLiked = await service.share.addLikeWork(this.state.user.worksId)
-      console.log(22,addLiked)
+      const addLiked = await service.share.addLikeWork(this.state.user.worksId,data.uid,data.userToken)
+        if (addLiked.status === 'success') {
+          const likedNum = this.state.user.likeNumber + 1
+          const worksId = this.state.user.worksId
+          const userImage = this.state.user.userImage
+          const userName = this.state.user.userName
+          const uid = this.state.user.uid
+          const shareSource = this.state.user.shareSource
+          const sessionId = this.state.user.sessionId
+          const worksType = this.state.user.worksType
+          this.setState({
+            user: {
+              liked: 1,
+              likeNumber : likedNum,
+              worksId: worksId,
+              userImage: userImage,
+              uid: uid,
+              userName: userName,
+              shareSource: shareSource,
+              sessionId: sessionId,
+              worksType: worksType
+            }
+          })
+        }
     } catch (error) {
-      console.log(error)
+      console.log(222, error)
     }
   }
 
-  deleteLike = () => {
-    const cancelLiked = service.share.deleteLike(this.state.user.worksId)
-    console.log(123,cancelLiked)
+  deleteLike = async (data) => {
+    try {
+      const cancelLiked = await service.share.deleteLike(this.state.user.worksId,data.uid,data.userToken,this.state.user.sessionId)
+      if (cancelLiked.status === 'success') {
+        const likeNum = this.state.user.likeNumber - 1
+        const worksId = this.state.user.worksId
+        const userImage = this.state.user.userImage
+        const userName = this.state.user.userName
+        const uid = this.state.user.uid
+        const shareSource = this.state.user.shareSource
+        const sessionId = this.state.user.sessionId
+        const worksType = this.state.user.worksType
+        this.setState({
+          user: {
+            liked: 0,
+            likeNumber : likeNum,
+            worksId: worksId,
+            userImage: userImage,
+            uid: uid,
+            userName: userName,
+            shareSource: shareSource,
+            sessionId: sessionId,
+            worksType: worksType
+          }
+        })
+      }
+    } catch (error) {
+      console.log(222, error)
+    }
   }
   render() {
     const { isFromApp, shareSourceType, shareSource, videoPoster, width, height, recommendList, originalCompleteImageUrl, canvasInfo, confirmText, isshow, savePoint, 

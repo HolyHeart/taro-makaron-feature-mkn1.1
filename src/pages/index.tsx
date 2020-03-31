@@ -255,8 +255,8 @@ class Share extends Component {
     console.log(22,url)
     const { userInfo = {} } = globalData
     const title = `@${userInfo.nickName}：${shareContent}`
-    const path = `pages/index?worksId=${this.state.user.worksId}&from=app`
-    Taro.navigateTo({ url: `/pages/index?worksId=${this.state.user.worksId}&from=app&isGoAPP=${!this.state.isGoAPP}` })
+    const path = `pages/index?worksId=${this.state.user.worksId}&from=app&isGoAPP=${!this.state.isGoAPP}`
+    // Taro.navigateTo({ url: `/pages/index?worksId=${this.state.user.worksId}&from=app&isGoAPP=${!this.state.isGoAPP}` })
     return {
       title: title,
       path: path ,
@@ -520,6 +520,7 @@ class Share extends Component {
       
       // console.log(result)
       this.userInfo = result.result.result
+      console.log('this',this.userInfo)
       if (this.state.user.liked === 0) {
         this.addLike(this.userInfo)
       } else {

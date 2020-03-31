@@ -70,12 +70,13 @@ class Share extends Component {
   state = {
     titleHeight: 0,
     isFromApp: false,
+    isGoAPP: true,
     shareSourceType: 'image', // 'video' 'image'
     shareSource: '',
     originalCompleteImageUrl: '',
     videoPoster: '',
-    width: 690,
-    height: 920,
+    // width: 690,
+    // height: 920,
     recommendList: [],
     themeId: '',
     sceneId: '',
@@ -87,8 +88,8 @@ class Share extends Component {
     savePoint: false,
     type: 'image',
     frame: {
-      width: 278,
-      height: 429,
+      width: 258,
+      height: 345,
       left: 0,
       top: 0,
     } ,
@@ -108,6 +109,8 @@ class Share extends Component {
       liked: 0,
       templateCode: '',
       shareSource:'',
+      shareSourceWidth:0,
+      shareSourceHeight:0,
       userToken: '',
       sessionId: '',
       deviceId:'',
@@ -171,10 +174,13 @@ class Share extends Component {
         hotMarginTop: 50
       })
     }
+    console.log('system',systemInfo)
     if (/iphone x/i.test(systemInfo.model)) {
       systemInfo.isIphoneX = true
     } else {
-      systemInfo.isIphoneX = false
+      systemInfo.isIphoneX = false 
+    }
+    if (/iphone s plus/i.test(systemInfo.model)) {
       this.setState({
         hotMarginTop: 0,
         titleHeight: 0
@@ -206,10 +212,14 @@ class Share extends Component {
       if ((data.renderPictureInfo.url || data.renderPictureInfo.firstFrame).indexOf('https') === -1) {
         var imageUrl = (data.renderPictureInfo.url || data.renderPictureInfo.firstFrame).replace(/^http/,'https')
         // console.log('url',imageUrl)
+      } else {
+        var imageUrl = data.renderPictureInfo.url || data.renderPictureInfo.firstFrame
       }
       if ((data.author.avatar).indexOf('https') === -1) {
         var userImage = (data.author.avatar).replace(/^http/,'https')
         // console.log('url',imageUrl)
+      } else {
+        var userImage = data.author.avatar
       }
       this.setState({
         user: {
@@ -220,6 +230,8 @@ class Share extends Component {
           worksId: data.worksId,
           liked: data.liked,
           shareSource : imageUrl,
+          shareSourceWidth:data.renderPictureInfo.imageWidth,
+          shareSourceHeight:data.renderPictureInfo.imageHeight,
           templateCode: data.schema,
           sessionId: deleteLike.sessionId,
           worksType: data.worksType,
@@ -243,14 +255,12 @@ class Share extends Component {
     console.log(22,url)
     const { userInfo = {} } = globalData
     const title = `@${userInfo.nickName}：${shareContent}`
-    const path = `pages/index?worksId=${this.state.user.worksId}`
-    console.log('234',path)
-    // Taro.navigateTo({ url: `/pages/index?worksId=${this.state.user.worksId}` })
+    const path = `pages/index?worksId=${this.state.user.worksId}&from=app`
+    Taro.navigateTo({ url: `/pages/index?worksId=${this.state.user.worksId}&from=app&isGoAPP=${!this.state.isGoAPP}` })
     return {
       title: title,
       path: path ,
       imageUrl: url ,
-      isFromApp: true,
       success: () => {
         console.log('分享成功')
       },
@@ -290,7 +300,7 @@ class Share extends Component {
 
   processLoadData = () => {
     console.log('share page index', this.$router.params) // 输出 { id: 2, type: 'test' }
-    let isFromApp, shareSourceType = 'image', videoPoster = '', shareVideoInfo = { width: 690, height: 920, }
+    let isFromApp, isGoAPP ,shareSourceType = 'image', videoPoster = '', shareVideoInfo = { width: 690, height: 920, }
     let { shareSource, themeId, sceneId, from, remoteURL = '', width = 690, height = 920, originalCompleteImageUrl, workID} = this.$router.params
     if (from === 'app') {
       isFromApp = true
@@ -301,8 +311,9 @@ class Share extends Component {
       }
       this.setState({
         user: {
-          worksId: workID
-        }
+          worksId: workID || this.$router.params.worksId
+        },
+        isGoAPP: !this.$router.params.isGoAPP
       }, () => { this.singleWorkList() })
     } else {
       if(this.state.user.worksId !== 'undefined') {
@@ -447,6 +458,8 @@ class Share extends Component {
         worksId: data.worksId,
         liked: data.liked,
         shareSource : data.renderPictureInfo.url || data.renderPictureInfo.firstFrame,
+        shareSourceWidth:data.renderPictureInfo.imageWidth,
+        shareSourceHeight:data.renderPictureInfo.imageHeight,
         templateCode: data.schema,
         sessionId: deleteLike1,
         worksType: data.worksType
@@ -800,6 +813,8 @@ class Share extends Component {
           const userName = this.state.user.userName
           const uid = this.state.user.uid
           const shareSource = this.state.user.shareSource
+          const shareSourceWidth = this.state.user.shareSourceWidth
+          const shareSourceHeight = this.state.user.shareSourceHeight
           const sessionId = this.state.user.sessionId
           const worksType = this.state.user.worksType
           this.setState({
@@ -811,10 +826,12 @@ class Share extends Component {
               uid: uid,
               userName: userName,
               shareSource: shareSource,
+              shareSourceWidth:shareSourceWidth,
+              shareSourceHeight:shareSourceHeight,
               sessionId: sessionId,
               worksType: worksType
             }
-          },()=>{this.singleWorkList()})
+          })
         }
     } catch (error) {
       console.log(222, error)
@@ -831,6 +848,8 @@ class Share extends Component {
         const userName = this.state.user.userName
         const uid = this.state.user.uid
         const shareSource = this.state.user.shareSource
+        const shareSourceWidth = this.state.user.shareSourceWidth
+        const shareSourceHeight = this.state.user.shareSourceHeight
         const sessionId = this.state.user.sessionId
         const worksType = this.state.user.worksType
         this.setState({
@@ -842,6 +861,8 @@ class Share extends Component {
             uid: uid,
             userName: userName,
             shareSource: shareSource,
+            shareSourceWidth:shareSourceWidth,
+            shareSourceHeight:shareSourceHeight,
             sessionId: sessionId,
             worksType: worksType
           }
@@ -857,7 +878,7 @@ class Share extends Component {
   }
 
   render() {
-    const { isFromApp, shareSourceType, shareSource, videoPoster, width, height, recommendList, originalCompleteImageUrl, confirmText, isshow, savePoint, 
+    const { isFromApp, isGoAPP, shareSourceType, shareSource, videoPoster, width, height, recommendList, originalCompleteImageUrl, confirmText, isshow, savePoint, 
       saveTitle, type, checkoutImage, checkoutVideo, morePlayList, user, userXcx, qrCode, frame, canvas, hotMarginTop} = this.state
     return (
       <View className='page-share'>
@@ -868,17 +889,22 @@ class Share extends Component {
           }
           color='#333'
         >懒人抠图</Title>
-        {/* { console.log('2345',qrCode)} */}
         {/* {isFromApp ?  */}
         <View className='main-section' style={{marginTop:(this.state.titleHeight + hotMarginTop/2) + 'rpx' }}>
           <View className="showImage">
             <View className="showImage blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
+            {/* <View className="showImage blur" style="background:red;"></View> */}
             {
-              user.worksType === 'pic' && <Image src={user.shareSource}   className="bgImage" mode="aspectFill"/> 
+               user.shareSourceWidth <= user.shareSourceHeight && user.worksType === 'pic' && 
+              <Image src={user.shareSource}   className="bgImageVertical" mode="heightFix"/> 
+            }  
+            {
+              user.shareSourceWidth > user.shareSourceHeight && user.worksType === 'pic' && 
+              <Image src={user.shareSource}   className="bgImageHorizontal" mode="widthFix"/> 
             }
-            { user.worksType === 'video' &&
+            { user.shareSourceWidth <= user.shareSourceHeight && user.worksType === 'video' &&
               <Video
-              className="video bgImage"
+              className="video bgImageVertical"
               // style={{ width: Taro.pxTransform(width), height: Taro.pxTransform(height - 2) }}
               loop
               autoplay
@@ -888,7 +914,18 @@ class Share extends Component {
               controls
             ></Video>
             }
-
+            { user.shareSourceWidth > user.shareSourceHeight && user.worksType === 'video' &&
+              <Video
+              className="video bgImageHorizontal"
+              // style={{ width: Taro.pxTransform(width), height: Taro.pxTransform(height - 2) }}
+              loop
+              autoplay
+              src={user.shareSource}
+              poster={videoPoster}
+              objectFit='cover'
+              controls
+            ></Video>
+            }
               
           </View>
           <View className="userMessage">
@@ -899,7 +936,8 @@ class Share extends Component {
             <View className='userName'>{user.userName}</View>
             {            
               <Button openType="getUserInfo" onGetUserInfo={this.getUserInfo}  className="likeAuth like">
-                { user.liked === 0 ? <Image src={like}  className="like" /> : <Image src={liked}  className="like" />}
+                { user.liked === 0 && <Image src={like}  className="like" />}
+                { user.liked === 1 && <Image src={liked}  className="like" />}
               </Button>               
             }
             <View style="" className="likeNum">{user.likeNumber}</View>
@@ -1082,8 +1120,7 @@ class Share extends Component {
             />
           </View>
         </View>
-        {isFromApp && <BackApp onClick={this.handleOpenApp} styleObj={{marginTop:(this.state.titleHeight + hotMarginTop/2) + 'rpx'} }/>}
-        {/* <BackApp onClick={this.handleOpenApp} /> */}
+        {isGoAPP  && <BackApp onClick={this.handleOpenApp} styleObj={{marginTop:(this.state.titleHeight + hotMarginTop/2) + 'rpx'} }/>}
         <AuthModal />
       </View>
     )

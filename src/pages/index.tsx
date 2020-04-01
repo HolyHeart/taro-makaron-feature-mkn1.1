@@ -985,7 +985,6 @@ class Share extends Component {
                 <Image src={user.shareSource}   className="bgImageHorizontal" mode="widthFix"/> 
               </View>
             } */}
-            {console.log(66666,(user.shareSourceWidth / user.shareSourceHeight) > (335/235))}
             {
               (user.shareSourceHeight / user.shareSourceWidth) > (235/335) && user.worksType === 'pic' &&  
               <View className="showImage"> 

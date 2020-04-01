@@ -202,9 +202,11 @@ class Share extends Component {
       titleHeight: totalTopHeight
     })
   }
+  
 
   componentDidMount() {
     this._initPage()
+    this.getRect()
     // Taro.showToast({
     //   title:this.$router.params.originalCompleteImageUrl
     // })
@@ -384,6 +386,16 @@ class Share extends Component {
     })
   }
 
+  getRect = () => {
+    console.log(555)
+    Taro.createSelectorQuery().select('#positionImage').boundingClientRect(
+      (rect)=>{
+        rect.width   // 节点的宽度
+        rect.height  // 节点的高度
+        console.log('rect',rect)     
+      }).exec()
+  }
+
   getRecommendList = async () => {
     if (this.state.user.templateCode) {
       // console.log(333333)
@@ -468,6 +480,7 @@ class Share extends Component {
     })
   }
   handleRecommendClick =  (data) => {
+    // this.getRect()
     // console.log('data',data)
     const deleteLike1 = Taro.getStorageSync('deleteLike')
     this.setState({
@@ -991,7 +1004,7 @@ class Share extends Component {
         } */}
         {
           (user.shareSourceHeight / user.shareSourceWidth) > ((235/335)) && user.worksType === 'pic' &&  
-          <View className="showImage"> 
+          <View className="showImage" id="positionImage"> 
             <View className="showImage blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
             <Image src={user.shareSource}   className="bgImageVertical" 
             style={{width:`${user.caluWidth}px` }}/> 

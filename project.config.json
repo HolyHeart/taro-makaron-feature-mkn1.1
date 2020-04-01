@@ -1,6 +1,7 @@
 {
 	"miniprogramRoot": "dist/",
 	"projectname": "taro-makaron",
+	"cloudfunctionRoot": "cloudfunctions/",
 	"description": "懒人抠图",
 	"appid": "wxcfe56965f4d986f0",
 	"setting": {

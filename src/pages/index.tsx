@@ -118,7 +118,9 @@ class Share extends Component {
       userToken: '',
       sessionId: '',
       deviceId:'',
-      worksType: 'pic'
+      worksType: 'pic',
+      caluWidth: 100,
+      caluHeight: 100
     },
     // userXcx: {
     //   userImage: '',
@@ -225,6 +227,8 @@ class Share extends Component {
       } else {
         var userImage = data.author.avatar
       }
+      const shareSourceWidth = data.renderPictureInfo.imageWidth
+      const shareSourceHeight = data.renderPictureInfo.imageHeight
       this.setState({
         user: {
           userImage: userImage,
@@ -234,12 +238,14 @@ class Share extends Component {
           worksId: data.worksId,
           liked: data.liked,
           shareSource : imageUrl,
-          shareSourceWidth:data.renderPictureInfo.imageWidth,
-          shareSourceHeight:data.renderPictureInfo.imageHeight,
+          shareSourceWidth:shareSourceWidth,
+          shareSourceHeight:shareSourceHeight,
           templateCode: data.schema,
           sessionId: deleteLike.sessionId,
           worksType: data.worksType,
-          deviceId: deleteLike.deviceId
+          deviceId: deleteLike.deviceId,
+          caluWidth: shareSourceWidth * 235 / shareSourceHeight,
+          caluHeight: shareSourceHeight * 335 / shareSourceWidth
         }
       }, () => { 
         this.onLoad()
@@ -254,7 +260,7 @@ class Share extends Component {
   componentDidShow() { }
   componentDidHide() { }
   onShareAppMessage(res) {
-    const shareContent = ''
+    const shareContent = '给你推荐一个好作品'
     const url = `${this.state.user.shareSource}?x-oss-process=image/resize,m_pad,h_420,w_525` 
     console.log(22,url)
     const { userInfo = {} } = globalData
@@ -969,40 +975,41 @@ class Share extends Component {
               </Video>
           </View>
         }
-        {/* <View className="showImage"> */}
-          {/* <View className="showImage blur" style={{backgroundImage: `url(${user.shareSource})`}}></View> */}
-            {/* {
-              user.shareSourceWidth <= user.shareSourceHeight && user.worksType === 'pic' &&  
-              <View className="showImage"> 
-                <View className="showImage blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
-                <Image src={user.shareSource}   className="bgImageVertical" mode="heightFix"/> 
-              </View>
-            }  
-            {
-              user.shareSourceWidth > user.shareSourceHeight && user.worksType === 'pic' &&  
-              <View className="showImage">
-                <View className="showImage blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
-                <Image src={user.shareSource}   className="bgImageHorizontal" mode="widthFix"/> 
-              </View>
-            } */}
-            {
-              (user.shareSourceHeight / user.shareSourceWidth) > (235/335) && user.worksType === 'pic' &&  
-              <View className="showImage"> 
-                <View className="showImage blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
-                <Image src={user.shareSource}   className="bgImageVertical" style="width:(235 *user.shareSourceWidth)/user.shareSourceHeight"/> 
-              </View>
-            }                                                                                                                                                                                                                                        
-            {
-              (user.shareSourceHeight / user.shareSourceWidth) < (235/335) && user.worksType === 'pic' &&  
-              <View className="showImage"> 
-                <View className="showImage blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
-                <Image src={user.shareSource}   className="bgImageHorizontal" style="height:(335 * user.shareSourceHeight)/user.shareSourceWidth"/>  
-              </View>
-            }
-            { user.shareSourceWidth <= user.shareSourceHeight && user.worksType === 'video' &&
-              <View className="showImage">
-                <View className="showImage blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
-                <Video
+        {/* {
+          user.shareSourceWidth <= user.shareSourceHeight && user.worksType === 'pic' &&  
+          <View className="showImage"> 
+            <View className="showImage blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
+            <Image src={user.shareSource}   className="bgImageVertical" mode="heightFix"/> 
+          </View>
+        }  
+        {
+          user.shareSourceWidth > user.shareSourceHeight && user.worksType === 'pic' &&  
+          <View className="showImage">
+            <View className="showImage blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
+            <Image src={user.shareSource}   className="bgImageHorizontal" mode="widthFix"/> 
+          </View>
+        } */}
+        {
+          (user.shareSourceHeight / user.shareSourceWidth) > ((235/335)) && user.worksType === 'pic' &&  
+          <View className="showImage"> 
+            <View className="showImage blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
+            <Image src={user.shareSource}   className="bgImageVertical" 
+            style={{width:`${user.caluWidth}px` }}/> 
+           </View>
+        }                                                                                                                                                                                                                                       
+        {
+          (user.shareSourceHeight / user.shareSourceWidth) < (235/335) && user.worksType === 'pic' &&  
+            <View className="showImage"> 
+              <View className="showImage blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
+              <Image src={user.shareSource}   className="bgImageHorizontal"
+              style={{height:`${user.caluHeight}px` }}
+              />  
+            </View>
+        }
+        { user.shareSourceWidth <= user.shareSourceHeight && user.worksType === 'video' &&
+            <View className="showImage">
+              <View className="showImage blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
+              <Video
                 className="video bgImageVertical"
                 // style={{ width: Taro.pxTransform(width), height: Taro.pxTransform(height - 2) }}
                 loop
@@ -1012,22 +1019,23 @@ class Share extends Component {
                 objectFit='cover'
                 controls
               ></Video>
-              </View>
-            }
-            { user.shareSourceWidth > user.shareSourceHeight && user.worksType === 'video' &&
-              <Video
-              className="video bgImageHorizontal"
-              // style={{ width: Taro.pxTransform(width), height: Taro.pxTransform(height - 2) }}
-              loop
-              autoplay
-              src={user.shareSource}
-              poster={videoPoster}
-              objectFit='cover'
-              controls
-            ></Video>
-            }
-              
-          {/* </View> */}
+            </View>
+        }
+        { user.shareSourceWidth > user.shareSourceHeight && user.worksType === 'video' &&
+        <View className="showImage">
+          <View className="showImage blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
+          <Video
+            className="video bgImageHorizontal"
+            // style={{ width: Taro.pxTransform(width), height: Taro.pxTransform(height - 2) }}
+            loop
+            autoplay
+            src={user.shareSource}
+            poster={videoPoster}
+            objectFit='cover'
+            controls
+          ></Video>
+        </View>
+          }
           <View className="userMessage">
             {
               (isUserInfo && user.userImage) ||  isXcx ? <Image className="user" src={user.userImage} /> : <Image className="user" src={titleImage} /> 
@@ -1055,14 +1063,27 @@ class Share extends Component {
                 {savePoint === true ? <View className="wx-dialog-save">{saveTitle}</View> : <View className="wx-dialog-save"></View>}
                 <View className="wx-dialog-content">
                     <View className="bgUrl">
-                      <Image src={user.shareSource} className="bgUrl" mode="aspectFill" />
+                    {
+                      user.worksType === 'pic' ? 
+                      <Image src={user.shareSource} className="bgUrl" mode="aspectFill" /> 
+                      :
+                      <Video
+                        className="bgUrl"
+                        loop
+                        autoplay
+                        src={user.shareSource}
+                        poster={videoPoster}
+                        objectFit='cover'
+                        controls>
+                      </Video>
+                    }
                     </View>
                     <View className="userInfo">
                       <Image className="userimage" src={user.userImage} />
                       <View className="username">
                         <View className="userwork"><View className="name">@{user.userName}</View>的作品</View>
                         {
-                          type === 'image' ? <View className="seetwo">{checkoutImage}</View> : <View className="seetwo">{checkoutVideo}</View>
+                          user.worksType === 'image' ? <View className="seetwo">{checkoutImage}</View> : <View className="seetwo">{checkoutVideo}</View>
                         }
                       </View>
                       <View className="two">

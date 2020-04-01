@@ -70,9 +70,10 @@ class Share extends Component {
   state = {
     titleHeight: 0,
     isFromApp: false,
-    isGoAPP: true,
+    isGoAPP: false,
     isUserInfo: false,
     isXcx: false,
+    isPlay: true,
     shareSourceType: 'image', // 'video' 'image'
     shareSource: '',
     originalCompleteImageUrl: '',
@@ -176,7 +177,7 @@ class Share extends Component {
         hotMarginTop: 50
       })
     }
-    console.log('system',systemInfo)
+    // console.log('system',systemInfo)
     if (/iphone x/i.test(systemInfo.model)) {
       systemInfo.isIphoneX = true
     } else {
@@ -257,8 +258,8 @@ class Share extends Component {
     console.log(22,url)
     const { userInfo = {} } = globalData
     const title = `@${userInfo.nickName}：${shareContent}`
-    const path = `pages/index?worksId=${this.state.user.worksId}&from=app&isGoAPP=${!this.state.isGoAPP}`
-    // Taro.navigateTo({ url: `/pages/index?worksId=${this.state.user.worksId}&from=app&isGoAPP=${!this.state.isGoAPP}` })
+    const path = `pages/index?worksId=${this.state.user.worksId}&from=app&isGoAPP=${!this.state.isGoAPP}&isPlay=${!this.state.isPlay}`
+    // Taro.navigateTo({ url: `/pages/index?worksId=${this.state.user.worksId}&from=app&isGoAPP=${!this.state.isGoAPP}&isPlay=${this.state.isPlay}` })
     return {
       title: title,
       path: path ,
@@ -293,21 +294,32 @@ class Share extends Component {
       } else {
         shareSource = appConfig.imageHost + remoteURL
       }
-      console.log('999',typeof(this.$router.params.isGoAPP))
       if(typeof(this.$router.params.isGoAPP) === 'undefined') {
+        const isGoAPP = !this.state.isGoAPP
         this.setState({
-          isGoAPP: this.state.isGoAPP
-        },()=>{console.log('433333',this.state.isGoAPP)})
+          isGoAPP: isGoAPP,
+        })
       } else {
+        const isGoAPP = /ture/i.test(this.$router.params.isGoAPP)
         this.setState({
-          isGoAPP: false
-        },()=>{console.log('333333',this.state.isGoAPP)})
+          isGoAPP: isGoAPP,
+        })
+      }
+      if(typeof(this.$router.params.isPlay) === 'undefined') {
+        const isPlay = this.state.isPlay
+        this.setState({
+          isPlay: isPlay,
+        })
+      } else {
+        const isPlay = /true/i.test(this.$router.params.isPlay)
+        this.setState({
+          isPlay: isPlay,
+        })
       }
       this.setState({
         user: {
           worksId: workID || this.$router.params.worksId
-        },
-        isGoAPP: this.state.isGoAPP
+        }
       }, () => { this.singleWorkList() })
     } else {
       if(this.state.user.worksId !== 'undefined') {
@@ -444,6 +456,7 @@ class Share extends Component {
       isGoAPP:false,
       isUserInfo: true,
       isXcx: false,
+      isPlay: false,
       user: {
         userImage: data.author.avatar,
         userName: data.author.nickname,
@@ -873,7 +886,7 @@ class Share extends Component {
   }
 
   render() {
-    const { isFromApp, isGoAPP, isUserInfo, isXcx, shareSourceType, shareSource, videoPoster, width, height, recommendList, originalCompleteImageUrl, confirmText, isshow, savePoint, 
+    const { isFromApp, isGoAPP, isUserInfo, isXcx, isPlay, shareSourceType, shareSource, videoPoster, width, height, recommendList, originalCompleteImageUrl, confirmText, isshow, savePoint, 
       saveTitle, type, checkoutImage, checkoutVideo, morePlayList, user, userXcx, qrCode, frame, canvas, hotMarginTop} = this.state
     return (
       <View className='page-share'>
@@ -1117,7 +1130,7 @@ class Share extends Component {
                 onClick={this.handleMainButton}
                 formType='submit'>我也要玩</Button>
             </View> : <Form onSubmit={this.handleFormSubmit} reportSubmit>
-                {isFromApp ?
+                {isFromApp && isPlay?
                   <Button
                     open-type="contact"
                     className="custom-button pink"

@@ -92,8 +92,8 @@ class Share extends Component {
     savePoint: false,
     type: 'image',
     frame: {
-      width: 258,
-      height: 345,
+      width: 278,
+      height: 429,
       left: 0,
       top: 0,
     } ,
@@ -260,7 +260,7 @@ class Share extends Component {
     const { userInfo = {} } = globalData
     const title = `@${userInfo.nickName}：${shareContent}`
     const path = `pages/index?worksId=${this.state.user.worksId}&from=app&isGoAPP=${!this.state.isGoAPP}&isPlay=${!this.state.isPlay}`
-    Taro.navigateTo({ url: `/pages/index?worksId=${this.state.user.worksId}&from=app&isGoAPP=${!this.state.isGoAPP}&isPlay=${this.state.isPlay}` })
+    // Taro.navigateTo({ url: `/pages/index?worksId=${this.state.user.worksId}&from=app&isGoAPP=${!this.state.isGoAPP}&isPlay=${this.state.isPlay}` })
     return {
       title: title,
       path: path ,
@@ -540,7 +540,7 @@ class Share extends Component {
       
       // console.log(result)
       this.userInfo = result.result.result
-      console.log('this',this.userInfo)
+      // console.log('this',this.userInfo)
       if (this.state.user.liked === 0) {
         this.addLike(this.userInfo)
       } else {
@@ -577,8 +577,6 @@ class Share extends Component {
     } catch (err) {
       // console.log('下载图片失败', err)
     }
-    // }
-    // console.log(333,localImagePath)
     return localImagePath
   }
 
@@ -634,8 +632,10 @@ class Share extends Component {
   }
 
   // 绘制二维码和logo
-  canvasDrawLogo = (context, ratio) => {
+  canvasDrawLogo = async (context, ratio) => {
     const { frame, user ,qrCode} = this.state
+    // console.log('333',qrCode)
+    // console.log('222',user.userImage)
     const codeWidth = 42 * ratio
     const codeHeight = 43 * ratio
     const codeLeft = 226 * ratio
@@ -644,7 +644,6 @@ class Share extends Component {
     context.drawImage(qrCode, codeLeft, codeTop, codeWidth, codeHeight)
     context.restore()
     context.stroke()
-
 
     const logoWidth = 38 * ratio
     const logoHeight = 38 * ratio
@@ -671,9 +670,7 @@ class Share extends Component {
     } else {
       const userName ='@' + this.state.user.userName + '的作品'
       console.log('userName',userName)
-      // context.fillText(userName,  frame.width * ratio / 3  , 388 * ratio, 200 * ratio, 21 * ratio)
       context.fillText(userName,  frame.width * ratio / 3  , 388 * ratio)
-      // context.fillText(this.state.checkoutImage, 56, 405)
       this.canvasDrawText(context, ratio)
     }
   }
@@ -922,20 +919,20 @@ class Share extends Component {
             </View>
           </View>
         }
-        {/* {
-          isFromApp && (user.worksId === 'undefined' || user.worksId === '')&&
-            <View className="showImage"> 
-              <View className="showImage blur" style={{backgroundImage: `url(${this.$router.params.remoteURL})`}}></View>
-              <Image src={this.$router.params.remoteURL}   className="bgImageVertical" mode="heightFix"/> 
-            </View>
-        }   */}
-        {/* {
-          user.worksId === 'undefined'   && 
-            <View className="showImage">
-              <View className="showImage blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
-              <Image src={user.shareSource}   className="bgImageHorizontal" mode="widthFix"/> 
-            </View>
-        } */}
+        {shareSourceType === 'video' && isFromApp && shareSource !== '' && isWorksId &&
+          <View className='video-wrap showImage'>
+             <Video
+              className="video bgImageVertical"
+              loop
+              autoplay
+              src={user.shareSource}
+              poster={videoPoster}
+              objectFit='cover'
+              controls
+              >
+              </Video>
+          </View>
+        }
         { isXcx && shareSourceType === 'image' &&
           <View>
             {themeData.sceneType === 3 && <View class="share-bg"></View>}
@@ -959,7 +956,7 @@ class Share extends Component {
               >
               </Video>
           </View>
-            }
+        }
         {/* <View className="showImage"> */}
           {/* <View className="showImage blur" style={{backgroundImage: `url(${user.shareSource})`}}></View> */}
             {

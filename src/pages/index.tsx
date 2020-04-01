@@ -624,7 +624,7 @@ class Share extends Component {
     }
     //防止锯齿，绘的图片是所需图片的3倍
     const codeWidth = frame.width * ratio - 20 * ratio 
-    const codeHeight = frame.height * ratio - 84 * ratio
+    const codeHeight =( frame.height * ratio - 84 * ratio)/2
     context.drawImage(localBgImagePath, 10 * ratio, 10 * ratio, codeWidth, codeHeight)
     // 绘制元素
     // await this.canvasDrawElement(context, ratio)
@@ -645,6 +645,18 @@ class Share extends Component {
     context.restore()
     context.stroke()
 
+    // const postfix = '?x-oss-process=image/resize,h_748,w_560'
+    // let localuserImagePath = ''
+    // try {
+    //   const userImageUrl = (user.userImage + postfix)
+    //   console.log('userImageUrl',userImageUrl)
+
+    //   localuserImagePath = await this.downloadRemoteImage(userImageUrl)
+    //   console.log('userImage',localuserImagePath)
+    // } catch (err) {
+    //   console.log('下载背景图片失败', err)
+    //   return
+    // }
     const logoWidth = 38 * ratio
     const logoHeight = 38 * ratio
     const logoLeft = 10 * ratio 
@@ -920,9 +932,9 @@ class Share extends Component {
           </View>
         }
         {shareSourceType === 'video' && isFromApp && shareSource !== '' && isWorksId &&
-          <View className='video-wrap showImage'>
+          <View className='showImage'>
              <Video
-              className="video bgImageVertical"
+              className="bgImageVertical"
               loop
               autoplay
               src={user.shareSource}
@@ -959,7 +971,7 @@ class Share extends Component {
         }
         {/* <View className="showImage"> */}
           {/* <View className="showImage blur" style={{backgroundImage: `url(${user.shareSource})`}}></View> */}
-            {
+            {/* {
               user.shareSourceWidth <= user.shareSourceHeight && user.worksType === 'pic' &&  
               <View className="showImage"> 
                 <View className="showImage blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
@@ -971,6 +983,21 @@ class Share extends Component {
               <View className="showImage">
                 <View className="showImage blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
                 <Image src={user.shareSource}   className="bgImageHorizontal" mode="widthFix"/> 
+              </View>
+            } */}
+            {console.log(66666,(user.shareSourceWidth / user.shareSourceHeight) > (335/235))}
+            {
+              (user.shareSourceHeight / user.shareSourceWidth) > (235/335) && user.worksType === 'pic' &&  
+              <View className="showImage"> 
+                <View className="showImage blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
+                <Image src={user.shareSource}   className="bgImageVertical" style="width:(235 *user.shareSourceWidth)/user.shareSourceHeight"/> 
+              </View>
+            }                                                                                                                                                                                                                                        
+            {
+              (user.shareSourceHeight / user.shareSourceWidth) < (235/335) && user.worksType === 'pic' &&  
+              <View className="showImage"> 
+                <View className="showImage blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
+                <Image src={user.shareSource}   className="bgImageHorizontal" style="height:(335 * user.shareSourceHeight)/user.shareSourceWidth"/>  
               </View>
             }
             { user.shareSourceWidth <= user.shareSourceHeight && user.worksType === 'video' &&
@@ -1004,9 +1031,8 @@ class Share extends Component {
           {/* </View> */}
           <View className="userMessage">
             {
-              isUserInfo && user.userImage ? <Image className="user" src={user.userImage} /> : '' 
+              (isUserInfo && user.userImage) ||  isXcx ? <Image className="user" src={user.userImage} /> : <Image className="user" src={titleImage} /> 
             }
-            
             <View className='userName'>{user.userName}</View>
             { isUserInfo &&
               <Button openType="getUserInfo" onGetUserInfo={this.getUserInfo}  className="likeAuth like">

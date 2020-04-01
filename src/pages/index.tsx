@@ -74,6 +74,7 @@ class Share extends Component {
     isUserInfo: false,
     isXcx: false,
     isPlay: true,
+    isWorksId: false,
     shareSourceType: 'image', // 'video' 'image'
     shareSource: '',
     originalCompleteImageUrl: '',
@@ -259,7 +260,7 @@ class Share extends Component {
     const { userInfo = {} } = globalData
     const title = `@${userInfo.nickName}：${shareContent}`
     const path = `pages/index?worksId=${this.state.user.worksId}&from=app&isGoAPP=${!this.state.isGoAPP}&isPlay=${!this.state.isPlay}`
-    // Taro.navigateTo({ url: `/pages/index?worksId=${this.state.user.worksId}&from=app&isGoAPP=${!this.state.isGoAPP}&isPlay=${this.state.isPlay}` })
+    Taro.navigateTo({ url: `/pages/index?worksId=${this.state.user.worksId}&from=app&isGoAPP=${!this.state.isGoAPP}&isPlay=${this.state.isPlay}` })
     return {
       title: title,
       path: path ,
@@ -288,39 +289,51 @@ class Share extends Component {
     let { shareSource, themeId, sceneId, from, remoteURL = '', width = 690, height = 920, originalCompleteImageUrl, workID} = this.$router.params
     if (from === 'app') {
       isFromApp = true
+      this.setState({
+        isWorksId: false
+      })
       this.state.isUserInfo = true
       if (remoteURL.indexOf('versa-ai.com') > -1) {
         shareSource = remoteURL
+        if(typeof(workID) === 'undefined') {
+          this.setState({
+            isWorksId: true
+          },()=>{ this.getRecommendList() })
+        }
       } else {
         shareSource = appConfig.imageHost + remoteURL
       }
       if(typeof(this.$router.params.isGoAPP) === 'undefined') {
         const isGoAPP = !this.state.isGoAPP
         this.setState({
-          isGoAPP: isGoAPP,
+          isGoAPP: isGoAPP
         })
       } else {
         const isGoAPP = /ture/i.test(this.$router.params.isGoAPP)
         this.setState({
-          isGoAPP: isGoAPP,
+          isGoAPP: isGoAPP
         })
       }
       if(typeof(this.$router.params.isPlay) === 'undefined') {
         const isPlay = this.state.isPlay
         this.setState({
-          isPlay: isPlay,
+          isPlay: isPlay
         })
       } else {
         const isPlay = /true/i.test(this.$router.params.isPlay)
         this.setState({
-          isPlay: isPlay,
+          isPlay: isPlay
         })
       }
       this.setState({
         user: {
           worksId: workID || this.$router.params.worksId
         }
-      }, () => { this.singleWorkList() })
+      }, () => { 
+        if(this.state.user.worksId) {
+          this.singleWorkList()
+        } 
+      })
     } else {
       if(this.state.user.worksId !== 'undefined') {
         this.setState({
@@ -886,7 +899,7 @@ class Share extends Component {
   }
 
   render() {
-    const { isFromApp, isGoAPP, isUserInfo, isXcx, isPlay, shareSourceType, shareSource, videoPoster, width, height, recommendList, originalCompleteImageUrl, confirmText, isshow, savePoint, 
+    const { isFromApp, isGoAPP, isUserInfo, isXcx, isPlay, isWorksId, shareSourceType, shareSource, videoPoster, width, height, recommendList, originalCompleteImageUrl, confirmText, isshow, savePoint, 
       saveTitle, type, checkoutImage, checkoutVideo, morePlayList, user, userXcx, qrCode, frame, canvas, hotMarginTop} = this.state
     return (
       <View className='page-share'>
@@ -899,6 +912,30 @@ class Share extends Component {
         >懒人抠图</Title>
         {/* {isFromApp ?  */}
         <View className='main-section' style={{marginTop:(this.state.titleHeight + hotMarginTop/2) + 'rpx' }}>
+        {/* {console.log(11,user.worksId)} */}
+        {shareSourceType === 'image' && isFromApp && shareSource !== '' && isWorksId &&
+          <View>
+            {themeData.sceneType === 3 && <View class="share-bg"></View>}
+            <View className="showImage">
+              <View className="showImage blur" style={{backgroundImage: `url(${shareSource})`}}></View>
+              <Image src={shareSource} mode="aspectFill"  className="bgImageVertical" />
+            </View>
+          </View>
+        }
+        {/* {
+          isFromApp && (user.worksId === 'undefined' || user.worksId === '')&&
+            <View className="showImage"> 
+              <View className="showImage blur" style={{backgroundImage: `url(${this.$router.params.remoteURL})`}}></View>
+              <Image src={this.$router.params.remoteURL}   className="bgImageVertical" mode="heightFix"/> 
+            </View>
+        }   */}
+        {/* {
+          user.worksId === 'undefined'   && 
+            <View className="showImage">
+              <View className="showImage blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
+              <Image src={user.shareSource}   className="bgImageHorizontal" mode="widthFix"/> 
+            </View>
+        } */}
         { isXcx && shareSourceType === 'image' &&
           <View>
             {themeData.sceneType === 3 && <View class="share-bg"></View>}
@@ -926,14 +963,14 @@ class Share extends Component {
         {/* <View className="showImage"> */}
           {/* <View className="showImage blur" style={{backgroundImage: `url(${user.shareSource})`}}></View> */}
             {
-              user.shareSourceWidth <= user.shareSourceHeight && user.worksType === 'pic' &&
+              user.shareSourceWidth <= user.shareSourceHeight && user.worksType === 'pic' &&  
               <View className="showImage"> 
                 <View className="showImage blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
                 <Image src={user.shareSource}   className="bgImageVertical" mode="heightFix"/> 
               </View>
             }  
             {
-              user.shareSourceWidth > user.shareSourceHeight && user.worksType === 'pic' && 
+              user.shareSourceWidth > user.shareSourceHeight && user.worksType === 'pic' &&  
               <View className="showImage">
                 <View className="showImage blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
                 <Image src={user.shareSource}   className="bgImageHorizontal" mode="widthFix"/> 
@@ -981,12 +1018,12 @@ class Share extends Component {
               </Button>               
             }
             { isUserInfo && <View style="" className="likeNum">{user.likeNumber}</View>}
-            { isUserInfo  &&
+            { isUserInfo  && !isWorksId &&
               <Button openType="share" className="share wx">
                 <Image src={wx} className="wx"/>
               </Button>
             }
-            { isUserInfo && <Image src={pyq} onClick={this.shareHandle} className="pyq"/>}
+            { isUserInfo && !isWorksId && <Image src={pyq} onClick={this.shareHandle} className="pyq"/>}
           </View>
           {
             isshow === true ?

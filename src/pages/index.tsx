@@ -93,8 +93,8 @@ class Share extends Component {
     savePoint: false,
     type: 'image',
     frame: {
-      width: 400,
-      height: 600,
+      width: 278,
+      height: 429,
       left: 0,
       top: 0,
     } ,
@@ -595,20 +595,23 @@ class Share extends Component {
         this.setState({
          dialogImageWidth: width,
          dialogImageHeight: height
+        },()=>{
+          const showDialogHeight = this.state.user.shareSourceHeight * this.state.dialogImageWidth /this.state.user.shareSourceWidth
+          const showDialogWidth = this.state.user.shareSourceWidth * this.state.dialogImageHeight /this.state.user.shareSourceHeight
+          this.setState({
+            showDialogHeight: showDialogHeight,
+            showDialogWidth:showDialogWidth
+          })
         }) 
       }).exec()
   }
 
   shareHandle =  () => {
-    this.getDialogRect()
-    const showDialogHeight = this.state.user.shareSourceHeight * this.state.dialogImageWidth /this.state.user.shareSourceWidth
-    const showDialogWidth = this.state.user.shareSourceWidth * this.state.dialogImageHeight /this.state.user.shareSourceHeight
     this.setState({
-      isshow: true,
-      showDialogHeight: showDialogHeight,
-      showDialogWidth:showDialogWidth
+      isshow: true
     },()=>{ 
       // this.handelConfirm()
+      this.getDialogRect()
     })
   }
   handelSave = () => {

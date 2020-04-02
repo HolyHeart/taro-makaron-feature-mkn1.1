@@ -1067,14 +1067,14 @@ class Share extends Component {
             {themeData.sceneType === 3 && <View class="share-bg"></View>}
             <View className="showImage">
                <View className="showImage blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
-                <Image src={user.shareSource} mode="aspectFill"  className="bgImageVertical" />
+                <Image src={user.shareSource} mode="aspectFill"  className="bgImage" />
             </View>
           </View>
         }
         {isXcx && shareSourceType === 'video' &&
           <View className='video-wrap showImage'>
              <Video
-              className="video bgImageVertical"
+              className="video bgImage"
               // style={{ width: Taro.pxTransform(width), height: Taro.pxTransform(height - 2) }}
               loop
               autoplay

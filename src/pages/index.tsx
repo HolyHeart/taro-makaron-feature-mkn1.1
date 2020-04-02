@@ -1178,41 +1178,53 @@ class Share extends Component {
                     <View className="bgUrl" id="dialogPosition">
                     {
                       user.worksType === 'pic' && (user.shareSourceHeight / user.shareSourceWidth) < ((dialogImageHeight/dialogImageWidth)) &&
-                      <Image src={user.shareSource} className="bgUrlSizeHorizontal" 
-                      // mode="aspectFill"  
-                      style={{height:`${showDialogHeight}px` }}/> 
+                      <View className="bgUrl">
+                        <View className="bgUrl blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
+                        <Image src={user.shareSource} className="bgUrlSizeHorizontal" 
+                          // mode="aspectFill"  
+                          style={{height:`${showDialogHeight}px` }}/> 
+                      </View>
                     }
                     {
                       user.worksType === 'pic' && (user.shareSourceHeight / user.shareSourceWidth) >= ((dialogImageHeight/dialogImageWidth)) &&
+                      <View className="bgUrl">
+                      <View className="bgUrl blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
                       <Image src={user.shareSource} className="bgUrlSizeVertical" 
                       // mode="aspectFill"  
-                      style={{width:`${showDialogWidth}px` }}/> 
+                      style={{width:`${showDialogWidth}px` }}/>  
+                    </View>
                     }
                     {
                       user.worksType === 'video' && (user.shareSourceHeight / user.shareSourceWidth) < ((dialogImageHeight/dialogImageWidth)) &&
-                      <Video
-                        className="bgUrlSizeHorizontal"
-                        style={{height:`${showDialogHeight}px` }}
-                        loop
-                        autoplay
-                        src={user.shareSource}
-                        poster={videoPoster}
-                        objectFit='cover'
-                        controls>
-                      </Video>
+                      <View className="bgUrl">
+                        <View className="bgUrl blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
+                        <Video
+                          className="bgUrlSizeHorizontal"
+                          style={{height:`${showDialogHeight}px` }}
+                          loop
+                          autoplay
+                          src={user.shareSource}
+                          poster={videoPoster}
+                          objectFit='cover'
+                          controls>
+                        </Video>
+                      </View>
                     }
                     {
                       user.worksType === 'video' && (user.shareSourceHeight / user.shareSourceWidth) > ((dialogImageHeight/dialogImageWidth)) &&
-                      <Video
-                        className="bgUrlSizeHorizontal"
-                        style={{width:`${showDialogWidth}px` }}
-                        loop
-                        autoplay
-                        src={user.shareSource}
-                        poster={videoPoster}
-                        objectFit='cover'
-                        controls>
-                      </Video>
+                      <View className="bgUrl">
+                        <View className="bgUrl blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
+                        <Video
+                          className="bgUrlSizeHorizontal"
+                          style={{width:`${showDialogWidth}px` }}
+                          loop
+                          autoplay
+                          src={user.shareSource}
+                          poster={videoPoster}
+                          objectFit='cover'
+                          controls>
+                        </Video>
+                    </View>
                     }
                     </View>
                     <View className="userInfo" id="dialogFooterSize">

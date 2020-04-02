@@ -610,7 +610,7 @@ class Share extends Component {
     this.setState({
       isshow: true
     },()=>{ 
-      // this.handelConfirm()
+      this.handelConfirm()
       this.getDialogRect()
     })
   }

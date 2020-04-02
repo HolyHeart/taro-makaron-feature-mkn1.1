@@ -220,6 +220,25 @@
         .bgUrl {
           width: 516rpx;
           height: 690rpx;
+          position: relative;
+          .bgUrlSizeHorizontal {
+            width: 100%;
+            position:absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            top: 0;
+            margin: auto;
+          }
+          .bgUrlSizeVertical {
+            height: 100%;
+            position:absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            top: 0;
+            margin: auto;
+          }
         }
         .userInfo {
           height: 148rpx;
@@ -354,6 +373,36 @@
         font-size: 24px;
         color: #999999;
         font-family: PingFangSC-Medium;
+      }
+      .recommend {
+        width: 100%;
+        .scroll {
+          white-space:nowrap;
+          .recommend-item {
+            display: inline-block;
+            width: 100rpx;
+            height: 100rpx;   
+            margin-right:40rpx;     
+            position: relative;   
+            .recommend-button {   
+              width: 100%;
+              height: 100%; 
+              padding: 0;
+              margin: 0;
+              display: inline-block;  
+              border-radius: 50%;
+              background-color: transparent;
+              &::after{ border: none; }
+              .recommend-image {
+                width: 100%;
+                height: 100%;
+              }
+              &.btn-hover {
+                transform:scale(0.85);      
+              }      
+            }    
+          }
+        }
       }
     }
   }

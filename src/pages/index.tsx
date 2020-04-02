@@ -89,7 +89,8 @@ class Share extends Component {
     sceneType: 0,
     isshow: false,
     confirmText: '好的，收下了',
-    saveTitle: '图片已保存到手机相册',
+    saveTitlePic: '图片已保存到手机相册',
+    saveTitleVideo: '视频海报已经保存到手机相册',
     savePoint: false,
     type: 'image',
     frame: {
@@ -98,6 +99,10 @@ class Share extends Component {
       left: 0,
       top: 0,
     } ,
+    dialogFooter:{
+      width:258,
+      height:74,
+    },
     canvas: {
       id: 'shareCanvas',
       ratio: 3
@@ -601,7 +606,40 @@ class Share extends Component {
           this.setState({
             showDialogHeight: showDialogHeight,
             showDialogWidth:showDialogWidth
+          },()=>{
+            this.handelConfirm()
           })
+        }) 
+      }).exec()
+  }
+  getDialogContentRect = () => {
+    Taro.createSelectorQuery().select('#dialogSize').boundingClientRect(
+      (rect)=>{
+        // console.log('dialogrect',rect)
+        const width = rect.width 
+        const height = rect.height
+        this.setState({
+         frame:{
+           width: width,
+           height: height
+         }
+        },()=> {
+          this.getDialogRect()
+        }) 
+      }).exec()
+  }
+
+  getDialogFooterRect = () => {
+    Taro.createSelectorQuery().select('#dialogFooterSize').boundingClientRect(
+      (rect)=>{
+        // console.log('dialogFooterrect',rect)
+        const width = rect.width 
+        const height = rect.height
+        this.setState({
+         dialogFooter:{
+           width: width,
+           height: height
+         }
         }) 
       }).exec()
   }
@@ -610,8 +648,9 @@ class Share extends Component {
     this.setState({
       isshow: true
     },()=>{ 
-      this.handelConfirm()
-      this.getDialogRect()
+      // this.handelConfirm()
+      this.getDialogContentRect()
+      this.getDialogFooterRect()
     })
   }
   handelSave = () => {
@@ -662,24 +701,36 @@ class Share extends Component {
   }
 
   canvasDrawRecommend = async (context) => {
-    const { frame, canvas, user} = this.state
+    const { frame, canvas, user, dialogFooter, showDialogHeight, showDialogWidth, bgImageHeight, bgImageWidth, dialogImageWidth, dialogImageHeight} = this.state
     const postfix = '?x-oss-process=image/resize,h_748,w_560'
     const { ratio = 3 } = canvas
     let localBgImagePath = ''
     try {
       const bgUrl = (user.shareSource + postfix)
-      console.log('bgUrl',bgUrl)
 
       localBgImagePath = await this.downloadRemoteImage(bgUrl)
-      console.log('bgImage',localBgImagePath)
+      if((user.shareSourceHeight / user.shareSourceWidth) < (bgImageHeight/bgImageWidth)) {
+        const codeLeft = (frame.width  - dialogImageWidth ) * ratio / 2
+        const codeTop = (frame.height  - showDialogHeight  - dialogFooter.height) * ratio / 2
+        const codeWidth = dialogImageWidth * ratio   
+        const codeHeight = showDialogHeight * ratio
+        context.drawImage(localBgImagePath, codeLeft, codeTop, codeWidth, codeHeight)
+      } else {
+        const codeLeft = (frame.width  - showDialogWidth ) * ratio / 2
+        const codeTop = (frame.height  - dialogImageHeight  - dialogFooter.height) * ratio 
+        const codeWidth = showDialogWidth * ratio   
+        const codeHeight = dialogImageHeight * ratio
+        context.drawImage(localBgImagePath, codeLeft, codeTop, codeWidth, codeHeight)
+      }
     } catch (err) {
       console.log('下载背景图片失败', err)
       return
     }
-    //防止锯齿，绘的图片是所需图片的3倍
-    const codeWidth = frame.width * ratio - 20 * ratio 
-    const codeHeight =( frame.height * ratio - 84 * ratio)/2
-    context.drawImage(localBgImagePath, 10 * ratio, 10 * ratio, codeWidth, codeHeight)
+    //  //防止锯齿，绘的图片是所需图片的3倍
+    //  const codeWidth = frame.width * ratio - 20 * ratio 
+    //  const codeHeight =( frame.height * ratio - 84 * ratio)/2
+    //  context.drawImage(localBgImagePath, 10 * ratio, 10 * ratio, codeWidth, codeHeight)
+ 
     // 绘制元素
     // await this.canvasDrawElement(context, ratio)
     this.canvasDrawLogo(context, ratio)
@@ -687,34 +738,22 @@ class Share extends Component {
 
   // 绘制二维码和logo
   canvasDrawLogo = async (context, ratio) => {
-    const { frame, user ,qrCode} = this.state
+    const { frame, user ,qrCode, dialogFooter, dialogImageWidth, dialogImageHeight} = this.state
     // console.log('333',qrCode)
     // console.log('222',user.userImage)
     const codeWidth = 42 * ratio
     const codeHeight = 43 * ratio
-    const codeLeft = 226 * ratio
-    const codeTop = 365 * ratio
+    const codeLeft = frame.width * ratio - (frame.width  - dialogImageWidth ) * ratio / 2 - codeWidth
+    const codeTop = dialogImageHeight * ratio + (frame.width  - dialogImageWidth ) * ratio / 2 + 20
     context.save()
     context.drawImage(qrCode, codeLeft, codeTop, codeWidth, codeHeight)
     context.restore()
     context.stroke()
 
-    // const postfix = '?x-oss-process=image/resize,h_748,w_560'
-    // let localuserImagePath = ''
-    // try {
-    //   const userImageUrl = (user.userImage + postfix)
-    //   console.log('userImageUrl',userImageUrl)
-
-    //   localuserImagePath = await this.downloadRemoteImage(userImageUrl)
-    //   console.log('userImage',localuserImagePath)
-    // } catch (err) {
-    //   console.log('下载背景图片失败', err)
-    //   return
-    // }
     const logoWidth = 38 * ratio
     const logoHeight = 38 * ratio
-    const logoLeft = 10 * ratio 
-    const logoTop = 375 * ratio
+    const logoLeft = (frame.width  - dialogImageWidth ) * ratio / 2 
+    const logoTop = logoLeft  + dialogImageHeight * ratio + (dialogFooter.height * ratio - logoHeight)  / 2
     context.save()
     context.arc(logoWidth / 2 + logoLeft, logoHeight / 2 + logoTop, logoWidth / 2, 0, Math.PI * 2, false)
     context.clip()
@@ -722,37 +761,51 @@ class Share extends Component {
     context.restore()
     context.stroke()
 
-    context.font = "30px 'PingFangSC-Medium'";
+    context.font = "40px 'PingFangSC-Medium'";
     context.fillStyle = "#333333";
     // 设置水平对齐方式
-    context.textAlign = "center";
+    // context.textAlign = "center";
     // 设置垂直对齐方式
-    context.textBaseline = "middle";
+    // context.textBaseline = "middle";
     // 绘制文字（参数：要写的字，x坐标，y坐标）
+      // var userName ='@' + (this.state.user.userName).substr(0,4) + '...的作品'
+      // context.fillText(userName,  frame.width * ratio / 3  , 388 * ratio)
+      // this.canvasDrawText(context, ratio)
     if(this.state.user.userName.length > 6) {
-      var userName ='@' + (this.state.user.userName).substr(0,4) + '...的作品'
-      context.fillText(userName,  frame.width * ratio / 3  , 388 * ratio)
+      const wordsLeft = (frame.width  - dialogImageWidth ) * ratio + logoWidth
+      const userName ='@' + (this.state.user.userName).substr(0,4) + '...的作品'
+      context.fillText(userName, wordsLeft, logoTop + 40)
       this.canvasDrawText(context, ratio)
     } else {
+      const wordsLeft = 2 * logoLeft + logoWidth
       const userName ='@' + this.state.user.userName + '的作品'
-      console.log('userName',userName)
-      context.fillText(userName,  frame.width * ratio / 3  , 388 * ratio)
+      context.fillText(userName, wordsLeft, logoTop + 40)
       this.canvasDrawText(context, ratio)
     }
   }
   canvasDrawText = (context, ratio) => {
-    const { frame } = this.state
-    context.font = "24px 'PingFangSC-Medium'"
+    const { frame, dialogImageWidth, dialogFooter, dialogImageHeight,} = this.state
+    context.font = "30px 'PingFangSC-Medium'"
     context.fillStyle = "#999999"
-    context.fillText(this.state.checkoutImage, frame.width * ratio / 3, 405 * ratio)
+    if(this.state.user.worksType === 'pic') {
+      const wordsLeft = (frame.width  - dialogImageWidth ) * ratio + 38 * ratio
+      const wordsTop = (frame.width  - dialogImageWidth ) * ratio / 2   + dialogImageHeight * ratio + (dialogFooter.height * ratio - 38 * ratio)  / 2  + 100
+      context.fillText(this.state.checkoutImage, wordsLeft,wordsTop )
+    } else {
+      const wordsLeft = (frame.width  - dialogImageWidth ) * ratio + 38 * ratio
+      const wordsTop = (frame.width  - dialogImageWidth ) * ratio / 2   + dialogImageHeight * ratio + (dialogFooter.height * ratio - 38 * ratio)  / 2  + 100
+      context.fillText(this.state.checkoutVideo, wordsLeft, wordsTop)
+    }
     this.canvasDrawLogoText(context, ratio)
   }
 
   canvasDrawLogoText = (context, ratio) => {
-    const { frame } = this.state
-    context.font = "25px bold '黑体'"
+    const { frame, dialogImageWidth, dialogImageHeight } = this.state
+    context.font = "30px  '黑体'"
     context.fillStyle = "#000000"
-    context.fillText(this.state.logoName, frame.width * ratio - 96, 412 * ratio, 42 * ratio, 9  * ratio)
+    const wordsLeft = frame.width * ratio - (frame.width  - dialogImageWidth ) * ratio / 2 - 42 * ratio + 10
+    const wordsTop = dialogImageHeight * ratio + (frame.width  - dialogImageWidth ) * ratio / 2 + 60 + 42 * ratio
+    context.fillText(this.state.logoName, wordsLeft, wordsTop)
   }
 
   setResultModalStatus = (flag = false) => {
@@ -804,7 +857,7 @@ class Share extends Component {
         }
       })
     })
-    if (this.state.user.worksType === 'pic') {
+    // if (this.state.user.worksType === 'pic') {
       // 保存图片到相册
       work.saveSourceToPhotosAlbum({
         location: 'local',
@@ -836,38 +889,39 @@ class Share extends Component {
           })
         }
       })
-    } else {
-      work.saveSourceToPhotosAlbum({
-        location: 'local',
-        sourceUrl: canvasImageUrl,
-        sourceType: 'video',
-        onSuccess: () => {
-          Taro.hideLoading()           
-          Taro.showToast({
-            title: '保存成功!',
-            icon: 'success',
-            duration: 2000
-          })
-          this.setState({
-            savePoint: true
-          })
-        },
-        onAuthFail: () => {
-          Taro.authModal({
-            open: true
-          })
-          this.setResultModalStatus(false)
-        },
-        onFail: () => {
-          Taro.hideLoading()
-          Taro.showToast({
-            title: '保存失败!',
-            icon: 'success',
-            duration: 2000
-          })
-        }
-      })
-    }
+    // } 
+    // else {
+    //   work.saveSourceToPhotosAlbum({
+    //     location: 'local',
+    //     sourceUrl: canvasImageUrl,
+    //     sourceType: 'video',
+    //     onSuccess: () => {
+    //       Taro.hideLoading()           
+    //       Taro.showToast({
+    //         title: '保存成功!',
+    //         icon: 'success',
+    //         duration: 2000
+    //       })
+    //       this.setState({
+    //         savePoint: true
+    //       })
+    //     },
+    //     onAuthFail: () => {
+    //       Taro.authModal({
+    //         open: true
+    //       })
+    //       this.setResultModalStatus(false)
+    //     },
+    //     onFail: () => {
+    //       Taro.hideLoading()
+    //       Taro.showToast({
+    //         title: '保存失败!',
+    //         icon: 'success',
+    //         duration: 2000
+    //       })
+    //     }
+    //   })
+    // }
   }
 
   handlePlayClick = (data) => {
@@ -972,7 +1026,7 @@ class Share extends Component {
 
   render() {
     const { isFromApp, isGoAPP, isUserInfo, isXcx, isPlay, isWorksId,bgImageHeight, bgImageWidth,dialogImageHeight,showDialogWidth,dialogImageWidth,showDialogHeight shareSourceType, shareSource, videoPoster, width, height, recommendList, originalCompleteImageUrl, confirmText, isshow, savePoint, 
-      saveTitle, type, checkoutImage, checkoutVideo, morePlayList, user, userXcx, qrCode, frame, canvas, hotMarginTop} = this.state
+      saveTitlePic, saveTitleVideo, type, checkoutImage, checkoutVideo, morePlayList, user, userXcx, qrCode, frame, canvas, hotMarginTop} = this.state
     return (
       <View className='page-share'>
         <Title
@@ -1118,8 +1172,9 @@ class Share extends Component {
             <View className="wx_dialog_container">           
               <View className="wx-mask"></View>
               <View className="wx-dialog">
-                {savePoint === true ? <View className="wx-dialog-save">{saveTitle}</View> : <View className="wx-dialog-save"></View>}
-                <View className="wx-dialog-content">
+                {savePoint === true && user.worksType === 'pic' ? <View className="wx-dialog-save">{saveTitlePic}</View> : <View className="wx-dialog-save"></View>}
+                {savePoint === true && user.worksType === 'video'? <View className="wx-dialog-save">{saveTitleVideo}</View> : <View className="wx-dialog-save"></View>}
+                <View className="wx-dialog-content" id="dialogSize">
                     <View className="bgUrl" id="dialogPosition">
                     {
                       user.worksType === 'pic' && (user.shareSourceHeight / user.shareSourceWidth) < ((dialogImageHeight/dialogImageWidth)) &&
@@ -1128,7 +1183,7 @@ class Share extends Component {
                       style={{height:`${showDialogHeight}px` }}/> 
                     }
                     {
-                      user.worksType === 'pic' && (user.shareSourceHeight / user.shareSourceWidth) > ((dialogImageHeight/dialogImageWidth)) &&
+                      user.worksType === 'pic' && (user.shareSourceHeight / user.shareSourceWidth) >= ((dialogImageHeight/dialogImageWidth)) &&
                       <Image src={user.shareSource} className="bgUrlSizeVertical" 
                       // mode="aspectFill"  
                       style={{width:`${showDialogWidth}px` }}/> 
@@ -1160,12 +1215,12 @@ class Share extends Component {
                       </Video>
                     }
                     </View>
-                    <View className="userInfo">
+                    <View className="userInfo" id="dialogFooterSize">
                       <Image className="userimage" src={user.userImage} />
                       <View className="username">
                         <View className="userwork"><View className="name">@{user.userName}</View>的作品</View>
                         {
-                          user.worksType === 'image' ? <View className="seetwo">{checkoutImage}</View> : <View className="seetwo">{checkoutVideo}</View>
+                          user.worksType === 'pic' ? <View className="seetwo">{checkoutImage}</View> : <View className="seetwo">{checkoutVideo}</View>
                         }
                       </View>
                       <View className="two">
@@ -1190,12 +1245,6 @@ class Share extends Component {
               style={`width: ${frame.width * canvas.ratio}px; height: ${frame.height * canvas.ratio}px;`}
               canvasId={canvas.id} />
           </View>
-          {/* <View className="canvas-wrap">
-            <Canvas
-              disable-scroll={true}
-              style={`width: ${(user.caluWidth+20) * canvas.ratio}px; height: ${(user.caluHeight+200) * canvas.ratio}px;`}
-              canvasId={canvas.id} />
-          </View> */}
           
         </View> 
         {/* : */}

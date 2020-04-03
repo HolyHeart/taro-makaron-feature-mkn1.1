@@ -55,7 +55,7 @@
 					"id": 0,
 					"name": "pages/index",
 					"pathName": "pages/index",
-					"query": "remoteURL=https://static01.versa-ai.com/upload/29cbaea56c26/40713F9A3A097492E9CF5C831362FE97.jpg&from=app&workID=238320659989319680",
+					"query": "remoteURL=https://static01.versa-ai.com/upload/29cbaea56c26/40713F9A3A097492E9CF5C831362FE97.jpg&from=app&workID=238320659989319680&scene=worksId:238320659989319680",
 					"scene": 1069,
 					"referrerInfo": {}
 				},
@@ -77,7 +77,7 @@
 					"id": 3,
 					"name": "pages/index",
 					"pathName": "pages/index",
-					"query": "remoteURL=https://static01.versa-ai.com/upload/29cbaea56c26/40713F9A3A097492E9CF5C831362FE97.jpg&from=app&workID=184837437540585472",
+					"query": "remoteURL=https://static01.versa-ai.com/upload/29cbaea56c26/40713F9A3A097492E9CF5C831362FE97.jpg&from=app&workID=133581248849039360",
 					"scene": 1069,
 					"referrerInfo": {}
 				},

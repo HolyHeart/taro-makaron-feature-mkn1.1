@@ -7,7 +7,7 @@ import originalImageIcon from '@/assets/images/originalImage@2x.png'
 import Title from '@/components/Title'
 import CustomIcon from '@/components/Icon'
 import RecommendList from '@/components/RecommendList'
-import MorePlayList from '@/components/MorePlayList'
+// import MorePlayList from '@/components/MorePlayList'
 import AuthModal from '@/components/AuthModal'
 import BackApp from '@/components/BackApp'
 import { appConfig } from '@/services/config'
@@ -29,7 +29,7 @@ import soul from '@/assets/images/soul.jpg'
 import newYear from '@/assets/images/newYear.jpg'
 import qlPro from '@/assets/images/qlpro.jpg'
 import makaron from '@/assets/images/MAKARON@2x.png'
-import session from 'dist/services/session'
+// import session from 'dist/services/session'
 
 // const demo = 'https://static01.versa-ai.com/upload/201bae375f8b/18e62d91-fc04-46c6-8f21-7224b53eb4b7.mp4'
 type PageStateProps = {
@@ -798,13 +798,15 @@ class Share extends Component {
     context.save()
     context.arc(logoWidth / 2 + logoLeft, logoHeight / 2 + logoTop, logoWidth / 2, 0, Math.PI * 2, false)
     context.clip()
+    context.setStrokeStyle(context, 'rgba(0, 0, 0, 0)')
+    context.stroke()
+   
     if(user.userImage){
       context.drawImage(user.userImage, logoLeft, logoTop, logoWidth, logoHeight)
     } else {
       context.drawImage(titleImage, logoLeft, logoTop, logoWidth, logoHeight)
     }
     context.restore()
-    context.stroke()
 
     context.font = "40px 'PingFangSC-Medium'";
     context.fillStyle = "#333333";
@@ -841,6 +843,7 @@ class Share extends Component {
       const wordsTop = (frame.width  - dialogImageWidth ) * ratio / 2   + dialogImageHeight * ratio + (dialogFooter.height * ratio - 38 * ratio)  / 2  + 100
       context.fillText(this.state.checkoutVideo, wordsLeft, wordsTop)
     }
+    // context.draw()
   }
 
   setResultModalStatus = (flag = false) => {
@@ -869,7 +872,7 @@ class Share extends Component {
     Taro.setStorageSync('saveNumber',mySaveNumber)
     this.isSaving = true
     const canvasImageUrl = await this.createCanvas()
-    // console.log('canvas',canvasImageUrl)
+    console.log('canvas',canvasImageUrl)
     Taro.hideLoading()
     this.isSaving = false
     this.setState({
@@ -1197,7 +1200,7 @@ class Share extends Component {
             { isUserInfo && <View style="" className="likeNum">{user.likeNumber}</View>}
             { isUserInfo  && !isWorksId &&
               <Button openType="share" className="share wx">
-                <Image src={wx} className="wx" style="width:46rpx;height:37.2rpx;"/>
+                <Image src={wx} className="wx"/>
               </Button>
             }
             { isUserInfo && !isWorksId && <Image src={pyq} onClick={this.shareHandle} className="pyq"/>}

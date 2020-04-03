@@ -28,6 +28,7 @@ import titleImage from '@/assets/images/pic_mkl@3x.png'
 import soul from '@/assets/images/soul.jpg'
 import newYear from '@/assets/images/newYear.jpg'
 import qlPro from '@/assets/images/qlpro.jpg'
+import makaron from '@/assets/images/MAKARON@2x.png'
 import session from 'dist/services/session'
 
 // const demo = 'https://static01.versa-ai.com/upload/201bae375f8b/18e62d91-fc04-46c6-8f21-7224b53eb4b7.mp4'
@@ -121,6 +122,7 @@ class Share extends Component {
       shareSource:'',
       shareSourceWidth:0,
       shareSourceHeight:0,
+      firstFrame:'',
       userToken: '',
       sessionId: '',
       deviceId:'',
@@ -222,6 +224,7 @@ class Share extends Component {
     //   title:this.$router.params.originalCompleteImageUrl
     // })
   }
+  
 
   singleWorkList = async () => {
     const singleWorkData = await service.share.singleWorkList(this.state.user.worksId)
@@ -230,9 +233,15 @@ class Share extends Component {
       const data = singleWorkData.result.result
       if ((data.renderPictureInfo.url || data.renderPictureInfo.firstFrame).indexOf('https') === -1) {
         var imageUrl = (data.renderPictureInfo.url || data.renderPictureInfo.firstFrame).replace(/^http/,'https')
+        if(data.renderPictureInfo.firstFrame) {
+          var imageFirstUrl = (data.renderPictureInfo.firstFrame).replace(/^http/,'https')
+        }
         // console.log('url',imageUrl)
       } else {
         var imageUrl = data.renderPictureInfo.url || data.renderPictureInfo.firstFrame
+        if(data.renderPictureInfo.firstFrame) {
+          var imageFirstUrl = (data.renderPictureInfo.firstFrame)
+        }
       }
       if (typeof(data.author.avatar)!== 'undefined' && (data.author.avatar).indexOf('https') === -1 ) {
         var userImage = (data.author.avatar).replace(/^http/,'https')
@@ -252,9 +261,10 @@ class Share extends Component {
           uid: data.uid,
           worksId: data.worksId,
           liked: data.liked,
-          shareSource : imageUrl,
+          shareSource : imageUrl || imageFirstUrl,
           shareSourceWidth:shareSourceWidth,
           shareSourceHeight:shareSourceHeight,
+          firstFrame: imageFirstUrl,
           templateCode: data.schema,
           sessionId: deleteLike.sessionId,
           worksType: data.worksType,
@@ -292,7 +302,16 @@ class Share extends Component {
   componentDidHide() { }
   onShareAppMessage(res) {
     const shareContent = '给你推荐一个好作品'
-    const url = `${this.state.user.shareSource}?x-oss-process=image/resize,m_pad,h_420,w_525` 
+    let url = ''
+    if(this.state.user.worksType === 'pic') {
+      url = `${this.state.user.shareSource}?x-oss-process=image/resize,m_pad,h_420,w_525` 
+    } else if (this.state.user.worksType === 'video') {
+      url = `${this.state.user.firstFrame}?x-oss-process=image/resize,m_pad,h_420,w_525` 
+      console.log('url',url)
+    } else {
+      url = `${this.state.user.shareSource}?x-oss-process=image/resize,m_pad,h_420,w_525` 
+    }
+    // const url = `${this.state.user.shareSource}?x-oss-process=image/resize,m_pad,h_420,w_525` 
     const { userInfo = {} } = globalData
     const title = `@${userInfo.nickName}：${shareContent}`
     const path = `pages/index?worksId=${this.state.user.worksId}&from=app&isGoAPP=${!this.state.isGoAPP}&isPlay=${this.state.isPlay}`
@@ -516,6 +535,7 @@ class Share extends Component {
         shareSource : data.renderPictureInfo.url || data.renderPictureInfo.firstFrame,
         shareSourceWidth:data.renderPictureInfo.imageWidth,
         shareSourceHeight:data.renderPictureInfo.imageHeight,
+        firstFrame: data.renderPictureInfo.firstFrame,
         templateCode: data.schema,
         sessionId: deleteLike1,
         worksType: data.worksType
@@ -661,11 +681,10 @@ class Share extends Component {
   }
 
   downloadRemoteImage = async (remoteUrl = '') => {
-    console.log('456',remoteUrl)
     let localImagePath = ''
     try {
       const result = await service.base.downloadFile(remoteUrl)
-      console.log('result',result)
+      // console.log('result',result)
       localImagePath = (result.tempFilePath)
     } catch (err) {
       // console.log('下载图片失败', err)
@@ -706,10 +725,23 @@ class Share extends Component {
     const { ratio = 3 } = canvas
     let localBgImagePath = ''
     try {
-      const bgUrl = (user.shareSource + postfix)
+      if(user.worksType === 'pic') {
+        const bgUrl = (user.shareSource + postfix)
+        localBgImagePath = await this.downloadRemoteImage(bgUrl)
+      } else if(user.worksType === 'video') {
+        const bgUrl = (user.firstFrame + postfix)
+        localBgImagePath = await this.downloadRemoteImage(bgUrl)
+        const codeLeft = (frame.width  - dialogImageWidth ) * ratio / 2
+        const codeTop = codeLeft
+        const codeWidth = dialogImageWidth * ratio   
+        const codeHeight = dialogImageHeight * ratio
+        const result = localBgImagePath
+        context.drawImage(result, codeLeft, codeTop, codeWidth, codeHeight)
+      }
+      // const bgUrl = (user.shareSource + postfix)
 
-      localBgImagePath = await this.downloadRemoteImage(bgUrl)
-      if((user.shareSourceHeight / user.shareSourceWidth) < (bgImageHeight/bgImageWidth)) {
+      // localBgImagePath = await this.downloadRemoteImage(bgUrl)
+      if((user.shareSourceHeight / user.shareSourceWidth) < (dialogImageHeight/dialogImageWidth)) {
         const codeLeft = (frame.width  - dialogImageWidth ) * ratio / 2
         const codeTop = (frame.height  - showDialogHeight  - dialogFooter.height) * ratio / 2
         const codeWidth = dialogImageWidth * ratio   
@@ -750,6 +782,15 @@ class Share extends Component {
     context.restore()
     context.stroke()
 
+    const codeLogoWidth = 40 * ratio
+    const codeLogoHeight = 7 * ratio
+    const codeLogoLeft = frame.width * ratio - (frame.width  - dialogImageWidth ) * ratio / 2 - 42 * ratio + 5
+    const codeLogoTop = dialogImageHeight * ratio + (frame.width  - dialogImageWidth ) * ratio / 2 + 40 + 42 * ratio
+    context.save()
+    context.drawImage(makaron, codeLogoLeft, codeLogoTop,codeLogoWidth, codeLogoHeight)
+    context.restore()
+    context.stroke()
+
     const logoWidth = 38 * ratio
     const logoHeight = 38 * ratio
     const logoLeft = (frame.width  - dialogImageWidth ) * ratio / 2 
@@ -757,7 +798,11 @@ class Share extends Component {
     context.save()
     context.arc(logoWidth / 2 + logoLeft, logoHeight / 2 + logoTop, logoWidth / 2, 0, Math.PI * 2, false)
     context.clip()
-    context.drawImage(user.userImage, logoLeft, logoTop, logoWidth, logoHeight)
+    if(user.userImage){
+      context.drawImage(user.userImage, logoLeft, logoTop, logoWidth, logoHeight)
+    } else {
+      context.drawImage(titleImage, logoLeft, logoTop, logoWidth, logoHeight)
+    }
     context.restore()
     context.stroke()
 
@@ -796,16 +841,6 @@ class Share extends Component {
       const wordsTop = (frame.width  - dialogImageWidth ) * ratio / 2   + dialogImageHeight * ratio + (dialogFooter.height * ratio - 38 * ratio)  / 2  + 100
       context.fillText(this.state.checkoutVideo, wordsLeft, wordsTop)
     }
-    this.canvasDrawLogoText(context, ratio)
-  }
-
-  canvasDrawLogoText = (context, ratio) => {
-    const { frame, dialogImageWidth, dialogImageHeight } = this.state
-    context.font = "30px  '黑体'"
-    context.fillStyle = "#000000"
-    const wordsLeft = frame.width * ratio - (frame.width  - dialogImageWidth ) * ratio / 2 - 42 * ratio + 10
-    const wordsTop = dialogImageHeight * ratio + (frame.width  - dialogImageWidth ) * ratio / 2 + 60 + 42 * ratio
-    context.fillText(this.state.logoName, wordsLeft, wordsTop)
   }
 
   setResultModalStatus = (flag = false) => {
@@ -834,7 +869,7 @@ class Share extends Component {
     Taro.setStorageSync('saveNumber',mySaveNumber)
     this.isSaving = true
     const canvasImageUrl = await this.createCanvas()
-    console.log('canvas',canvasImageUrl)
+    // console.log('canvas',canvasImageUrl)
     Taro.hideLoading()
     this.isSaving = false
     this.setState({
@@ -1043,7 +1078,7 @@ class Share extends Component {
           <View>
             {themeData.sceneType === 3 && <View class="share-bg"></View>}
             <View className="showImage">
-              <View className="showImage blur" style={{backgroundImage: `url(${shareSource})`}}></View>
+              <View className="blur" style={{backgroundImage: `url(${shareSource})`}}></View>
               <Image src={shareSource} mode="aspectFill"  className="bgImageVertical" />
             </View>
           </View>
@@ -1101,9 +1136,9 @@ class Share extends Component {
           </View>
         } */}
         {
-          (user.shareSourceHeight / user.shareSourceWidth) > ((bgImageHeight/bgImageWidth)) && user.worksType === 'pic' &&  
+          (user.shareSourceHeight / user.shareSourceWidth) >= ((bgImageHeight/bgImageWidth)) && user.worksType === 'pic' &&  
           <View className="showImage" id="positionImage"> 
-            <View className="showImage blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
+            <View className="blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
             <Image src={user.shareSource}   className="bgImageVertical" 
             style={{width:`${user.caluWidth}px` }}/> 
            </View>
@@ -1111,15 +1146,15 @@ class Share extends Component {
         {
           (user.shareSourceHeight / user.shareSourceWidth) < (bgImageHeight/bgImageWidth) && user.worksType === 'pic' &&  
             <View className="showImage"> 
-              <View className="showImage blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
+              <View className="blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
               <Image src={user.shareSource}   className="bgImageHorizontal"
               style={{height:`${user.caluHeight}px` }}
               />  
             </View>
         }
-        { (user.shareSourceHeight / user.shareSourceWidth) > ((bgImageHeight/bgImageWidth)) && user.worksType === 'video' &&
+        { (user.shareSourceHeight / user.shareSourceWidth) >= ((bgImageHeight/bgImageWidth)) && user.worksType === 'video' &&
             <View className="showImage">
-              <View className="showImage blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
+              <View className="blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
               <Video
                 className="video bgImageVertical"
                 // style={{ width: Taro.pxTransform(width), height: Taro.pxTransform(height - 2) }}
@@ -1135,7 +1170,7 @@ class Share extends Component {
         }
         { (user.shareSourceHeight / user.shareSourceWidth) < (bgImageHeight/bgImageWidth) && user.worksType === 'video' &&
         <View className="showImage">
-          <View className="showImage blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
+          <View className="blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
           <Video
             className="video bgImageHorizontal"
             style={{height:`${user.caluHeight}px` }}
@@ -1178,26 +1213,26 @@ class Share extends Component {
                     <View className="bgUrl" id="dialogPosition">
                     {
                       user.worksType === 'pic' && (user.shareSourceHeight / user.shareSourceWidth) < ((dialogImageHeight/dialogImageWidth)) &&
-                      <View className="bgUrl">
-                        <View className="bgUrl blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
+                      // <View className="bgUrl">
+                        // <View className="blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
                         <Image src={user.shareSource} className="bgUrlSizeHorizontal" 
                           // mode="aspectFill"  
                           style={{height:`${showDialogHeight}px` }}/> 
-                      </View>
+                      // </View>
                     }
                     {
                       user.worksType === 'pic' && (user.shareSourceHeight / user.shareSourceWidth) >= ((dialogImageHeight/dialogImageWidth)) &&
-                      <View className="bgUrl">
-                      <View className="bgUrl blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
+                      // <View className="bgUrl">
+                      // <View className="blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
                       <Image src={user.shareSource} className="bgUrlSizeVertical" 
                       // mode="aspectFill"  
-                      style={{width:`${showDialogWidth}px` }}/>  
-                    </View>
+                      style={{width:`${showDialogWidth}px` }}/> 
+                       // </View>
                     }
                     {
                       user.worksType === 'video' && (user.shareSourceHeight / user.shareSourceWidth) < ((dialogImageHeight/dialogImageWidth)) &&
                       <View className="bgUrl">
-                        <View className="bgUrl blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
+                        <View className="blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
                         <Video
                           className="bgUrlSizeHorizontal"
                           style={{height:`${showDialogHeight}px` }}
@@ -1211,9 +1246,9 @@ class Share extends Component {
                       </View>
                     }
                     {
-                      user.worksType === 'video' && (user.shareSourceHeight / user.shareSourceWidth) > ((dialogImageHeight/dialogImageWidth)) &&
+                      user.worksType === 'video' && (user.shareSourceHeight / user.shareSourceWidth) >= ((dialogImageHeight/dialogImageWidth)) &&
                       <View className="bgUrl">
-                        <View className="bgUrl blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
+                        <View className="blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
                         <Video
                           className="bgUrlSizeHorizontal"
                           style={{width:`${showDialogWidth}px` }}
@@ -1237,7 +1272,7 @@ class Share extends Component {
                       </View>
                       <View className="two">
                         <Image className="twoCode" src={qrCode} />
-                        <View className="logo">Makaron</View>
+                        <Image className="logo" src={makaron} />
                       </View>
                     </View>
                   <AuthModal />

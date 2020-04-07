@@ -136,14 +136,14 @@ class Share extends Component {
     dialogImageHeight: 345,
     showDialogWidth: 258,
     showDialogHeight: 345,
-    // userXcx: {
+    userXcx: {
     //   userImage: '',
     //   userName: '',
     //   likeNumber: 0,
     //   uid: '',
     //   worksId: '',
     //   liked: 0
-    // },
+    },
     result: {
       show: false,
       shareImage: {
@@ -229,6 +229,8 @@ class Share extends Component {
   singleWorkList = async () => {
     const singleWorkData = await service.share.singleWorkList(this.state.user.worksId)
     const deleteLike = Taro.getStorageSync('deleteLike')
+    const userInfo = Taro.getStorageSync('userInfo')
+    // console.log(7777,userInfo)
     if (singleWorkData.status === 'success') {
       const data = singleWorkData.result.result
       if ((data.renderPictureInfo.url || data.renderPictureInfo.firstFrame).indexOf('https') === -1) {
@@ -598,10 +600,16 @@ class Share extends Component {
       // console.log(result)
       this.userInfo = result.result.result
       // console.log('this',this.userInfo)
-      if (this.state.user.liked === 0) {
-        this.addLike(this.userInfo)
-      } else {
-        this.deleteLike(this.userInfo)
+      Taro.setStorage({
+        key: "userInfo",
+        data: this.userInfo
+      })
+      if(result.status === 'success') {
+        if (this.state.user.liked === 0) {
+          this.addLike(this.userInfo)
+        } else {
+          this.deleteLike(this.userInfo)
+        }
       }
     } else {
       Taro.showToast({
@@ -1064,7 +1072,7 @@ class Share extends Component {
 
 
   render() {
-    const { isFromApp, isGoAPP, isUserInfo, isXcx, isPlay, isWorksId,bgImageHeight, bgImageWidth,dialogImageHeight,showDialogWidth,dialogImageWidth,showDialogHeight shareSourceType, shareSource, videoPoster, width, height, recommendList, originalCompleteImageUrl, confirmText, isshow, savePoint, 
+    const { isFromApp, isGoAPP, isUserInfo, isXcx, isPlay, isWorksId,bgImageHeight, bgImageWidth,dialogImageHeight,showDialogWidth,dialogImageWidth,showDialogHeight, shareSourceType, shareSource, videoPoster, width, height, recommendList, originalCompleteImageUrl, confirmText, isshow, savePoint, 
       saveTitlePic, saveTitleVideo, type, checkoutImage, checkoutVideo, morePlayList, user, userXcx, qrCode, frame, canvas, hotMarginTop} = this.state
     return (
       <View className='page-share'>

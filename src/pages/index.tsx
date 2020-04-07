@@ -259,7 +259,6 @@ class Share extends Component {
       } else {
         liked = parseInt(this.$router.params.isLiked)
       }
-      console.log(999,liked)
       this.setState({
         user: {
           userImage: userImage,

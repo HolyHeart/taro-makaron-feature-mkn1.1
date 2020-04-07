@@ -255,10 +255,8 @@ class Share extends Component {
       const caluHeight = shareSourceHeight * this.state.bgImageWidth / shareSourceWidth
       let liked = 0
       if(!this.$router.params.isLiked) {
-        console.log(888)
         liked = data.liked
       } else {
-        console.log(999)
         liked = parseInt(this.$router.params.isLiked)
       }
       console.log(999,liked)
@@ -281,8 +279,7 @@ class Share extends Component {
           caluWidth: caluWidth,
           caluHeight: caluHeight
         }
-      }, () => { 
-        console.log(666,this.state.user.liked)
+      }, () => {
         this.onLoad()
         this.getRect()
       })

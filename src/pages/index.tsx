@@ -229,7 +229,7 @@ class Share extends Component {
   singleWorkList = async () => {
     const singleWorkData = await service.share.singleWorkList(this.state.user.worksId)
     const deleteLike = Taro.getStorageSync('deleteLike')
-    const userInfo = Taro.getStorageSync('userInfo')
+    // const userInfo = Taro.getStorageSync('userInfo')
     // console.log(7777,userInfo)
     if (singleWorkData.status === 'success') {
       const data = singleWorkData.result.result
@@ -251,6 +251,12 @@ class Share extends Component {
       } else {
         var userImage = data.author.avatar 
       }
+      // this.userInfo = Taro.getStorageSync('userInfo')
+      // if( typeof(this.userInfo) !== 'string') {
+      //   var liked = parseInt(this.$router.params.isLiked)
+      // } else {
+      //   var liked = data.liked
+      // }
       const shareSourceWidth = data.renderPictureInfo.imageWidth
       const shareSourceHeight = data.renderPictureInfo.imageHeight
       const caluWidth = shareSourceWidth * this.state.bgImageHeight / shareSourceHeight
@@ -278,6 +284,13 @@ class Share extends Component {
       }, () => {
         this.onLoad()
         this.getRect()
+        // var that  = this
+        // Taro.removeStorage({
+        //   key: 'userInfo',
+        //   success: (res) => {
+        //     that.userInfo = ''
+        //   }
+        // })
       })
     }
     this.getRecommendList()
@@ -318,7 +331,7 @@ class Share extends Component {
     const { userInfo = {} } = globalData
     const title = `@${userInfo.nickName}：${shareContent}`
     const path = `pages/index?worksId=${this.state.user.worksId}&from=app&isGoAPP=${!this.state.isGoAPP}&isPlay=${this.state.isPlay}`
-    Taro.navigateTo({ url: `/pages/index?worksId=${this.state.user.worksId}&from=app&isGoAPP=${!this.state.isGoAPP}&isPlay=${this.state.isPlay}` })
+    // Taro.navigateTo({ url: `/pages/index?worksId=${this.state.user.worksId}&from=app&isGoAPP=${!this.state.isGoAPP}&isPlay=${this.state.isPlay}&isLiked=${this.state.user.liked}` })
     return {
       title: title,
       path: path ,
@@ -486,41 +499,15 @@ class Share extends Component {
       })
     }
   }
-  todo = () => {
-    work.chooseImage({
-      onTap: (index) => {
-        if (index === 0) {
-          this.app.aldstat.sendEvent('分享页上传人像选择拍摄照片', '选择拍摄')
-        } else if (index === 1) {
-          this.app.aldstat.sendEvent('分享页上传人像选择相册照片', '选择相册')
-        }
-      },
-      onSuccess: (path) => {
-        this.app.aldstat.sendEvent('分享页上传人像成功', '上传成功')
-        globalData.choosedImage = path
-        const { themeData = {}, sceneId } = globalData
-        let url = ''
-        if (themeData.sceneType === 1) {
-          url = '/pages/filter/index'
-        } else if (themeData.sceneType === 2) {
-          url = '/pages/dynamic/index'
-        } else if (themeData.sceneType === 3) {
-          url = '/pages/segment/index'
-        } else if (themeData.sceneType === 4) {
-          url = '/pages/crop/index'
-        } else {
-          url = '/pages/editor/index'
-        }
-        if (sceneId) {
-          url = url + '?sceneId=' + sceneId
-        }
-        console.log(url)
-        Taro.navigateTo({url})
-      }
-    })
-  }
+
   handleRecommendClick =  (data) => {
     // console.log('data',data)
+    // Taro.removeStorage({
+    //   key: 'userInfo',
+    //   success: (res) => {
+    //     this.userInfo = ''
+    //   }
+    // })
     const deleteLike1 = Taro.getStorageSync('deleteLike')
     this.setState({
       isFromApp: false,
@@ -565,6 +552,8 @@ class Share extends Component {
     const scene = await service.share.getQrCode(page, width, worksId, sessionId, deviceId)
     this.setState({
       qrCode: scene
+    },()=>{
+      console.log('scene',scene)
     })
     
   }
@@ -600,10 +589,10 @@ class Share extends Component {
       // console.log(result)
       this.userInfo = result.result.result
       // console.log('this',this.userInfo)
-      Taro.setStorage({
-        key: "userInfo",
-        data: this.userInfo
-      })
+      // Taro.setStorage({
+      //   key: "userInfo",
+      //   data: this.userInfo
+      // })
       if(result.status === 'success') {
         if (this.state.user.liked === 0) {
           this.addLike(this.userInfo)
@@ -747,9 +736,7 @@ class Share extends Component {
         const result = localBgImagePath
         context.drawImage(result, codeLeft, codeTop, codeWidth, codeHeight)
       }
-      // const bgUrl = (user.shareSource + postfix)
 
-      // localBgImagePath = await this.downloadRemoteImage(bgUrl)
       if((user.shareSourceHeight / user.shareSourceWidth) < (dialogImageHeight/dialogImageWidth)) {
         const codeLeft = (frame.width  - dialogImageWidth ) * ratio / 2
         const codeTop = (frame.height  - showDialogHeight  - dialogFooter.height) * ratio / 2
@@ -782,6 +769,7 @@ class Share extends Component {
     const { frame, user ,qrCode, dialogFooter, dialogImageWidth, dialogImageHeight} = this.state
     // console.log('333',qrCode)
     // console.log('222',user.userImage)
+    // const postfix = '?x-oss-process=image/resize,h_748,w_560'
     const codeWidth = 42 * ratio
     const codeHeight = 43 * ratio
     const codeLeft = frame.width * ratio - (frame.width  - dialogImageWidth ) * ratio / 2 - codeWidth
@@ -810,7 +798,16 @@ class Share extends Component {
     context.setStrokeStyle(context, 'rgba(0, 0, 0, 0)')
     context.stroke()
    
-    if(user.userImage){
+    if(user.userImage){     
+      // let localUserImagePath = ''
+      // try {
+      //   const userUrl = (user.userImage + postfix)
+      //   localUserImagePath = await this.downloadRemoteImage(userUrl)
+      //   context.drawImage(localUserImagePath, logoLeft, logoTop, logoWidth, logoHeight)
+      // }catch (err) {
+      //   console.log('下载背景图片失败', err)
+      //   return
+      // }
       context.drawImage(user.userImage, logoLeft, logoTop, logoWidth, logoHeight)
     } else {
       context.drawImage(titleImage, logoLeft, logoTop, logoWidth, logoHeight)
@@ -827,14 +824,18 @@ class Share extends Component {
       // var userName ='@' + (this.state.user.userName).substr(0,4) + '...的作品'
       // context.fillText(userName,  frame.width * ratio / 3  , 388 * ratio)
       // this.canvasDrawText(context, ratio)
-    if(this.state.user.userName.length > 6) {
+    if(this.state.user.userName && this.state.user.userName.length > 6) {
       const wordsLeft = (frame.width  - dialogImageWidth ) * ratio + logoWidth
       const userName ='@' + (this.state.user.userName).substr(0,4) + '...的作品'
       context.fillText(userName, wordsLeft, logoTop + 40)
       this.canvasDrawText(context, ratio)
     } else {
       const wordsLeft = 2 * logoLeft + logoWidth
-      const userName ='@' + this.state.user.userName + '的作品'
+      if (typeof(this.state.user.userName) === 'undefined') {
+        var userName = '@' + '的作品'
+      } else {
+        var userName ='@' + this.state.user.userName + '的作品'
+      }
       context.fillText(userName, wordsLeft, logoTop + 40)
       this.canvasDrawText(context, ratio)
     }
@@ -1275,7 +1276,13 @@ class Share extends Component {
                     }
                     </View>
                     <View className="userInfo" id="dialogFooterSize">
-                      <Image className="userimage" src={user.userImage} />
+                      {/* <Image className="userimage" src={user.userImage} /> */}
+                      {
+                        user.userImage && <Image className="userimage" src={user.userImage} />
+                      }
+                      {
+                        !user.userImage && <Image className="userimage" src={titleImage} />
+                      }
                       <View className="username">
                         <View className="userwork"><View className="name">@{user.userName}</View>的作品</View>
                         {

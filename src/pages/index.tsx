@@ -253,12 +253,6 @@ class Share extends Component {
       const shareSourceHeight = data.renderPictureInfo.imageHeight
       const caluWidth = shareSourceWidth * this.state.bgImageHeight / shareSourceHeight
       const caluHeight = shareSourceHeight * this.state.bgImageWidth / shareSourceWidth
-      let liked = 0
-      if(!this.$router.params.isLiked) {
-        liked = data.liked
-      } else {
-        liked = parseInt(this.$router.params.isLiked)
-      }
       this.setState({
         user: {
           userImage: userImage,
@@ -266,7 +260,8 @@ class Share extends Component {
           likeNumber: data.likedAmount,
           uid: data.uid,
           worksId: data.worksId,
-          liked: liked,
+          // liked: liked,
+          liked: data.liked,
           shareSource : imageUrl || imageFirstUrl,
           shareSourceWidth:shareSourceWidth,
           shareSourceHeight:shareSourceHeight,
@@ -320,8 +315,8 @@ class Share extends Component {
     // const url = `${this.state.user.shareSource}?x-oss-process=image/resize,m_pad,h_420,w_525` 
     const { userInfo = {} } = globalData
     const title = `@${userInfo.nickName}：${shareContent}`
-    const path = `pages/index?worksId=${this.state.user.worksId}&from=app&isGoAPP=${!this.state.isGoAPP}&isPlay=${this.state.isPlay}&isLiked=${this.state.user.liked}`
-    // Taro.navigateTo({ url: `/pages/index?worksId=${this.state.user.worksId}&from=app&isGoAPP=${!this.state.isGoAPP}&isPlay=${this.state.isPlay}&isLiked=${this.state.user.liked}` })
+    const path = `pages/index?worksId=${this.state.user.worksId}&from=app&isGoAPP=${!this.state.isGoAPP}&isPlay=${this.state.isPlay}`
+    Taro.navigateTo({ url: `/pages/index?worksId=${this.state.user.worksId}&from=app&isGoAPP=${!this.state.isGoAPP}&isPlay=${this.state.isPlay}` })
     return {
       title: title,
       path: path ,
@@ -605,16 +600,8 @@ class Share extends Component {
       // console.log('this',this.userInfo)
       if (this.state.user.liked === 0) {
         this.addLike(this.userInfo)
-        Taro.setStorage({
-          key: "liked",
-          data: 1
-        })
       } else {
         this.deleteLike(this.userInfo)
-        Taro.setStorage({
-          key: "liked",
-          data: 0
-        })
       }
     } else {
       Taro.showToast({
@@ -1009,11 +996,9 @@ class Share extends Component {
           const worksType = this.state.user.worksType
           const caluWidth = this.state.user.caluWidth
           const caluHeight = this.state.user.caluHeight
-          const liked = Taro.getStorageSync('liked')
-          console.log('liked',liked)
           this.setState({
             user: {
-              liked: liked,
+              liked: 1,
               likeNumber : likedNum,
               worksId: worksId,
               userImage: userImage,
@@ -1050,11 +1035,9 @@ class Share extends Component {
         const worksType = this.state.user.worksType
         const caluWidth = this.state.user.caluWidth
         const caluHeight = this.state.user.caluHeight
-        const liked = Taro.getStorageSync('liked')
-        console.log('liked',liked)
         this.setState({
           user: {
-            liked: liked,
+            liked: 0,
             likeNumber : likeNum,
             worksId: worksId,
             userImage: userImage,

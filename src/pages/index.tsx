@@ -24,7 +24,7 @@ import like from '@/assets/images/like@3x.png'
 import liked from '@/assets/images/liked@3x.png'
 import wx from '@/assets/images/wxicon@3x.png'
 import pyq from '@/assets/images/pyq@3x.png'
-import titleImage from '@/assets/images/pic_mkl@3x.png'
+import titleImage from '@/assets/images/maka.png'
 import soul from '@/assets/images/soul.jpg'
 import newYear from '@/assets/images/newYear.jpg'
 import qlPro from '@/assets/images/qlpro.jpg'
@@ -763,7 +763,7 @@ class Share extends Component {
  
     // 绘制元素
     // await this.canvasDrawElement(context, ratio)
-    this.canvasDrawLogo(context, ratio)
+    await this.canvasDrawLogo(context, ratio)
   }
 
   // 绘制二维码和logo
@@ -771,13 +771,14 @@ class Share extends Component {
     const { frame, user ,qrCode, dialogFooter, dialogImageWidth, dialogImageHeight} = this.state
     // console.log('333',qrCode)
     // console.log('222',user.userImage)
-    // const postfix = '?x-oss-process=image/resize,h_748,w_560'
+    const postfix = '?x-oss-process=image/resize,h_748,w_560'
     const codeWidth = 42 * ratio
     const codeHeight = 43 * ratio
     const codeLeft = frame.width * ratio - (frame.width  - dialogImageWidth ) * ratio / 2 - codeWidth
     const codeTop = dialogImageHeight * ratio + (frame.width  - dialogImageWidth ) * ratio / 2 + 20
     context.save()
-    context.drawImage(qrCode, codeLeft, codeTop, codeWidth, codeHeight)
+    let localBgImagePath = await this.downloadRemoteImage(qrCode)
+    context.drawImage(localBgImagePath, codeLeft, codeTop, codeWidth, codeHeight)
     context.restore()
     context.stroke()
 
@@ -800,16 +801,16 @@ class Share extends Component {
     context.setStrokeStyle(context, 'rgba(0, 0, 0, 0)')
     context.stroke()
     if(user.userImage){     
-      // let localUserImagePath = ''
-      // try {
-      //   const userUrl = (user.userImage + postfix)
-      //   localUserImagePath = await this.downloadRemoteImage(userUrl)
-      //   context.drawImage(localUserImagePath, logoLeft, logoTop, logoWidth, logoHeight)
-      // }catch (err) {
-      //   console.log('下载背景图片失败', err)
-      //   return
-      // }
-      context.drawImage(user.userImage, logoLeft, logoTop, logoWidth, logoHeight)
+      let localUserImagePath = ''
+      try {
+        const userUrl = (user.userImage + postfix)
+        localUserImagePath = await this.downloadRemoteImage(userUrl)
+        context.drawImage(localUserImagePath, logoLeft, logoTop, logoWidth, logoHeight)
+      }catch (err) {
+        console.log('下载背景图片失败', err)
+        return
+      }
+      // context.drawImage(user.userImage, logoLeft, logoTop, logoWidth, logoHeight)
     } else {
       context.drawImage(titleImage, logoLeft, logoTop, logoWidth, logoHeight)
     }

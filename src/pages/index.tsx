@@ -809,6 +809,12 @@ class Share extends Component {
       //   console.log('下载背景图片失败', err)
       //   return
       // }
+      // Taro.getImageInfo({             
+      //   src: user.userImage + '?x-oss-process=image/resize,h_748,w_560',     
+      //   success: (res) => {
+      //     context.drawImage(res.path, logoLeft, logoTop, logoWidth, logoHeight)
+      //   }
+      // })
       context.drawImage(user.userImage, logoLeft, logoTop, logoWidth, logoHeight)
     } else {
       context.drawImage(titleImage, logoLeft, logoTop, logoWidth, logoHeight)

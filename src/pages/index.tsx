@@ -300,7 +300,8 @@ class Share extends Component {
     Taro.createSelectorQuery().select('#positionImage').boundingClientRect(
       (rect)=>{
         // rect.width   // 节点的宽度
-        // rect.height  // 节点的高度  
+        // rect.height  // 节点的高度 
+        // console.log('rect',rect) 
         const width = rect.width 
         const height = rect.height
         this.setState({
@@ -553,7 +554,7 @@ class Share extends Component {
     this.setState({
       qrCode: scene
     },()=>{
-      console.log('scene',scene)
+      // console.log('scene',scene)
     })
     
   }
@@ -1158,7 +1159,7 @@ class Share extends Component {
         }                                                                                                                                                                                                                                       
         {
           (user.shareSourceHeight / user.shareSourceWidth) < (bgImageHeight/bgImageWidth) && user.worksType === 'pic' &&  
-            <View className="showImage"> 
+            <View className="showImage" id="positionImage"> 
               <View className="blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
               <Image src={user.shareSource}   className="bgImageHorizontal"
               style={{height:`${user.caluHeight}px` }}
@@ -1166,7 +1167,7 @@ class Share extends Component {
             </View>
         }
         { (user.shareSourceHeight / user.shareSourceWidth) >= ((bgImageHeight/bgImageWidth)) && user.worksType === 'video' &&
-            <View className="showImage">
+            <View className="showImage" id="positionImage">
               <View className="blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
               <Video
                 className="video bgImageVertical"
@@ -1182,7 +1183,7 @@ class Share extends Component {
             </View>
         }
         { (user.shareSourceHeight / user.shareSourceWidth) < (bgImageHeight/bgImageWidth) && user.worksType === 'video' &&
-        <View className="showImage">
+        <View className="showImage" id="positionImage">
           <View className="blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
           <Video
             className="video bgImageHorizontal"

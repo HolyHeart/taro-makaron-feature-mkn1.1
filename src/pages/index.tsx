@@ -21,7 +21,7 @@ import { getSystemInfo } from '@/model/actions/global'
 
 // import ShareDialog from '@/components/ShareDialog'
 import like from '@/assets/images/like@3x.png'
-import liked from '@/assets/images/liked@3x.png'
+import isliked from '@/assets/images/liked@3x.png'
 import wx from '@/assets/images/wxicon@3x.png'
 import pyq from '@/assets/images/pyq@3x.png'
 import titleImage from '@/assets/images/maka.png'
@@ -111,13 +111,15 @@ class Share extends Component {
     checkoutImage: '长按识别二维码查看',
     checkoutVideo: '长按识别二维码播放视频',
     logoName: 'Makaron',
+    liked: 0,
+    likeNumber: 0,
     user: {
       userImage: '',
       userName: '',
-      likeNumber: 0,
+      // likeNumber: 0,
       uid: '',
       worksId:'',
-      liked: 0,
+      // liked: 0,
       templateCode: '',
       shareSource:'',
       shareSourceWidth:0,
@@ -249,12 +251,13 @@ class Share extends Component {
       } else {
         var userImage = data.author.avatar 
       }
-      // this.userInfo = Taro.getStorageSync('userInfo')
-      // if( typeof(this.userInfo) !== 'string') {
-      //   var liked = parseInt(this.$router.params.isLiked)
-      // } else {
-      //   var liked = data.liked
-      // }
+      this.userInfo = Taro.getStorageSync('userInfo')
+      let liked
+      if( typeof(this.$router.params.isLiked) === 'undefined') {
+         liked = data.liked
+      } else {
+         liked = parseInt(this.$router.params.isLiked)
+      }
       const shareSourceWidth = data.renderPictureInfo.imageWidth
       const shareSourceHeight = data.renderPictureInfo.imageHeight
       const caluWidth = shareSourceWidth * this.state.bgImageHeight / shareSourceHeight
@@ -263,11 +266,8 @@ class Share extends Component {
         user: {
           userImage: userImage,
           userName: data.author.nickname,
-          likeNumber: data.likedAmount,
           uid: data.uid,
           worksId: data.worksId,
-          // liked: liked,
-          liked: data.liked,
           shareSource : imageUrl || imageFirstUrl,
           shareSourceWidth:shareSourceWidth,
           shareSourceHeight:shareSourceHeight,
@@ -278,7 +278,9 @@ class Share extends Component {
           deviceId: deleteLike.deviceId,
           caluWidth: caluWidth,
           caluHeight: caluHeight
-        }
+        },
+        liked: liked,
+        likeNumber: data.likedAmount
       }, () => {
         this.onLoad()
         this.getRect()
@@ -319,8 +321,8 @@ class Share extends Component {
     // const url = `${this.state.user.shareSource}?x-oss-process=image/resize,m_pad,h_420,w_525` 
     const { userInfo = {} } = globalData
     const title = `@${userInfo.nickName}：${shareContent}`
-    const path = `pages/index?worksId=${this.state.user.worksId}&from=app&isGoAPP=${!this.state.isGoAPP}&isPlay=${this.state.isPlay}`
-    // Taro.navigateTo({ url: `/pages/index?worksId=${this.state.user.worksId}&from=app&isGoAPP=${!this.state.isGoAPP}&isPlay=${this.state.isPlay}&isLiked=${this.state.user.liked}` })
+    const path = `pages/index?worksId=${this.state.user.worksId}&from=app&isGoAPP=${!this.state.isGoAPP}&isPlay=${this.state.isPlay}&isLiked=${this.state.liked}`
+    // Taro.navigateTo({ url: `/pages/index?worksId=${this.state.user.worksId}&from=app&isGoAPP=${!this.state.isGoAPP}&isPlay=${this.state.isPlay}&isLiked=${this.state.liked}` })
     return {
       title: title,
       path: path ,
@@ -570,15 +572,23 @@ class Share extends Component {
       // console.log(result)
       this.userInfo = result.result.result
       // console.log('this',this.userInfo)
-      // Taro.setStorage({
-      //   key: "userInfo",
-      //   data: this.userInfo
-      // })
+      Taro.setStorage({
+        key: "userInfo",
+        data: this.userInfo
+      })
       if(result.status === 'success') {
-        if (this.state.user.liked === 0) {
-          this.addLike(this.userInfo)
+        if (this.state.liked === 0) {
+          this.setState({
+            liked: 1
+          },()=>{
+            this.addLike(this.userInfo) 
+          })
         } else {
-          this.deleteLike(this.userInfo)
+          this.setState({
+            liked: 0
+          },()=>{
+            this.deleteLike(this.userInfo) 
+          })
         }
       }
     } else {
@@ -966,34 +976,9 @@ class Share extends Component {
     try {
       const addLiked = await service.share.addLikeWork(this.state.user.worksId,data.uid,data.userToken)
         if (addLiked.status === 'success') {
-          const likedNum = this.state.user.likeNumber + 1
-          const worksId = this.state.user.worksId
-          const userImage = this.state.user.userImage
-          const userName = this.state.user.userName
-          const uid = this.state.user.uid
-          const shareSource = this.state.user.shareSource
-          const shareSourceWidth = this.state.user.shareSourceWidth
-          const shareSourceHeight = this.state.user.shareSourceHeight
-          const sessionId = this.state.user.sessionId
-          const worksType = this.state.user.worksType
-          const caluWidth = this.state.user.caluWidth
-          const caluHeight = this.state.user.caluHeight
+          const likedNumber = this.state.likeNumber + 1
           this.setState({
-            user: {
-              liked: 1,
-              likeNumber : likedNum,
-              worksId: worksId,
-              userImage: userImage,
-              uid: uid,
-              userName: userName,
-              shareSource: shareSource,
-              shareSourceWidth:shareSourceWidth,
-              shareSourceHeight:shareSourceHeight,
-              sessionId: sessionId,
-              worksType: worksType,
-              caluWidth: caluWidth,
-              caluHeight: caluHeight
-            }
+            likeNumber: likedNumber
           })
         }
     } catch (error) {
@@ -1005,34 +990,9 @@ class Share extends Component {
     try {
       const cancelLiked = await service.share.deleteLike(this.state.user.worksId,data.uid,data.userToken,this.state.user.sessionId)
       if (cancelLiked.status === 'success') {
-        const likeNum = this.state.user.likeNumber - 1
-        const worksId = this.state.user.worksId
-        const userImage = this.state.user.userImage
-        const userName = this.state.user.userName
-        const uid = this.state.user.uid
-        const shareSource = this.state.user.shareSource
-        const shareSourceWidth = this.state.user.shareSourceWidth
-        const shareSourceHeight = this.state.user.shareSourceHeight
-        const sessionId = this.state.user.sessionId
-        const worksType = this.state.user.worksType
-        const caluWidth = this.state.user.caluWidth
-        const caluHeight = this.state.user.caluHeight
+        const likeNum = this.state.likeNumber - 1
         this.setState({
-          user: {
-            liked: 0,
-            likeNumber : likeNum,
-            worksId: worksId,
-            userImage: userImage,
-            uid: uid,
-            userName: userName,
-            shareSource: shareSource,
-            shareSourceWidth:shareSourceWidth,
-            shareSourceHeight:shareSourceHeight,
-            sessionId: sessionId,
-            worksType: worksType,
-            caluWidth: caluWidth,
-            caluHeight: caluHeight
-          }
+          likeNumber: likeNum
         })
       }
     } catch (error) {
@@ -1162,11 +1122,11 @@ class Share extends Component {
             <View className='userName'>{user.userName}</View>
             { isUserInfo &&
               <Button openType="getUserInfo" onGetUserInfo={this.getUserInfo}  className="likeAuth like">
-                { user.liked === 0 && <Image src={like}  className="like" />}
-                { user.liked === 1 && <Image src={liked}  className="like" />}
+                { this.state.liked === 0 && <Image src={like}  className="like" />}
+                { this.state.liked === 1 && <Image src={isliked}  className="like" />}
               </Button>               
             }
-            { isUserInfo && <View style="" className="likeNum">{user.likeNumber}</View>}
+            { isUserInfo && <View style="" className="likeNum">{this.state.likeNumber}</View>}
             { isUserInfo  && !isWorksId &&
               <Button openType="share" className="share wx">
                 <Image src={wx} className="wx"/>

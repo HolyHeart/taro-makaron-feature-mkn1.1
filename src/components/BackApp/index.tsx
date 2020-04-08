@@ -1,7 +1,8 @@
 import { ComponentClass } from 'react'
 import Taro, { Component } from '@tarojs/taro'
-import { View, Button } from '@tarojs/components'
+import { View, Button, Image } from '@tarojs/components'
 import './index.less'
+import goApp from '@/assets/images/8c966dcf-4847-438c-8b84-d55f9fd2166c.png'
 type ComponentStateProps = {}
 
 type ComponentOwnProps = {
@@ -31,7 +32,9 @@ class BackApp extends Component {
         <Button
           className='open-app'
           openType='launchApp'
-        ></Button>    
+        >
+          <Image src={goApp} className='open-app'/>
+        </Button>    
       </View>
     )
   }

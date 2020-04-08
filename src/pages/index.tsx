@@ -730,12 +730,13 @@ class Share extends Component {
       } else if(user.worksType === 'video') {
         const bgUrl = (user.firstFrame + postfix)
         localBgImagePath = await this.downloadRemoteImage(bgUrl)
-        const codeLeft = (frame.width  - dialogImageWidth ) * ratio / 2
-        const codeTop = codeLeft
-        const codeWidth = dialogImageWidth * ratio   
-        const codeHeight = dialogImageHeight * ratio
-        const result = localBgImagePath
-        context.drawImage(result, codeLeft, codeTop, codeWidth, codeHeight)
+        //作品类型为video时其第一帧为背景图
+        // const codeLeft = (frame.width  - dialogImageWidth ) * ratio / 2
+        // const codeTop = codeLeft
+        // const codeWidth = dialogImageWidth * ratio   
+        // const codeHeight = dialogImageHeight * ratio
+        // const result = localBgImagePath
+        // context.drawImage(result, codeLeft, codeTop, codeWidth, codeHeight)
       }
 
       if((user.shareSourceHeight / user.shareSourceWidth) < (dialogImageHeight/dialogImageWidth)) {
@@ -798,7 +799,6 @@ class Share extends Component {
     context.clip()
     context.setStrokeStyle(context, 'rgba(0, 0, 0, 0)')
     context.stroke()
-   
     if(user.userImage){     
       // let localUserImagePath = ''
       // try {
@@ -809,12 +809,6 @@ class Share extends Component {
       //   console.log('下载背景图片失败', err)
       //   return
       // }
-      // Taro.getImageInfo({             
-      //   src: user.userImage + '?x-oss-process=image/resize,h_748,w_560',     
-      //   success: (res) => {
-      //     context.drawImage(res.path, logoLeft, logoTop, logoWidth, logoHeight)
-      //   }
-      // })
       context.drawImage(user.userImage, logoLeft, logoTop, logoWidth, logoHeight)
     } else {
       context.drawImage(titleImage, logoLeft, logoTop, logoWidth, logoHeight)
@@ -828,9 +822,6 @@ class Share extends Component {
     // 设置垂直对齐方式
     // context.textBaseline = "middle";
     // 绘制文字（参数：要写的字，x坐标，y坐标）
-      // var userName ='@' + (this.state.user.userName).substr(0,4) + '...的作品'
-      // context.fillText(userName,  frame.width * ratio / 3  , 388 * ratio)
-      // this.canvasDrawText(context, ratio)
     if(this.state.user.userName && this.state.user.userName.length > 6) {
       const wordsLeft = (frame.width  - dialogImageWidth ) * ratio + logoWidth
       const userName ='@' + (this.state.user.userName).substr(0,4) + '...的作品'
@@ -1141,20 +1132,6 @@ class Share extends Component {
               </Video>
           </View>
         }
-        {/* {
-          user.shareSourceWidth <= user.shareSourceHeight && user.worksType === 'pic' &&  
-          <View className="showImage"> 
-            <View className="showImage blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
-            <Image src={user.shareSource}   className="bgImageVertical" mode="heightFix"/> 
-          </View>
-        }  
-        {
-          user.shareSourceWidth > user.shareSourceHeight && user.worksType === 'pic' &&  
-          <View className="showImage">
-            <View className="showImage blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
-            <Image src={user.shareSource}   className="bgImageHorizontal" mode="widthFix"/> 
-          </View>
-        } */}
         {
           (user.shareSourceHeight / user.shareSourceWidth) >= ((bgImageHeight/bgImageWidth)) && user.worksType === 'pic' &&  
           <View className="showImage" id="positionImage"> 
@@ -1320,91 +1297,6 @@ class Share extends Component {
           </View>
           
         </View> 
-        {/* : */}
-        {/* <View className='main-section' style={{marginTop:this.state.titleHeight + 'rpx' }}>
-        {shareSourceType === 'image' &&
-          <View>
-            {themeData.sceneType === 3 && <View class="share-bg"></View>}
-            <View className="showImage">
-              <View className="showImage blur" style={{backgroundImage: `url(${shareSource})`}}></View>
-              <Image src={shareSource} mode="aspectFill"  className="bgImage" />
-            </View>
-          </View>
-        }
-        {shareSourceType === 'video' &&
-          <View className='video-wrap showImage'>
-            <Video
-              className="video bgImage"
-              // style={{ width: Taro.pxTransform(width), height: Taro.pxTransform(height - 2) }}
-              loop
-              autoplay
-              src={shareSource}
-              poster={videoPoster}
-              objectFit='cover'
-              controls
-            ></Video>
-          </View>
-        }
-        <View className="userMessage">
-          {
-            userXcx.userImage ? <Image className="user" src={userXcx.userImage} /> : <Image className="user" src={titleImage} />
-          }
-          
-          <View className='userName'>{userXcx.userName}</View>
-          {            
-              <Button openType="getUserInfo" onGetUserInfo={this.getUserInfo}  className="likeAuth like">
-                { console.log('liked',userXcx.liked)}
-                { userXcx.liked === 0 ? <Image src={like}  className="like" /> : <Image src={liked}  className="like" />}
-              </Button>               
-            }
-          <View style="" className="likeNum">{userXcx.likeNumber}</View>
-          <Button openType="share" className="share wx">
-            <Image src={wx} className="wx"/>
-          </Button>
-          <Image src={pyq} onClick={this.shareHandle} className="pyq"/>
-        </View>
-        {
-          isshow === true ?
-          <View className="wx_dialog_container">           
-            <View className="wx-mask"></View>
-            <View className="wx-dialog">
-              {savePoint === true ? <View className="wx-dialog-save">{saveTitle}</View> : <View className="wx-dialog-save"></View>}
-              <View className="wx-dialog-content">
-                  <View className="bgUrl">
-                    <Image src={shareSource} className="bgUrl" mode="aspectFill" onClick={this.handelConfirm}/>
-                  </View>
-                  <View className="userInfo">
-                    <Image className="userimage" src={userXcx.userImage} />
-                    <View className="username">
-                      <View className="userwork"><View className="name">@{userXcx.userName}</View>的作品</View>
-                      {
-                        type === 'image' ? <View className="seetwo">{checkoutImage}</View> : <View className="seetwo">{checkoutVideo}</View>
-                      }
-                    </View>
-                    <View className="two">
-                      <Image className="twoCode" src={qrCode} />
-                      <View className="logo">Makaron</View>
-                    </View>
-                  </View>
-                <AuthModal />
-              </View>
-              <View className="wx-dialog-footer">
-                <Button className="wx-dialog-btn" onClick={this.handelSave}  style="flex:1" >
-                    {confirmText}
-                </Button>
-              </View>
-            </View>
-          </View>
-          : ''
-        }
-        <View class="canvas-wrap">
-          <Canvas
-            disable-scroll={true}
-            style={`width: ${frame.width * canvas.ratio}px; height: ${frame.height * canvas.ratio}px;`}
-            canvasId={canvas.id} />
-        </View>
-      </View> */}
-        {/* } */}
         <View className='sub-section'>
           {
             this.state.sceneType == 5 ? <View className='originalWrap'>
@@ -1444,13 +1336,6 @@ class Share extends Component {
               onClick={this.handleRecommendClick}
             />
           </View>
-          {/* <View className='recommend-wrap'>
-            <View className='recommend-title'>更多好玩</View>
-            <MorePlayList
-              list={morePlayList}
-              onClick={this.handlePlayClick}
-            />
-          </View> */}
           <View className='recommend-wrap'>
             <View className='recommend-title'>更多好玩</View>
             <View className="recommend" >

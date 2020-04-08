@@ -229,8 +229,6 @@ class Share extends Component {
   singleWorkList = async () => {
     const singleWorkData = await service.share.singleWorkList(this.state.user.worksId)
     const deleteLike = Taro.getStorageSync('deleteLike')
-    // const userInfo = Taro.getStorageSync('userInfo')
-    // console.log(7777,userInfo)
     if (singleWorkData.status === 'success') {
       const data = singleWorkData.result.result
       if ((data.renderPictureInfo.url || data.renderPictureInfo.firstFrame).indexOf('https') === -1) {
@@ -284,13 +282,6 @@ class Share extends Component {
       }, () => {
         this.onLoad()
         this.getRect()
-        // var that  = this
-        // Taro.removeStorage({
-        //   key: 'userInfo',
-        //   success: (res) => {
-        //     that.userInfo = ''
-        //   }
-        // })
       })
     }
     this.getRecommendList()
@@ -299,9 +290,6 @@ class Share extends Component {
   getRect = () => {
     Taro.createSelectorQuery().select('#positionImage').boundingClientRect(
       (rect)=>{
-        // rect.width   // 节点的宽度
-        // rect.height  // 节点的高度 
-        // console.log('rect',rect) 
         const width = rect.width 
         const height = rect.height
         this.setState({
@@ -502,13 +490,6 @@ class Share extends Component {
   }
 
   handleRecommendClick =  (data) => {
-    // console.log('data',data)
-    // Taro.removeStorage({
-    //   key: 'userInfo',
-    //   success: (res) => {
-    //     this.userInfo = ''
-    //   }
-    // })
     const deleteLike1 = Taro.getStorageSync('deleteLike')
     this.setState({
       isFromApp: false,
@@ -550,11 +531,10 @@ class Share extends Component {
     const sessionId = this.state.user.sessionId
     const deviceId = this.state.user.deviceId
     // console.log(999,this.state.user)
-    const scene = await service.share.getQrCode(page, width, worksId, sessionId, deviceId)
+    const qrcode = await service.share.getQrCode(page, width, worksId, sessionId, deviceId)
+    const scene = decodeURIComponent(qrcode)
     this.setState({
       qrCode: scene
-    },()=>{
-      // console.log('scene',scene)
     })
     
   }
@@ -756,11 +736,7 @@ class Share extends Component {
       console.log('下载背景图片失败', err)
       return
     }
-    //  //防止锯齿，绘的图片是所需图片的3倍
-    //  const codeWidth = frame.width * ratio - 20 * ratio 
-    //  const codeHeight =( frame.height * ratio - 84 * ratio)/2
-    //  context.drawImage(localBgImagePath, 10 * ratio, 10 * ratio, codeWidth, codeHeight)
- 
+    //  防止锯齿，绘的图片是所需图片的3倍 
     // 绘制元素
     // await this.canvasDrawElement(context, ratio)
     await this.canvasDrawLogo(context, ratio)
@@ -769,8 +745,6 @@ class Share extends Component {
   // 绘制二维码和logo
   canvasDrawLogo = async (context, ratio) => {
     const { frame, user ,qrCode, dialogFooter, dialogImageWidth, dialogImageHeight} = this.state
-    // console.log('333',qrCode)
-    // console.log('222',user.userImage)
     const postfix = '?x-oss-process=image/resize,h_748,w_560'
     const codeWidth = 42 * ratio
     const codeHeight = 43 * ratio

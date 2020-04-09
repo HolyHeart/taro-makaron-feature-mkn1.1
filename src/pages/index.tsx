@@ -504,18 +504,19 @@ class Share extends Component {
       user: {
         userImage: data.author.avatar,
         userName: data.author.nickname,
-        likeNumber: data.likedAmount,
         uid: data.uid,
         worksId: data.worksId,
-        liked: data.liked,
         shareSource : data.renderPictureInfo.url || data.renderPictureInfo.firstFrame,
         shareSourceWidth:data.renderPictureInfo.imageWidth,
         shareSourceHeight:data.renderPictureInfo.imageHeight,
         firstFrame: data.renderPictureInfo.firstFrame,
         templateCode: data.schema,
         sessionId: deleteLike1,
-        worksType: data.worksType
+        worksType: data.worksType,
+        type: data.renderPictureInfo.type
       },
+      liked: data.liked,
+      likeNumber: data.likedAmount,
       shareSource : data.renderPictureInfo.url || data.renderPictureInfo.firstFrame,
       userXcx: {
         userImage: data.author.avatar,

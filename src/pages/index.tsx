@@ -1098,13 +1098,13 @@ class Share extends Component {
               (isUserInfo && user.userImage) ||  isXcx  || isWorksId ? <Image className="user" src={user.userImage} /> : <Image className="user" src={titleImage} /> 
             }
             <View className='userName'>{user.userName}</View>
-            { isUserInfo &&
+            { isUserInfo && !isWorksId &&
               <Button openType="getUserInfo" onGetUserInfo={this.getUserInfo}  className="likeAuth">
                 { this.state.liked === 0 && <Image src={like}  className="like" />}
                 { this.state.liked === 1 && <Image src={isliked}  className="like" />}
               </Button>               
             }
-            { isUserInfo && <View style="" className="likeNum">{this.state.likeNumber}</View>}
+            { isUserInfo && !isWorksId &&<View style="" className="likeNum">{this.state.likeNumber}</View>}
             { isUserInfo  && !isWorksId &&
               <Button openType="share" className="share wx">
                 <Image src={wx} className="wx"/>

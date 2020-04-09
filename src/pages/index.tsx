@@ -578,13 +578,9 @@ class Share extends Component {
       })
       if(result.status === 'success') {
         if (this.state.liked === 0) {
-          this.addLike(this.userInfo) 
+         this.addLike(this.userInfo)
         } else {
-          this.setState({
-            liked: 0
-          },()=>{
-            this.deleteLike(this.userInfo) 
-          })
+          this.deleteLike(this.userInfo) 
         }
       }
     } else {
@@ -970,15 +966,16 @@ class Share extends Component {
 
   addLike = async (data) => {
     try {
+      const singlelikedWorkData = await service.share.singleWorkList(this.state.user.worksId)
+      // console.log(88,singlelikedWorkData)
+      let likedNumber
+      if(singlelikedWorkData.result.result.liked === 0) {
+        likedNumber = this.state.likeNumber + 1
+      } else {
+        likedNumber = this.state.likeNumber
+      }
       const addLiked = await service.share.addLikeWork(this.state.user.worksId,data.uid,data.userToken)
         if (addLiked.status === 'success') {
-          const singlelikedWorkData = await service.share.singleWorkList(this.state.user.worksId)
-          let likedNumber 
-          if (singlelikedWorkData.result.result.liked === 1) {
-            likedNumber = this.state.likeNumber
-          } else {
-            likedNumber = this.state.likeNumber + 1
-          }
           this.setState({
             liked: 1,
             likeNumber: likedNumber
@@ -995,6 +992,7 @@ class Share extends Component {
       if (cancelLiked.status === 'success') {
         const likeNum = this.state.likeNumber - 1
         this.setState({
+          liked: 0,
           likeNumber: likeNum
         })
       }

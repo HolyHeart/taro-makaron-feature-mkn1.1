@@ -712,11 +712,9 @@ class Share extends Component {
     let localBgImagePath = ''
     try {
       if(user.worksType === 'pic' || (user.worksType === 'video' && user.type === 'pic')) {
-        const bgUrl = (user.shareSource)
-        console.log('88',bgUrl)
+        const bgUrl = (user.shareSource + postfix)
         localBgImagePath = await this.downloadRemoteImage(bgUrl)
       } else if(user.worksType === 'video') {
-        console.log(222000)
         const bgUrl = (user.firstFrame + postfix)
         localBgImagePath = await this.downloadRemoteImage(bgUrl)
         //作品类型为video时其第一帧为背景图
@@ -760,15 +758,6 @@ class Share extends Component {
     const codeLeft = frame.width * ratio - (frame.width  - dialogImageWidth ) * ratio / 2 - codeWidth
     const codeTop = dialogImageHeight * ratio + (frame.width  - dialogImageWidth ) * ratio / 2 + 20
     context.save()
-    // let localBgImagePath = ''
-    //   try {
-    //     const userUrl = (qrCode + postfix)
-    //     localBgImagePath = await this.downloadRemoteImage(userUrl)
-    //     context.drawImage(localBgImagePath, codeLeft, codeTop, codeWidth, codeHeight)
-    //   }catch (err) {
-    //     console.log('下载背景图片失败', err)
-    //     return
-    //   }
     let localBgImagePath = await this.downloadRemoteImage(qrCode)
     context.drawImage(localBgImagePath, codeLeft, codeTop, codeWidth, codeHeight)
     context.restore()

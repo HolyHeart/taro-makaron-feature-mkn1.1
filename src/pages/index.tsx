@@ -1062,7 +1062,7 @@ class Share extends Component {
         {
           (user.shareSourceHeight / user.shareSourceWidth) < (bgImageHeight/bgImageWidth) && user.worksType === 'pic' &&  
             <View className="showImage" id="positionImage"> 
-              <View className="blur" style={{backgroundImage: `url(${user.firstFrame})`}}></View>
+              <View className="blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
               <Image src={user.shareSource}   className="bgImageHorizontal"
               style={{height:`${user.caluHeight}px` }}
               />  

@@ -709,15 +709,24 @@ class Share extends Component {
   canvasDrawRecommend = async (context) => {
     const { frame, canvas, user, dialogFooter, showDialogHeight, showDialogWidth, bgImageHeight, bgImageWidth, dialogImageWidth, dialogImageHeight} = this.state
     const postfix = '?x-oss-process=image/resize,h_748,w_560'
+    const vpostfix = '?x-oss-process=video/snapshot,t_0,f_jpg,w_0,h_0'
     const { ratio = 3 } = canvas
     let localBgImagePath = ''
+    let bgUrl = ''
     try {
-      if(user.worksType === 'pic' || (user.worksType === 'video' && user.type === 'pic')) {
-        const bgUrl = (user.shareSource + postfix)
+      if(user.worksType === 'pic') {
+        bgUrl = (user.shareSource + postfix)
         localBgImagePath = await this.downloadRemoteImage(bgUrl)
       } else if(user.worksType === 'video') {
-        const bgUrl = (user.firstFrame + postfix)
-        localBgImagePath = await this.downloadRemoteImage(bgUrl)
+        if(user.firstFrame){
+          bgUrl = (user.firstFrame + postfix)
+          localBgImagePath = await this.downloadRemoteImage(bgUrl)
+        } else {
+          bgUrl = (user.shareSource + vpostfix)
+          localBgImagePath = await this.downloadRemoteImage(bgUrl)
+        }
+        // const bgUrl = (user.firstFrame + postfix)
+        // localBgImagePath = await this.downloadRemoteImage(bgUrl)
         //作品类型为video时其第一帧为背景图
         // const codeLeft = (frame.width  - dialogImageWidth ) * ratio / 2
         // const codeTop = codeLeft
@@ -886,7 +895,6 @@ class Share extends Component {
         }
       })
     })
-    // if (this.state.user.worksType === 'pic') {
       // 保存图片到相册
       work.saveSourceToPhotosAlbum({
         location: 'local',
@@ -918,39 +926,6 @@ class Share extends Component {
           })
         }
       })
-    // } 
-    // else {
-    //   work.saveSourceToPhotosAlbum({
-    //     location: 'local',
-    //     sourceUrl: canvasImageUrl,
-    //     sourceType: 'video',
-    //     onSuccess: () => {
-    //       Taro.hideLoading()           
-    //       Taro.showToast({
-    //         title: '保存成功!',
-    //         icon: 'success',
-    //         duration: 2000
-    //       })
-    //       this.setState({
-    //         savePoint: true
-    //       })
-    //     },
-    //     onAuthFail: () => {
-    //       Taro.authModal({
-    //         open: true
-    //       })
-    //       this.setResultModalStatus(false)
-    //     },
-    //     onFail: () => {
-    //       Taro.hideLoading()
-    //       Taro.showToast({
-    //         title: '保存失败!',
-    //         icon: 'success',
-    //         duration: 2000
-    //       })
-    //     }
-    //   })
-    // }
   }
 
   handlePlayClick = (data) => {

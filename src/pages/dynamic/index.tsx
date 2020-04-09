@@ -232,7 +232,7 @@ class Dynamic extends Component {
       }
     }
     console.log(title, path, shareImageUrl)
-    Taro.navigateTo({ url: `/pages/index?shareSource=${shareImageUrl}` })
+    // Taro.navigateTo({ url: `/pages/index?shareSource=${shareImageUrl}` })
     return {
       title: title,
       path: path,

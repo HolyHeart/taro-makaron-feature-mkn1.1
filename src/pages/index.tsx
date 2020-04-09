@@ -129,6 +129,7 @@ class Share extends Component {
       sessionId: '',
       deviceId:'',
       worksType: 'pic',
+      type:'pic',
       caluWidth: 100,
       caluHeight: 100
     },
@@ -275,6 +276,7 @@ class Share extends Component {
           templateCode: data.schema,
           sessionId: deleteLike.sessionId,
           worksType: data.worksType,
+          type: data.renderPictureInfo.type,
           deviceId: deleteLike.deviceId,
           caluWidth: caluWidth,
           caluHeight: caluHeight
@@ -675,8 +677,11 @@ class Share extends Component {
 
   createCanvas = async () => {
     return new Promise(async (resolve, reject) => {
-      const { canvas } = this.state
+      const { canvas, frame} = this.state
+      const { ratio = 3 } = canvas
       const context = Taro.createCanvasContext(canvas.id, this)
+      context.setFillStyle('#FFFFFF')
+      context.fillRect(0, 0, frame.width * ratio, frame.height * ratio)
       await this.canvasDrawRecommend(context)
       //绘制图片
       context.draw()
@@ -706,10 +711,12 @@ class Share extends Component {
     const { ratio = 3 } = canvas
     let localBgImagePath = ''
     try {
-      if(user.worksType === 'pic') {
-        const bgUrl = (user.shareSource + postfix)
+      if(user.worksType === 'pic' || (user.worksType === 'video' && user.type === 'pic')) {
+        const bgUrl = (user.shareSource)
+        console.log('88',bgUrl)
         localBgImagePath = await this.downloadRemoteImage(bgUrl)
       } else if(user.worksType === 'video') {
+        console.log(222000)
         const bgUrl = (user.firstFrame + postfix)
         localBgImagePath = await this.downloadRemoteImage(bgUrl)
         //作品类型为video时其第一帧为背景图
@@ -753,6 +760,15 @@ class Share extends Component {
     const codeLeft = frame.width * ratio - (frame.width  - dialogImageWidth ) * ratio / 2 - codeWidth
     const codeTop = dialogImageHeight * ratio + (frame.width  - dialogImageWidth ) * ratio / 2 + 20
     context.save()
+    // let localBgImagePath = ''
+    //   try {
+    //     const userUrl = (qrCode + postfix)
+    //     localBgImagePath = await this.downloadRemoteImage(userUrl)
+    //     context.drawImage(localBgImagePath, codeLeft, codeTop, codeWidth, codeHeight)
+    //   }catch (err) {
+    //     console.log('下载背景图片失败', err)
+    //     return
+    //   }
     let localBgImagePath = await this.downloadRemoteImage(qrCode)
     context.drawImage(localBgImagePath, codeLeft, codeTop, codeWidth, codeHeight)
     context.restore()
@@ -801,7 +817,7 @@ class Share extends Component {
     // 绘制文字（参数：要写的字，x坐标，y坐标）
     if(this.state.user.userName && this.state.user.userName.length > 6) {
       const wordsLeft = (frame.width  - dialogImageWidth ) * ratio + logoWidth
-      const userName ='@' + (this.state.user.userName).substr(0,4) + '...的作品'
+      const userName ='@' + (this.state.user.userName).substr(0,7) + '的作品'
       context.fillText(userName, wordsLeft, logoTop + 40)
       this.canvasDrawText(context, ratio)
     } else {
@@ -1018,9 +1034,7 @@ class Share extends Component {
           }
           color='#333'
         >懒人抠图</Title>
-        {/* {isFromApp ?  */}
         <View className='main-section' style={{marginTop:(this.state.titleHeight + hotMarginTop/2) + 'rpx' }}>
-        {/* {console.log(11,user.worksId)} */}
         {shareSourceType === 'image' && isFromApp && shareSource !== '' && isWorksId &&
           <View>
             {themeData.sceneType === 3 && <View class="share-bg"></View>}
@@ -1057,7 +1071,6 @@ class Share extends Component {
           <View className='video-wrap showImage'>
              <Video
               className="video bgImage"
-              // style={{ width: Taro.pxTransform(width), height: Taro.pxTransform(height - 2) }}
               loop
               autoplay
               src={user.shareSource}
@@ -1090,7 +1103,6 @@ class Share extends Component {
               <View className="blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
               <Video
                 className="video bgImageVertical"
-                // style={{ width: Taro.pxTransform(width), height: Taro.pxTransform(height - 2) }}
                 style={{width:`${user.caluWidth}px` }}
                 loop
                 autoplay
@@ -1122,7 +1134,7 @@ class Share extends Component {
             }
             <View className='userName'>{user.userName}</View>
             { isUserInfo &&
-              <Button openType="getUserInfo" onGetUserInfo={this.getUserInfo}  className="likeAuth like">
+              <Button openType="getUserInfo" onGetUserInfo={this.getUserInfo}  className="likeAuth">
                 { this.state.liked === 0 && <Image src={like}  className="like" />}
                 { this.state.liked === 1 && <Image src={isliked}  className="like" />}
               </Button>               
@@ -1146,21 +1158,11 @@ class Share extends Component {
                     <View className="bgUrl" id="dialogPosition">
                     {
                       user.worksType === 'pic' && (user.shareSourceHeight / user.shareSourceWidth) < ((dialogImageHeight/dialogImageWidth)) &&
-                      // <View className="bgUrl">
-                        // <View className="blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
-                        <Image src={user.shareSource} className="bgUrlSizeHorizontal" 
-                          // mode="aspectFill"  
-                          style={{height:`${showDialogHeight}px` }}/> 
-                      // </View>
+                        <Image src={user.shareSource} className="bgUrlSizeHorizontal" style={{height:`${showDialogHeight}px` }}/> 
                     }
                     {
                       user.worksType === 'pic' && (user.shareSourceHeight / user.shareSourceWidth) >= ((dialogImageHeight/dialogImageWidth)) &&
-                      // <View className="bgUrl">
-                      // <View className="blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
-                      <Image src={user.shareSource} className="bgUrlSizeVertical" 
-                      // mode="aspectFill"  
-                      style={{width:`${showDialogWidth}px` }}/> 
-                       // </View>
+                      <Image src={user.shareSource} className="bgUrlSizeVertical" style={{width:`${showDialogWidth}px` }}/> 
                     }
                     {
                       user.worksType === 'video' && (user.shareSourceHeight / user.shareSourceWidth) < ((dialogImageHeight/dialogImageWidth)) &&
@@ -1196,7 +1198,6 @@ class Share extends Component {
                     }
                     </View>
                     <View className="userInfo" id="dialogFooterSize">
-                      {/* <Image className="userimage" src={user.userImage} /> */}
                       {
                         user.userImage && <Image className="userimage" src={user.userImage} />
                       }

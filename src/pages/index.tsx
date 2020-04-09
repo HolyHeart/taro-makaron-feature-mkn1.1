@@ -501,6 +501,7 @@ class Share extends Component {
       isUserInfo: true,
       isXcx: false,
       isPlay: false,
+      isWorksId: false,
       user: {
         userImage: data.author.avatar,
         userName: data.author.nickname,

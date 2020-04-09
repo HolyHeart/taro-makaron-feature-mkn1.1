@@ -248,6 +248,9 @@ class Share extends Component {
         if(data.renderPictureInfo.firstFrame) {
           var imageFirstUrl = (data.renderPictureInfo.firstFrame)
         }
+        if(data.worksType === 'video' && data.renderPictureInfo.type === 'pic') {
+          imageUrl = data.renderPictureInfo.url + '?x-oss-process=video/snapshot,t_0,f_jpg,w_0,h_0'
+        }
       }
       if (typeof(data.author.avatar)!== 'undefined' && (data.author.avatar).indexOf('https') === -1 ) {
         var userImage = (data.author.avatar).replace(/^http/,'https')

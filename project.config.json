@@ -47,48 +47,7 @@
 		"gamePlugin": {
 			"current": -1,
 			"list": []
-		},
-		"miniprogram": {
-			"current": -1,
-			"list": [
-				{
-					"id": 0,
-					"name": "pages/index",
-					"pathName": "pages/index",
-					"query": "remoteURL=https://static01.versa-ai.com/upload/29cbaea56c26/40713F9A3A097492E9CF5C831362FE97.jpg&from=app&workID=194770891879272448",
-					"scene": 1069,
-					"referrerInfo": {}
-				},
-				{
-					"id": 1,
-					"name": "pages/index",
-					"pathName": "pages/index",
-					"query": "remoteURL=https://static01.versa-ai.com/upload/29cbaea56c26/40713F9A3A097492E9CF5C831362FE97.jpg&from=app&workID=131047061180960768",
-					"scene": null
-				},
-				{
-					"id": 2,
-					"name": "pages/index",
-					"pathName": "pages/index",
-					"query": "remoteURL=https://static01.versa-ai.com/upload/29cbaea56c26/40713F9A3A097492E9CF5C831362FE97.jpg&from=app",
-					"scene": null
-				},
-				{
-					"id": 3,
-					"name": "pages/index",
-					"pathName": "pages/index",
-					"query": "remoteURL=https://static01.versa-ai.com/upload/29cbaea56c26/40713F9A3A097492E9CF5C831362FE97.jpg&from=app&workID=133581248849039360",
-					"scene": 1069,
-					"referrerInfo": {}
-				},
-				{
-					"id": 4,
-					"name": "pages/index",
-					"pathName": "pages/index",
-					"query": "remoteURL=https://static01.versa-ai.com/upload/29cbaea56c26/40713F9A3A097492E9CF5C831362FE97.jpg&from=app&workID=133581248849039360",
-					"scene": null
-				}
-			]
 		}
+		
 	}
 }

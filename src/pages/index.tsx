@@ -935,18 +935,17 @@ class Share extends Component {
   }
 
   handlePlayClick = (data) => {
-    console.log('data',data)
     if (!data.themeId) {
-      console.log('why')
       return
     }
     Taro.navigateToMiniProgram({
       appId: data.themeId,
       success(res) {
         // 打开成功
+        console.log('打开成功', res)
       },
       fail(res) {
-        console.log('打开失败')
+        console.log('打开失败', res)
       }
     })
   }
@@ -1245,19 +1244,19 @@ class Share extends Component {
                     return <View className="recommend-item" onClick={this.handlePlayClick.bind(this,item)} >
                     {
                       item.sort === 1 &&  
-                      <Button className="recommend-button" hoverClass="btn-hover"formType='submit'>
+                      <Button className="recommend-button" hoverClass="btn-hover" formType='submit'>
                         <Image className='recommend-image' src={qlPro} style='width: 100%; height: 100%' mode='scaleToFill'/>   
                       </Button>
                     }
                     {
                       item.sort === 2 &&  
-                      <Button className="recommend-button" hoverClass="btn-hover"formType='submit'>
+                      <Button className="recommend-button" hoverClass="btn-hover" formType='submit'>
                         <Image className='recommend-image' src={newYear} style='width: 100%; height: 100%' mode='scaleToFill'/>   
                       </Button>
                     }
                     {
                       item.sort === 3 &&  
-                      <Button className="recommend-button" hoverClass="btn-hover"formType='submit'>
+                      <Button className="recommend-button" hoverClass="btn-hover" formType='submit'>
                         <Image className='recommend-image' src={soul} style='width: 100%; height: 100%' mode='scaleToFill'/>   
                       </Button>
                     }

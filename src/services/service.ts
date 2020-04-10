@@ -585,7 +585,7 @@ export const share = {
   },
 
   getQrCode: function (page, width, worksId,sessionId,deviceId) {
-    return api.share.getQrCode + `?page=${page}&index&width=${width}&worksId=${worksId}&sessionId=${sessionId}&deviceId=${deviceId}`
+    return api.share.getQrCode + `?page=${page}&width=${width}&worksId=${worksId}&sessionId=${sessionId}&deviceId=${deviceId}`
   },
 
   addLikeWork: function (worksId, uid, token) {

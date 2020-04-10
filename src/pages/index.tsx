@@ -231,7 +231,8 @@ class Share extends Component {
 
   singleWorkList = async () => {
     const singleWorkData = await service.share.singleWorkList(this.state.user.worksId)
-    const deleteLike = Taro.getStorageSync('deleteLike')
+    const sessionId = Taro.getStorageSync('session')
+    const deviceId = Taro.getStorageSync('deviceId')
     if (singleWorkData.status === 'success') {
       const data = singleWorkData.result.result
       let imageUrl
@@ -279,10 +280,10 @@ class Share extends Component {
           shareSourceHeight:shareSourceHeight,
           firstFrame: imageFirstUrl,
           templateCode: data.schema,
-          sessionId: deleteLike.sessionId,
+          sessionId: sessionId,
           worksType: data.worksType,
           type: data.renderPictureInfo.type,
-          deviceId: deleteLike.deviceId,
+          deviceId: deviceId,
           caluWidth: caluWidth,
           caluHeight: caluHeight
         },
@@ -499,7 +500,7 @@ class Share extends Component {
   }
 
   handleRecommendClick =  (data) => {
-    const deleteLike1 = Taro.getStorageSync('deleteLike')
+    const sessionId = Taro.getStorageSync('session')
     this.setState({
       isFromApp: false,
       isGoAPP:false,
@@ -517,7 +518,7 @@ class Share extends Component {
         shareSourceHeight:data.renderPictureInfo.imageHeight,
         firstFrame: data.renderPictureInfo.firstFrame,
         templateCode: data.schema,
-        sessionId: deleteLike1,
+        sessionId: sessionId,
         worksType: data.worksType,
         type: data.renderPictureInfo.type
       },

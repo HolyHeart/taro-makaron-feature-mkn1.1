@@ -92,10 +92,6 @@ export const request = (options) => {
   const session = Session.get()
   options.data[Session.headerKey] = session
   options.data['deviceId'] = tool.getDeviceId()
-  Taro.setStorage({
-    key: "deleteLike",
-    data: options.data
-  })
   return fetch(options)
   .then(async (response:any) => {  
     const { statusCode, data, errMsg } = response

@@ -871,11 +871,11 @@ class Share extends Component {
       title: '照片生成中...',
       mask: true,
     })
-    const mySaveNumber = {
-      number: Taro.getStorageSync('saveNumber').number + 1,
-      date: Taro.getStorageSync('saveNumber').date
-    }
-    Taro.setStorageSync('saveNumber',mySaveNumber)
+    // const mySaveNumber = {
+    //   number: Taro.getStorageSync('saveNumber').number + 1,
+    //   date: Taro.getStorageSync('saveNumber').date
+    // }
+    // Taro.setStorageSync('saveNumber',mySaveNumber)
     this.isSaving = true
     const canvasImageUrl = await this.createCanvas()
     console.log('canvas',canvasImageUrl)

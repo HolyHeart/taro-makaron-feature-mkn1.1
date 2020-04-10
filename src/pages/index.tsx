@@ -173,7 +173,6 @@ class Share extends Component {
   }
 
   app = Taro.getApp()
-
   isSaving = false // 是否正在保存
 
   saveNumber = {
@@ -405,7 +404,17 @@ class Share extends Component {
         } 
       })
     } else {
-      if(this.state.user.worksId !== 'undefined') {
+      if(typeof(this.$router.params.scene) !== 'undefined') {
+        const query = this.$router.params
+        const qR = decodeURIComponent(query.scene)
+        this.state.user.worksId =  qR
+        this.state.user.shareSource = shareSource
+        this.state.isUserInfo = true
+        this.singleWorkList()
+      } else {
+        this.state.user.shareSource = shareSource
+      }
+      if(this.state.user.worksId !== 'undefined' && typeof(this.$router.params.scene) === 'undefined') {
         this.setState({
           user: {
             worksId: this.$router.params.worksId,
@@ -872,11 +881,14 @@ class Share extends Component {
       title: '照片生成中...',
       mask: true,
     })
+<<<<<<< HEAD
     // const mySaveNumber = {
     //   number: Taro.getStorageSync('saveNumber').number + 1,
     //   date: Taro.getStorageSync('saveNumber').date
     // }
     // Taro.setStorageSync('saveNumber',mySaveNumber)
+=======
+>>>>>>> b2a3a165ec4954e256d39025f7ac51cd4a28608d
     this.isSaving = true
     const canvasImageUrl = await this.createCanvas()
     console.log('canvas',canvasImageUrl)

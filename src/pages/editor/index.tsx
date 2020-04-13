@@ -234,11 +234,11 @@ class Editor extends Component {
     const { userInfo = {} } = globalData
     const path = `/pages/index?shareSource=${shareImageUrl}`
     // console.log('url',path)
-    const title = `@${userInfo.nickName}：${shareContent}`
+    // const title = `@${userInfo.nickName}：${shareContent}`
     if (!shareImage.remoteUrl) {
       console.log('shareImage.remoteUrl',shareImage.remoteUrl)
       return {
-        title: title,
+        // title: title,
         path: '/pages/home/index',
         imageUrl: currentScene.thumbnailUrl,
       }
@@ -246,7 +246,7 @@ class Editor extends Component {
     // console.log('789',title, path, shareImageUrl)
     // Taro.navigateTo({ url: `/pages/index?shareSource=${shareImageUrl}` })
     return {
-      title: title,
+      // title: title,
       path: path,
       imageUrl: shareImageUrl,
       success: () => {

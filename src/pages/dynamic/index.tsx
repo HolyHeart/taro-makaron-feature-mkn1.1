@@ -223,18 +223,18 @@ class Dynamic extends Component {
     }
     const path = tool.formatQueryUrl('/pages/index', data)
     const {userInfo = {}} = globalData
-    const title = `@${userInfo.nickName}：${shareContent}`
+    // const title = `@${userInfo.nickName}：${shareContent}`
     if (!shareImage.remoteUrl) {
       return {
-        title: title,
+        // title: title,
         path: '/pages/home/index',
         imageUrl: currentScene.thumbnailUrl,
       }
     }
-    console.log(title, path, shareImageUrl)
+    // console.log(title, path, shareImageUrl)
     // Taro.navigateTo({ url: `/pages/index?shareSource=${shareImageUrl}` })
     return {
-      title: title,
+      // title: title,
       path: path,
       imageUrl: shareImageUrl,
       success: () => {

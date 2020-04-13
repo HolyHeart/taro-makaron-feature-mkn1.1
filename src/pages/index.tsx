@@ -71,12 +71,11 @@ class Share extends Component {
   userInfo:{}
   state = {
     titleHeight: 0,
-    isFromApp: false,
-    isGoAPP: false,
-    isUserInfo: false,
-    isXcx: false,
-    isPlay: true,
-    isWorksId: false,
+    isFromApp: false, // 作品是否是从APP分享过来的
+    isGoAPP: false, // 是否有去往APP按钮
+    isXcx: false,  // 判断作品是否是从小程序分享过来的
+    isPlay: false, // 判断按钮是否为更多好玩
+    isWorksId: true, // 判断从APP分享过来的作品是否带有参数worksId
     shareSourceType: 'image', // 'video' 'image'
     shareSource: '',
     originalCompleteImageUrl: '',
@@ -330,7 +329,7 @@ class Share extends Component {
     }
     // const url = `${this.state.user.shareSource}?x-oss-process=image/resize,m_pad,h_420,w_525` 
     const { userInfo = {} } = globalData
-    const title = `@${userInfo.nickName}：${shareContent}`
+    const title = `${shareContent}`
     const path = `pages/index?worksId=${this.state.user.worksId}&from=app&isGoAPP=${!this.state.isGoAPP}&isPlay=${this.state.isPlay}&isLiked=${this.state.liked}`
     // Taro.navigateTo({ url: `/pages/index?worksId=${this.state.user.worksId}&from=app&isGoAPP=${!this.state.isGoAPP}&isPlay=${this.state.isPlay}&isLiked=${this.state.liked}` })
     return {
@@ -361,15 +360,11 @@ class Share extends Component {
     let { shareSource, themeId, sceneId, from, remoteURL = '', width = 690, height = 920, originalCompleteImageUrl, workID} = this.$router.params
     if (from === 'app') {
       isFromApp = true
-      this.setState({
-        isWorksId: false
-      })
-      this.state.isUserInfo = true
       if (remoteURL.indexOf('versa-ai.com') > -1) {
         shareSource = remoteURL
         if(typeof(workID) === 'undefined') {
           this.setState({
-            isWorksId: true
+            isWorksId: false
           },()=>{ this.getRecommendList() })
         }
       } else {
@@ -412,7 +407,6 @@ class Share extends Component {
         const qR = decodeURIComponent(query.scene)
         this.state.user.worksId =  qR
         this.state.user.shareSource = shareSource
-        this.state.isUserInfo = true
         this.singleWorkList()
       } else {
         this.state.user.shareSource = shareSource
@@ -431,6 +425,9 @@ class Share extends Component {
         })
       }
       isFromApp = false
+      this.setState({
+        isWorksId: false
+      })
       if (shareSource) {
         shareSource = decodeURIComponent(shareSource)
       }
@@ -438,7 +435,6 @@ class Share extends Component {
     shareSourceType = tool.calcSourceType(shareSource)
     if (shareSourceType === 'video') {
       videoPoster = `${shareSource}?x-oss-process=video/snapshot,t_0,f_png,w_0,h_0,m_fast`
-      debugger
       shareVideoInfo = tool.calcVideoSize(690, 920, width, height)
     }
     if (!themeId) {
@@ -516,10 +512,10 @@ class Share extends Component {
     this.setState({
       isFromApp: false,
       isGoAPP:false,
-      isUserInfo: true,
+      // isUserInfo: true,
       isXcx: false,
-      isPlay: false,
-      isWorksId: false,
+      isPlay: true,
+      isWorksId: true,
       user: {
         userImage: data.author.avatar,
         userName: data.author.nickname,
@@ -1001,7 +997,7 @@ class Share extends Component {
 
 
   render() {
-    const { isFromApp, isGoAPP, isUserInfo, isXcx, isPlay, isWorksId,bgImageHeight, bgImageWidth,dialogImageHeight,showDialogWidth,dialogImageWidth,showDialogHeight, shareSourceType, shareSource, videoPoster, width, height, recommendList, originalCompleteImageUrl, confirmText, isshow, savePoint, 
+    const { isFromApp, isGoAPP,  isXcx, isPlay, isWorksId,bgImageHeight, bgImageWidth,dialogImageHeight,showDialogWidth,dialogImageWidth,showDialogHeight, shareSourceType, shareSource, videoPoster, width, height, recommendList, originalCompleteImageUrl, confirmText, isshow, savePoint, 
       saveTitlePic, saveTitleVideo, type, checkoutImage, checkoutVideo, morePlayList, user, userXcx, qrCode, frame, canvas, hotMarginTop} = this.state
     return (
       <View className='page-share'>
@@ -1013,22 +1009,22 @@ class Share extends Component {
           color='#333'
         >懒人抠图</Title>
         <View className='main-section' style={{marginTop:(this.state.titleHeight + hotMarginTop/2) + 'rpx' }}>
-        {shareSourceType === 'image' && isFromApp && shareSource !== '' && isWorksId &&
+        {shareSourceType === 'image' && isFromApp && shareSource !== '' && !isWorksId &&
           <View>
-            {themeData.sceneType === 3 && <View class="share-bg"></View>}
             <View className="showImage">
               <View className="blur" style={{backgroundImage: `url(${shareSource})`}}></View>
               <Image src={shareSource} mode="aspectFill"  className="bgImageVertical" />
             </View>
           </View>
         }
-        {shareSourceType === 'video' && isFromApp && shareSource !== '' && isWorksId &&
+        {shareSourceType === 'video' && isFromApp && shareSource !== '' && !isWorksId &&
           <View className='showImage'>
+            <View className="showImage blur" style={{backgroundImage: `url(${videoPoster})`}}></View>
              <Video
               className="bgImageVertical"
               loop
               autoplay
-              src={user.shareSource}
+              src={shareSource}
               poster={videoPoster}
               objectFit='cover'
               controls
@@ -1038,20 +1034,20 @@ class Share extends Component {
         }
         { isXcx && shareSourceType === 'image' &&
           <View>
-            {themeData.sceneType === 3 && <View class="share-bg"></View>}
             <View className="showImage">
-               <View className="showImage blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
-                <Image src={user.shareSource} mode="aspectFill"  className="bgImage" />
+               <View className="showImage blur" style={{backgroundImage: `url(${shareSource})`}}></View>
+                <Image src={shareSource} mode="aspectFill"  className="bgImage" />
             </View>
           </View>
         }
         {isXcx && shareSourceType === 'video' &&
           <View className='video-wrap showImage'>
+            <View className="blur" style={{backgroundImage: `url(${videoPoster})`}}></View>
              <Video
               className="video bgImage"
               loop
               autoplay
-              src={user.shareSource}
+              src={shareSource}
               poster={videoPoster}
               objectFit='cover'
               controls
@@ -1122,22 +1118,22 @@ class Share extends Component {
         }
           <View className="userMessage">
             {
-              (isUserInfo && user.userImage) ||  isXcx  || isWorksId ? <Image className="user" src={user.userImage} /> : <Image className="user" src={titleImage} /> 
+              (user.userImage) ||  isXcx  || !isWorksId ? <Image className="user" src={user.userImage} /> : <Image className="user" src={titleImage} /> 
             }
             <View className='userName'>{user.userName}</View>
-            { isUserInfo && !isWorksId &&
+            {isWorksId &&
               <Button openType="getUserInfo" onGetUserInfo={this.getUserInfo}  className="likeAuth">
                 { this.state.liked === 0 && <Image src={like}  className="like" />}
                 { this.state.liked === 1 && <Image src={isliked}  className="like" />}
               </Button>               
             }
-            { isUserInfo && !isWorksId &&<View style="" className="likeNum">{this.state.likeNumber}</View>}
-            { isUserInfo  && !isWorksId &&
+            { isWorksId &&<View style="" className="likeNum">{this.state.likeNumber}</View>}
+            { isWorksId &&
               <Button openType="share" className="share wx">
                 <Image src={wx} className="wx"/>
               </Button>
             }
-            { isUserInfo && !isWorksId && <Image src={pyq} onClick={this.shareHandle} className="pyq"/>}
+            { isWorksId && <Image src={pyq} onClick={this.shareHandle} className="pyq"/>}
           </View>
           {
             isshow === true ? 
@@ -1239,7 +1235,7 @@ class Share extends Component {
                 onClick={this.handleMainButton}
                 formType='submit'>我也要玩</Button>
             </View> : <Form onSubmit={this.handleFormSubmit} reportSubmit>
-                {isFromApp && isPlay?
+                {isFromApp && !isPlay?
                   <Button
                     open-type="contact"
                     className="custom-button pink"

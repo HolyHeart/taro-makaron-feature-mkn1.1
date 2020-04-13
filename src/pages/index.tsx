@@ -235,21 +235,24 @@ class Share extends Component {
     if (singleWorkData.status === 'success') {
       const data = singleWorkData.result.result
       let imageUrl
-      if ((data.renderPictureInfo.url || data.renderPictureInfo.firstFrame).indexOf('https') === -1) {
-        imageUrl = (data.renderPictureInfo.url || data.renderPictureInfo.firstFrame).replace(/^http/,'https')
+      let imageFirstUrl
+      if ((data.renderPictureInfo.url).indexOf('https') === -1) {
+        imageUrl = (data.renderPictureInfo.url).replace(/^http/,'https')
         if(data.renderPictureInfo.firstFrame) {
-          var imageFirstUrl = (data.renderPictureInfo.firstFrame).replace(/^http/,'https')
+          imageFirstUrl = (data.renderPictureInfo.firstFrame).replace(/^http/,'https')
         }
         if(data.worksType === 'video' && data.renderPictureInfo.type === 'pic') {
-          imageUrl = (data.renderPictureInfo.url).replace(/^http/,'https') + '?x-oss-process=video/snapshot,t_0,f_jpg,w_0,h_0'
+          imageUrl = (data.renderPictureInfo.url).replace(/^http/,'https') 
+          imageFirstUrl = (data.renderPictureInfo.url).replace(/^http/,'https')  + '?x-oss-process=video/snapshot,t_0,f_jpg,w_0,h_0'
         } 
       } else {
-        imageUrl = data.renderPictureInfo.url || data.renderPictureInfo.firstFrame
+        imageUrl = data.renderPictureInfo.url
         if(data.renderPictureInfo.firstFrame) {
-          var imageFirstUrl = (data.renderPictureInfo.firstFrame)
+          imageFirstUrl = data.renderPictureInfo.firstFrame
         }
         if(data.worksType === 'video' && data.renderPictureInfo.type === 'pic') {
-          imageUrl = data.renderPictureInfo.url + '?x-oss-process=video/snapshot,t_0,f_jpg,w_0,h_0'
+          imageUrl = data.renderPictureInfo.url 
+          imageFirstUrl = data.renderPictureInfo.url + '?x-oss-process=video/snapshot,t_0,f_jpg,w_0,h_0'
         }
       }
       if (typeof(data.author.avatar)!== 'undefined' && (data.author.avatar).indexOf('https') === -1 ) {
@@ -274,7 +277,7 @@ class Share extends Component {
           userName: data.author.nickname,
           uid: data.uid,
           worksId: data.worksId,
-          shareSource : imageUrl || imageFirstUrl,
+          shareSource : imageUrl,
           shareSourceWidth:shareSourceWidth,
           shareSourceHeight:shareSourceHeight,
           firstFrame: imageFirstUrl,
@@ -522,7 +525,7 @@ class Share extends Component {
         userName: data.author.nickname,
         uid: data.uid,
         worksId: data.worksId,
-        shareSource : data.renderPictureInfo.url || data.renderPictureInfo.firstFrame,
+        shareSource : data.renderPictureInfo.url,
         shareSourceWidth:data.renderPictureInfo.imageWidth,
         shareSourceHeight:data.renderPictureInfo.imageHeight,
         firstFrame: data.renderPictureInfo.firstFrame,
@@ -533,7 +536,7 @@ class Share extends Component {
       },
       liked: data.liked,
       likeNumber: data.likedAmount,
-      shareSource : data.renderPictureInfo.url || data.renderPictureInfo.firstFrame,
+      shareSource : data.renderPictureInfo.url,
       userXcx: {
         userImage: data.author.avatar,
         userName: data.author.nickname,
@@ -1076,13 +1079,33 @@ class Share extends Component {
         { (user.shareSourceHeight / user.shareSourceWidth) >= ((bgImageHeight/bgImageWidth)) && user.worksType === 'video' && user.type === 'video' &&
             <View className="showImage" id="positionImage">
               <View className="blur" style={{backgroundImage: `url(${user.firstFrame})`}}></View>
-              <Image src={user.firstFrame} className="bgImageVertical" style={{width:`${user.caluWidth}px` }}/>
+              {/* <Image src={user.firstFrame} className="bgImageVertical" style={{width:`${user.caluWidth}px` }}/> */}
+              <Video
+                className="video bgImageVertical"
+                style={{width:`${user.caluWidth}px` }}
+                loop
+                autoplay
+                src={user.shareSource}
+                poster={user.firstFrame}
+                objectFit='cover'
+                controls
+              ></Video>
             </View>
         }
         { (user.shareSourceHeight / user.shareSourceWidth) < (bgImageHeight/bgImageWidth) && user.worksType === 'video' && user.type === 'video' &&
             <View className="showImage" id="positionImage">
               <View className="blur" style={{backgroundImage: `url(${user.firstFrame})`}}></View>
-              <Image src={user.firstFrame} className="bgImageHorizontal" style={{height:`${user.caluHeight}px`}}/>
+              {/* <Image src={user.firstFrame} className="bgImageHorizontal" style={{height:`${user.caluHeight}px`}}/> */}
+              <Video
+                className="video bgImageHorizontal"
+                style={{height:`${user.caluHeight}px`}}
+                loop
+                autoplay
+                src={user.shareSource}
+                poster={user.firstFrame}
+                objectFit='cover'
+                controls
+              ></Video>
             </View>
         }
         { (user.shareSourceHeight / user.shareSourceWidth) >= ((bgImageHeight/bgImageWidth)) && user.worksType === 'video' && user.type === 'pic' &&
@@ -1152,14 +1175,14 @@ class Share extends Component {
                       user.worksType === 'video' && (user.shareSourceHeight / user.shareSourceWidth) < ((dialogImageHeight/dialogImageWidth)) && user.type === 'pic' &&
                       <View className="bgUrl">
                         <View className="blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
-                        <Image src={user.shareSource} className="bgUrlSizeHorizontal" style={{height:`${showDialogHeight}px` }}/> 
+                        <Image src={user.firstFrame} className="bgUrlSizeHorizontal" style={{height:`${showDialogHeight}px` }}/> 
                       </View>
                     }
                     {
                       user.worksType === 'video' && (user.shareSourceHeight / user.shareSourceWidth) >= ((dialogImageHeight/dialogImageWidth)) && user.type === 'pic' &&
                       <View className="bgUrl">
                         <View className="blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
-                        <Image src={user.shareSource} className="bgUrlSizeVertical" style={{width:`${showDialogWidth}px` }}/>
+                        <Image src={user.firstFrame} className="bgUrlSizeVertical" style={{width:`${showDialogWidth}px` }}/>
                     </View>
                     }
                     

@@ -47,6 +47,7 @@
 		"gamePlugin": {
 			"current": -1,
 			"list": []
+<<<<<<< HEAD
 		},
 		"miniprogram": {
 			"current": -1,
@@ -69,6 +70,8 @@
 					"scene": null
 				}
 			]
+=======
+>>>>>>> a0732be4af9f3c20d595ecab90c94efe8783699f
 		}
 	}
 }

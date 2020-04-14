@@ -55,32 +55,7 @@
 		"gamePlugin": {
 			"current": -1,
 			"list": []
-		},
-		"miniprogram": {
-			"current": -1,
-			"list": [
-				{
-					"id": 0,
-					"name": "pages/index",
-					"pathName": "pages/index",
-					"query": "remoteURL=https://static01.versa-ai.com/upload/29cbaea56c26/40713F9A3A097492E9CF5C831362FE97.jpg&from=app&workID=327570570734395392",
-					"scene": null
-				},
-				{
-					"id": 2,
-					"name": "pages/index",
-					"pathName": "pages/index",
-					"query": "remoteURL=https://static01.versa-ai.com/upload/2dc2567fdec7/71D3EE13-7CCB-4037-8D7B-72580E9D5ABB.mp4&from=app&workID=228196252859162624",
-					"scene": null
-				},
-				{
-					"id": -1,
-					"name": "pages/index",
-					"pathName": "pages/index",
-					"query": "remoteURL=https://static01.versa-ai.com/upload/2dc2567fdec7/71D3EE13-7CCB-4037-8D7B-72580E9D5ABB.mp4&from=app",
-					"scene": null
-				}
-			]
 		}
+		
 	}
 }

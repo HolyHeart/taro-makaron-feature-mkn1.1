@@ -289,7 +289,8 @@ class Share extends Component {
           caluHeight: caluHeight
         },
         liked: liked,
-        likeNumber: data.likedAmount
+        likeNumber: data.likedAmount,
+        isWorksId: true
       }, () => {
         this.onLoad()
         this.getRect()

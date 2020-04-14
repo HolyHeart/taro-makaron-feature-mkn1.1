@@ -370,6 +370,9 @@ class Share extends Component {
         }
       } else {
         shareSource = appConfig.imageHost + remoteURL
+        this.setState({
+          isWorksId: false
+        },()=>{ this.getRecommendList() })
       }
       if(typeof(this.$router.params.isGoAPP) === 'undefined') {
         const isGoAPP = !this.state.isGoAPP

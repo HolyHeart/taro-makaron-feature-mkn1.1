@@ -28,7 +28,7 @@
 	"appid": "wxcfe56965f4d986f0",
 	"projectname": "taro-makaron",
 	"miniprogramRoot": "dist/",
-	"cloudfunctionTemplateRoot": "",
+	"cloudfunctionRoot": "cloudfunctions/",
 	"watchOptions": {
 		"ignore": []
 	},

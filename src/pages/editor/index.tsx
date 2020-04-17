@@ -87,9 +87,9 @@ class Editor extends Component {
       remoteUrl: ''
     },
     content: '',
-​    isshow: false,
-​    cancelText: '取消',
-​    confirmText: '看广告',
+    isshow: false,
+    cancelText: '取消',
+    confirmText: '看广告',
     frame: {
       width: 0,
       height: 0,
@@ -196,18 +196,19 @@ class Editor extends Component {
   }
   componentWillMount() { }
   componentDidMount() {
+    wx.cloud.init()
     this._initPage()
     this.canIShareToQQZone()
-​    if(Taro.getStorageSync('saveNumber') === '' || Taro.getStorageSync('saveNumber').number === 0){
-  ​      Taro.setStorageSync('saveNumber',this.saveNumber)
-  ​  }
+    if (Taro.getStorageSync('saveNumber') === '' || Taro.getStorageSync('saveNumber').number === 0) {
+      Taro.setStorageSync('saveNumber', this.saveNumber)
+    }
     const date1 = new Date()
-    if(date1.getTime() - Taro.getStorageSync('saveNumber').date > 86400000){
+    if (date1.getTime() - Taro.getStorageSync('saveNumber').date > 86400000) {
       this.saveNumber = {
         number: 0,
         date: date1.getTime()
       }
-      Taro.setStorageSync('saveNumber',this.saveNumber)
+      Taro.setStorageSync('saveNumber', this.saveNumber)
     }
   }
   componentWillReceiveProps(nextProps) {
@@ -230,13 +231,13 @@ class Editor extends Component {
       themeId: globalData.themeId || '',
       sceneId: currentScene.sceneId || '',
     }
-    
+
     const { userInfo = {} } = globalData
     const path = `/pages/index?shareSource=${shareImageUrl}`
     // console.log('url',path)
     // const title = `@${userInfo.nickName}：${shareContent}`
     if (!shareImage.remoteUrl) {
-      console.log('shareImage.remoteUrl',shareImage.remoteUrl)
+      console.log('shareImage.remoteUrl', shareImage.remoteUrl)
       return {
         // title: title,
         path: '/pages/home/index',
@@ -276,7 +277,7 @@ class Editor extends Component {
   }
 
 
-    // qq空间分享兼容性检测
+  // qq空间分享兼容性检测
   canIShareToQQZone = () => {
     if (wx.canIUse('openQzonePublish')) {
       console.log('🔥🔥🔥可以分享到空间')
@@ -286,7 +287,7 @@ class Editor extends Component {
     } else {
       console.log('微信版本小程序不支持分享到QQ空间')
     }
-  } 
+  }
 
 
   // 公共方法
@@ -681,7 +682,7 @@ class Editor extends Component {
       number: Taro.getStorageSync('saveNumber').number + 1,
       date: Taro.getStorageSync('saveNumber').date
     }
-    Taro.setStorageSync('saveNumber',mySaveNumber)
+    Taro.setStorageSync('saveNumber', mySaveNumber)
     this.isSaving = true
     const canvasImageUrl = await this.createCanvas()
     Taro.hideLoading()
@@ -1281,7 +1282,7 @@ class Editor extends Component {
     return result
   }
   todo = (data) => {
-    const {detail: {userInfo}} = data   
+    const { detail: { userInfo } } = data
     if (userInfo) {
       service.base.loginAuth(data.detail)
       globalData.userInfo = userInfo
@@ -1303,9 +1304,37 @@ class Editor extends Component {
           console.log('choosedImage', path, globalData)
           this.app.aldstat.sendEvent('编辑页面人像成功', '上传成功')
           globalData.choosedImage = path
-          const separateResult = globalData.separateResult = await this.initSegment()
-          console.log('separateResult', separateResult)
-          await this.initSeparateData(separateResult)
+          wx.getFileSystemManager().readFile({
+            filePath: path,
+            success: (data) => {
+              wx.cloud.callFunction({
+                name: 'checkImage',
+                data: {
+                  contentType: 'image/png',
+                  value: data.data
+                },
+                success: async (res) => {
+                  console.log('checkImage success：', res)
+                  // const separateResult = globalData.separateResult = await this.initSegment()
+                  // await this.initSeparateData(separateResult)
+                  if (res.result !== null && res.result.errCode === 0) {
+                    const separateResult = globalData.separateResult = await this.initSegment()
+                    await this.initSeparateData(separateResult)
+                  } else {
+                    work.pageToError()
+                  }
+                },
+                fail: async (err) => {
+                  console.log('checkImage error', err)
+                  const separateResult = globalData.separateResult = await this.initSegment()
+                  await this.initSeparateData(separateResult)
+                }
+              })
+            },
+            fail:()=>{
+            }
+          })
+
         }
       })
     } else {
@@ -1450,41 +1479,41 @@ class Editor extends Component {
       })
     }
   }
-  handelVideoAd(){
+  handelVideoAd() {
     //.catch((err)=>{console.log(err)})
     this.setState({
       isshow: false
     })
-    this.videoAd = wx.createRewardedVideoAd({adUnitId: 'adunit-7815bc095ad4a222'})
-    this.videoAd.onLoad(()=>{console.log('广告拉取成功')})
-    this.videoAd.onError((err)=>{console.log(err)})
-    this.videoAd.onClose((res)=>{
-      if(res.isEnded){
+    this.videoAd = wx.createRewardedVideoAd({ adUnitId: 'adunit-7815bc095ad4a222' })
+    this.videoAd.onLoad(() => { console.log('广告拉取成功') })
+    this.videoAd.onError((err) => { console.log(err) })
+    this.videoAd.onClose((res) => {
+      if (res.isEnded) {
         this.handleOpenResult()
       }
     })
-  
-    if(this.videoAd){
-      this.videoAd.load().then(()=>{
+
+    if (this.videoAd) {
+      this.videoAd.load().then(() => {
         this.videoAd.show()
       })
     }
   }
-  saveImg(){
+  saveImg() {
     this.setState({
       isshow: true,
-      content:'观看完整的视频广告后，才可以保存这张图片哦~',
+      content: '观看完整的视频广告后，才可以保存这张图片哦~',
     })
   }
-  handelCancel(){
+  handelCancel() {
     this.setState({
       isshow: false
     })
-    
+
   }
-  changeNav(){
+  changeNav() {
     this.app.aldstat.sendEvent('保存后返回首页', '回到首页')
-    Taro.navigateTo({ url: '/pages/home/index'})
+    Taro.navigateTo({ url: '/pages/home/index' })
   }
   render() {
     const { loading, rawImage, frame, customBg, foreground, coverList, sceneList, currentScene, result, canvas } = this.state
@@ -1542,23 +1571,23 @@ class Editor extends Component {
           <MarginTopWrap config={{ large: 60, small: 40, default: 20 }} >
             <View style="display:flex;margin-top:120rpx">
               <Button style='flex:1;z-index:2' id='addPhoto' openType="getUserInfo" className="custom-button pink" hoverClass="btn-hover" onGetUserInfo={this.todo}>{this.state.chooseText}</Button>
-              {Taro.getStorageSync('saveNumber').number ===0 ? 
-              <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.handleOpenResult} openType="share">分享并保存</Button> 
-            :<Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.saveImg}>保存</Button>} 
+              {Taro.getStorageSync('saveNumber').number === 0 ?
+                <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.handleOpenResult} openType="share">分享并保存</Button>
+                : <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.saveImg}>保存</Button>}
             </View>
           </MarginTopWrap>
-          {this.state.isshow === true ? <Dialog 
+          {this.state.isshow === true ? <Dialog
             content={this.state.content}
             cancelText={this.state.cancelText}
             confirmText={this.state.confirmText}
             isshow={this.state.isshow}
-            renderButton ={
+            renderButton={
               <View className="wx-dialog-footer" style="display:flex;margin-bottom:30rpx">
                 <Button className="wx-dialog-btn" onClick={this.handelCancel} style="flex:1">
-                    {this.state.cancelText}
+                  {this.state.cancelText}
                 </Button>
-                <Button className="wx-dialog-btn" onClick={this.handelVideoAd}  style="flex:1">
-                    {this.state.confirmText}
+                <Button className="wx-dialog-btn" onClick={this.handelVideoAd} style="flex:1">
+                  {this.state.confirmText}
                 </Button>
               </View>
             }
@@ -1587,12 +1616,12 @@ class Editor extends Component {
               <View className="btn-wrap">
                 <Button className="custom-button pink btn-1" hoverClass="btn-hover" id="btnNav" openType="share">继续分享</Button>
                 {this.state.ableToShareToQZone ?
-                <View>
-                  <Button className="custom-button dark btn-2" hoverClass="btn-hover"  onClick={this.publishToQzone}>同步到说说</Button>
-                  <Button className="custom-button dark btn-3" hoverClass="btn-hover"  onClick={this.handlePlayAgain}>再玩一次</Button>
-                </View>: <View>
-                  <Button className="custom-button dark btn-4" hoverClass="btn-hover"  onClick={this.changeNav}>回到首页</Button>
-                </View>}
+                  <View>
+                    <Button className="custom-button dark btn-2" hoverClass="btn-hover" onClick={this.publishToQzone}>同步到说说</Button>
+                    <Button className="custom-button dark btn-3" hoverClass="btn-hover" onClick={this.handlePlayAgain}>再玩一次</Button>
+                  </View> : <View>
+                    <Button className="custom-button dark btn-4" hoverClass="btn-hover" onClick={this.changeNav}>回到首页</Button>
+                  </View>}
               </View>
             }
           />

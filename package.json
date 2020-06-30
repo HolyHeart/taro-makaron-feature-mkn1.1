@@ -42,6 +42,7 @@
 		"redux-logger": "^3.0.6",
 		"redux-thunk": "^2.3.0",
 		"taro-ui": "^2.2.1",
+		"threejs-miniprogram": "0.0.5",
 		"wx-server-sdk": "^1.8.2"
 	},
 	"devDependencies": {

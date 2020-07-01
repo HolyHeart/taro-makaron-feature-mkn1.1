@@ -170,15 +170,15 @@ class Home extends Component {
     // console.log(this.props, nextProps)
   }
   componentWillUnmount() { }
-  componentDidShow() {
+  componentDidShow() { //？？？
     const data = Taro.getStorageSync('firstView')
     // TODO 如果没有授权，取得授权
-    if (data == 'no') {
+    if (data == 'no') {//点击立即体验后，有这个值
       // TODO 此段代码暂时无用
-      Taro.getSetting({
+      Taro.getSetting({// 获取已经授权的权限
         success(res) {
           if (!res.authSetting['scope.userInfo']) {
-            console.log(res)
+            console.log(res,'authorization') //获取授权结果
           }
         }
       })
@@ -219,14 +219,16 @@ class Home extends Component {
   }
 
   _initPage = async () => {
+    console.log(11111111111111111111111111111111)
     await Session.set()
-
+    console.log(22222222222222222222222222222)
     await this.getCateGoryAndScenes()
   }
 
-  getCateGoryAndScenes = async () => {
+  getCateGoryAndScenes = async () => {//请求数据
     try {
       const res = await await home.getCateGoryAndScenes(1)
+      console.log(res,'showoshow')//对主页数据的请求
       const categories = res.result && res.result.result.map((item) => {
         return item.categoryName
       })
@@ -457,7 +459,7 @@ class Home extends Component {
       tooltipHeight: 0,
     })
   }
-  goScene = (scene, type,originalImage) => {
+    goScene = (scene, type,originalImage) => {
 
     if (type === 'challange') {
       globalData.themeData = {}
@@ -477,7 +479,7 @@ class Home extends Component {
       } else if (scene.sceneType === 5){
         Taro.navigateTo({ url: '/pages/myBackground/index' })
       } else {
-        Taro.navigateTo({ url: '/pages/editor/index' })
+        Taro.navigateTo({ url: '/pages/demoZengYJ/index' })//在主页面每个图都是sceneType===0
       }
     }
   }

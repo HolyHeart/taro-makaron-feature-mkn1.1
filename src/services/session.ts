@@ -31,6 +31,7 @@ const Session = {
     const loginInfo = await Taro.login()
     const {appId} = config
     const {code} = loginInfo
+    console.log(code,'codecode')//打印code
     try {
       const data = await service.base.auth({
         code, appId
@@ -38,6 +39,7 @@ const Session = {
       const {statusCode, result} = data
       if (statusCode === 200 && result.responseCode === '0000') {
         Taro.setStorageSync(this.storageKey, result.result)
+        console.log(result.result)
         return result.result
       } else {
         console.log('auth fail!(get sessionId)', data)

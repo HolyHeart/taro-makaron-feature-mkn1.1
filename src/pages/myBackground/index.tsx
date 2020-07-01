@@ -148,7 +148,8 @@ class MyBackground extends Component {
   videoAd = null //定义视频广告
   isSaving = false // 是否正在保存
 
-  componentWillMount () {}
+  componentWillMount () {
+  }
   componentDidMount () {
     this._initPage()
   }
@@ -193,7 +194,6 @@ class MyBackground extends Component {
   }
 
   _initPage = async () => {
-
     // this.initRawImage()
     await Session.set()
     this.initSceneData(() => {
@@ -400,7 +400,7 @@ class MyBackground extends Component {
     }
     this.setState({
       bgImg:scene.choosedImage,
-      
+
     }, () => {
       // console.log('handleChooseScene', this.state.currentScene)
 
@@ -586,7 +586,7 @@ class MyBackground extends Component {
           }
         });
       }, 400)
-      
+
     })
   }
   // 绘制贴纸，文字，覆盖层所有元素
@@ -911,7 +911,7 @@ class MyBackground extends Component {
   todo = (ev) => {
     if(ev.currentTarget.id === 'custom-btn'){
 
-      const {detail: {userInfo}} = data   
+      const {detail: {userInfo}} = data
       if (userInfo) {
         service.base.loginAuth(data.detail)
         globalData.userInfo = userInfo
@@ -942,10 +942,10 @@ class MyBackground extends Component {
       }
 
 
-   
+
     }else{
       work.chooseImageBg({
-        
+
         onTap: (index) => {
           // console.log('tap index', index)
           if (index === 0) {
@@ -967,9 +967,9 @@ class MyBackground extends Component {
           this.handleChooseScene(globalData)
         }
       })
-      
+
     }
-    
+
   }
 
   changeNav(){
@@ -989,7 +989,7 @@ class MyBackground extends Component {
           this.handleOpenResult()
         }
       })
-    
+
     if(this.videoAd){
       this.videoAd.load().then(()=>{
         this.videoAd.show()
@@ -1013,20 +1013,20 @@ class MyBackground extends Component {
       //     })
       //   }
       // })
-      
+
         this.setState({
           isshow: true,
           content:'观看完整的视频广告后，才可以保存这张图片哦~',
         })
-      
-      
+
+
     }
   }
   handelCancel(){
     this.setState({
       isshow: false
     })
-    
+
   }
   handleChangeCoverStyle = (data) => {
     const { id } = data
@@ -1057,12 +1057,12 @@ class MyBackground extends Component {
               <Image src={rawImage.localUrl} style="width:100%;height:100%" mode="aspectFit"/>
             </View>
             <View className={`crop`} id="crop" style={{ width: this.state.drawBoard.width, height: this.state.drawBoard.height }}>
-              { 
+              {
                 this.state.bgImg === ''?
                 <View className="layer-bg" onClick={this.handleBackgroundClick}>
                 </View>:
                 <View className="background-image" >
-                    <Image src={this.state.bgImg} style="height:100%;width:100%;" mode="scaleToFill" onLoad={this.handleBgLoaded} onClick={this.handleBackgroundClick}/> 
+                    <Image src={this.state.bgImg} style="height:100%;width:100%;" mode="scaleToFill" onLoad={this.handleBgLoaded} onClick={this.handleBackgroundClick}/>
                 </View>
               }
               <Sticker
@@ -1094,15 +1094,15 @@ class MyBackground extends Component {
           <View style="display:flex;">
             <Button style='flex:1' id="custom-btn" openType="getUserInfo" className="custom-button white" hoverClass="btn-hover" onGetUserInfo={this.todo} >{this.state.chooseText}</Button>
             <Button style='flex:1;margin-left:10px' className="custom-button pink" hoverClass="btn-hover" onClick={this.todo}>{this.state.bgText}</Button>
-             
+
           </View>
           <View style="display:flex;margin-top:30rpx">
             {this.state.bgImg === '' ? <Button style='flex:1;' className="custom-button white"   hoverClass="btn-hover" onClick={this.saveImg} >保存</Button>
             : <Button style='flex:1;' className="custom-button white"   hoverClass="btn-hover" onClick={this.saveImg}  >保存</Button>}
-            
+
           </View>
           </MarginTopWrap>
-          {this.state.isshow === true ? <Dialog 
+          {this.state.isshow === true ? <Dialog
             content={this.state.content}
             cancelText={this.state.cancelText}
             confirmText={this.state.confirmText}
@@ -1154,4 +1154,5 @@ class MyBackground extends Component {
   }
 }
 
+console.log(11111111111111111111111111111111111111111111111111)
 export default MyBackground as ComponentClass<PageOwnProps, PageState>

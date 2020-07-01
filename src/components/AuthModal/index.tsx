@@ -63,7 +63,7 @@ class AuthModal extends Component {
         <View className="modal"></View>
         <View className="content">
           <Button openType="openSetting" size='default' type='warn' >前往授权</Button>
-        </View>        
+        </View>
       </View>
     )
   }

@@ -38,6 +38,7 @@ type PageStateProps = {
   }
 }
 
+
 // type PageDispatchProps = {}
 type PageDispatchProps = {
   getSystemInfo: (data: object) => void
@@ -199,13 +200,13 @@ class Share extends Component {
     if (/iphone x/i.test(systemInfo.model)) {
       systemInfo.isIphoneX = true
     } else {
-      systemInfo.isIphoneX = false 
+      systemInfo.isIphoneX = false
     }
     if (/iphone s plus/i.test(systemInfo.model)) {
       this.setState({
         hotMarginTop: 0,
         titleHeight: 0
-      })    
+      })
     }
     let totalTopHeight = 0
     if (systemInfo.model.indexOf('iPhone X') !== -1) {
@@ -217,15 +218,16 @@ class Share extends Component {
       titleHeight: totalTopHeight
     })
   }
-  
+
 
   componentDidMount() {
+    //console.log(1)
     this._initPage()
     // Taro.showToast({
     //   title:this.$router.params.originalCompleteImageUrl
     // })
   }
-  
+
 
   singleWorkList = async () => {
     const singleWorkData = await service.share.singleWorkList(this.state.user.worksId)
@@ -241,23 +243,23 @@ class Share extends Component {
           imageFirstUrl = (data.renderPictureInfo.firstFrame).replace(/^http/,'https')
         }
         if(data.worksType === 'video' && data.renderPictureInfo.type === 'pic') {
-          imageUrl = (data.renderPictureInfo.url).replace(/^http/,'https') 
+          imageUrl = (data.renderPictureInfo.url).replace(/^http/,'https')
           imageFirstUrl = (data.renderPictureInfo.url).replace(/^http/,'https')  + '?x-oss-process=video/snapshot,t_0,f_jpg,w_0,h_0'
-        } 
+        }
       } else {
         imageUrl = data.renderPictureInfo.url
         if(data.renderPictureInfo.firstFrame) {
           imageFirstUrl = data.renderPictureInfo.firstFrame
         }
         if(data.worksType === 'video' && data.renderPictureInfo.type === 'pic') {
-          imageUrl = data.renderPictureInfo.url 
+          imageUrl = data.renderPictureInfo.url
           imageFirstUrl = data.renderPictureInfo.url + '?x-oss-process=video/snapshot,t_0,f_jpg,w_0,h_0'
         }
       }
       if (typeof(data.author.avatar)!== 'undefined' && (data.author.avatar).indexOf('https') === -1 ) {
         var userImage = (data.author.avatar).replace(/^http/,'https')
       } else {
-        var userImage = data.author.avatar 
+        var userImage = data.author.avatar
       }
       this.userInfo = Taro.getStorageSync('userInfo')
       let liked
@@ -265,7 +267,7 @@ class Share extends Component {
          liked = data.liked
       } else {
          liked = parseInt(this.$router.params.isLiked)
-      }     
+      }
       const shareSourceWidth = data.renderPictureInfo.imageWidth
       const shareSourceHeight = data.renderPictureInfo.imageHeight
       const caluWidth = shareSourceWidth * this.state.bgImageHeight / shareSourceHeight
@@ -302,12 +304,12 @@ class Share extends Component {
   getRect = () => {
     Taro.createSelectorQuery().select('#positionImage').boundingClientRect(
       (rect)=>{
-        const width = rect.width 
+        const width = rect.width
         const height = rect.height
         this.setState({
          bgImageWidth: width,
          bgImageHeight: height
-        }) 
+        })
       }).exec()
   }
 
@@ -321,14 +323,14 @@ class Share extends Component {
     const shareContent = '给你推荐一个好作品'
     let url = ''
     if(this.state.user.worksType === 'pic') {
-      url = `${this.state.user.shareSource}?x-oss-process=image/resize,m_pad,h_420,w_525` 
+      url = `${this.state.user.shareSource}?x-oss-process=image/resize,m_pad,h_420,w_525`
     } else if (this.state.user.worksType === 'video') {
-      url = `${this.state.user.firstFrame}?x-oss-process=image/resize,m_pad,h_420,w_525` 
+      url = `${this.state.user.firstFrame}?x-oss-process=image/resize,m_pad,h_420,w_525`
       console.log('url',url)
     } else {
-      url = `${this.state.user.shareSource}?x-oss-process=image/resize,m_pad,h_420,w_525` 
+      url = `${this.state.user.shareSource}?x-oss-process=image/resize,m_pad,h_420,w_525`
     }
-    // const url = `${this.state.user.shareSource}?x-oss-process=image/resize,m_pad,h_420,w_525` 
+    // const url = `${this.state.user.shareSource}?x-oss-process=image/resize,m_pad,h_420,w_525`
     const { userInfo = {} } = globalData
     const title = `${shareContent}`
     const path = `pages/index?worksId=${this.state.user.worksId}&from=app&isGoAPP=${!this.state.isGoAPP}&isPlay=${this.state.isPlay}&isLiked=${this.state.liked}`
@@ -400,10 +402,10 @@ class Share extends Component {
         user: {
           worksId: workID || this.$router.params.worksId
         }
-      }, () => { 
+      }, () => {
         if(this.state.user.worksId) {
           this.singleWorkList()
-        } 
+        }
       })
     } else {
       if(typeof(this.$router.params.scene) !== 'undefined') {
@@ -560,7 +562,7 @@ class Share extends Component {
     this.setState({
       qrCode: scene
     })
-    
+
   }
 
   handleFormSubmit = (e) => {
@@ -590,7 +592,7 @@ class Share extends Component {
       const { themeData = {}, sceneId } = globalData
       globalData.userInfo = userInfo
       const result = await service.base.loginAuth(e.detail)
-      
+
       // console.log(result)
       this.userInfo = result.result.result
       // console.log('this',this.userInfo)
@@ -602,7 +604,7 @@ class Share extends Component {
         if (this.state.liked === 0) {
          this.addLike(this.userInfo)
         } else {
-          this.deleteLike(this.userInfo) 
+          this.deleteLike(this.userInfo)
         }
       }
     } else {
@@ -618,7 +620,7 @@ class Share extends Component {
   getDialogRect = () => {
     Taro.createSelectorQuery().select('#dialogPosition').boundingClientRect(
       (rect)=>{
-        const width = rect.width 
+        const width = rect.width
         const height = rect.height
         this.setState({
          dialogImageWidth: width,
@@ -632,14 +634,14 @@ class Share extends Component {
           },()=>{
             this.handelConfirm()
           })
-        }) 
+        })
       }).exec()
   }
   getDialogContentRect = () => {
     Taro.createSelectorQuery().select('#dialogSize').boundingClientRect(
       (rect)=>{
         // console.log('dialogrect',rect)
-        const width = rect.width 
+        const width = rect.width
         const height = rect.height
         this.setState({
          frame:{
@@ -648,7 +650,7 @@ class Share extends Component {
          }
         },()=> {
           this.getDialogRect()
-        }) 
+        })
       }).exec()
   }
 
@@ -656,21 +658,21 @@ class Share extends Component {
     Taro.createSelectorQuery().select('#dialogFooterSize').boundingClientRect(
       (rect)=>{
         // console.log('dialogFooterrect',rect)
-        const width = rect.width 
+        const width = rect.width
         const height = rect.height
         this.setState({
          dialogFooter:{
            width: width,
            height: height
          }
-        }) 
+        })
       }).exec()
   }
 
   shareHandle =  () => {
     this.setState({
       isshow: true
-    },()=>{ 
+    },()=>{
       // this.handelConfirm()
       this.getDialogContentRect()
       this.getDialogFooterRect()
@@ -749,7 +751,7 @@ class Share extends Component {
         //作品类型为video时其第一帧为背景图
         // const codeLeft = (frame.width  - dialogImageWidth ) * ratio / 2
         // const codeTop = codeLeft
-        // const codeWidth = dialogImageWidth * ratio   
+        // const codeWidth = dialogImageWidth * ratio
         // const codeHeight = dialogImageHeight * ratio
         // const result = localBgImagePath
         // context.drawImage(result, codeLeft, codeTop, codeWidth, codeHeight)
@@ -758,13 +760,13 @@ class Share extends Component {
       if((user.shareSourceHeight / user.shareSourceWidth) < (dialogImageHeight/dialogImageWidth)) {
         const codeLeft = (frame.width  - dialogImageWidth ) * ratio / 2
         const codeTop = (frame.height  - showDialogHeight  - dialogFooter.height) * ratio / 2
-        const codeWidth = dialogImageWidth * ratio   
+        const codeWidth = dialogImageWidth * ratio
         const codeHeight = showDialogHeight * ratio
         context.drawImage(localBgImagePath, codeLeft, codeTop, codeWidth, codeHeight)
       } else {
         const codeLeft = (frame.width  - showDialogWidth ) * ratio / 2
-        const codeTop = (frame.height  - dialogImageHeight  - dialogFooter.height) * ratio 
-        const codeWidth = showDialogWidth * ratio   
+        const codeTop = (frame.height  - dialogImageHeight  - dialogFooter.height) * ratio
+        const codeWidth = showDialogWidth * ratio
         const codeHeight = dialogImageHeight * ratio
         context.drawImage(localBgImagePath, codeLeft, codeTop, codeWidth, codeHeight)
       }
@@ -772,7 +774,7 @@ class Share extends Component {
       console.log('下载背景图片失败', err)
       return
     }
-    //  防止锯齿，绘的图片是所需图片的3倍 
+    //  防止锯齿，绘的图片是所需图片的3倍
     // 绘制元素
     // await this.canvasDrawElement(context, ratio)
     await this.canvasDrawLogo(context, ratio)
@@ -803,14 +805,14 @@ class Share extends Component {
 
     const logoWidth = 38 * ratio
     const logoHeight = 38 * ratio
-    const logoLeft = (frame.width  - dialogImageWidth ) * ratio / 2 
+    const logoLeft = (frame.width  - dialogImageWidth ) * ratio / 2
     const logoTop = logoLeft  + dialogImageHeight * ratio + (dialogFooter.height * ratio - logoHeight)  / 2
     context.save()
     context.arc(logoWidth / 2 + logoLeft, logoHeight / 2 + logoTop, logoWidth / 2, 0, Math.PI * 2, false)
     context.clip()
     context.setStrokeStyle(context, 'rgba(0, 0, 0, 0)')
     context.stroke()
-    if(user.userImage){     
+    if(user.userImage){
       let localUserImagePath = ''
       try {
         const userUrl = (user.userImage + postfix)
@@ -1001,7 +1003,7 @@ class Share extends Component {
 
 
   render() {
-    const { isFromApp, isGoAPP,  isXcx, isPlay, isWorksId,bgImageHeight, bgImageWidth,dialogImageHeight,showDialogWidth,dialogImageWidth,showDialogHeight, shareSourceType, shareSource, videoPoster, width, height, recommendList, originalCompleteImageUrl, confirmText, isshow, savePoint, 
+    const { isFromApp, isGoAPP,  isXcx, isPlay, isWorksId,bgImageHeight, bgImageWidth,dialogImageHeight,showDialogWidth,dialogImageWidth,showDialogHeight, shareSourceType, shareSource, videoPoster, width, height, recommendList, originalCompleteImageUrl, confirmText, isshow, savePoint,
       saveTitlePic, saveTitleVideo, type, checkoutImage, checkoutVideo, morePlayList, user, userXcx, qrCode, frame, canvas, hotMarginTop} = this.state
     return (
       <View className='page-share'>
@@ -1060,20 +1062,20 @@ class Share extends Component {
           </View>
         }
         {
-          (user.shareSourceHeight / user.shareSourceWidth) >= ((bgImageHeight/bgImageWidth)) && user.worksType === 'pic' &&  
-          <View className="showImage" id="positionImage"> 
+          (user.shareSourceHeight / user.shareSourceWidth) >= ((bgImageHeight/bgImageWidth)) && user.worksType === 'pic' &&
+          <View className="showImage" id="positionImage">
             <View className="blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
-            <Image src={user.shareSource}   className="bgImageVertical" 
-            style={{width:`${user.caluWidth}px` }}/> 
+            <Image src={user.shareSource}   className="bgImageVertical"
+            style={{width:`${user.caluWidth}px` }}/>
            </View>
-        }                                                                                                                                                                                                                                       
+        }
         {
-          (user.shareSourceHeight / user.shareSourceWidth) < (bgImageHeight/bgImageWidth) && user.worksType === 'pic' &&  
-            <View className="showImage" id="positionImage"> 
+          (user.shareSourceHeight / user.shareSourceWidth) < (bgImageHeight/bgImageWidth) && user.worksType === 'pic' &&
+            <View className="showImage" id="positionImage">
               <View className="blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
               <Image src={user.shareSource}   className="bgImageHorizontal"
               style={{height:`${user.caluHeight}px` }}
-              />  
+              />
             </View>
         }
         { (user.shareSourceHeight / user.shareSourceWidth) >= ((bgImageHeight/bgImageWidth)) && user.worksType === 'video' && user.type === 'video' &&
@@ -1122,14 +1124,14 @@ class Share extends Component {
         }
           <View className="userMessage">
             {
-              (user.userImage) ||  isXcx  || !isWorksId ? <Image className="user" src={user.userImage} /> : <Image className="user" src={titleImage} /> 
+              (user.userImage) ||  isXcx  || !isWorksId ? <Image className="user" src={user.userImage} /> : <Image className="user" src={titleImage} />
             }
             <View className='userName'>{user.userName}</View>
             {isWorksId &&
               <Button openType="getUserInfo" onGetUserInfo={this.getUserInfo}  className="likeAuth">
                 { this.state.liked === 0 && <Image src={like}  className="like" />}
                 { this.state.liked === 1 && <Image src={isliked}  className="like" />}
-              </Button>               
+              </Button>
             }
             { isWorksId &&<View style="" className="likeNum">{this.state.likeNumber}</View>}
             { isWorksId &&
@@ -1140,8 +1142,8 @@ class Share extends Component {
             { isWorksId && <Image src={pyq} onClick={this.shareHandle} className="pyq"/>}
           </View>
           {
-            isshow === true ? 
-            <View className="wx_dialog_container">           
+            isshow === true ?
+            <View className="wx_dialog_container">
               <View className="wx-mask"></View>
               <View className="wx-dialog">
                 {savePoint === true && user.worksType === 'pic' ? <View className="wx-dialog-save">{saveTitlePic}</View> : <View className="wx-dialog-save"></View>}
@@ -1150,17 +1152,17 @@ class Share extends Component {
                     <View className="bgUrl" id="dialogPosition">
                     {
                       user.worksType === 'pic' && (user.shareSourceHeight / user.shareSourceWidth) < ((dialogImageHeight/dialogImageWidth)) &&
-                        <Image src={user.shareSource} className="bgUrlSizeHorizontal" style={{height:`${showDialogHeight}px` }}/> 
+                        <Image src={user.shareSource} className="bgUrlSizeHorizontal" style={{height:`${showDialogHeight}px` }}/>
                     }
                     {
                       user.worksType === 'pic' && (user.shareSourceHeight / user.shareSourceWidth) >= ((dialogImageHeight/dialogImageWidth)) &&
-                      <Image src={user.shareSource} className="bgUrlSizeVertical" style={{width:`${showDialogWidth}px` }}/> 
+                      <Image src={user.shareSource} className="bgUrlSizeVertical" style={{width:`${showDialogWidth}px` }}/>
                     }
                     {
                       user.worksType === 'video' && (user.shareSourceHeight / user.shareSourceWidth) < ((dialogImageHeight/dialogImageWidth)) && user.type === 'video' &&
                       <View className="bgUrl">
                         <View className="blur" style={{backgroundImage: `url(${user.firstFrame})`}}></View>
-                        <Image src={user.firstFrame} className="bgUrlSizeHorizontal" style={{height:`${showDialogHeight}px` }}/> 
+                        <Image src={user.firstFrame} className="bgUrlSizeHorizontal" style={{height:`${showDialogHeight}px` }}/>
                       </View>
                     }
                     {
@@ -1175,7 +1177,7 @@ class Share extends Component {
                       user.worksType === 'video' && (user.shareSourceHeight / user.shareSourceWidth) < ((dialogImageHeight/dialogImageWidth)) && user.type === 'pic' &&
                       <View className="bgUrl">
                         <View className="blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
-                        <Image src={user.firstFrame} className="bgUrlSizeHorizontal" style={{height:`${showDialogHeight}px` }}/> 
+                        <Image src={user.firstFrame} className="bgUrlSizeHorizontal" style={{height:`${showDialogHeight}px` }}/>
                       </View>
                     }
                     {
@@ -1185,7 +1187,7 @@ class Share extends Component {
                         <Image src={user.firstFrame} className="bgUrlSizeVertical" style={{width:`${showDialogWidth}px` }}/>
                     </View>
                     }
-                    
+
                     </View>
                     <View className="userInfo" id="dialogFooterSize">
                       {
@@ -1222,8 +1224,8 @@ class Share extends Component {
               style={`width: ${frame.width * canvas.ratio}px; height: ${frame.height * canvas.ratio}px;`}
               canvasId={canvas.id} />
           </View>
-          
-        </View> 
+
+        </View>
         <View className='sub-section'>
           {
             this.state.sceneType == 5 ? <View className='originalWrap'>
@@ -1267,28 +1269,28 @@ class Share extends Component {
             <View className='recommend-title'>更多好玩</View>
             <View className="recommend" >
               <ScrollView className="scroll" scrollX>
-                { 
+                {
                   morePlayList.map((item) => {
                     return <View className="recommend-item" onClick={this.handlePlayClick.bind(this,item)} >
                     {
-                      item.sort === 1 &&  
+                      item.sort === 1 &&
                       <Button className="recommend-button" hoverClass="btn-hover" formType='submit'>
-                        <Image className='recommend-image' src={qlPro} style='width: 100%; height: 100%' mode='scaleToFill'/>   
+                        <Image className='recommend-image' src={qlPro} style='width: 100%; height: 100%' mode='scaleToFill'/>
                       </Button>
                     }
                     {
-                      item.sort === 2 &&  
+                      item.sort === 2 &&
                       <Button className="recommend-button" hoverClass="btn-hover" formType='submit'>
-                        <Image className='recommend-image' src={newYear} style='width: 100%; height: 100%' mode='scaleToFill'/>   
+                        <Image className='recommend-image' src={newYear} style='width: 100%; height: 100%' mode='scaleToFill'/>
                       </Button>
                     }
                     {
-                      item.sort === 3 &&  
+                      item.sort === 3 &&
                       <Button className="recommend-button" hoverClass="btn-hover" formType='submit'>
-                        <Image className='recommend-image' src={soul} style='width: 100%; height: 100%' mode='scaleToFill'/>   
+                        <Image className='recommend-image' src={soul} style='width: 100%; height: 100%' mode='scaleToFill'/>
                       </Button>
                     }
-                  </View> 
+                  </View>
                   })
                 }
               </ScrollView>

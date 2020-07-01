@@ -20,7 +20,7 @@ import Session from '@/services/session'
 import service from '@/services/service'
 import { appConfig } from '@/services/config'
 import { createCache } from '@/services/cache'
-import './index.less'
+import './demoZengYJ/index.less'
 import image_code from '@/assets/images/code.png'
 import image_versa from '@/assets/images/versa.png'
 import addTips from "@/assets/images/tips_addpic@2x.png";
@@ -75,7 +75,7 @@ interface Editor {
   }
 }))
 
-class Editor extends Component {
+class ZengYJDemo extends Component {
   config: Config = {
     navigationBarTitleText: '懒人抠图',
     disableScroll: true,
@@ -170,8 +170,8 @@ class Editor extends Component {
       },
     },
     drawBoard: {
-      width: '690rpx',
-      height: '920rpx'
+      width: '483rpx', ///690*0.7 920*0.7
+      height: '644rpx'
     },
     ableToShareToQZone: false
   }
@@ -482,8 +482,8 @@ class Editor extends Component {
     if ((detail.width / detail.height) >= (3 / 4)) {
       this.setState({
         drawBoard: {
-          width: '690rpx',
-          height: `${detail.height * 345 / detail.width * 2}rpx` //690 920
+          width: '483rpx',
+          height: `${detail.height * 345*0.7/ detail.width * 2}rpx` //690 920=》483 644
         }
       }, () => {
         setTimeout(() => {
@@ -493,8 +493,8 @@ class Editor extends Component {
     } else {
       this.setState({
         drawBoard: {
-          height: '920rpx',
-          width: `${detail.width * 460 / detail.height * 2}rpx`
+          height: '644rpx',
+          width: `${detail.width * 460*0.7 / detail.height * 2}rpx`
         }
       }, () => {
         setTimeout(() => {
@@ -537,7 +537,7 @@ class Editor extends Component {
   }
   // 人物
   onForegroundLoaded = (detail: object, item?: any) => {
-     //console.log('handleForegroundLoaded', detail, item) // item 就是foreground存的信息
+    //console.log('handleForegroundLoaded', detail, item) // item 就是foreground存的信息
     this.hideLoading()
     const { width, height } = detail
     this.setStateTarget('foreground', {
@@ -1559,15 +1559,15 @@ class Editor extends Component {
             </View>
             <View style={{ width: this.state.drawBoard.width, height: this.state.drawBoard.height }} className={`crop`} id="crop">
               {currentScene.type === 'recommend' &&
-                <View className="background-image">
-                  <Image
-                    src={currentScene.bgUrl}
-                    style="width:100%;height:100%"
-                    mode="scaleToFill"
-                    onLoad={this.handleBgLoaded}
-                    onClick={this.handleBackgroundClick}
-                  />
-                </View>
+              <View className="background-image">
+                <Image
+                  src={currentScene.bgUrl}
+                  style="width:100%;height:100%"
+                  mode="scaleToFill"
+                  onLoad={this.handleBgLoaded}
+                  onClick={this.handleBackgroundClick}
+                />
+              </View>
               }
               <Sticker
                 ref="foreground"
@@ -1636,30 +1636,30 @@ class Editor extends Component {
 
         <AuthModal />
         {result.show &&
-          <ResultModal
-            type='image'
-            image={{
-              url: result.shareImage.localUrl,
-            }}
-            cropHeight={this.state.drawBoard.height}
-            cropWidth={this.state.drawBoard.width}
-            renderButton={
-              <View className="btn-wrap">
-                <Button className="custom-button pink btn-1" hoverClass="btn-hover" id="btnNav" openType="share">继续分享</Button>
-                {this.state.ableToShareToQZone ?
-                  <View>
-                    <Button className="custom-button dark btn-2" hoverClass="btn-hover" onClick={this.publishToQzone}>同步到说说</Button>
-                    <Button className="custom-button dark btn-3" hoverClass="btn-hover" onClick={this.handlePlayAgain}>再玩一次</Button>
-                  </View> : <View>
-                    <Button className="custom-button dark btn-4" hoverClass="btn-hover" onClick={this.changeNav}>回到首页</Button>
-                  </View>}
-              </View>
-            }
-          />
+        <ResultModal
+          type='image'
+          image={{
+            url: result.shareImage.localUrl,
+          }}
+          cropHeight={this.state.drawBoard.height}
+          cropWidth={this.state.drawBoard.width}
+          renderButton={
+            <View className="btn-wrap">
+              <Button className="custom-button pink btn-1" hoverClass="btn-hover" id="btnNav" openType="share">继续分享</Button>
+              {this.state.ableToShareToQZone ?
+                <View>
+                  <Button className="custom-button dark btn-2" hoverClass="btn-hover" onClick={this.publishToQzone}>同步到说说</Button>
+                  <Button className="custom-button dark btn-3" hoverClass="btn-hover" onClick={this.handlePlayAgain}>再玩一次</Button>
+                </View> : <View>
+                  <Button className="custom-button dark btn-4" hoverClass="btn-hover" onClick={this.changeNav}>回到首页</Button>
+                </View>}
+            </View>
+          }
+        />
         }
       </View>
     )
   }
 }
 
-export default Editor as ComponentClass<PageOwnProps, PageState>
+export default ZengYJDemo as ComponentClass<PageOwnProps, PageState>

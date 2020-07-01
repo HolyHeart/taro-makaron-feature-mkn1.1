@@ -29,7 +29,7 @@ class Guide extends Component {
   componentDidMount () {
     try {
       const  value = Taro.getStorageSync('firstView')
-      console.log(value)
+      console.log('valuevaluevalue',value,'valuevaluevalue')
       if (value ==='yes' ||value ==='') {
         this.setState({
           open:true

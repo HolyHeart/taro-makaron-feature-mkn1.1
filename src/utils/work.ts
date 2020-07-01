@@ -186,7 +186,7 @@ const downloadRemoteImage = async (remoteUrl = '') => {
     return cacheImg.get(cacheKey)
   } else {
     try {
-      const result = await service.base.downloadFile(remoteUrl)
+      const result = await service.base.downloadFile(remoteUrl) //得到本地路径
       localImagePath = result.tempFilePath
     } catch (err) {
       console.log('下载图片失败', err)
@@ -215,14 +215,14 @@ const saveSourceToPhotosAlbum = async (options:saveSourceOptions) => {
   try {
     if (options.sourceType === 'video') {
       globalData.videoQQZonePublishLocalUrl = localUrl
-      await Taro.saveVideoToPhotosAlbum({filePath: localUrl})
+      await Taro.saveVideoToPhotosAlbum({filePath: localUrl}) //不支持网络存储的路径，所以一定要转为local
     } else {
       await Taro.saveImageToPhotosAlbum({filePath: localUrl})
     }
   //  console.log('保存成功')
    typeof options.onSuccess === 'function' && options.onSuccess()
   } catch (err) {
-    Taro.getSetting({
+    Taro.getSetting({//获取用户的当前设置
       success (setting) {
         const {authSetting} = setting
         if (!authSetting['scope.writePhotosAlbum']) {
@@ -255,7 +255,7 @@ const chooseImage = async ({onTap, onSuccess}:chooseImageOptions) => {
     itemList: [
       '拍摄人像照',
       '从相册选择带有人像的照片',
-    ],
+    ],//【显示操作菜单】
     success: function ({tapIndex}) {
       typeof onTap === 'function' && onTap(tapIndex)
       if (tapIndex === 0) {
@@ -300,7 +300,7 @@ const chooseImage = async ({onTap, onSuccess}:chooseImageOptions) => {
   }).catch(err => console.log(err))
 }
 const chooseImageBg = async ({onTap, onSuccess}:chooseImageOptions) => {
-  
+
   Taro.showActionSheet({
     itemList: ([
       '拍摄照片',
@@ -344,7 +344,7 @@ const chooseImageBg = async ({onTap, onSuccess}:chooseImageOptions) => {
           sourceType: ['album'],
         }).then(({tempFilePaths: [path]}) => {
           typeof onSuccess === 'function' && onSuccess(path)
-          
+
         })
       }
     }

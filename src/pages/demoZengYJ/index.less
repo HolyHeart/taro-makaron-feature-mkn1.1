@@ -11,22 +11,22 @@ page {
   box-sizing:border-box;
   display:flex;
   flex-direction:column;
-  align-items:center;
-  justify-content:center;
+  align-items:center;   /*侧轴*/
+  justify-content:center; /*主轴*/
   .pic-section {
     position:relative;
     width:690rpx;
     height: 920rpx;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     .raw {
       position: absolute;
       left: 50%;
       transition:all 0.2s;
       top: 50%;
-      width:690rpx;
-      height:920rpx;
+      width:483rpx;
+      height:644rpx;
       transform: translateX(-50%) translateY(-50%);
       &.hidden {
         opacity: 0;
@@ -74,7 +74,7 @@ page {
     visibility:none;
   }
   .btn-wrap {
-    width:690rpx;
+    width:483rpx;
     .btn-1 {
       margin-top: 40rpx;
     }

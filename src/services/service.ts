@@ -60,20 +60,25 @@ export const base = {
     // 上传图片
     let imageType = type || 'png'
     const token = await base.getUploadToken()
+    console.log(token,'this is  token this is token'); // 但是缓存中已经有了-上传图片后就有token
     const imgName = tool.createImgName(16)
     const prefix = token.prefix // 'upload/prod/image/'
     token.params.key = `${prefix}${imgName}.${imageType}`
-    let { data } = await Taro.uploadFile({
+    let { data } = await Taro.uploadFile({   //【获得token将图片上传】//data是服务器返回的数据
       filePath: localFilePath,
       name: 'file',
       url: token.host,
       formData: token.params
     })
+    console.log(data,'this is serveice.ts/upload after tokens data')
+
     if (typeof data === 'string') {
       try {
         let result = JSON.parse(data)
+        console.log(result,'this is result just parsing from data')
         result.host = 'https://static01.versa-ai.com/'
         result.url = result.host + result.picurl
+        console.log(result.url,'checking to see complete result.url')
         return result
       } catch (err) {
         console.log('upload image string parse to json fail !!!')
@@ -254,7 +259,10 @@ export const core = {
     if (typeof options.beforeSeparate === 'function') {
       options.beforeSeparate(remoteImageUrl)
     }
+
+    console.log(remoteImageUrl,'this is part of remoteImgaeUrl initSeperate ==================')//部分url
     const checkResult = await core.checkImage(remoteImageUrl)
+
     if(checkResult.status==='success'){
        if(checkResult.result.result.suggestion==='block'){
          return {
@@ -262,16 +270,17 @@ export const core = {
          }
        }
     }
-    console.log(checkResult)
+    console.log(checkResult,'this is checkResult checkResult checkResult=================')
+
     // 最后进行人景分离
-    let separateData
+    let separateData //得到的分割结果
     try {
       if (options.loading) {
         typeof options.showLoading === 'function' && options.showLoading()
       }
       if (options.type === 0 || options.type === 1) {
         separateData = await core.segment(remoteImageUrl, options.type)
-      } else {
+      } else {                                                                    //这里是-1
         separateData = await core.segment(remoteImageUrl)
       }
       if (options.loading) {
@@ -290,9 +299,12 @@ export const core = {
       return
     }
     // 存储分割缓存
+    console.log(separateData.result,'this is separateData.result==============')
+
     return cacheSegment.set(cacheKey, {
       ...separateData.result
     })
+
   },
   filterConvertVideo: function (videoParams: string = '') {
     let postData = {

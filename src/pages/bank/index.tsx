@@ -176,22 +176,30 @@ class Editor extends Component {
   THREE: any
 
   componentDidMount() {
+    // console.log(THREE.WebGLRenderer, 111)
+    // const cvsCtx = Taro.createCanvasContext('c', this.$scope)
+    // console.log(cvsCtx, 222)
+    // const render = new THREE.WebGLRenderer({
+    //   context: cvsCtx,
+    //   antialias: true,
+    // })
+
     const query = Taro.createSelectorQuery().in(this.$scope)
     query
-      .select('.canvas')
-      .node()
-      .exec((res) => {
+      .select('#c')
+      .node((res) => {
         // const canvas = res[0].node
         // console.log(res)
         // const THREE = createScopedThreejs(canvas)
         // renderExample(canvas, THREE)
         // this.THREE = THREE
         console.log(111, res)
-        const canvas = THREE.global.registerCanvas(res[0].node)
+        const canvas = THREE.global.registerCanvas(res.node)
         renderExample(canvas, THREE)
         this.THREE = THREE
         console.log(123)
       })
+      .exec()
     console.log(0)
   }
 
@@ -214,6 +222,7 @@ class Editor extends Component {
           }}
           canvasId="poster"
           className="canvas"
+          id="c"
         />
       </View>
     )

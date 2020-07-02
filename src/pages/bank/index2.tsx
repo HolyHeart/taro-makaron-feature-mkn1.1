@@ -197,6 +197,7 @@ class Editor extends Component {
         const canvas = THREE.global.registerCanvas(res.node)
         renderExample(canvas, THREE)
         this.THREE = THREE
+        console.log(THREE.ObjectLoader, 111)
         console.log(123)
       })
       .exec()

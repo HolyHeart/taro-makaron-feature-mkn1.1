@@ -1,5 +1,5 @@
 import { OrbitControls } from './jsm/controls/OrbitControls'
-import gLTF from './jsm/loaders/GLTFLoader'
+import getOBJLoader from './jsm/loaders/OBJLoader.js'
 import url from '../assets/card.gltf'
 
 export default function renderExample1(canvas, THREE) {
@@ -21,21 +21,23 @@ export default function renderExample1(canvas, THREE) {
     renderer.setPixelRatio(wx.getSystemInfoSync().pixelRatio)
     renderer.setSize(canvas.width, canvas.height)
 
-    let GLTFLoader = gLTF(THREE)
+    const manager = new THREE.LoadingManager()
+
+    let OBJLoader = getOBJLoader(THREE)
+    let loader = new OBJLoader(manager)
     var geometry = new THREE.BoxGeometry(10, 10, 10)
-    const gltfLoader = new GLTFLoader()
-    gltfLoader.load(
-      'https://activity-dev.versa-ai.com/cardB.gltf',
-      (gltf) => {
-        gltf.scene.traverse(function (child) {
+    loader.load(
+      'https://activity-dev.versa-ai.com/card.obj',
+      function (obj) {
+        let object = obj
+        obj.traverse(function (child) {
           if (child.isMesh) {
             child.material.emissive = child.material.color
             child.material.emissiveMap = child.material.map
           }
         })
-        const root = gltf.scene
-        console.log(root, 123123)
-        scene.add(root)
+        console.log(obj, 666666)
+        scene.add(object)
       },
       (e) => {
         console.log(e)
@@ -50,7 +52,7 @@ export default function renderExample1(canvas, THREE) {
     let helper = new THREE.GridHelper(1000, 100)
     scene.add(helper)
 
-    camera.position.z = 30
+    camera.position.z = 60
   }
   function animate() {
     cube.rotation.x += 0.01

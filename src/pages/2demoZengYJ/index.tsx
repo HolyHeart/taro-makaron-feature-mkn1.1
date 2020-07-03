@@ -1668,7 +1668,61 @@ class Bank extends Component {
                 />
               </View>
             </View>
+
+            <View className='subSection'>
+              <View className="hideIcon">隐藏卡面图标</View>
+              <View className="buttonPart">
+                <Button style='flex:1;z-index:2' id='addPhoto' openType="getUserInfo" className="custom-button pink"
+                        hoverClass="btn-hover" onGetUserInfo={this.todo}>{this.state.chooseText}</Button>
+                {Taro.getStorageSync('saveNumber').number === 0 ?
+                  <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover"
+                          onClick={this.handleOpenResult} openType="share">分享并保存</Button>
+                  : <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover"
+                            onClick={this.saveImg}>保存</Button>}
+              </View>
+            </View>
+
+            {this.state.isshow === true ? <Dialog
+              content={this.state.content}
+              cancelText={this.state.cancelText}
+              confirmText={this.state.confirmText}
+              isshow={this.state.isshow}
+              renderButton={
+                <View className="wx-dialog-footer" style="display:flex;margin-bottom:30rpx">
+                  <Button className="wx-dialog-btn" onClick={this.handelCancel} style="flex:1">
+                    {this.state.cancelText}
+                  </Button>
+                  <Button className="wx-dialog-btn" onClick={this.handelVideoAd} style="flex:1">
+                    {this.state.confirmText}
+                  </Button>
+                </View>
+              }
+            /> : ''}
           </View>
+
+          <View className="subMain">
+            <View className="addSub">...其他可定制卡片...</View>
+            <View className="pictureList">
+              {this.state.sceneList.map((item) => {
+                return <Image src={item.bgUrl}/>
+              })}
+            </View>
+          </View>
+
+          <View class="canvas-wrap">
+            <Canvas
+              disable-scroll={true}
+              style={`width: ${frame.width * canvas.ratio}px; height: ${frame.height * canvas.ratio}px;`}
+              canvasId={canvas.id}/>
+          </View>>
+
+          <Loading visible={loading}/>
+
+          <View className='newGuide' style={{display: this.state.hasGuide === false ? 'none' : 'block'}}>
+            <Image src={addTips} alt="" className='tips' style={{top: this.state.guiderTop + 'px'}}/>
+          </View>
+
+          {/*<AuthModal/>*/}
         </View>
       </ScrollView>
     )

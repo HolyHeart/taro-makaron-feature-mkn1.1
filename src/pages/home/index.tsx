@@ -389,7 +389,7 @@ class Home extends Component {
           } else if (sceneType === 4) {
             Taro.navigateTo({ url: '/pages/crop/index' })
           } else {
-            Taro.navigateTo({ url: '/pages/editor/index' })
+            Taro.navigateTo({ url: '/pages/2demoZengYJ/index' })
           }
         }
       })

@@ -1557,9 +1557,9 @@ class zengyjModel2 extends Component {
           <View className="addTitle">中国银行&&马卡龙</View>
 
           <View className="pic-section">
-            <View className={`raw ${(foreground.remoteUrl && foreground.loaded) ? 'hidden' : ''}`} style={{ width: this.state.drawBoard.width, height: this.state.drawBoard.height }}>
-              <Image src={rawImage.localUrl} style="width:100%;height:100%" mode="aspectFit" />
-            </View>
+            {/*<View className={`raw ${(foreground.remoteUrl && foreground.loaded) ? 'hidden' : ''}`} style={{ width: this.state.drawBoard.width, height: this.state.drawBoard.height }}>*/}
+              {/*<Image src={rawImage.localUrl} style="width:100%;height:100%" mode="aspectFit" />*/}
+            {/*</View>*/}
             <View style={{ width: this.state.drawBoard.width, height: this.state.drawBoard.height }} className={`crop`} id="crop">
               {currentScene.type === 'recommend' &&
               <View className="background-image">
@@ -1582,30 +1582,29 @@ class zengyjModel2 extends Component {
                 onTouchstart={this.handleForegroundTouchstart}
                 onTouchend={this.handleForegroundTouchend}
               />
-              {coverList.map(item => {
-                return <Sticker
-                  key={item.id}
-                  url={item.remoteUrl}
-                  stylePrams={item}
-                  framePrams={frame}
-                  onChangeStyle={this.handleChangeCoverStyle}
-                  onImageLoaded={this.onCoverLoaded}
-                  onTouchstart={this.handleCoverTouchstart}
-                  onTouchend={this.handleCoverTouchend}
-                  onDeleteSticker={this.handleDeleteCover.bind(this, item)}
-                />
-              })}
+              {/*{coverList.map(item => {*/}
+                {/*return <Sticker*/}
+                  {/*key={item.id}*/}
+                  {/*url={item.remoteUrl}*/}
+                  {/*stylePrams={item}*/}
+                  {/*framePrams={frame}*/}
+                  {/*onChangeStyle={this.handleChangeCoverStyle}*/}
+                  {/*onImageLoaded={this.onCoverLoaded}*/}
+                  {/*onTouchstart={this.handleCoverTouchstart}*/}
+                  {/*onTouchend={this.handleCoverTouchend}*/}
+                  {/*onDeleteSticker={this.handleDeleteCover.bind(this, item)}*/}
+                {/*/>*/}
+              {/*})}*/}
             </View>
           </View>
 
-          <MarginTopWrap config={{ large: 60, small: 40, default: 20 }} >
-            <View style="display:flex;margin-top:20rpx">
+          <View className='subSection' style="display:flex;margin-top:22px">
+              <View className="hideIcon">隐藏图标</View>
               <Button style='flex:1;z-index:2' id='addPhoto' openType="getUserInfo" className="custom-button pink" hoverClass="btn-hover" onGetUserInfo={this.todo}>{this.state.chooseText}</Button>
               {Taro.getStorageSync('saveNumber').number === 0 ?
                 <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.handleOpenResult} openType="share">分享并保存</Button>
                 : <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.saveImg}>保存</Button>}
-            </View>
-          </MarginTopWrap>
+          </View>
           {this.state.isshow === true ? <Dialog
             content={this.state.content}
             cancelText={this.state.cancelText}
@@ -1638,28 +1637,7 @@ class zengyjModel2 extends Component {
         </View>
 
         <AuthModal />
-        {result.show &&
-        <ResultModal
-          type='image'
-          image={{
-            url: result.shareImage.localUrl,
-          }}
-          cropHeight={this.state.drawBoard.height}
-          cropWidth={this.state.drawBoard.width}
-          renderButton={
-            <View className="btn-wrap">
-              <Button className="custom-button pink btn-1" hoverClass="btn-hover" id="btnNav" openType="share">继续分享</Button>
-              {this.state.ableToShareToQZone ?
-                <View>
-                  <Button className="custom-button dark btn-2" hoverClass="btn-hover" onClick={this.publishToQzone}>同步到说说</Button>
-                  <Button className="custom-button dark btn-3" hoverClass="btn-hover" onClick={this.handlePlayAgain}>再玩一次</Button>
-                </View> : <View>
-                  <Button className="custom-button dark btn-4" hoverClass="btn-hover" onClick={this.changeNav}>回到首页</Button>
-                </View>}
-            </View>
-          }
-        />
-        }
+
       </View>
     )
   }

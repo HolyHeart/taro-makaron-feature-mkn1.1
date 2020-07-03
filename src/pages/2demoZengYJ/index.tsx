@@ -1691,7 +1691,9 @@ class zengyjModel2 extends Component {
 
           <View className="subMain">
             <View className="addSub">...其他可定制卡片...</View>
-            {this.state.bottom}
+            {this.state.BottomPicture.map(item=>{
+              return<Image></Image>
+            })}
           </View>
 
           <View class="canvas-wrap">

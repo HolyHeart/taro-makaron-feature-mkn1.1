@@ -19,23 +19,23 @@ page {
     margin-bottom:  79px;
     position: relative;
     display: flex;
-    height:98px;
-    font-size:98px ;
+    height:41.6px;
+    font-size:41.6px ;
     text-align: center;
     justify-content: center;
     border: 1px solid black;
   }
   .pic-section {
     position:relative;
-    width:700px;
-    height: 400rpx;
+    width:600px;
+    height: 452px;
     display: flex;
     justify-content: center;
     align-items:flex-start;
     .crop {
       position:relative;
       width:100%;
-      height:400rpx;
+      height:380px;
       // background: #ccc;
       transition:all 0.2s;
       overflow: hidden;
@@ -59,17 +59,41 @@ page {
       }
     }
   }
-  .hideIcon{
-    align-items: center;
-    magrin: 0 auto;
-    position: relative;
-    display: flex;
-    height:34rpx;
-    font-size:34rpx ;
-    text-align: center;
-    justify-content: center;
-    border: 1px solid black;
+  .subSection{
+    margin-top: 22px;
+      .hideIcon{
+        align-items: center;
+        magrin: auto 0;
+        position: relative;
+        display: flex;
+        height:34px;
+        font-size:34px ;
+        text-align: center;
+        justify-content: center;
+        border: 1px solid black;
+      }
+      .buttonPart{
+        display:flex;
+        margin-top:25px;
+      }
+    }
   }
+
+  .subMain{
+    margin-top: 118px;
+    .addSub{
+      align-items: center;
+      position: relative;
+      display: flex;
+      height:34px;
+      font-size:34px ;
+      text-align: center;
+      justify-content: center;
+      border: 1px solid black;
+    }
+  }
+
+
   .button-section {
     margin-top: 20px;
     &.high {
@@ -103,7 +127,6 @@ page {
       margin-top: 30rpx;
     }
   }
-}
 .newGuide{
   position: absolute;
   width: 100%;

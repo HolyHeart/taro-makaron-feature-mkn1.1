@@ -1,73 +1,63 @@
-import { ComponentClass } from 'react'
-import Taro, { Component, Config } from '@tarojs/taro'
-import { View, Button, Image, Canvas } from '@tarojs/components'
-import { connect } from '@tarojs/redux'
 
-import { getSystemInfo } from '@/model/actions/global'
-import tool from '@/utils/tool'
-import work from '@/utils/work'
+import { ComponentClass } from 'react'
+import Taro, { Component, Config, base64ToArrayBuffer } from '@tarojs/taro'
+import { View, Form, Button, Image, Video, Canvas,ScrollView } from '@tarojs/components'
+import { connect } from '@tarojs/redux'
+import originalImageIcon from '@/assets/images/originalImage@2x.png'
 import Title from '@/components/Title'
 import CustomIcon from '@/components/Icon'
-import CustomBg from '@/components/CustomBg'
-import Sticker from '@/components/Sticker'
-import SceneList from '@/components/SceneList'
-import Loading from '@/components/Loading'
-import MarginTopWrap from '@/components/MarginTopWrap'
+import RecommendList from '@/components/RecommendList'
+// import MorePlayList from '@/components/MorePlayList'
 import AuthModal from '@/components/AuthModal'
-import ResultModal from '@/components/ResultModal'
-import globalData from '@/services/global_data'
+import BackApp from '@/components/BackApp'
+import { appConfig } from '@/services/config'
 import Session from '@/services/session'
 import service from '@/services/service'
-import { appConfig } from '@/services/config'
-import { createCache } from '@/services/cache'
-import './demoZengYJ/index.less'
-import image_code from '@/assets/images/code.png'
-import image_versa from '@/assets/images/versa.png'
-import addTips from "@/assets/images/tips_addpic@2x.png";
-import Dialog from '@/components/Dialog'
+import globalData from '@/services/global_data'
+import tool from '@/utils/tool'
+import work from '@/utils/work'
+import './index.less'
+import { getSystemInfo } from '@/model/actions/global'
 
-// const mock_path = 'https://static01.versa-ai.com/upload/783272fc1375/999deac02e85f3ea.png'
-// const mock_segment_url = 'https://static01.versa-ai.com/images/process/segment/2019/01/14/b4cf047a-17a5-11e9-817f-00163e001583.png'
+// import ShareDialog from '@/components/ShareDialog'
+import like from '@/assets/images/like@3x.png'
+import isliked from '@/assets/images/liked@3x.png'
+import wx from '@/assets/images/wxicon@3x.png'
+import pyq from '@/assets/images/pyq@3x.png'
+import titleImage from '@/assets/images/maka.png'
+import soul from '@/assets/images/soul.jpg'
+import newYear from '@/assets/images/newYear.jpg'
+import qlPro from '@/assets/images/qlpro.jpg'
+import makaron from '@/assets/images/MAKARON@2x.png'
+// import session from 'dist/services/session'
 
+// const demo = 'https://static01.versa-ai.com/upload/201bae375f8b/18e62d91-fc04-46c6-8f21-7224b53eb4b7.mp4'
 type PageStateProps = {
   global: {
     system: object
   }
 }
 
+
+// type PageDispatchProps = {}
 type PageDispatchProps = {
   getSystemInfo: (data: object) => void
 }
 
 type PageOwnProps = {}
 
-type PageState = {
-  foreground: {
-    remoteUrl: string,
-    zIndex: number,
-    width: number,
-    height: number,
-    x: number,
-    y: number,
-    rotate: number,
-    originWidth: number,
-    originHeight: number,
-    autoWidth: number,
-    autoHeight: number,
-    autoScale: number,
-    fixed: boolean,
-    visible: boolean
-  },
-  coverList: Array<object>
-}
+type PageState = {}
 
 type IProps = PageStateProps & PageDispatchProps & PageOwnProps
 
-interface Editor {
+interface Share {
   props: IProps;
 }
 
-@connect(({ global }) => ({
+// @connect(({ }) => ({
+// }), (dispatch) => ({
+// }))
+connect(({ global }) => ({
   global
 }), (dispatch) => ({
   getSystemInfo(data) {
@@ -75,93 +65,88 @@ interface Editor {
   }
 }))
 
-class ZengYJDemo extends Component {
+class demoZengYJ extends Component {
   config: Config = {
-    navigationBarTitleText: '懒人抠图',
-    disableScroll: true,
-    enablePullDownRefresh: false
+    navigationBarTitleText: '懒人抠图'
   }
-
+  userInfo:{}
   state = {
-    rawImage: {
-      localUrl: '',
-      remoteUrl: ''
-    },
-    content: '',
+    titleHeight: 0,
+    isFromApp: false, // 作品是否是从APP分享过来的
+    isGoAPP: false, // 是否有去往APP按钮
+    isXcx: false,  // 判断作品是否是从小程序分享过来的
+    isPlay: false, // 判断按钮是否为更多好玩
+    isWorksId: true, // 判断从APP分享过来的作品是否带有参数worksId
+    shareSourceType: 'image', // 'video' 'image'
+    shareSource: '',
+    originalCompleteImageUrl: '',
+    videoPoster: '',
+    // width: 690,
+    // height: 920,
+    recommendList: [],
+    themeId: '',
+    sceneId: '',
+    themeData: {},
+    sceneType: 0,
     isshow: false,
-    cancelText: '取消',
-    confirmText: '看广告',
+    confirmText: '好的，收下了',
+    saveTitlePic: '图片已保存到手机相册',
+    saveTitleVideo: '视频海报已经保存到手机相册',
+    savePoint: false,
+    type: 'image',
     frame: {
-      width: 0,
-      height: 0,
+      width: 278,
+      height: 429,
       left: 0,
       top: 0,
-    },
-    customBg: {
-      localUrl: '',
-      remoteUrl: '',
-      originWidth: 0,
-      originHeight: 0,
-      autoScale: 1,
-      autoWidth: 0,
-      autoHeight: 0,
-      width: 0,
-      height: 0,
-      x: 0,
-      y: 0,
-      rotate: 0,
-    },
-    chooseText: '添加人像照片',
-    foreground: {  //存储切图信息
-      id: 'foreground',
-      remoteUrl: '',
-      zIndex: 2,
-      width: 0,
-      height: 0,
-      x: 0,
-      y: 0,
-      rotate: 0,
-      originWidth: 0, // 原始宽度
-      originHeight: 0, // 原始高度
-      autoWidth: 0, // 自适应后的宽度
-      autoHeight: 0, // 自适应后的高度
-      autoScale: 0, // 相对画框缩放比例
-      fixed: false, // 是否固定
-      isActive: true, // 是否激活
-      loaded: false, // 是否加载完毕
-      visible: true, // 是否显示
-    },
-    coverList: [  //存储边框信息
-      // {
-      // id: 'cover-01',
-      // remoteUrl: 'https://static01.versa-ai.com/images/process/segment/2019/01/07/a102310e-122a-11e9-b5ef-00163e023476.png',
-      // originHeight: 2440,
-      // originWidth: 750,
-      // autoHeight: 244,
-      // autoScale: 0.1,
-      // autoWidth: 75,
-      // width: 57.378244033967235,
-      // height:186.6705539238401,
-      // x: 185.1442062300867,
-      // y: 155.66472303807996,
-      // rotate: -25.912119928692746,
-      // zIndex: 3,
-      // fixed: false, // 是否固定
-      // isActive: false, // 是否激活
-      // visible: true, // 是否显示
-      // }
-    ],
-    sceneList: [],
-    guiderTop: '',
-    hasGuide: false,
-    currentScene: {
-      type: 'recommend', // 'custom' 'recommend'
+    } ,
+    dialogFooter:{
+      width:258,
+      height:74,
     },
     canvas: {
       id: 'shareCanvas',
       ratio: 3
     },
-    loading: false,
+    checkoutImage: '长按识别二维码查看',
+    checkoutVideo: '长按识别二维码播放视频',
+    logoName: 'Makaron',
+    liked: 0,
+    likeNumber: 0,
+    user: {
+      userImage: '',
+      userName: '',
+      // likeNumber: 0,
+      uid: '',
+      worksId:'',
+      // liked: 0,
+      templateCode: '',
+      shareSource:'',
+      shareSourceWidth:0,
+      shareSourceHeight:0,
+      firstFrame:'',
+      userToken: '',
+      sessionId: '',
+      deviceId:'',
+      worksType: 'pic',
+      type:'pic',
+      caluWidth: 100,
+      caluHeight: 100
+    },
+    bgImageWidth: 335,
+    bgImageHeight: 235,
+    dialogImageWidth: 258,
+    dialogImageHeight: 345,
+    showDialogWidth: 258,
+    showDialogHeight: 345,
+    userXcx: {
+      //   userImage: '',
+      //   userName: '',
+      //   likeNumber: 0,
+      //   uid: '',
+      //   worksId: '',
+      //   liked: 0
+    },
     result: {
       show: false,
       shareImage: {
@@ -169,50 +154,168 @@ class ZengYJDemo extends Component {
         localUrl: '',
       },
     },
-    drawBoard: {
-      width: '483rpx', ///690*0.7 920*0.7
-      height: '644rpx'
+    morePlayList: [{
+      themeId: 'wxe1faaac6a4477320',
+      recommendShowUrl:'https://static01.versa-ai.com/upload/f8b8cb0ff2e8/f0348bbf-6667-46d4-96eb-f34869a43867.png',
+      sort:1
     },
-    ableToShareToQZone: false
+      {
+        themeId:'wx37543a814ef773a5',
+        recommendShowUrl:'https://static01.versa-ai.com/upload/028e459b3c1a/1a48a5c5-b26a-49d1-bbf3-c597888c0f5a.png',
+        sort:2
+      },{
+        themeId:'wx21630a5d4651096a',
+        recommendShowUrl:'https://static01.versa-ai.com/upload/028e459b3c1a/1a48a5c5-b26a-49d1-bbf3-c597888c0f5a.png',
+        sort:3
+      }],
+    qrCode:'',
+    hotMarginTop: 0,
   }
 
   app = Taro.getApp()
-
-  // 全局主题数据
-  themeData = {
-    sceneList: [],
-    rawCoverList: [], // 原始贴纸数据
-  }
-
-  cache = {
-    foreground: createCache('foreground'),
-    cover: createCache('cover'),
-    source: createCache('source'),
-  }
-
   isSaving = false // 是否正在保存
+
   saveNumber = {
     number: 0,
     date: 0,
   }
-  componentWillMount() { }
-  componentDidMount() {
-    wx.cloud.init()
-    this._initPage()
-    this.canIShareToQQZone()
-    if (Taro.getStorageSync('saveNumber') === '' || Taro.getStorageSync('saveNumber').number === 0) {
-      Taro.setStorageSync('saveNumber', this.saveNumber)
-    }
-    const date1 = new Date()
 
-    if (date1.getTime() - Taro.getStorageSync('saveNumber').date > 86400000) {
-      this.saveNumber = {
-        number: 0,
-        date: date1.getTime()
-      }
-      Taro.setStorageSync('saveNumber', this.saveNumber)
+  componentWillMount() {
+    // 兼容跳转使用
+    // console.log('index page willMount', this.$router.params)
+    // let {from = 'app', remoteURL = ''} = this.$router.params
+    // const data = {
+    //   from,
+    //   remoteURL
+    // }
+    // const path = tool.formatQueryUrl('/pages/share/index', data)
+    // Taro.redirectTo({url: path})
+    const systemInfo = Taro.getSystemInfoSync()
+    if (systemInfo.screenHeight > 568) {
+      this.setState({
+        hotMarginTop: 50
+      })
     }
+    // console.log('system',systemInfo)
+    if (/iphone x/i.test(systemInfo.model)) {
+      systemInfo.isIphoneX = true
+    } else {
+      systemInfo.isIphoneX = false
+    }
+    if (/iphone s plus/i.test(systemInfo.model)) {
+      this.setState({
+        hotMarginTop: 0,
+        titleHeight: 0
+      })
+    }
+    let totalTopHeight = 0
+    if (systemInfo.model.indexOf('iPhone X') !== -1) {
+      totalTopHeight = 40
+    } else if (systemInfo.model.indexOf('iPhone') !== -1) {
+      totalTopHeight = 0
+    }
+    this.setState({
+      titleHeight: totalTopHeight
+    })
   }
+
+
+  componentDidMount() {
+    //console.log(1)
+    this._initPage()
+    // Taro.showToast({
+    //   title:this.$router.params.originalCompleteImageUrl
+    // })
+  }
+
+
+  singleWorkList = async () => {
+    const singleWorkData = await service.share.singleWorkList(this.state.user.worksId)
+
+    console.log(singleWorkData,'this is singleWorkData')
+
+    const sessionId = Taro.getStorageSync('session')
+    const deviceId = Taro.getStorageSync('deviceId')
+    if (singleWorkData.status === 'success') {
+      const data = singleWorkData.result.result
+      let imageUrl
+      let imageFirstUrl
+      if ((data.renderPictureInfo.url).indexOf('https') === -1) {
+        imageUrl = (data.renderPictureInfo.url).replace(/^http/,'https')
+        if(data.renderPictureInfo.firstFrame) {
+          imageFirstUrl = (data.renderPictureInfo.firstFrame).replace(/^http/,'https')
+        }
+        if(data.worksType === 'video' && data.renderPictureInfo.type === 'pic') {
+          imageUrl = (data.renderPictureInfo.url).replace(/^http/,'https')
+          imageFirstUrl = (data.renderPictureInfo.url).replace(/^http/,'https')  + '?x-oss-process=video/snapshot,t_0,f_jpg,w_0,h_0'
+        }
+      } else {
+        imageUrl = data.renderPictureInfo.url
+        if(data.renderPictureInfo.firstFrame) {
+          imageFirstUrl = data.renderPictureInfo.firstFrame
+        }
+        if(data.worksType === 'video' && data.renderPictureInfo.type === 'pic') {
+          imageUrl = data.renderPictureInfo.url
+          imageFirstUrl = data.renderPictureInfo.url + '?x-oss-process=video/snapshot,t_0,f_jpg,w_0,h_0'
+        }
+      }
+      if (typeof(data.author.avatar)!== 'undefined' && (data.author.avatar).indexOf('https') === -1 ) {
+        var userImage = (data.author.avatar).replace(/^http/,'https')
+      } else {
+        var userImage = data.author.avatar
+      }
+      this.userInfo = Taro.getStorageSync('userInfo')
+      let liked
+      if( typeof(this.$router.params.isLiked) === 'undefined') {
+        liked = data.liked
+      } else {
+        liked = parseInt(this.$router.params.isLiked)
+      }
+      const shareSourceWidth = data.renderPictureInfo.imageWidth
+      const shareSourceHeight = data.renderPictureInfo.imageHeight
+      const caluWidth = shareSourceWidth * this.state.bgImageHeight / shareSourceHeight
+      const caluHeight = shareSourceHeight * this.state.bgImageWidth / shareSourceWidth
+      this.setState({
+        user: {
+          userImage: userImage,
+          userName: data.author.nickname,
+          uid: data.uid,
+          worksId: data.worksId,
+          shareSource : imageUrl,
+          shareSourceWidth:shareSourceWidth,
+          shareSourceHeight:shareSourceHeight,
+          firstFrame: imageFirstUrl,
+          templateCode: data.schema,
+          sessionId: sessionId,
+          worksType: data.worksType,
+          type: data.renderPictureInfo.type,
+          deviceId: deviceId,
+          caluWidth: caluWidth,
+          caluHeight: caluHeight
+        },
+        liked: liked,
+        likeNumber: data.likedAmount,
+        isWorksId: true
+      }, () => {
+        this.onLoad()
+        this.getRect()
+      })
+    }
+    this.getRecommendList()
+  }
+
+  getRect = () => {
+    Taro.createSelectorQuery().select('#positionImage').boundingClientRect(
+      (rect)=>{
+        const width = rect.width
+        const height = rect.height
+        this.setState({
+          bgImageWidth: width,
+          bgImageHeight: height
+        })
+      }).exec()
+  }
+
   componentWillReceiveProps(nextProps) {
     // console.log(this.props, nextProps)
   }
@@ -220,38 +323,25 @@ class ZengYJDemo extends Component {
   componentDidShow() { }
   componentDidHide() { }
   onShareAppMessage(res) {
-    // if (res.from === 'button') {
-    //   console.log('页面按钮分享', res.target)
-    // }
-    this.app.aldstat.sendEvent('生成页分享', { '场景名': this.state.currentScene.sceneName, '场景Id': this.state.currentScene.sceneId })
-    const { currentScene, result = {} } = this.state
-    const { shareImage = {} } = result
-    const shareContent = currentScene.shareContent || ''
-    const shareImageUrl = `${shareImage.remoteUrl}?x-oss-process=image/resize,m_pad,h_420,w_525`
-    const data = {
-      shareSource: shareImage.remoteUrl,
-      themeId: globalData.themeId || '',
-      sceneId: currentScene.sceneId || '',
+    const shareContent = '给你推荐一个好作品'
+    let url = ''
+    if(this.state.user.worksType === 'pic') {
+      url = `${this.state.user.shareSource}?x-oss-process=image/resize,m_pad,h_420,w_525`
+    } else if (this.state.user.worksType === 'video') {
+      url = `${this.state.user.firstFrame}?x-oss-process=image/resize,m_pad,h_420,w_525`
+      console.log('url',url)
+    } else {
+      url = `${this.state.user.shareSource}?x-oss-process=image/resize,m_pad,h_420,w_525`
     }
-
+    // const url = `${this.state.user.shareSource}?x-oss-process=image/resize,m_pad,h_420,w_525`
     const { userInfo = {} } = globalData
-    const path = `/pages/index?shareSource=${shareImageUrl}`
-    // console.log('url',path)
-    // const title = `@${userInfo.nickName}：${shareContent}`
-    if (!shareImage.remoteUrl) {
-      console.log('shareImage.remoteUrl', shareImage.remoteUrl)
-      return {
-        // title: title,
-        path: '/pages/home/index',
-        imageUrl: currentScene.thumbnailUrl,
-      }
-    }
-    // console.log('789',title, path, shareImageUrl)
-    // Taro.navigateTo({ url: `/pages/index?shareSource=${shareImageUrl}` })
+    const title = `${shareContent}`
+    const path = `pages/index?worksId=${this.state.user.worksId}&from=app&isGoAPP=${!this.state.isGoAPP}&isPlay=${this.state.isPlay}&isLiked=${this.state.liked}`
+    // Taro.navigateTo({ url: `/pages/index?worksId=${this.state.user.worksId}&from=app&isGoAPP=${!this.state.isGoAPP}&isPlay=${this.state.isPlay}&isLiked=${this.state.liked}` })
     return {
-      // title: title,
-      path: path,
-      imageUrl: shareImageUrl,
+      title: title,
+      path: path ,
+      imageUrl: url ,
       success: () => {
         console.log('分享成功')
       },
@@ -259,552 +349,397 @@ class ZengYJDemo extends Component {
   }
 
   _initPage = async () => {
-    // this.initRawImage()
     await Session.set()
-    this.initSceneData(() => {
-      const firstViewEditor = Taro.getStorageSync('firstViewEditor')
-      if (!firstViewEditor) {
-        const query = wx.createSelectorQuery()
-        query.select('#addPhoto').boundingClientRect()
-        query.selectViewport().scrollOffset()//获取滚动区域，
-        query.exec((res) => {
+    this.processLoadData()
+    // 提前获取主题信息
+    this.getThemeData((themeData = {}) => {
+      this.setState({
+        themeData,
+        sceneType: themeData.sceneType
+      })
+    })
+  }
+
+  processLoadData = () => {
+    console.log('share page index', this.$router.params) // 输出 { id: 2, type: 'test' }
+    let isFromApp,shareSourceType = 'image', videoPoster = '', shareVideoInfo = { width: 690, height: 920, }
+    let { shareSource, themeId, sceneId, from, remoteURL = '', width = 690, height = 920, originalCompleteImageUrl, workID} = this.$router.params
+    if (from === 'app') {
+      isFromApp = true
+      if (remoteURL.indexOf('versa-ai.com') > -1) {
+        shareSource = remoteURL
+        if(typeof(workID) === 'undefined') {
           this.setState({
-            hasGuide: true,
-            guiderTop: res[0].top - 77 - 15
-          })
-        })
-        Taro.setStorageSync('firstViewEditor', true)
-      }
-    })
-  }
-
-
-  // qq空间分享兼容性检测
-  canIShareToQQZone = () => {
-    if (wx.canIUse('openQzonePublish')) {
-      console.log('🔥🔥🔥可以分享到空间')
-      this.setState({
-        ableToShareToQZone: true
-      })
-    } else {
-      console.log('微信版本小程序不支持分享到QQ空间')
-    }
-  }
-
-
-  // 公共方法
-  pageToHome = () => {
-    Taro.navigateBack({ delta: 1 })
-  }
-  showLoading = () => {
-    this.setState({
-      loading: true
-    })
-  }
-  hideLoading = () => {
-    this.setState({
-      loading: false
-    })
-  }
-  setStateTarget = (key, value = {}, callback?: () => void) => {
-    const target = this.state[key]
-    this.setState({
-      [key]: {
-        ...target,
-        ...value
-      }
-    }, () => {
-      typeof callback === 'function' && callback()
-    })
-  }
-
-  calFrameRect = () => {
-    work.getDomRect('crop', rect => {
-      this.setState({
-        frame: {
-          width: rect.width,
-          height: rect.height,
-          left: rect.left,
-          top: rect.top,
+            isWorksId: false
+          },()=>{ this.getRecommendList() })
         }
-      }, () => {
-        this.initCoverData()
-        if (Taro.getStorageSync('lastSeparateImage')) {
-          const { foreground } = this.state
-          this.setState({
-            foreground: {
-              ...foreground,
-              remoteUrl: Taro.getStorageSync('lastSeparateImage')
-            }
-          })
-        }
-      })
-    })
-  }
-
-  initRawImage = () => {
-    const { rawImage } = this.state
-    globalData.choosedImage = globalData.choosedImage || 'http://tmp/wxcfe56965f4d986f0.o6zAJsztn2DIgXEGteELseHpiOtU.6gRGsIZIvyytf45cffd60a62912bada466d51e03f6fa.jpg'
-    this.setState({
-      rawImage: {
-        ...rawImage,
-        localUrl: globalData.choosedImage
-      }
-    })
-  }
-  // 初始化场景信息
-  initSceneData = async (callback) => {
-    const currentScene = globalData.sceneConfig//来自于主页给每一项设置的，
-    console.log(currentScene,'initiating the first scene&&adding')
-    this.setState({
-      currentScene: {
-        ...this.state.currentScene,
-        ...currentScene,
-        type: 'recommend'
-      }
-    }, () => {
-      typeof callback === 'function' && callback()
-    })
-  }
-  // 初始化贴纸
-  initCoverData = () => {
-    const { currentScene } = this.state
-    // const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
-    const sceneConfig = tool.JSON_parse(currentScene.sceneConfig)
-    const { cover = {} } = sceneConfig
-    console.log(cover,'covering this is cover ,this is 边框') //是边框的信息
-    this.themeData.rawCoverList = cover.list || []
-    const coverList = work.formatRawCoverList(this.themeData.rawCoverList)
-
-    this.setState({
-      coverList: coverList
-    })
-    // console.log('initCoverData cover', cover, coverList)
-  }
-
-  // 初始化分割
-  initSegment = async () => {
-    let separateRes
-    try {
-      console.log('trying trying trying')
-      separateRes = await service.core.separateLocalImg(globalData.choosedImage, {
-        type: -1,
-        loading: true,
-        showLoading: () => {
-          // console.log('showLoading')
-          // Taro.showLoading({
-          //   title: '照片变身中...',
-          //   mask: true,
-          // })
-          this.showLoading()
-        },
-        hideLoading: () => {
-          // console.log('hideLoading')
-          // Taro.hideLoading()
-          if (this.state.foreground.loaded) {
-            this.hideLoading()
-          }
-        }
-      })// 得到已经分割好的图片
-
-      console.log(separateRes,'this is first separateRes'); //部分url
-
-      const { cateImageDict = {} } = separateRes.result || {}
-
-      if (!cateImageDict['16'] && !cateImageDict['16-1']) {
-        console.log('技术犯规了')
-        work.pageToError()
-        return
-      }
-    } catch (err) {
-      console.log('catch', err)
-      this.hideLoading()
-      return {}
-    }
-    return (separateRes && separateRes.result) || {}
-  }
-
-  initSeparateData = async (separateResult) => {
-    const { currentScene, foreground } = this.state
-    this.changeSceneChooseSegment(currentScene, separateResult, (res = {}) => {
-      Taro.setStorageSync('lastSeparateImage', res.separateUrl)
-      this.setState({
-        chooseText: '重新上传人像',
-        foreground: {
-          ...foreground,
-          remoteUrl: res.separateUrl
-        }
-      })
-    })
-
-  }
-
-  // 根据场景决定头像
-  async changeSceneChooseSegment(currentScene, separateResult = {}, callback) {
-    const { imageHost } = appConfig
-    if (!separateResult.cateImageDict) {
-      return
-    }
-    // 判断分离的是全身还是头像    //adding by YUjinZENG-explanation segmentType是导入数据的时候就定义好了的
-    let separateUrl = ''
-    let separateMaskUrl = ''
-    console.log(currentScene,'currentScenceing---ing')
-    if (currentScene.segmentType === 1) { //目前的数据都是0；所以下面的选项也不影响
-      separateUrl = imageHost + separateResult.cateImageDict['16-1']//['16-1']没有这个key啊
-      separateMaskUrl = imageHost + separateResult.maskImageDict['16-1']
-    } else {
-      separateUrl = imageHost + separateResult.cateImageDict['16']
-      separateMaskUrl = imageHost + separateResult.maskImageDict['16']
-    }
-    typeof callback === 'function' && callback({
-      separateUrl, //远程请求的链接
-      separateMaskUrl
-    })
-  }
-
-  // 背景
-  handleBackgroundClick = () => {
-    this.setForegroundActiveStatus(false)
-    this.setCoverListActiveStatus({ type: 'all' }, false)
-  }
-  // 自定义背景
-  onCustomBgLoaded = (detail: object) => {
-    const { width, height } = detail
-    this.setStateTarget('customBg', {
-      originWidth: width,
-      originHeight: height
-    }, () => {
-      this.customBgAuto()
-    })
-  }
-  handleBgLoaded = ({ detail }) => {
-    console.log(detail)//背景图片的尺寸-eg：背景图 900,1200---整个框包括白板也是这么大
-    if ((detail.width / detail.height) >= (3 / 4)) {
-      this.setState({
-        drawBoard: {
-          width: '483rpx',
-          height: `${detail.height * 345*0.7/ detail.width * 2}rpx` //690 920=》483 644
-        }
-      }, () => {
-        setTimeout(() => {
-          this.calFrameRect()
-        }, 250);
-      })
-    } else {
-      this.setState({
-        drawBoard: {
-          height: '644rpx',
-          width: `${detail.width * 460*0.7 / detail.height * 2}rpx`
-        }
-      }, () => {
-        setTimeout(() => {
-          this.calFrameRect()
-        }, 250);
-      })
-    }
-  }
-  handleChangeCustomBgStyle = (data) => {
-    // console.log('handleChangeCustomBgStyle', data)
-    const { frame } = this.state
-    if (data.x > 0) {
-      data.x = 0
-    }
-    if (data.y > 0) {
-      data.y = 0
-    }
-    if (frame.width - data.width > data.x) {
-      data.x = frame.width - data.width
-    }
-    if (frame.height - data.height > data.y) {
-      data.y = frame.height - data.height
-    }
-    const { customBg } = this.state
-    this.setState({
-      customBg: {
-        ...customBg,
-        ...data
-      }
-    }, () => {
-    })
-  }
-  handleCustomBgTouchstart = () => {
-    // console.log('handleCustomBgTouchstart')
-    this.setForegroundActiveStatus(false)
-    this.setCoverListActiveStatus({ type: 'all' }, false)
-  }
-  handleCustomBgTouchend = () => {
-    // console.log('handleCustomBgTouchend')
-  }
-  // 人物
-  onForegroundLoaded = (detail: object, item?: any) => {
-    //console.log('handleForegroundLoaded', detail, item) // item 就是foreground存的信息
-    this.hideLoading()
-    const { width, height } = detail
-    this.setStateTarget('foreground', {
-      originWidth: width,
-      originHeight: height,
-      loaded: true
-    }, () => {
-      this.foregroundAuto()
-    })
-  }
-  handleChangeStyle = (data) => {
-    const { foreground } = this.state
-    console.log(data,'====== this is to check data =====')
-    this.setState({
-      foreground: {
-        ...foreground,
-        ...data
-      }
-    }, () => {
-    })
-  }
-  handleForegroundTouchstart = (sticker) => {
-    // console.log('handleForegroundTouchstart', sticker)
-    this.setForegroundActiveStatus(true)
-    this.setCoverListActiveStatus({ type: 'all' }, false)
-  }
-  handleForegroundTouchend = () => {
-    this.storeForegroundInfo()
-  }
-  // 贴纸
-  onCoverLoaded = (detail: object, item?: any) => {
-    // console.log('onCoverLoaded', detail, item)
-    const { width, height } = detail
-    const originInfo = {
-      originWidth: width,
-      originHeight: height
-    }
-    this.coverAuto(originInfo, item)
-  }
-  handleChangeCoverStyle = (data) => {
-    console.log(data,'---------this is to check data to check id -------')
-    const { id } = data
-    const { coverList } = this.state
-    coverList.forEach((v, i) => {
-      if (v.id === id) {
-        coverList[i] = data
-      }
-    })
-    this.setState({
-      coverList: coverList
-    })
-  }
-  handleCoverTouchstart = (sticker) => {
-    // console.log('handleCoverTouchstart', sticker)
-    this.setCoverListActiveStatus({ type: 'some', ids: [sticker.id] }, true)
-    this.setForegroundActiveStatus(false)
-  }
-  handleCoverTouchend = (sticker) => {
-    // console.log('handleCoverTouchend', sticker)
-    this.storeCoverInfo(sticker)
-    this.app.aldstat.sendEvent('贴纸使用', { '贴纸Id': sticker.id })
-  }
-  handleDeleteCover = (sticker) => {
-    // console.log('handleDeleteCover', sticker)
-    const { id } = sticker
-    const { coverList } = this.state
-    coverList.forEach((v, i) => {
-      if (v.id === id) {
-        coverList[i] = {
-          ...v,
-          deleted: true,
-          visible: false
-        }
-      }
-    })
-    this.setState({
-      coverList: coverList
-    })
-    this.app.aldstat.sendEvent('贴纸删除', { '贴纸Id': sticker.id })
-  }
-
-  // 更换场景
-  handleChooseScene = (scene) => {
-    const { currentScene } = this.state
-    if (currentScene.sceneId === scene.sceneId) {
-      return
-    }
-    this.setState({
-      currentScene: {
-        ...currentScene,
-        ...scene,
-        type: 'recommend'
-      }
-    }, () => {
-      // console.log('handleChooseScene', this.state.currentScene)
-      this.foregroundAuto()
-      this.initCoverData()
-      this.app.aldstat.sendEvent('选择场景', { '场景名': this.state.currentScene.sceneName, '场景Id': this.state.currentScene.sceneId })
-    })
-  }
-  // 自定义场景
-  handleChooseCustom = () => {
-    work.chooseImage({
-      onTap: (index) => {
-        if (index === 0) {
-          this.app.aldstat.sendEvent('自定义背景上传人像选择拍摄照片', '选择拍摄')
-        } else if (index === 1) {
-          this.app.aldstat.sendEvent('自定义背景上传人像选择相册照片', '选择相册')
-        }
-      },
-      onSuccess: (path) => {
-        const { currentScene } = this.state
-        const customScene = {
-          type: 'custom',
-          bgUrl: path,
-          sceneId: '',
-          sceneName: '',
-          shareContent: '',
-          thumbnailUrl: path,
-        }
+      } else {
+        shareSource = appConfig.imageHost + remoteURL
         this.setState({
-          currentScene: {
-            ...currentScene,
-            ...customScene
-          },
-          customBg: {
-            ...this.state.customBg,
-            localUrl: path
-          },
-          coverList: []
-        }, () => {
-          // console.log('handleChooseCustom', this.state.currentScene)
+          isWorksId: false
+        },()=>{ this.getRecommendList() })
+      }
+      if(typeof(this.$router.params.isGoAPP) === 'undefined') {
+        const isGoAPP = !this.state.isGoAPP
+        this.setState({
+          isGoAPP: isGoAPP
+        })
+      } else {
+        const isGoAPP = /ture/i.test(this.$router.params.isGoAPP)
+        this.setState({
+          isGoAPP: isGoAPP
         })
       }
-    })
-  }
-
-  // 保存
-  handleOpenResult = async () => {
-    if (!this.state.foreground.remoteUrl) {
-      return
-    }
-    if (!this.state.currentScene.bgUrl) {
-      return
-    }
-    if (this.isSaving) {
-      return
-    }
-    this.app.aldstat.sendEvent('保存图片或视频', { '场景名': this.state.currentScene.sceneName, '场景Id': this.state.currentScene.sceneId })
-    Taro.showLoading({
-      title: '照片生成中...',
-      mask: true,
-    })
-    const mySaveNumber = {
-      number: Taro.getStorageSync('saveNumber').number + 1,
-      date: Taro.getStorageSync('saveNumber').date
-    }
-    Taro.setStorageSync('saveNumber', mySaveNumber)
-    this.isSaving = true
-    const canvasImageUrl = await this.createCanvas()
-    console.log(canvasImageUrl,'这是canvasImageUrl')//图片的本地地址
-    Taro.hideLoading()
-    this.isSaving = false
-    this.setState({
-      result: {
-        shareImage: {
-          localUrl: canvasImageUrl,
-          remoteUrl: '',
-        },
-        show: true
+      if(typeof(this.$router.params.isPlay) === 'undefined') {
+        const isPlay = this.state.isPlay
+        this.setState({
+          isPlay: isPlay
+        })
+      } else {
+        const isPlay = /true/i.test(this.$router.params.isPlay)
+        this.setState({
+          isPlay: isPlay
+        })
       }
-    }, async () => {
-      const { url } = await service.base.upload(canvasImageUrl)
       this.setState({
-        result: {
-          show: this.state.result.show,
-          shareImage: {
-            localUrl: canvasImageUrl,
-            remoteUrl: url, //获得远端的url
-          }
+        user: {
+          worksId: workID || this.$router.params.worksId
+        }
+      }, () => {
+        if(this.state.user.worksId) {
+          this.singleWorkList()
         }
       })
-    })
-
-
-    // 保存图片到相册
-    work.saveSourceToPhotosAlbum({
-      location: 'local',
-      sourceUrl: canvasImageUrl,
-      sourceType: 'image',
-      onSuccess: () => {
-        Taro.showToast({
-          title: '保存成功!',
-          icon: 'success',
-          duration: 2000
-        })
-      },
-      onAuthFail: () => {
-        Taro.authModal({
-          open: true
-        })
-        this.setResultModalStatus(false)
-      },
-      onFail: () => {
-        Taro.showToast({
-          title: '保存失败!',
-          icon: 'success',
-          duration: 2000
+    } else {
+      if(typeof(this.$router.params.scene) !== 'undefined') {
+        const query = this.$router.params
+        const qR = decodeURIComponent(query.scene)
+        this.state.user.worksId =  qR
+        this.state.user.shareSource = shareSource
+        this.singleWorkList()
+      } else {
+        this.state.user.shareSource = shareSource
+      }
+      if(this.state.user.worksId !== 'undefined' && typeof(this.$router.params.scene) === 'undefined') {
+        this.setState({
+          user: {
+            worksId: this.$router.params.worksId,
+            shareSource: shareSource
+          },
+          isXcx: true
+        }, () => { this.getRecommendList() })
+      } else {
+        this.setState({
+          shareSource: shareSource
         })
       }
-    })
-  }
-  // 再玩一次
-  handlePlayAgain = () => {
-    this.app.aldstat.sendEvent('生成页再玩一次', '再玩一次')
-    // this.pageToHome()
+      isFromApp = false
+      this.setState({
+        isWorksId: false
+      })
+      if (shareSource) {
+        shareSource = decodeURIComponent(shareSource)
+      }
+    }
+    shareSourceType = tool.calcSourceType(shareSource)
+    if (shareSourceType === 'video') {
+      videoPoster = `${shareSource}?x-oss-process=video/snapshot,t_0,f_png,w_0,h_0,m_fast`
+      shareVideoInfo = tool.calcVideoSize(690, 920, width, height)
+    }
+    if (!themeId) {
+      themeId = appConfig.themeId
+    }
+    globalData.themeId = themeId
+    globalData.sceneId = sceneId
+    // console.log(123,globalData)
     this.setState({
-      result: {
-        show: false,
-        shareImage: {
-          remoteUrl: '',
-          localUrl: '',
-        },
-      }
+      isFromApp,
+      shareSourceType,
+      shareSource,
+      videoPoster,
+      width: shareVideoInfo.width,
+      height: shareVideoInfo.height,
+      themeId,
+      sceneId,
+      originalCompleteImageUrl: decodeURIComponent(originalCompleteImageUrl),
     })
   }
 
-  // 发布到QQ空间
+  getRecommendList = async () => {
+    if (this.state.user.templateCode) {
+      console.log(333333)
+      const hotData = await service.share.getHotList(this.state.user.templateCode)
+      console.log('hotData', hotData)
+      this.setState({
+        recommendList: (hotData.result && hotData.result.result) || []
+      })
+    } else {
+      const size = 4 //6
+      const recommendData = await service.share.getrecommendList(size)
 
-  publishToQzone = () => {
-    const { currentScene } = this.state
-    const shareContent = currentScene.shareContent || (globalData.themeData && globalData.themeData.shareContent)
-    qq.openQzonePublish({
-      text: shareContent,
-      media: [
-        {
-          type: 'photo',
-          path: this.state.result.shareImage.localUrl
+      console.log(recommendData.result.result,'---this is recommendData.result.result---');
+
+      let urlList=[{url:'https://static01.versa-ai.com/upload/456db36d2256/D36AE0F4-8209-40EA-A00B-D1B059548220.png',worksId:151439060106571776},
+        {url:'https://static01.versa-ai.com/upload/6cccddc45193/22AF7111-8A9E-4A8C-BE80-522D73DAA527.png',worksId:247273876981997568},
+        {url:'https://static01.versa-ai.com/upload/456db36d2256/D36AE0F4-8209-40EA-A00B-D1B059548220.png',worksId:151439060106571776},
+        {url:'https://static01.versa-ai.com/upload/6cccddc45193/22AF7111-8A9E-4A8C-BE80-522D73DAA527.png',worksId:247273876981997568}]
+
+      let tempRecommendList=recommendData.result.result.map((item,index)=>{
+            item.originPictureInfo.url=urlList[index].url;
+            item.renderPictureInfo.url=urlList[index].url;
+            item.worksId=urlList[index].worksId;
+            item.originPictureInfo.worksType='pic';
+            item.renderPictureInfo.worksType='pic';
+            item.worksType='pic';
+            return item
+      });
+
+      //console.log(tempRecommendList,'---to check tempRecommendList---')
+      // this.setState({
+      //   recommendList: (recommendData.result && recommendData.result.result) || []
+      // })
+      this.setState({
+        recommendList:(recommendData.result && tempRecommendList) || []
+      })
+      // this.setState({
+      //   recommendList:['https://static01.versa-ai.com/upload/94d3748b8577/c2cb0c03-ddaa-43d7-8a95-e604b22ed3d8.jpg',
+      //     'https://static01.versa-ai.com/upload/ea415cfc0899/133b0dd6-0bde-4aaf-8a0f-109a59005529.jpg',
+      //     'https://static01.versa-ai.com/upload/63bc2e0e523e/3954291d-be5c-4092-b9f3-1e04298955aa.jpg',
+      //     'https://static01.versa-ai.com/upload/9a62e01ab882/9534f788-7d5c-4aec-8e5c-756777eef9a5.jpg']
+      // })
+    }
+  }
+
+  getThemeData = async (callback?: (data?) => void) => {
+    if (!globalData.themeId) {
+      return
+    }
+    const themeId = globalData.themeId || ''
+    const themeData = await service.core.theme(themeId)
+    globalData.themeData = themeData.result.result
+    typeof callback === 'function' && callback(themeData.result.result)
+  }
+
+  pageToHome = () => {
+    this.app.aldstat.sendEvent('分享页返回主页按钮', '分享页返回主页按钮')
+    Taro.redirectTo({
+      url: '/pages/home/index'
+    })
+  }
+
+  handleGetUserInfo = (e) => {
+    // console.log('handleGetUserInfo', e)
+    const { detail: { userInfo } } = e
+    if (userInfo) {
+      const { themeData = {}, sceneId } = globalData
+      globalData.userInfo = userInfo
+      service.base.loginAuth(e.detail)
+      Taro.navigateTo({ url: `/pages/home/index` })
+    } else {
+      Taro.showToast({
+        title: '请授权',
+        icon: 'success',
+        duration: 2000
+      })
+    }
+  }
+
+  handleRecommendClick =  (data) => {
+    const sessionId = Taro.getStorageSync('session')
+    this.setState({
+      isFromApp: false,
+      isGoAPP:false,
+      // isUserInfo: true,
+      isXcx: false,
+      isPlay: true,
+      isWorksId: true,
+      user: {
+        userImage: data.author.avatar,
+        userName: data.author.nickname,
+        uid: data.uid,
+        worksId: data.worksId,
+        shareSource : data.renderPictureInfo.url,
+        shareSourceWidth:data.renderPictureInfo.imageWidth,
+        shareSourceHeight:data.renderPictureInfo.imageHeight,
+        firstFrame: data.renderPictureInfo.firstFrame,
+        templateCode: data.schema,
+        sessionId: sessionId,
+        worksType: data.worksType,
+        type: data.renderPictureInfo.type
+      },
+      liked: data.liked,
+      likeNumber: data.likedAmount,
+      shareSource : data.renderPictureInfo.url,
+      userXcx: {
+        userImage: data.author.avatar,
+        userName: data.author.nickname,
+        likeNumber: data.likedAmount,
+        uid: data.uid,
+        worksId: data.worksId,
+        liked: data.liked
+      }
+    }, () => {this.singleWorkList()})
+  }
+
+  onLoad = async() => {
+    const page = 'pages/index'
+    const width = 100
+    const worksId = this.state.user.worksId
+    const sessionId = this.state.user.sessionId
+    const deviceId = this.state.user.deviceId
+    // console.log(999,this.state.user)
+    const qrcode = await service.share.getQrCode(page, width, worksId, sessionId, deviceId)
+    const scene = decodeURIComponent(qrcode)
+    this.setState({
+      qrCode: scene
+    })
+
+  }
+
+  handleFormSubmit = (e) => {
+    const { detail: { formId } } = e
+    formId && service.core.reportFormId(formId)
+  }
+  swapImag = () => {
+    if (this.state.originalCompleteImageUrl && this.state.originalCompleteImageUrl.length > 0) {
+      let tmpURL = this.state.originalCompleteImageUrl;
+      let swapUrl = this.state.shareSource;
+      this.setState({
+        originalCompleteImageUrl: swapUrl,
+        shareSource: tmpURL
+      })
+    }
+  }
+  handleMainButton = () => {
+
+    this.app.aldstat.sendEvent('分享页主按钮', '分享页主按钮')
+  }
+  handleOpenApp = () => {
+    this.app.aldstat.sendEvent('分享页打开app', '打开app')
+  }
+  getUserInfo = async (e) =>{
+    const { detail: { userInfo } } = e
+    if (userInfo) {
+      const { themeData = {}, sceneId } = globalData
+      globalData.userInfo = userInfo
+      const result = await service.base.loginAuth(e.detail)
+
+      // console.log(result)
+      this.userInfo = result.result.result
+      // console.log('this',this.userInfo)
+      Taro.setStorage({
+        key: "userInfo",
+        data: this.userInfo
+      })
+      if(result.status === 'success') {
+        if (this.state.liked === 0) {
+          this.addLike(this.userInfo)
+        } else {
+          this.deleteLike(this.userInfo)
         }
-      ]
+      }
+    } else {
+      Taro.showToast({
+        title: '请授权',
+        icon: 'success',
+        duration: 2000
+      })
+    }
+
+  }
+
+  getDialogRect = () => {
+    Taro.createSelectorQuery().select('#dialogPosition').boundingClientRect(
+      (rect)=>{
+        const width = rect.width
+        const height = rect.height
+        this.setState({
+          dialogImageWidth: width,
+          dialogImageHeight: height
+        },()=>{
+          const showDialogHeight = this.state.user.shareSourceHeight * this.state.dialogImageWidth /this.state.user.shareSourceWidth
+          const showDialogWidth = this.state.user.shareSourceWidth * this.state.dialogImageHeight /this.state.user.shareSourceHeight
+          this.setState({
+            showDialogHeight: showDialogHeight,
+            showDialogWidth:showDialogWidth
+          },()=>{
+            this.handelConfirm()
+          })
+        })
+      }).exec()
+  }
+  getDialogContentRect = () => {
+    Taro.createSelectorQuery().select('#dialogSize').boundingClientRect(
+      (rect)=>{
+        // console.log('dialogrect',rect)
+        const width = rect.width
+        const height = rect.height
+        this.setState({
+          frame:{
+            width: width,
+            height: height
+          }
+        },()=> {
+          this.getDialogRect()
+        })
+      }).exec()
+  }
+
+  getDialogFooterRect = () => {
+    Taro.createSelectorQuery().select('#dialogFooterSize').boundingClientRect(
+      (rect)=>{
+        // console.log('dialogFooterrect',rect)
+        const width = rect.width
+        const height = rect.height
+        this.setState({
+          dialogFooter:{
+            width: width,
+            height: height
+          }
+        })
+      }).exec()
+  }
+
+  shareHandle =  () => {
+    this.setState({
+      isshow: true
+    },()=>{
+      // this.handelConfirm()
+      this.getDialogContentRect()
+      this.getDialogFooterRect()
+    })
+  }
+  handelSave = () => {
+    this.setState({
+      isshow: false,
+      savePoint: false
     })
   }
 
-  setResultModalStatus = (flag = false) => {
-    const { result } = this.state
-    result.show = flag
-    this.setState({
-      result: {
-        ...result
-      }
-    })
+  downloadRemoteImage = async (remoteUrl = '') => {
+    let localImagePath = ''
+    try {
+      const result = await service.base.downloadFile(remoteUrl)
+      // console.log('result',result)
+      localImagePath = (result.tempFilePath)
+    } catch (err) {
+      // console.log('下载图片失败', err)
+    }
+    return localImagePath
   }
 
   createCanvas = async () => {
     return new Promise(async (resolve, reject) => {
-      const { currentScene, canvas } = this.state
-      const context = Taro.createCanvasContext(canvas.id, this) //组件绘图的上下文
-      if (currentScene.type === 'custom') {
-        await this.canvasDrawCustom(context)
-      } else if (currentScene.type === 'recommend') {
-        await this.canvasDrawRecommend(context) //【将背景图片&&边框，放到画布】
-      }
+      const { canvas, frame} = this.state
+      const { ratio = 3 } = canvas
+      const context = Taro.createCanvasContext(canvas.id, this)
+      context.setFillStyle('#FFFFFF')
+      context.fillRect(0, 0, frame.width * ratio, frame.height * ratio)
+      await this.canvasDrawRecommend(context)
       //绘制图片
-      context.draw() //【有点像将之前的设置保存到context中】
-      //将生成好的图片保存到本地，需要延迟一会，绘制期间耗时
+      context.draw()
       setTimeout(function () {
-        Taro.canvasToTempFilePath({ //存储照片
+        Taro.canvasToTempFilePath({
           canvasId: canvas.id,
           fileType: 'jpg',
           // 解决vivo手机模糊bug，强制图片质量为原图
@@ -824,842 +759,635 @@ class ZengYJDemo extends Component {
   }
 
   canvasDrawRecommend = async (context) => {
-    const { currentScene, frame, canvas } = this.state
-
-    console.log(frame,'frame ===width===height===frame')
-
+    const { frame, canvas, user, dialogFooter, showDialogHeight, showDialogWidth, bgImageHeight, bgImageWidth, dialogImageWidth, dialogImageHeight} = this.state
     const postfix = '?x-oss-process=image/resize,h_748,w_560'
+    const vpostfix = '?x-oss-process=video/snapshot,t_0,f_jpg,w_0,h_0'
     const { ratio = 3 } = canvas
-    const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
-    let sceneConfig = {}
-    try {
-      sceneConfig = tool.JSON_parse(sceneInfo.sceneConfig)
-    } catch (err) {
-      console.log('canvasDrawRecommend 解析sceneConfig JSON字符串失败', err)
-    }
-    // 下载远程背景图片
     let localBgImagePath = ''
+    let bgUrl = ''
     try {
-      const bgUrl = currentScene.bgUrl + postfix
-      localBgImagePath = await this.downloadRemoteImage(bgUrl)
+      if(user.worksType === 'pic') {
+        bgUrl = (user.shareSource + postfix)
+        localBgImagePath = await this.downloadRemoteImage(bgUrl)
+      } else if(user.worksType === 'video') {
+        if(user.firstFrame){
+          bgUrl = (user.firstFrame + postfix)
+          localBgImagePath = await this.downloadRemoteImage(bgUrl)
+        } else {
+          bgUrl = (user.shareSource + vpostfix)
+          localBgImagePath = await this.downloadRemoteImage(bgUrl)
+        }
+        // const bgUrl = (user.firstFrame + postfix)
+        // localBgImagePath = await this.downloadRemoteImage(bgUrl)
+        //作品类型为video时其第一帧为背景图
+        // const codeLeft = (frame.width  - dialogImageWidth ) * ratio / 2
+        // const codeTop = codeLeft
+        // const codeWidth = dialogImageWidth * ratio
+        // const codeHeight = dialogImageHeight * ratio
+        // const result = localBgImagePath
+        // context.drawImage(result, codeLeft, codeTop, codeWidth, codeHeight)
+      }
+
+      if((user.shareSourceHeight / user.shareSourceWidth) < (dialogImageHeight/dialogImageWidth)) {
+        const codeLeft = (frame.width  - dialogImageWidth ) * ratio / 2
+        const codeTop = (frame.height  - showDialogHeight  - dialogFooter.height) * ratio / 2
+        const codeWidth = dialogImageWidth * ratio
+        const codeHeight = showDialogHeight * ratio
+        context.drawImage(localBgImagePath, codeLeft, codeTop, codeWidth, codeHeight)
+      } else {
+        const codeLeft = (frame.width  - showDialogWidth ) * ratio / 2
+        const codeTop = (frame.height  - dialogImageHeight  - dialogFooter.height) * ratio
+        const codeWidth = showDialogWidth * ratio
+        const codeHeight = dialogImageHeight * ratio
+        context.drawImage(localBgImagePath, codeLeft, codeTop, codeWidth, codeHeight)
+      }
     } catch (err) {
       console.log('下载背景图片失败', err)
       return
     }
-    //防止锯齿，绘的图片是所需图片的3倍
-    context.drawImage(localBgImagePath, 0, 0, frame.width * ratio, frame.height * ratio)
+    //  防止锯齿，绘的图片是所需图片的3倍
     // 绘制元素
-    await this.canvasDrawElement(context, ratio)
-    // 绘制二维码
-    if (sceneConfig.watermark) {
-      this.canvasDrawLogo(context, ratio)
-    }
+    // await this.canvasDrawElement(context, ratio)
+    await this.canvasDrawLogo(context, ratio)
   }
-  canvasDrawCustom = async (context) => {
-    const { customBg, canvas } = this.state
-    const { ratio = 3 } = canvas
-    // 自定义背景为本地图片，不需要下载
-    const localBgImagePath = customBg.localUrl
-    //防止锯齿，绘的图片是所需图片的3倍
-    context.drawImage(localBgImagePath, customBg.x * ratio, customBg.y * ratio, customBg.width * ratio, customBg.height * ratio)
-    // 绘制元素
-    await this.canvasDrawElement(context, ratio)
-    // 绘制二维码
-    this.canvasDrawLogo(context, ratio)
-  }
-  // 绘制贴纸，文字，覆盖层所有元素
-  canvasDrawElement = async (context, ratio) => {
-    const { currentScene, foreground, frame, canvas, coverList = [] } = this.state
-    // 收集所有元素进行排序
-    let elements: Array<any> = []
-    const element_foreground = {
-      type: 'foreground',
-      id: foreground.id,
-      zIndex: foreground.zIndex,
-      remoteUrl: foreground.remoteUrl,
-      width: foreground.width * ratio,
-      height: foreground.height * ratio,
-      x: foreground.x * ratio,
-      y: foreground.y * ratio,
-      rotate: foreground.rotate,
-    }
-    // 收集人物
-    elements.push(element_foreground)
-    // 收集贴纸
-    coverList.filter(v => !v.deleted).forEach(v => {
-      const element_cover = {
-        type: 'cover',
-        zIndex: v.zIndex,
-        id: v.id,
-        remoteUrl: v.remoteUrl,
-        width: v.width * ratio,
-        height: v.height * ratio,
-        x: v.x * ratio,
-        y: v.y * ratio,
-        rotate: v.rotate,
-      }
-      elements.push(element_cover)
-    })
-    // 对元素进行排序
-    elements.sort((a, b) => {
-      return a.zIndex - b.zIndex
-    })
-    // 下载成本地图片并绘制
-    for (let i = 0; i < elements.length; i++) {
-      const element = elements[i]
-      try {
-        const localImagePath = await this.downloadRemoteImage(element.remoteUrl)
-        element.localUrl = localImagePath
-        drawElement(element)
-      } catch (err) {
-        console.log('下载贴纸图片失败', err)
-        continue
-      }
-    }
-    // console.log('elements', elements)
-    function drawElement({ localUrl, width, height, x, y, rotate }) {
-      context.save()
-      context.translate(x + 0.5 * width, y + 0.5 * height)
-      context.rotate(rotate * Math.PI / 180)
-      context.drawImage(localUrl, -0.5 * width, -0.5 * height, width, height)
-      context.restore()
-      context.stroke()
-    }
-  }
+
   // 绘制二维码和logo
-  canvasDrawLogo = (context, ratio) => {
-    const { frame } = this.state
-    // const localCodeImagePath = '../../assets/images/code.png'
-    const codeWidth = 67.5 * 1.5
-    const codeHeight = 67.5 * 1.5
-    const codeLeft = frame.width * ratio - codeWidth - 15
-    const codeTop = frame.height * ratio - codeHeight - 15
+  canvasDrawLogo = async (context, ratio) => {
+    const { frame, user ,qrCode, dialogFooter, dialogImageWidth, dialogImageHeight} = this.state
+    const postfix = '?x-oss-process=image/resize,h_748,w_560'
+    const codeWidth = 42 * ratio
+    const codeHeight = 43 * ratio
+    const codeLeft = frame.width * ratio - (frame.width  - dialogImageWidth ) * ratio / 2 - codeWidth
+    const codeTop = dialogImageHeight * ratio + (frame.width  - dialogImageWidth ) * ratio / 2 + 20
     context.save()
-    context.drawImage(image_code, codeLeft, codeTop, codeWidth, codeHeight)
+    let localBgImagePath = await this.downloadRemoteImage(qrCode)
+    context.drawImage(localBgImagePath, codeLeft, codeTop, codeWidth, codeHeight)
     context.restore()
     context.stroke()
-    // const localLogoImagePath = '../../assets/images/versa.png'
-    const logoWidth = 197 * 1.5
-    const logoHeight = 20 * 1.5
-    const logoLeft = frame.width * ratio * 0.5 - logoWidth * 0.5
-    const logoTop = frame.height * ratio - logoHeight - 8
+
+    const codeLogoWidth = 40 * ratio
+    const codeLogoHeight = 7 * ratio
+    const codeLogoLeft = frame.width * ratio - (frame.width  - dialogImageWidth ) * ratio / 2 - 42 * ratio + 5
+    const codeLogoTop = dialogImageHeight * ratio + (frame.width  - dialogImageWidth ) * ratio / 2 + 40 + 42 * ratio
     context.save()
-    context.drawImage(image_versa, logoLeft, logoTop, logoWidth, logoHeight)
+    context.drawImage(makaron, codeLogoLeft, codeLogoTop,codeLogoWidth, codeLogoHeight)
     context.restore()
     context.stroke()
-  }
 
-  // 下载照片并存储到本地
-  downloadRemoteImage = async (remoteUrl = '') => {
-    // 判断是否在缓存里
-    const cacheKey = `${remoteUrl}_localPath`
-    const cache_source = this.cache['source']
-
-    let localImagePath = ''
-    if (cache_source.get(cacheKey)) {
-      // console.log('get-cache', cacheKey, cache_source.get(cacheKey))
-      return cache_source.get(cacheKey)
-    } else {
+    const logoWidth = 38 * ratio
+    const logoHeight = 38 * ratio
+    const logoLeft = (frame.width  - dialogImageWidth ) * ratio / 2
+    const logoTop = logoLeft  + dialogImageHeight * ratio + (dialogFooter.height * ratio - logoHeight)  / 2
+    context.save()
+    context.arc(logoWidth / 2 + logoLeft, logoHeight / 2 + logoTop, logoWidth / 2, 0, Math.PI * 2, false)
+    context.clip()
+    context.setStrokeStyle(context, 'rgba(0, 0, 0, 0)')
+    context.stroke()
+    if(user.userImage){
+      let localUserImagePath = ''
       try {
-        const result = await service.base.downloadFile(remoteUrl)
-        localImagePath = result.tempFilePath
-      } catch (err) {
-        console.log('下载图片失败', err)
+        const userUrl = (user.userImage + postfix)
+        localUserImagePath = await this.downloadRemoteImage(userUrl)
+        context.drawImage(localUserImagePath, logoLeft, logoTop, logoWidth, logoHeight)
+      }catch (err) {
+        console.log('下载背景图片失败', err)
+        return
       }
+      // context.drawImage(user.userImage, logoLeft, logoTop, logoWidth, logoHeight)
+    } else {
+      context.drawImage(titleImage, logoLeft, logoTop, logoWidth, logoHeight)
     }
-    return this.cache['source'].set(cacheKey, localImagePath)
+    context.restore()
+
+    context.font = "40px 'PingFangSC-Medium'";
+    context.fillStyle = "#333333";
+    // 设置水平对齐方式
+    // context.textAlign = "center";
+    // 设置垂直对齐方式
+    // context.textBaseline = "middle";
+    // 绘制文字（参数：要写的字，x坐标，y坐标）
+    if(this.state.user.userName && this.state.user.userName.length > 6) {
+      const wordsLeft = (frame.width  - dialogImageWidth ) * ratio + logoWidth
+      const userName ='@' + (this.state.user.userName).substr(0,7) + '的作品'
+      context.fillText(userName, wordsLeft, logoTop + 40)
+      this.canvasDrawText(context, ratio)
+    } else {
+      const wordsLeft = 2 * logoLeft + logoWidth
+      if (typeof(this.state.user.userName) === 'undefined') {
+        var userName = '@' + '的作品'
+      } else {
+        var userName ='@' + this.state.user.userName + '的作品'
+      }
+      context.fillText(userName, wordsLeft, logoTop + 40)
+      this.canvasDrawText(context, ratio)
+    }
+  }
+  canvasDrawText = (context, ratio) => {
+    const { frame, dialogImageWidth, dialogFooter, dialogImageHeight,} = this.state
+    context.font = "30px 'PingFangSC-Medium'"
+    context.fillStyle = "#999999"
+    if(this.state.user.worksType === 'pic') {
+      const wordsLeft = (frame.width  - dialogImageWidth ) * ratio + 38 * ratio
+      const wordsTop = (frame.width  - dialogImageWidth ) * ratio / 2   + dialogImageHeight * ratio + (dialogFooter.height * ratio - 38 * ratio)  / 2  + 100
+      context.fillText(this.state.checkoutImage, wordsLeft,wordsTop )
+    } else {
+      const wordsLeft = (frame.width  - dialogImageWidth ) * ratio + 38 * ratio
+      const wordsTop = (frame.width  - dialogImageWidth ) * ratio / 2   + dialogImageHeight * ratio + (dialogFooter.height * ratio - 38 * ratio)  / 2  + 100
+      context.fillText(this.state.checkoutVideo, wordsLeft, wordsTop)
+    }
+    // context.draw()
   }
 
-  // 设置人物状态
-  setForegroundActiveStatus = (value = false) => {
-    this.setStateTarget('foreground', { isActive: value })
-  }
-  // 设置贴纸状态
-  setCoverListActiveStatus = (options = {}, value = false) => {
-    const { type, ids = [] } = options
-    const { coverList } = this.state
-    if (type === 'all') {
-      coverList.forEach(v => {
-        v['isActive'] = value
-      })
-    } else {
-      coverList.forEach(v => {
-        if (ids.indexOf(v.id) > -1) {
-          v['isActive'] = value
-        } else {
-          v['isActive'] = !value
-        }
-      })
-    }
+  setResultModalStatus = (flag = false) => {
+    const { result } = this.state
+    result.show = flag
     this.setState({
-      coverList
-    })
-  }
-
-  // 自定义背景自适应
-  customBgAuto = (callback?: () => void) => {
-    // 获取图片原始大小
-    const { customBg, frame } = this.state
-    const { originWidth = 0, originHeight = 0 } = customBg || {}
-    const imageRatio = originWidth / originHeight
-    // 计算宽高比例
-    const result = {
-      autoScale: 1,
-      autoWidth: 0,
-      autoHeight: 0,
-      width: 0,
-      height: 0,
-      x: 0,
-      y: 0,
-    }
-    if ((originWidth / originHeight) > (frame.width / frame.height)) {
-      // 图片宽高比大于框
-      // 将图片高度放大为与框相同，宽度超出框
-      result.autoScale = frame.width / originWidth
-      result.autoHeight = frame.height
-      result.autoWidth = result.autoHeight * imageRatio
-    } else {
-      result.autoScale = frame.height / originHeight
-      result.autoWidth = frame.width
-      result.autoHeight = result.autoWidth / imageRatio
-    }
-    // 位移使图片居中
-    result.width = result.autoWidth
-    result.height = result.autoHeight
-    result.x -= (result.width - frame.width) * 0.5
-    result.y -= (result.height - frame.height) * 0.5
-    this.setState({
-      customBg: {
-        ...this.state.customBg,
+      result: {
         ...result
       }
-    }, () => {
-      typeof callback === 'function' && callback()
     })
   }
-  // 人物自适应
-  foregroundAuto = (callback?: () => void) => {
-    // 先判断是否有缓存
-    const { currentScene } = this.state
-    // const sceneId = currentScene.sceneId || 'demo_scene'
-    // const cache_foreground = this.cache['foreground']
-    // const scene_foreground_params = cache_foreground.get(sceneId)
 
-    // if ( scene_foreground_params ) {
-    //   this.setStateTarget('foreground', {
-    //     ...scene_foreground_params
-    //   }, () => {
-    //     typeof callback === 'function' && callback()
-    //   })
-    //   return
-    // }
-
-    const size = this.calcForegroundSize()
-    const position = this.calcForegroundPosition(size)
-    console.log(position,'-------see this is position-----')
-    this.setStateTarget('foreground', {
-      ...size,
-      ...position
-    }, () => {
-      typeof callback === 'function' && callback()
+  handelConfirm = async () => {
+    if (this.isSaving) {
+      return
+    }
+    // this.app.aldstat.sendEvent('保存图片或视频', { '场景名': this.state.currentScene.sceneName, '场景Id': this.state.currentScene.sceneId })
+    Taro.showLoading({
+      title: '照片生成中...',
+      mask: true,
     })
-  }
-  // 计算人物尺寸   //映射到背景的尺寸【add by YuJIN Zeng
-  calcForegroundSize = () => {
-    const { currentScene, sceneList, foreground, frame } = this.state
-    const { originWidth, originHeight } = foreground
-    // const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
-
-    const imageRatio = originWidth / originHeight
-    const params = tool.JSON_parse(currentScene.sceneConfig)
-    const autoScale = parseFloat(params.size.default)
-
-    const result = {
-      autoScale,
-      autoWidth: 0,
-      autoHeight: 0,
-      width: 0,
-      height: 0
-    }
-    if (originWidth > originHeight) {
-      // 以最短边计算
-      result.autoWidth = frame.width * autoScale
-      result.autoHeight = result.autoWidth / imageRatio
-    } else {
-      result.autoHeight = frame.height * autoScale
-      result.autoWidth = result.autoHeight * imageRatio
-    }
-    result.width = result.autoWidth
-    result.height = result.autoHeight
-
-    return result
-  }
-  // 计算人物位置
-  calcForegroundPosition = ({ width, height } = {}) => {
-    const { currentScene, sceneList, foreground, frame } = this.state
-    const { originWidth, originHeight } = foreground
-    width = width || foreground.width
-    height = height || foreground.height
-    // const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
-
-    const boxWidth = frame.width
-    const boxHeight = frame.height
-    const sceneConfig = tool.JSON_parse(currentScene.sceneConfig)
-    const { position } = sceneConfig
-    const type = position.place || '0'
-    const result = {
-      x: 0,
-      y: 0,
-      rotate: 0
-    }
-    switch (type) {
-      case '0':
-        result.x = (boxWidth - width) * 0.5
-        result.y = (boxHeight - height) * 0.5
-        break
-      case '1':
-        result.x = 0
-        result.y = 0
-        break
-      case '2':
-        result.x = (boxWidth - width) * 0.5
-        result.y = 0
-        break
-      case '3':
-        result.x = boxWidth - width
-        result.y = 0
-        break
-      case '4':
-        result.x = boxWidth - width
-        result.y = (boxHeight - height) * 0.5
-        break
-      case '5':
-        result.x = boxWidth - width
-        result.y = boxHeight - height
-        break
-      case '6':
-        result.x = (boxWidth - width) * 0.5
-        result.y = boxHeight - height
-        break
-      case '7':
-        result.x = 0
-        result.y = boxHeight - height
-        break
-      case '8':
-        result.x = 0
-        result.y = (boxHeight - height) * 0.5
-        break
-      case '9':
-        const result_location = location(position, boxWidth, boxHeight, width, height)
-        result.x = result_location.x
-        result.y = result_location.y
-        break
-      case '10':
-        const result_center = centerLocation(position, boxWidth, boxHeight, width, height)
-        result.x = result_center.x
-        result.y = result_center.y
-        break
-      case '11':
-        const result_faceCenter = faceCenterLocation(position, boxWidth, boxHeight, width, height)
-        result.x = result_faceCenter.x
-        result.y = result_faceCenter.y
-        break
-      default:
-        result.x = (boxWidth - width) * 0.5
-        result.y = (boxHeight - height) * 0.5
-    }
-    result.rotate = parseInt(sceneConfig.rotate)
-    return result
-
-    function location(position, boxWidth, boxHeight, width, height) {
-      const result = {
-        x: 0,
-        y: 0
-      }
-      if (position.xAxis.derection === 'left') {
-        result.x = position.xAxis.offset * boxWidth
-      }
-      if (position.xAxis.derection === 'right') {
-        result.x = boxWidth * (1 - position.xAxis.offset) - width
-      }
-      if (position.yAxis.derection === 'top') {
-        result.y = position.yAxis.offset * boxHeight
-      }
-      if (position.yAxis.derection === 'bottom') {
-        result.y = boxHeight * (1 - position.yAxis.offset) - height
-      }
-      return result
-    }
-    // 中心点设置位置
-    function centerLocation(position, boxWidth, boxHeight, width, height) {
-      const result = {
-        x: 0,
-        y: 0
-      }
-      if (position.xAxis.derection === 'left') {
-        result.x = position.xAxis.offset * boxWidth - width * 0.5
-      }
-      if (position.xAxis.derection === 'right') {
-        result.x = boxWidth * (1 - position.xAxis.offset) - width * 0.5
-      }
-      if (position.yAxis.derection === 'top') {
-        result.y = position.yAxis.offset * boxHeight - height * 0.5
-      }
-      if (position.yAxis.derection === 'bottom') {
-        result.y = boxHeight * (1 - position.yAxis.offset) - height * 0.5
-      }
-      return result
-    }
-    // 脸部中心点设置位置
-    function faceCenterLocation(position, boxWidth, boxHeight, width, height) {
-      const result = {
-        x: 0,
-        y: 0
-      }
-      const faceCenterPosition = (globalData.separateResult &&
-        globalData.separateResult.faceCenterDict && globalData.separateResult.faceCenterDict['16-1']) || [0, 0]
-      const imageSize = (globalData.separateResult &&
-        globalData.separateResult.imageSizeDict && globalData.separateResult.imageSizeDict['16-1']) || [1, 1]
-      const faceLeft = (faceCenterPosition[0] / imageSize[0]) || 0.5 // 脸部中心点距离左边比例
-      const faceTop = (faceCenterPosition[1] / imageSize[1]) || 0.5 // 脸部中心点距离顶边比例
-      if (position.xAxis.derection === 'left') {
-        result.x = position.xAxis.offset * boxWidth - width * faceLeft
-      }
-      if (position.xAxis.derection === 'right') {
-        result.x = boxWidth * (1 - position.xAxis.offset) - width * faceLeft
-      }
-      if (position.yAxis.derection === 'top') {
-        result.y = position.yAxis.offset * boxHeight - height * faceTop
-      }
-      if (position.yAxis.derection === 'bottom') {
-        result.y = boxHeight * (1 - position.yAxis.offset) - height * faceTop
-      }
-      return result
-    }
-  }
-  // 缓存人物尺寸位置
-  storeForegroundInfo = () => {
-    const { foreground, currentScene } = this.state
-    const clone_foreground = tool.deepClone(foreground)
-    clone_foreground.isActive = false
-    const sceneId = currentScene.sceneId || 'demo_scene'
-    this.cache['foreground'].set(sceneId, clone_foreground)
-    // console.log('this.cache.foreground', this.cache['foreground'].get(sceneId))
-  }
-
-  // 贴纸自适应
-  coverAuto = (originInfo, cover, callback?: () => void) => {
-    const size = this.calcCoverSize(originInfo, cover)
-    const position = this.calcCoverPosition(size, cover)
-    const { coverList = [], currentScene } = this.state
-    coverList.forEach((v, i) => {
-      if (v.id === cover.id) {
-        // 判断是否有缓存
-        const cacheKey = `${currentScene.sceneId}_${v.id}`
-        const cacheRes = this.cache['cover'].get(cacheKey)
-        if (cacheRes) {
-          coverList[i] = cacheRes
-        } else {
-          coverList[i] = { ...v, ...size, ...position }
-        }
-      }
-    })
-
+    this.isSaving = true
+    const canvasImageUrl = await this.createCanvas()
+    console.log('canvas',canvasImageUrl)
+    Taro.hideLoading()
+    this.isSaving = false
     this.setState({
-      coverList: coverList
-    }, () => {
-      typeof callback === 'function' && callback()
+      result: {
+        shareImage: {
+          localUrl: canvasImageUrl,
+          remoteUrl: '',
+        },
+        show: true
+      }
+    }, async () => {
+      const { url } = await service.base.upload(canvasImageUrl)
+      this.setState({
+        result: {
+          show: this.state.result.show,
+          shareImage: {
+            localUrl: canvasImageUrl,
+            remoteUrl: url,
+          }
+        }
+      })
     })
-  }
-  calcCoverSize = (originInfo, cover) => {
-    const { originWidth, originHeight } = originInfo
-    const { frame } = this.state
-    const coverInfo = work.getCoverInfoById(cover.id, this.themeData.rawCoverList, 'id')
-    const imageRatio = originWidth / originHeight
-    let autoScale
-    if (coverInfo && coverInfo.size) {
-      autoScale = parseFloat(coverInfo.size.default || 0.5)
-    } else {
-      autoScale = 0.5
-    }
-    const result = {
-      autoScale,
-      autoWidth: 0,
-      autoHeight: 0,
-      width: 0,
-      height: 0
-    }
-    if (originWidth > originHeight) {
-      // 以最短边计算
-      result.autoWidth = frame.width * autoScale
-      result.autoHeight = result.autoWidth / imageRatio
-    } else {
-      result.autoHeight = frame.height * autoScale
-      result.autoWidth = result.autoHeight * imageRatio
-    }
-    result.width = result.autoWidth
-    result.height = result.autoHeight
-
-    return result
-  }
-
-  //上传图片的操作
-  todo = (data) => {
-    console.log(data,'datadatadataOftodo')//授权获得用户信息
-    const { detail: { userInfo } } = data
-    if (userInfo) {
-      service.base.loginAuth(data.detail)//【上传用户信息】
-      globalData.userInfo = userInfo
-      if (this.state.hasGuide === true) {
+    // 保存图片到相册
+    work.saveSourceToPhotosAlbum({
+      location: 'local',
+      sourceUrl: canvasImageUrl,
+      sourceType: 'image',
+      onSuccess: () => {
+        Taro.showToast({
+          title: '保存成功!',
+          icon: 'success',
+          duration: 2000
+        })
         this.setState({
-          hasGuide: false
+          savePoint: true
+        })
+      },
+      onAuthFail: () => {
+        console.log(33333)
+        Taro.authModal({
+          open: true
+        })
+        this.setResultModalStatus(false)
+      },
+      onFail: () => {
+        console.log(22222)
+        Taro.showToast({
+          title: '保存失败!',
+          icon: 'success',
+          duration: 2000
         })
       }
-      work.chooseImage({
-        onTap: (index) => {
-          // console.log('tap index', index)
-          if (index === 0) {
-            this.app.aldstat.sendEvent('编辑页面选择拍摄照片', '选择拍摄')
-          } else if (index === 1) {
-            this.app.aldstat.sendEvent('编辑页面选择相册照片', '选择相册')
-          }
-        },
-        onSuccess: async (path) => {//获得加载图片的路径,这里的success就是用来把加载进来的图片进行处理
-          console.log('choosedImage', path, globalData)
-          this.app.aldstat.sendEvent('编辑页面人像成功', '上传成功')
-          globalData.choosedImage = path//存入图片，为之后的处理准备
-          wx.getFileSystemManager().readFile({
-            filePath: path,
-            success: (data) => { //这的data是文件内容，所以这个函数的意义是啥？？？
-              wx.cloud.callFunction({
-                name: 'checkImage',
-                data: {
-                  contentType: 'image/png',
-                  value: data.data
-                },
-                success: async (res) => {//res 为处理信息，跟图片无关；
-                  console.log('checkImage success：', res)
-                  // const separateResult = globalData.separateResult = await this.initSegment()
-                  // await this.initSeparateData(separateResult)
-                  if (res.result !== null && res.result.errCode === 0) {
-                    const separateResult = globalData.separateResult = await this.initSegment()//一个对象、得到分割结果，还不是图像，只是部分路径
-                    console.log(separateResult,'separeteResulting')
-                    await this.initSeparateData(separateResult)
-                  } else {
-                    work.pageToError()
-                  }
-                },
-                fail: async (err) => {
-                  console.log('checkImage error', err)
-                  const separateResult = globalData.separateResult = await this.initSegment()
-                  await this.initSeparateData(separateResult)
-                }
-              })
-            },
-            fail:()=>{
-            }
-          })
-
-        }
-      })
-    } else {
-      Taro.showToast({
-        title: '请授权',
-        icon: 'success',
-        duration: 2000
-      })
-    }
-
-  }
-
-  calcCoverPosition = (size = {}, cover = {}) => {
-    const { width = 0, height = 0 } = size
-    const { frame } = this.state
-    const coverInfo = work.getCoverInfoById(cover.id, this.themeData.rawCoverList, 'id')
-    const { position, rotate = 0 } = coverInfo
-    const boxWidth = frame.width
-    const boxHeight = frame.height
-
-    const type = position.place || '0'
-    const result = {
-      x: 0,
-      y: 0,
-      rotate: 0
-    }
-    switch (type) {
-      case '0':
-        result.x = (boxWidth - width) * 0.5
-        result.y = (boxHeight - height) * 0.5
-        break
-      case '1':
-        result.x = 0
-        result.y = 0
-        break
-      case '2':
-        result.x = (boxWidth - width) * 0.5
-        result.y = 0
-        break
-      case '3':
-        result.x = boxWidth - width
-        result.y = 0
-        break
-      case '4':
-        result.x = boxWidth - width
-        result.y = (boxHeight - height) * 0.5
-        break
-      case '5':
-        result.x = boxWidth - width
-        result.y = boxHeight - height
-        break
-      case '6':
-        result.x = (boxWidth - width) * 0.5
-        result.y = boxHeight - height
-        break
-      case '7':
-        result.x = 0
-        result.y = boxHeight - height
-        break
-      case '8':
-        result.x = 0
-        result.y = (boxHeight - height) * 0.5
-        break
-      case '9':
-        const result_location = location(position, boxWidth, boxHeight, width, height)
-        result.x = result_location.x
-        result.y = result_location.y
-        break
-      case '10':
-        const result_center = centerLocation(position, boxWidth, boxHeight, width, height)
-        result.x = result_center.x
-        result.y = result_center.y
-        break
-      default:
-        result.x = (boxWidth - width) * 0.5
-        result.y = (boxHeight - height) * 0.5
-    }
-    result.rotate = parseInt(rotate)
-    return result
-
-    function location(position, boxWidth, boxHeight, width, height) {
-      const result = {
-        x: 0,
-        y: 0
-      }
-      if (position.xAxis.derection === 'left') {
-        result.x = position.xAxis.offset * boxWidth
-      }
-      if (position.xAxis.derection === 'right') {
-        result.x = boxWidth * (1 - position.xAxis.offset) - width
-      }
-      if (position.yAxis.derection === 'top') {
-        result.y = position.yAxis.offset * boxHeight
-      }
-      if (position.yAxis.derection === 'bottom') {
-        result.y = boxHeight * (1 - position.yAxis.offset) - height
-      }
-      return result
-    }
-    // 中心点设置位置
-    function centerLocation(position, boxWidth, boxHeight, width, height) {
-      const result = {
-        x: 0,
-        y: 0
-      }
-      if (position.xAxis.derection === 'left') {
-        result.x = position.xAxis.offset * boxWidth - width * 0.5
-      }
-      if (position.xAxis.derection === 'right') {
-        result.x = boxWidth * (1 - position.xAxis.offset) - width * 0.5
-      }
-      if (position.yAxis.derection === 'top') {
-        result.y = position.yAxis.offset * boxHeight - height * 0.5
-      }
-      if (position.yAxis.derection === 'bottom') {
-        result.y = boxHeight * (1 - position.yAxis.offset) - height * 0.5
-      }
-      return result
-    }
-  }
-  // 缓存贴纸信息
-  storeCoverInfo = (sticker) => {
-    const { currentScene } = this.state
-    const clone_cover = tool.deepClone(sticker)
-    // 贴纸存储不激活状态
-    clone_cover.isActive = false
-    const sceneId = currentScene.sceneId || 'demo_scene'
-    const cacheKey = `${sceneId}_${sticker.id}`
-    this.cache['cover'].set(cacheKey, clone_cover)
-  }
-  handleGetUserInfo = (data) => {
-    // console.log('handleGetUserInfo', data)
-    const { detail: { userInfo } } = data
-    if (userInfo) {
-      service.base.loginAuth(data.detail)
-      globalData.userInfo = userInfo
-      // this.todo()
-    } else {
-      Taro.showToast({
-        title: '请授权',
-        icon: 'success',
-        duration: 2000
-      })
-    }
-  }
-  handelVideoAd() {
-    //.catch((err)=>{console.log(err)})
-    this.setState({
-      isshow: false
-    })
-    this.videoAd = wx.createRewardedVideoAd({ adUnitId: 'adunit-7815bc095ad4a222' })
-    this.videoAd.onLoad(() => { console.log('广告拉取成功') })
-    this.videoAd.onError((err) => { console.log(err) })
-    this.videoAd.onClose((res) => {
-      if (res.isEnded) {
-        this.handleOpenResult()
-      }
-    })
-
-    if (this.videoAd) {
-      this.videoAd.load().then(() => {
-        this.videoAd.show()
-      })
-    }
-  }
-  saveImg() {
-    this.setState({
-      isshow: true,
-      content: '观看完整的视频广告后，才可以保存这张图片哦~',
     })
   }
-  handelCancel() {
-    this.setState({
-      isshow: false
-    })
 
+  handlePlayClick = (data) => {
+    if (!data.themeId) {
+      return
+    }
+    Taro.navigateToMiniProgram({
+      appId: data.themeId,
+      success(res) {
+        // 打开成功
+        console.log('打开成功', res)
+      },
+      fail(res) {
+        console.log('打开失败', res)
+      }
+    })
   }
-  changeNav() {
-    this.app.aldstat.sendEvent('保存后返回首页', '回到首页')
-    Taro.navigateTo({ url: '/pages/home/index' })
+
+  addLike = async (data) => {
+    try {
+      const singlelikedWorkData = await service.share.singleWorkList(this.state.user.worksId)
+      // console.log(88,singlelikedWorkData)
+      let likedNumber
+      if(singlelikedWorkData.result.result.liked === 0) {
+        likedNumber = this.state.likeNumber + 1
+      } else {
+        likedNumber = this.state.likeNumber
+      }
+      const addLiked = await service.share.addLikeWork(this.state.user.worksId,data.uid,data.userToken)
+      if (addLiked.status === 'success') {
+        this.setState({
+          liked: 1,
+          likeNumber: likedNumber
+        })
+      }
+    } catch (error) {
+      console.log(222, error)
+    }
   }
+
+  deleteLike = async (data) => {
+    try {
+      const cancelLiked = await service.share.deleteLike(this.state.user.worksId,data.uid,data.userToken,this.state.user.sessionId)
+      if (cancelLiked.status === 'success') {
+        const likeNum = this.state.likeNumber - 1
+        this.setState({
+          liked: 0,
+          likeNumber: likeNum
+        })
+      }
+    } catch (error) {
+      console.log(222, error)
+    }
+  }
+
+  handleContact (e) {
+    console.log(e.detail)
+  }
+
+
   render() {
-    const { loading, rawImage, frame, customBg, foreground, coverList, sceneList, currentScene, result, canvas } = this.state
+    const { isFromApp, isGoAPP,  isXcx, isPlay, isWorksId,bgImageHeight, bgImageWidth,dialogImageHeight,showDialogWidth,dialogImageWidth,showDialogHeight, shareSourceType, shareSource, videoPoster, width, height, recommendList, originalCompleteImageUrl, confirmText, isshow, savePoint,
+      saveTitlePic, saveTitleVideo, type, checkoutImage, checkoutVideo, morePlayList, user, userXcx, qrCode, frame, canvas, hotMarginTop} = this.state
     return (
-      <View className='page-editor'>
+      <View className='page-share'>
         <Title
-          color="#333"
-          leftStyleObj={{ left: Taro.pxTransform(8) }}
+          leftStyleObj={{ left: Taro.pxTransform(12) }}
           renderLeft={
-            <CustomIcon type="back" theme="dark" onClick={this.pageToHome} />
+            <CustomIcon type="home" theme="dark" onClick={this.pageToHome} />
           }
+          color='#333'
         >懒人抠图</Title>
-        <View className="main">
-          <View className="pic-section">
-            <View className={`raw ${(foreground.remoteUrl && foreground.loaded) ? 'hidden' : ''}`} style={{ width: this.state.drawBoard.width, height: this.state.drawBoard.height }}>
-              <Image src={rawImage.localUrl} style="width:100%;height:100%" mode="aspectFit" />
+        <View className='main-section' style={{marginTop:(this.state.titleHeight + hotMarginTop/2) + 'rpx' }}>
+
+          <View className="addTitle">中国银行&&马卡龙</View>
+
+
+          <View className='wrapPicture'>
+
+
+            {shareSourceType === 'image' && isFromApp && shareSource !== '' && !isWorksId &&
+            <View>
+              <View className="showImage">
+                <View className="blur" style={{backgroundImage: `url(${shareSource})`}}></View>
+                <Image src={shareSource} mode="aspectFill"  className="bgImageVertical" />
+              </View>
             </View>
-            <View style={{ width: this.state.drawBoard.width, height: this.state.drawBoard.height }} className={`crop`} id="crop">
-              {currentScene.type === 'recommend' &&
-              <View className="background-image">
-                <Image
-                  src={currentScene.bgUrl}
-                  style="width:100%;height:100%"
-                  mode="scaleToFill"
-                  onLoad={this.handleBgLoaded}
-                  onClick={this.handleBackgroundClick}
+            }
+            {shareSourceType === 'video' && isFromApp && shareSource !== '' && !isWorksId &&
+            <View className='showImage'>
+              <View className="showImage blur" style={{backgroundImage: `url(${videoPoster})`}}></View>
+              <Video
+                className="bgImageVertical"
+                loop
+                autoplay
+                src={shareSource}
+                poster={videoPoster}
+                objectFit='cover'
+                controls
+              >
+              </Video>
+            </View>
+            }
+            { isXcx && shareSourceType === 'image' &&
+            <View>
+              <View className="showImage">
+                <View className="showImage blur" style={{backgroundImage: `url(${shareSource})`}}></View>
+                <Image src={shareSource} mode="aspectFill"  className="bgImage" />
+              </View>
+            </View>
+            }
+            {isXcx && shareSourceType === 'video' &&
+            <View className='video-wrap showImage'>
+              <View className="blur" style={{backgroundImage: `url(${videoPoster})`}}></View>
+              <Video
+                className="video bgImage"
+                loop
+                autoplay
+                src={shareSource}
+                poster={videoPoster}
+                objectFit='cover'
+                controls
+              >
+              </Video>
+            </View>
+            }
+
+            {
+              (user.shareSourceHeight / user.shareSourceWidth) >= ((bgImageHeight/bgImageWidth)) && user.worksType === 'pic' &&
+              <View className="showImage" id="positionImage">
+                <View className="blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
+                <Image src={user.shareSource}   className="bgImageVertical"
+                       style={{width:`${user.caluWidth}px` }}/>
+              </View>
+            }
+
+            {
+              (user.shareSourceHeight / user.shareSourceWidth) < (bgImageHeight/bgImageWidth) && user.worksType === 'pic' &&
+              <View className="showImage" id="positionImage">
+                <View className="blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
+                <Image src={user.shareSource}   className="bgImageHorizontal"
+                       style={{height:`${user.caluHeight}px` }}
                 />
               </View>
-              }
-              <Sticker
-                ref="foreground"
-                url={foreground.remoteUrl}
-                stylePrams={foreground}
-                framePrams={frame}
-                onChangeStyle={this.handleChangeStyle}
-                onImageLoaded={this.onForegroundLoaded}
-                onTouchstart={this.handleForegroundTouchstart}
-                onTouchend={this.handleForegroundTouchend}
-              />
-              {coverList.map(item => {
-                return <Sticker
-                  key={item.id}
-                  url={item.remoteUrl}
-                  stylePrams={item}
-                  framePrams={frame}
-                  onChangeStyle={this.handleChangeCoverStyle}
-                  onImageLoaded={this.onCoverLoaded}
-                  onTouchstart={this.handleCoverTouchstart}
-                  onTouchend={this.handleCoverTouchend}
-                  onDeleteSticker={this.handleDeleteCover.bind(this, item)}
-                />
-              })}
+            }
+
+            { (user.shareSourceHeight / user.shareSourceWidth) >= ((bgImageHeight/bgImageWidth)) && user.worksType === 'video' && user.type === 'video' &&
+            <View className="showImage" id="positionImage">
+              <View className="blur" style={{backgroundImage: `url(${user.firstFrame})`}}></View>
+              {/* <Image src={user.firstFrame} className="bgImageVertical" style={{width:`${user.caluWidth}px` }}/> */}
+              <Video
+                className="video bgImageVertical"
+                style={{width:`${user.caluWidth}px` }}
+                loop
+                autoplay
+                src={user.shareSource}
+                poster={user.firstFrame}
+                objectFit='cover'
+                controls
+              ></Video>
             </View>
+            }
+
+            { (user.shareSourceHeight / user.shareSourceWidth) < (bgImageHeight/bgImageWidth) && user.worksType === 'video' && user.type === 'video' &&
+            <View className="showImage" id="positionImage">
+              <View className="blur" style={{backgroundImage: `url(${user.firstFrame})`}}></View>
+              {/* <Image src={user.firstFrame} className="bgImageHorizontal" style={{height:`${user.caluHeight}px`}}/> */}
+              <Video
+                className="video bgImageHorizontal"
+                style={{height:`${user.caluHeight}px`}}
+                loop
+                autoplay
+                src={user.shareSource}
+                poster={user.firstFrame}
+                objectFit='cover'
+                controls
+              ></Video>
+            </View>
+            }
+
+            { (user.shareSourceHeight / user.shareSourceWidth) >= ((bgImageHeight/bgImageWidth)) && user.worksType === 'video' && user.type === 'pic' &&
+            <View className="showImage" id="positionImage">
+              <View className="blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
+              <Image src={user.shareSource} className="bgImageVertical" style={{width:`${user.caluWidth}px` }}/>
+            </View>
+            }
+
+            { (user.shareSourceHeight / user.shareSourceWidth) < (bgImageHeight/bgImageWidth) && user.worksType === 'video' && user.type === 'pic' &&
+            <View className="showImage" id="positionImage">
+              <View className="blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
+              <Image src={user.shareSource} className="bgImageHorizontal" style={{height:`${user.caluHeight}px`}}/>
+            </View>
+            }
+
+            {/*<Sticker*/}
+              {/*ref="foreground"*/}
+              {/*url={foreground.remoteUrl}*/}
+              {/*stylePrams={foreground}*/}
+              {/*framePrams={frame}*/}
+              {/*onChangeStyle={this.handleChangeStyle}*/}
+              {/*onImageLoaded={this.onForegroundLoaded}*/}
+              {/*onTouchstart={this.handleForegroundTouchstart}*/}
+              {/*onTouchend={this.handleForegroundTouchend}*/}
+            {/*/>*/}
+            {/*{coverList.map(item => {*/}
+              {/*return <Sticker*/}
+                {/*key={item.id}*/}
+                {/*url={item.remoteUrl}*/}
+                {/*stylePrams={item}*/}
+                {/*framePrams={frame}*/}
+                {/*onChangeStyle={this.handleChangeCoverStyle}*/}
+                {/*onImageLoaded={this.onCoverLoaded}*/}
+                {/*onTouchstart={this.handleCoverTouchstart}*/}
+                {/*onTouchend={this.handleCoverTouchend}*/}
+                {/*onDeleteSticker={this.handleDeleteCover.bind(this, item)}*/}
+              {/*/>*/}
+            {/*})}*/}
+
           </View>
 
-          <MarginTopWrap config={{ large: 60, small: 40, default: 20 }} >
-            <View style="display:flex;margin-top:120rpx">
-              <Button style='flex:1;z-index:2' id='addPhoto' openType="getUserInfo" className="custom-button pink" hoverClass="btn-hover" onGetUserInfo={this.todo}>{this.state.chooseText}</Button>
-              {Taro.getStorageSync('saveNumber').number === 0 ?
-                <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.handleOpenResult} openType="share">分享并保存</Button>
-                : <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.saveImg}>保存</Button>}
-            </View>
-          </MarginTopWrap>
-          {this.state.isshow === true ? <Dialog
-            content={this.state.content}
-            cancelText={this.state.cancelText}
-            confirmText={this.state.confirmText}
-            isshow={this.state.isshow}
-            renderButton={
-              <View className="wx-dialog-footer" style="display:flex;margin-bottom:30rpx">
-                <Button className="wx-dialog-btn" onClick={this.handelCancel} style="flex:1">
-                  {this.state.cancelText}
-                </Button>
-                <Button className="wx-dialog-btn" onClick={this.handelVideoAd} style="flex:1">
-                  {this.state.confirmText}
-                </Button>
+          {/*<View className="userMessage">*/}
+            {/*{*/}
+              {/*(user.userImage) ||  isXcx  || !isWorksId ? <Image className="user" src={user.userImage} /> : <Image className="user" src={titleImage} />*/}
+            {/*}*/}
+            {/*<View className='userName'>{user.userName}</View>*/}
+            {/*{isWorksId &&*/}
+            {/*<Button openType="getUserInfo" onGetUserInfo={this.getUserInfo}  className="likeAuth">*/}
+              {/*{ this.state.liked === 0 && <Image src={like}  className="like" />}*/}
+              {/*{ this.state.liked === 1 && <Image src={isliked}  className="like" />}*/}
+            {/*</Button>*/}
+            {/*}*/}
+            {/*{ isWorksId &&<View style="" className="likeNum">{this.state.likeNumber}</View>}*/}
+            {/*{ isWorksId &&*/}
+            {/*<Button openType="share" className="share wx">*/}
+              {/*<Image src={wx} className="wx"/>*/}
+            {/*</Button>*/}
+            {/*}*/}
+            {/*{ isWorksId && <Image src={pyq} onClick={this.shareHandle} className="pyq"/>}*/}
+          {/*</View>*/}
+
+          <View className="hideIcon">---waiting 隐藏卡片图标 waiting ---</View>
+
+          {
+            isshow === true ?
+              <View className="wx_dialog_container">
+                <View className="wx-mask"></View>
+                <View className="wx-dialog">
+                  {savePoint === true && user.worksType === 'pic' ? <View className="wx-dialog-save">{saveTitlePic}</View> : <View className="wx-dialog-save"></View>}
+                  {savePoint === true && user.worksType === 'video'? <View className="wx-dialog-save">{saveTitleVideo}</View> : <View className="wx-dialog-save"></View>}
+                  <View className="wx-dialog-content" id="dialogSize">
+                    <View className="bgUrl" id="dialogPosition">
+                      {
+                        user.worksType === 'pic' && (user.shareSourceHeight / user.shareSourceWidth) < ((dialogImageHeight/dialogImageWidth)) &&
+                        <Image src={user.shareSource} className="bgUrlSizeHorizontal" style={{height:`${showDialogHeight}px` }}/>
+                      }
+                      {
+                        user.worksType === 'pic' && (user.shareSourceHeight / user.shareSourceWidth) >= ((dialogImageHeight/dialogImageWidth)) &&
+                        <Image src={user.shareSource} className="bgUrlSizeVertical" style={{width:`${showDialogWidth}px` }}/>
+                      }
+                      {
+                        user.worksType === 'video' && (user.shareSourceHeight / user.shareSourceWidth) < ((dialogImageHeight/dialogImageWidth)) && user.type === 'video' &&
+                        <View className="bgUrl">
+                          <View className="blur" style={{backgroundImage: `url(${user.firstFrame})`}}></View>
+                          <Image src={user.firstFrame} className="bgUrlSizeHorizontal" style={{height:`${showDialogHeight}px` }}/>
+                        </View>
+                      }
+                      {
+                        user.worksType === 'video' && (user.shareSourceHeight / user.shareSourceWidth) >= ((dialogImageHeight/dialogImageWidth)) && user.type === 'video' &&
+                        <View className="bgUrl">
+                          <View className="blur" style={{backgroundImage: `url(${user.firstFrame})`}}></View>
+                          <Image src={user.firstFrame} className="bgUrlSizeVertical" style={{width:`${showDialogWidth}px` }}/>
+                        </View>
+                      }
+
+                      {
+                        user.worksType === 'video' && (user.shareSourceHeight / user.shareSourceWidth) < ((dialogImageHeight/dialogImageWidth)) && user.type === 'pic' &&
+                        <View className="bgUrl">
+                          <View className="blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
+                          <Image src={user.firstFrame} className="bgUrlSizeHorizontal" style={{height:`${showDialogHeight}px` }}/>
+                        </View>
+                      }
+                      {
+                        user.worksType === 'video' && (user.shareSourceHeight / user.shareSourceWidth) >= ((dialogImageHeight/dialogImageWidth)) && user.type === 'pic' &&
+                        <View className="bgUrl">
+                          <View className="blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
+                          <Image src={user.firstFrame} className="bgUrlSizeVertical" style={{width:`${showDialogWidth}px` }}/>
+                        </View>
+                      }
+
+                    </View>
+                    <View className="userInfo" id="dialogFooterSize">
+                      {
+                        user.userImage && <Image className="userimage" src={user.userImage} />
+                      }
+                      {
+                        !user.userImage && <Image className="userimage" src={titleImage} />
+                      }
+                      <View className="username">
+                        <View className="userwork"><View className="name">@{user.userName}</View>的作品</View>
+                        {
+                          user.worksType === 'pic' ? <View className="seetwo">{checkoutImage}</View> : <View className="seetwo">{checkoutVideo}</View>
+                        }
+                      </View>
+                      <View className="two">
+                        <Image className="twoCode" src={qrCode} />
+                        <Image className="logo" src={makaron} />
+                      </View>
+                    </View>
+                    <AuthModal />
+                  </View>
+                  <View className="wx-dialog-footer">
+                    <Button className="wx-dialog-btn" onClick={this.handelSave}  style="flex:1" >
+                      {confirmText}
+                    </Button>
+                  </View>
+                </View>
               </View>
-            }
-          /> : ''}
-        </View>
-
-        <View class="canvas-wrap">
-          <Canvas
-            disable-scroll={true}
-            style={`width: ${frame.width * canvas.ratio}px; height: ${frame.height * canvas.ratio}px;`}
-            canvasId={canvas.id} />
-        </View>
-
-        <Loading visible={loading} />
-
-        <View className='newGuide' style={{ display: this.state.hasGuide === false ? 'none' : 'block' }}>
-          <Image src={addTips} alt="" className='tips' style={{ top: this.state.guiderTop + 'px' }} />
-        </View>
-
-        <AuthModal />
-        {result.show &&
-        <ResultModal
-          type='image'
-          image={{
-            url: result.shareImage.localUrl,
-          }}
-          cropHeight={this.state.drawBoard.height}
-          cropWidth={this.state.drawBoard.width}
-          renderButton={
-            <View className="btn-wrap">
-              <Button className="custom-button pink btn-1" hoverClass="btn-hover" id="btnNav" openType="share">继续分享</Button>
-              {this.state.ableToShareToQZone ?
-                <View>
-                  <Button className="custom-button dark btn-2" hoverClass="btn-hover" onClick={this.publishToQzone}>同步到说说</Button>
-                  <Button className="custom-button dark btn-3" hoverClass="btn-hover" onClick={this.handlePlayAgain}>再玩一次</Button>
-                </View> : <View>
-                  <Button className="custom-button dark btn-4" hoverClass="btn-hover" onClick={this.changeNav}>回到首页</Button>
-                </View>}
-            </View>
+              : ''
           }
-        />
-        }
+
+
+          <View className="canvas-wrap">
+            <Canvas
+              disable-scroll={true}
+              style={`width: ${frame.width * canvas.ratio}px; height: ${frame.height * canvas.ratio}px;`}
+              canvasId={canvas.id} />
+          </View>
+
+        </View>
+
+        <View className='sub-section'>
+
+          {
+            this.state.sceneType == 5 ? <View className='originalWrap'>
+              <View className='ImageWrap'>
+                <Image src={originalImageIcon} className='originalIcon' >
+                </Image>
+                <Image className='originalImage' src={originalCompleteImageUrl} mode='aspectFit' onClick={this.swapImag} />
+              </View>
+              <Button
+                className="custom-button pink " hoverClass="btn-hover" style='flex:1'
+                openType="getUserInfo"
+                onGetUserInfo={this.handleGetUserInfo}
+                onClick={this.handleMainButton}
+                formType='submit'>替换人像照片</Button>
+            </View> : <Form onSubmit={this.handleFormSubmit} reportSubmit>
+              {isFromApp && !isPlay?
+                <Button
+                  open-type="contact"
+                  className="custom-button pink"
+                  hoverClass="btnhover"
+                  onClick={this.handleContact}
+                >制作同款作品</Button> :
+                <Button
+                  className="custom-button pink"
+                  hoverClass="btnhover"
+                  openType="getUserInfo"
+                  onGetUserInfo={this.handleGetUserInfo}
+                  onClick={this.handleMainButton}
+                  formType='submit'>我也要玩</Button>
+              }
+            </Form>
+          }
+
+
+
+          <View className='recommend-wrap' style={{ marginTop: hotMarginTop/2 + 'rpx'}}>
+            <View className='recommend-title'>热门作品</View>
+            <RecommendList
+              list={recommendList}
+              onClick={this.handleRecommendClick}
+            />
+          </View>
+
+
+          {/*<View className='recommend-wrap'>*/}
+            {/*<View className='recommend-title'>更多好玩</View>*/}
+            {/*<View className="recommend" >*/}
+              {/*<ScrollView className="scroll" scrollX>*/}
+                {/*{*/}
+                  {/*morePlayList.map((item) => {*/}
+                    {/*return <View className="recommend-item" onClick={this.handlePlayClick.bind(this,item)} >*/}
+                      {/*{*/}
+                        {/*item.sort === 1 &&*/}
+                        {/*<Button className="recommend-button" hoverClass="btn-hover" formType='submit'>*/}
+                          {/*<Image className='recommend-image' src={qlPro} style='width: 100%; height: 100%' mode='scaleToFill'/>*/}
+                        {/*</Button>*/}
+                      {/*}*/}
+                      {/*{*/}
+                        {/*item.sort === 2 &&*/}
+                        {/*<Button className="recommend-button" hoverClass="btn-hover" formType='submit'>*/}
+                          {/*<Image className='recommend-image' src={newYear} style='width: 100%; height: 100%' mode='scaleToFill'/>*/}
+                        {/*</Button>*/}
+                      {/*}*/}
+                      {/*{*/}
+                        {/*item.sort === 3 &&*/}
+                        {/*<Button className="recommend-button" hoverClass="btn-hover" formType='submit'>*/}
+                          {/*<Image className='recommend-image' src={soul} style='width: 100%; height: 100%' mode='scaleToFill'/>*/}
+                        {/*</Button>*/}
+                      {/*}*/}
+                    {/*</View>*/}
+                  {/*})*/}
+                {/*}*/}
+              {/*</ScrollView>*/}
+            {/*</View>*/}
+          {/*</View> */}
+
+
+        </View>
+        {isGoAPP && isFromApp && <BackApp onClick={this.handleOpenApp} styleObj={{marginTop:(this.state.titleHeight + hotMarginTop/2) + 'rpx'} }/>}
+        <AuthModal />
       </View>
     )
   }
 }
 
-export default ZengYJDemo as ComponentClass<PageOwnProps, PageState>
+export default demoZengYJ as ComponentClass<PageOwnProps, PageState>
+

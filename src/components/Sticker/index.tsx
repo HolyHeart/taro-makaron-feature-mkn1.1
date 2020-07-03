@@ -425,6 +425,7 @@ class Sticker extends Component {
     //console.log(stylePrams,'this is actual foreground from sticker')
 
     const styleObj = this.formatStyle(this.props.stylePrams)
+    console.log(styleObj,'this is styleObj this is styleObj');
     // console.log('sticker render', this.state.url)
     return (
       <View
@@ -437,7 +438,7 @@ class Sticker extends Component {
         {this.state.url &&
           <Image
             src={this.state.url}
-            mode="widthFix"
+            mode="scaleToFill"
             style="width:100%;height:100%"
             onLoad={this.handleImageLoaded}
             onTouchstart={this.stickerOntouchstart}

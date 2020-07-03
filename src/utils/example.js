@@ -76,8 +76,7 @@ export function renderExample1(canvas, THREE, obj, url) {
         require('../assets/images/avatar.jpg'),
         (texture) => {
           //   console.log(texture, 'texture', objCache.children[0].material.map)
-          texture.wrapS = THREE.RepeatWrapping
-          texture.wrapT = THREE.RepeatWrapping
+          texture.minFilter = THREE.LinearFilter //解决图片2次幂问题
           try {
             texture.image.currentSrc = texture.image.src
           } catch (e) {
@@ -128,8 +127,8 @@ export function renderExample1(canvas, THREE, obj, url) {
     camera.position.z = 30
   }
   function animate() {
-    cube && (cube.rotation.x += 0.01)
-    cube && (cube.rotation.y += 0.01)
+    // cube && (cube.rotation.x += 0.01)
+    // cube && (cube.rotation.y += 0.01)
     timer = canvas.requestAnimationFrame(animate)
     renderer.render(scene, camera)
   }

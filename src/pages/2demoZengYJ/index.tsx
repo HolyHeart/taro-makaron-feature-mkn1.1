@@ -65,7 +65,7 @@ type PageState = {
 
 type IProps = PageStateProps & PageDispatchProps & PageOwnProps
 
-interface Editor {
+interface Bank {
   props: IProps;
 }
 

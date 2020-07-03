@@ -73,7 +73,7 @@ export function renderExample1(canvas, THREE, obj, url) {
       //   scene.add(objCache)
 
       const texture = new THREE.TextureLoader().load(
-        require('../assets/images/avatar.jpg'),
+        require('../assets/images/avatar.png'),
         (texture) => {
           //   console.log(texture, 'texture', objCache.children[0].material.map)
           texture.minFilter = THREE.LinearFilter //解决图片2次幂问题
@@ -104,6 +104,8 @@ export function renderExample1(canvas, THREE, obj, url) {
           //     'show',
           //     objCache.children[0].material.map.image.currentSrc,
           //   )
+          objCache.rotation.z = (180 * Math.PI) / 180
+          objCache.rotation.y = (180 * Math.PI) / 180
           scene.add(objCache)
         },
         (err) => {

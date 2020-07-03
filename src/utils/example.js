@@ -20,12 +20,13 @@ export function renderExample1(canvas, THREE, obj, url) {
       1000,
     )
     scene = new THREE.Scene()
-    scene.background = new THREE.Color(0xf0f0f0)
+    // scene.background = new THREE.Color(0xf0f0f0)
 
     if (!url) {
-      renderer = new THREE.WebGLRenderer({ antialias: true })
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
       renderer.setPixelRatio(wx.getSystemInfoSync().pixelRatio)
       renderer.setSize(canvas.width, canvas.height)
+      renderer.setClearAlpha(0.0)
       rendererCache = renderer
     } else {
       renderer = rendererCache

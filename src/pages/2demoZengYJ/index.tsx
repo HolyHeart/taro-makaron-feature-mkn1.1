@@ -1,9 +1,9 @@
 import { ComponentClass } from 'react'
 import Taro, { Component, Config } from '@tarojs/taro'
-import { View, Button, Image, Canvas } from '@tarojs/components'
+import { View, Button, Image, Canvas, Text } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 
-import { getSystemInfo } from '@/model/actions/global'
+import { getSystemInfo, setSceneList } from '@/model/actions/global'
 import tool from '@/utils/tool'
 import work from '@/utils/work'
 import Title from '@/components/Title'
@@ -23,7 +23,7 @@ import { createCache } from '@/services/cache'
 import './index.less'
 import image_code from '@/assets/images/code.png'
 import image_versa from '@/assets/images/versa.png'
-import addTips from "@/assets/images/tips_addpic@2x.png";
+import addTips from '@/assets/images/tips_addpic@2x.png'
 import Dialog from '@/components/Dialog'
 
 // const mock_path = 'https://static01.versa-ai.com/upload/783272fc1375/999deac02e85f3ea.png'
@@ -32,59 +32,66 @@ import Dialog from '@/components/Dialog'
 type PageStateProps = {
   global: {
     system: object
+    sceneList: []
   }
 }
 
 type PageDispatchProps = {
   getSystemInfo: (data: object) => void
+  setSceneList: (data: object) => void
 }
 
 type PageOwnProps = {}
 
 type PageState = {
   foreground: {
-    remoteUrl: string,
-    zIndex: number,
-    width: number,
-    height: number,
-    x: number,
-    y: number,
-    rotate: number,
-    originWidth: number,
-    originHeight: number,
-    autoWidth: number,
-    autoHeight: number,
-    autoScale: number,
-    fixed: boolean,
+    remoteUrl: string
+    zIndex: number
+    width: number
+    height: number
+    x: number
+    y: number
+    rotate: number
+    originWidth: number
+    originHeight: number
+    autoWidth: number
+    autoHeight: number
+    autoScale: number
+    fixed: boolean
     visible: boolean
-  },
+  }
   coverList: Array<object>
 }
 
 type IProps = PageStateProps & PageDispatchProps & PageOwnProps
 
-interface Editor {
-  props: IProps;
+interface Bank {
+  props: IProps
 }
 
-@connect(({ global }) => ({
-  global
-}), (dispatch) => ({
-  getSystemInfo(data) {
-    dispatch(getSystemInfo(data))
-  }
-}))
-
-class zengyjModel2 extends Component {
+@connect(
+  ({ global }) => ({
+    global,
+  }),
+  (dispatch) => ({
+    getSystemInfo(data) {
+      dispatch(getSystemInfo(data))
+    },
+    setSceneList(data) {
+      dispatch(setSceneList(data))
+    },
+  }),
+)
+class Bank extends Component {
   config: Config = {
     navigationBarTitleText: '懒人抠图',
     disableScroll: true,
-    enablePullDownRefresh: false
+    enablePullDownRefresh: false,
   }
   state = {
     rawImage: {
       localUrl: '',
-      remoteUrl: ''
+      remoteUrl: '',
     },
     content: '',
     isshow: false,
@@ -111,7 +118,8 @@ class zengyjModel2 extends Component {
       rotate: 0,
     },
     chooseText: '添加人像照片',
-    foreground: {  //存储任务切图信息
+    foreground: {
+      //存储任务切图信息
       id: 'foreground',
       remoteUrl: '',
       zIndex: 2,
@@ -130,7 +138,8 @@ class zengyjModel2 extends Component {
       loaded: false, // 是否加载完毕
       visible: true, // 是否显示
     },
-    coverList: [  //存储边框信息
+    coverList: [
+      //存储边框信息
       // {
       // id: 'cover-01',
       // remoteUrl: 'https://static01.versa-ai.com/images/process/segment/2019/01/07/a102310e-122a-11e9-b5ef-00163e023476.png',
@@ -158,7 +167,7 @@ class zengyjModel2 extends Component {
     },
     canvas: {
       id: 'shareCanvas',
-      ratio: 3
+      ratio: 3,
     },
     loading: false,
     result: {
@@ -170,9 +179,9 @@ class zengyjModel2 extends Component {
     },
     drawBoard: {
       width: '700rpx',
-      height: '420rpx'
+      height: '420rpx',
     },
-    ableToShareToQZone: false
+    ableToShareToQZone: false,
   }
 
   app = Taro.getApp()
@@ -194,12 +203,21 @@ class zengyjModel2 extends Component {
     number: 0,
     date: 0,
   }
-  componentWillMount() { }
+  componentWillMount() {
+    const { global = {} } = this.props
+    let { sceneList } = global
+    this.setState({
+      sceneList,
+    })
+  }
   componentDidMount() {
     wx.cloud.init()
     this._initPage()
     this.canIShareToQQZone()
-    if (Taro.getStorageSync('saveNumber') === '' || Taro.getStorageSync('saveNumber').number === 0) {
+    if (
+      Taro.getStorageSync('saveNumber') === '' ||
+      Taro.getStorageSync('saveNumber').number === 0
+    ) {
       Taro.setStorageSync('saveNumber', this.saveNumber)
     }
     const date1 = new Date()
@@ -207,7 +225,7 @@ class zengyjModel2 extends Component {
     if (date1.getTime() - Taro.getStorageSync('saveNumber').date > 86400000) {
       this.saveNumber = {
         number: 0,
-        date: date1.getTime()
+        date: date1.getTime(),
       }
       Taro.setStorageSync('saveNumber', this.saveNumber)
     }
@@ -215,14 +233,17 @@ class zengyjModel2 extends Component {
   componentWillReceiveProps(nextProps) {
     // console.log(this.props, nextProps)
   }
-  componentWillUnmount() { }
-  componentDidShow() { }
-  componentDidHide() { }
+  componentWillUnmount() {}
+  componentDidShow() {}
+  componentDidHide() {}
   onShareAppMessage(res) {
     // if (res.from === 'button') {
     //   console.log('页面按钮分享', res.target)
     // }
-    this.app.aldstat.sendEvent('生成页分享', { '场景名': this.state.currentScene.sceneName, '场景Id': this.state.currentScene.sceneId })
+    this.app.aldstat.sendEvent('生成页分享', {
+      场景名: this.state.currentScene.sceneName,
+      场景Id: this.state.currentScene.sceneId,
+    })
     const { currentScene, result = {} } = this.state
     const { shareImage = {} } = result
     const shareContent = currentScene.shareContent || ''
@@ -265,11 +286,11 @@ class zengyjModel2 extends Component {
       if (!firstViewEditor) {
         const query = wx.createSelectorQuery()
         query.select('#addPhoto').boundingClientRect()
-        query.selectViewport().scrollOffset()//获取滚动区域，
+        query.selectViewport().scrollOffset() //获取滚动区域，
         query.exec((res) => {
           this.setState({
             hasGuide: true,
-            guiderTop: res[0].top - 77 - 15
+            guiderTop: res[0].top - 77 - 15,
           })
         })
         Taro.setStorageSync('firstViewEditor', true)
@@ -277,19 +298,17 @@ class zengyjModel2 extends Component {
     })
   }
 
-
   // qq空间分享兼容性检测
   canIShareToQQZone = () => {
     if (wx.canIUse('openQzonePublish')) {
       console.log('🔥🔥🔥可以分享到空间')
       this.setState({
-        ableToShareToQZone: true
+        ableToShareToQZone: true,
       })
     } else {
       console.log('微信版本小程序不支持分享到QQ空间')
     }
   }
-
 
   // 公共方法
   pageToHome = () => {
@@ -297,73 +316,84 @@ class zengyjModel2 extends Component {
   }
   showLoading = () => {
     this.setState({
-      loading: true
+      loading: true,
     })
   }
   hideLoading = () => {
     this.setState({
-      loading: false
+      loading: false,
     })
   }
   setStateTarget = (key, value = {}, callback?: () => void) => {
     const target = this.state[key]
-    this.setState({
-      [key]: {
-        ...target,
-        ...value
-      }
-    }, () => {
-      typeof callback === 'function' && callback()
-    })
+    this.setState(
+      {
+        [key]: {
+          ...target,
+          ...value,
+        },
+      },
+      () => {
+        typeof callback === 'function' && callback()
+      },
+    )
   }
 
   calFrameRect = () => {
-    work.getDomRect('crop', rect => {
-      this.setState({
-        frame: {
-          width: rect.width,
-          height: rect.height,
-          left: rect.left,
-          top: rect.top,
-        }
-      }, () => {
-        this.initCoverData()
-        if (Taro.getStorageSync('lastSeparateImage')) {
-          const { foreground } = this.state
-          this.setState({
-            foreground: {
-              ...foreground,
-              remoteUrl: Taro.getStorageSync('lastSeparateImage')
-            }
-          })
-        }
-      })
+    work.getDomRect('crop', (rect) => {
+      this.setState(
+        {
+          frame: {
+            width: rect.width,
+            height: rect.height,
+            left: rect.left,
+            top: rect.top,
+          },
+        },
+        () => {
+          this.initCoverData()
+          if (Taro.getStorageSync('lastSeparateImage')) {
+            const { foreground } = this.state
+            this.setState({
+              foreground: {
+                ...foreground,
+                remoteUrl: Taro.getStorageSync('lastSeparateImage'),
+              },
+            })
+          }
+        },
+      )
     })
   }
 
   initRawImage = () => {
     const { rawImage } = this.state
-    globalData.choosedImage = globalData.choosedImage || 'http://tmp/wxcfe56965f4d986f0.o6zAJsztn2DIgXEGteELseHpiOtU.6gRGsIZIvyytf45cffd60a62912bada466d51e03f6fa.jpg'
+    globalData.choosedImage =
+      globalData.choosedImage ||
+      'http://tmp/wxcfe56965f4d986f0.o6zAJsztn2DIgXEGteELseHpiOtU.6gRGsIZIvyytf45cffd60a62912bada466d51e03f6fa.jpg'
     this.setState({
       rawImage: {
         ...rawImage,
-        localUrl: globalData.choosedImage
-      }
+        localUrl: globalData.choosedImage,
+      },
     })
   }
   // 初始化场景信息
   initSceneData = async (callback) => {
-    const currentScene = globalData.sceneConfig//来自于主页给每一项设置的，
-    console.log(currentScene,'initiating the first scene&&adding')
-    this.setState({
-      currentScene: {
-        ...this.state.currentScene,
-        ...currentScene,
-        type: 'recommend'
-      }
-    }, () => {
-      typeof callback === 'function' && callback()
-    })
+    const currentScene = globalData.sceneConfig //来自于主页给每一项设置的，
+    console.log(currentScene, 'initiating the first scene&&adding')
+    this.setState(
+      {
+        currentScene: {
+          ...this.state.currentScene,
+          ...currentScene,
+          type: 'recommend',
+        },
+      },
+      () => {
+        typeof callback === 'function' && callback()
+      },
+    )
   }
   // 初始化贴纸
   initCoverData = () => {
@@ -371,12 +401,12 @@ class zengyjModel2 extends Component {
     // const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
     const sceneConfig = tool.JSON_parse(currentScene.sceneConfig)
     const { cover = {} } = sceneConfig
-    console.log(cover,'covering this is cover ,this is 边框') //是边框的信息
+    console.log(cover, 'covering this is cover ,this is 边框') //是边框的信息
     this.themeData.rawCoverList = cover.list || []
     const coverList = work.formatRawCoverList(this.themeData.rawCoverList)
 
     this.setState({
-      coverList: coverList
+      coverList: coverList,
     })
     // console.log('initCoverData cover', cover, coverList)
   }
@@ -386,27 +416,30 @@ class zengyjModel2 extends Component {
     let separateRes
     try {
       console.log('trying trying trying')
-      separateRes = await service.core.separateLocalImg(globalData.choosedImage, {
-        type: -1,
-        loading: true,
-        showLoading: () => {
-          // console.log('showLoading')
-          // Taro.showLoading({
-          //   title: '照片变身中...',
-          //   mask: true,
-          // })
-          this.showLoading()
+      separateRes = await service.core.separateLocalImg(
+        globalData.choosedImage,
+        {
+          type: -1,
+          loading: true,
+          showLoading: () => {
+            // console.log('showLoading')
+            // Taro.showLoading({
+            //   title: '照片变身中...',
+            //   mask: true,
+            // })
+            this.showLoading()
+          },
+          hideLoading: () => {
+            // console.log('hideLoading')
+            // Taro.hideLoading()
+            if (this.state.foreground.loaded) {
+              this.hideLoading()
+            }
+          },
         },
-        hideLoading: () => {
-          // console.log('hideLoading')
-          // Taro.hideLoading()
-          if (this.state.foreground.loaded) {
-            this.hideLoading()
-          }
-        }
-      })// 得到已经分割好的图片
+      ) // 得到已经分割好的图片
 
-      console.log(separateRes,'this is first separateRes'); //部分url
+      console.log(separateRes, 'this is first separateRes') //部分url
 
       const { cateImageDict = {} } = separateRes.result || {}
 
@@ -431,11 +464,10 @@ class zengyjModel2 extends Component {
         chooseText: '重新上传人像',
         foreground: {
           ...foreground,
-          remoteUrl: res.separateUrl
-        }
+          remoteUrl: res.separateUrl,
+        },
       })
     })
-
   }
 
   // 根据场景决定头像
@@ -447,18 +479,20 @@ class zengyjModel2 extends Component {
     // 判断分离的是全身还是头像    //adding by YUjinZENG-explanation segmentType是导入数据的时候就定义好了的
     let separateUrl = ''
     let separateMaskUrl = ''
-    console.log(currentScene,'currentScenceing---ing')
-    if (currentScene.segmentType === 1) { //目前的数据都是0；所以下面的选项也不影响
-      separateUrl = imageHost + separateResult.cateImageDict['16-1']//['16-1']没有这个key啊
+    console.log(currentScene, 'currentScenceing---ing')
+    if (currentScene.segmentType === 1) {
+      //目前的数据都是0；所以下面的选项也不影响
+      separateUrl = imageHost + separateResult.cateImageDict['16-1'] //['16-1']没有这个key啊
       separateMaskUrl = imageHost + separateResult.maskImageDict['16-1']
     } else {
       separateUrl = imageHost + separateResult.cateImageDict['16']
       separateMaskUrl = imageHost + separateResult.maskImageDict['16']
     }
-    typeof callback === 'function' && callback({
-      separateUrl, //远程请求的链接
-      separateMaskUrl
-    })
+    typeof callback === 'function' &&
+      callback({
+        separateUrl, //远程请求的链接
+        separateMaskUrl,
+      })
   }
 
   // 背景
@@ -469,37 +503,47 @@ class zengyjModel2 extends Component {
   // 自定义背景
   onCustomBgLoaded = (detail: object) => {
     const { width, height } = detail
-    this.setStateTarget('customBg', {
-      originWidth: width,
-      originHeight: height
-    }, () => {
-      this.customBgAuto()
-    })
+    this.setStateTarget(
+      'customBg',
+      {
+        originWidth: width,
+        originHeight: height,
+      },
+      () => {
+        this.customBgAuto()
+      },
+    )
   }
   handleBgLoaded = ({ detail }) => {
-    console.log(detail)//背景图片的尺寸-eg：背景图 900,1200---整个框包括白板也是这么大
-    if ((detail.width / detail.height) >= (3 / 4)) {
-      this.setState({
-        drawBoard: {
-          width: '760rpx',
-          height: '420rpx'//`${detail.height * 345 / detail.width * 2}rpx` //690 920
-        }
-      }, () => {
-        setTimeout(() => {
-          this.calFrameRect()
-        }, 250);
-      })
+    console.log(detail) //背景图片的尺寸-eg：背景图 900,1200---整个框包括白板也是这么大
+    if (detail.width / detail.height >= 3 / 4) {
+      this.setState(
+        {
+          drawBoard: {
+            width: '760rpx',
+            height: '420rpx', //`${detail.height * 345 / detail.width * 2}rpx` //690 920
+          },
+        },
+        () => {
+          setTimeout(() => {
+            this.calFrameRect()
+          }, 250)
+        },
+      )
     } else {
-      this.setState({
-        drawBoard: {
-          height: '760rpx',
-          width: '420rpx'//`${detail.width * 460 / detail.height * 2}rpx`
-        }
-      }, () => {
-        setTimeout(() => {
-          this.calFrameRect()
-        }, 250);
-      })
+      this.setState(
+        {
+          drawBoard: {
+            height: '760rpx',
+            width: '420rpx', //`${detail.width * 460 / detail.height * 2}rpx`
+          },
+        },
+        () => {
+          setTimeout(() => {
+            this.calFrameRect()
+          }, 250)
+        },
+      )
     }
   }
   handleChangeCustomBgStyle = (data) => {
@@ -518,13 +562,15 @@ class zengyjModel2 extends Component {
       data.y = frame.height - data.height
     }
     const { customBg } = this.state
-    this.setState({
-      customBg: {
-        ...customBg,
-        ...data
-      }
-    }, () => {
-    })
+    this.setState(
+      {
+        customBg: {
+          ...customBg,
+          ...data,
+        },
+      },
+      () => {},
+    )
   }
   handleCustomBgTouchstart = () => {
     // console.log('handleCustomBgTouchstart')
@@ -539,24 +585,30 @@ class zengyjModel2 extends Component {
     //console.log('handleForegroundLoaded', detail, item) // item 就是foreground存的信息
     this.hideLoading()
     const { width, height } = detail
-    this.setStateTarget('foreground', {
-      originWidth: width,
-      originHeight: height,
-      loaded: true
-    }, () => {
-      this.foregroundAuto()
-    })
+    this.setStateTarget(
+      'foreground',
+      {
+        originWidth: width,
+        originHeight: height,
+        loaded: true,
+      },
+      () => {
+        this.foregroundAuto()
+      },
+    )
   }
   handleChangeStyle = (data) => {
     const { foreground } = this.state
-    console.log(data,'====== this is to check data =====')
-    this.setState({
-      foreground: {
-        ...foreground,
-        ...data
-      }
-    }, () => {
-    })
+    console.log(data, '====== this is to check data =====')
+    this.setState(
+      {
+        foreground: {
+          ...foreground,
+          ...data,
+        },
+      },
+      () => {},
+    )
   }
   handleForegroundTouchstart = (sticker) => {
     // console.log('handleForegroundTouchstart', sticker)
@@ -572,12 +624,12 @@ class zengyjModel2 extends Component {
     const { width, height } = detail
     const originInfo = {
       originWidth: width,
-      originHeight: height
+      originHeight: height,
     }
     this.coverAuto(originInfo, item)
   }
   handleChangeCoverStyle = (data) => {
-    console.log(data,'---------this is to check data to check id -------')
+    console.log(data, '---------this is to check data to check id -------')
     const { id } = data
     const { coverList } = this.state
     coverList.forEach((v, i) => {
@@ -586,7 +638,7 @@ class zengyjModel2 extends Component {
       }
     })
     this.setState({
-      coverList: coverList
+      coverList: coverList,
     })
   }
   handleCoverTouchstart = (sticker) => {
@@ -597,7 +649,7 @@ class zengyjModel2 extends Component {
   handleCoverTouchend = (sticker) => {
     // console.log('handleCoverTouchend', sticker)
     this.storeCoverInfo(sticker)
-    this.app.aldstat.sendEvent('贴纸使用', { '贴纸Id': sticker.id })
+    this.app.aldstat.sendEvent('贴纸使用', { 贴纸Id: sticker.id })
   }
   handleDeleteCover = (sticker) => {
     // console.log('handleDeleteCover', sticker)
@@ -608,14 +660,14 @@ class zengyjModel2 extends Component {
         coverList[i] = {
           ...v,
           deleted: true,
-          visible: false
+          visible: false,
         }
       }
     })
     this.setState({
-      coverList: coverList
+      coverList: coverList,
     })
-    this.app.aldstat.sendEvent('贴纸删除', { '贴纸Id': sticker.id })
+    this.app.aldstat.sendEvent('贴纸删除', { 贴纸Id: sticker.id })
   }
 
   // 更换场景
@@ -624,27 +676,39 @@ class zengyjModel2 extends Component {
     if (currentScene.sceneId === scene.sceneId) {
       return
     }
-    this.setState({
-      currentScene: {
-        ...currentScene,
-        ...scene,
-        type: 'recommend'
-      }
-    }, () => {
-      // console.log('handleChooseScene', this.state.currentScene)
-      this.foregroundAuto()
-      this.initCoverData()
-      this.app.aldstat.sendEvent('选择场景', { '场景名': this.state.currentScene.sceneName, '场景Id': this.state.currentScene.sceneId })
-    })
+    this.setState(
+      {
+        currentScene: {
+          ...currentScene,
+          ...scene,
+          type: 'recommend',
+        },
+      },
+      () => {
+        // console.log('handleChooseScene', this.state.currentScene)
+        this.foregroundAuto()
+        this.initCoverData()
+        this.app.aldstat.sendEvent('选择场景', {
+          场景名: this.state.currentScene.sceneName,
+          场景Id: this.state.currentScene.sceneId,
+        })
+      },
+    )
   }
   // 自定义场景
   handleChooseCustom = () => {
     work.chooseImage({
       onTap: (index) => {
         if (index === 0) {
-          this.app.aldstat.sendEvent('自定义背景上传人像选择拍摄照片', '选择拍摄')
+          this.app.aldstat.sendEvent(
+            '自定义背景上传人像选择拍摄照片',
+            '选择拍摄',
+          )
         } else if (index === 1) {
-          this.app.aldstat.sendEvent('自定义背景上传人像选择相册照片', '选择相册')
+          this.app.aldstat.sendEvent(
+            '自定义背景上传人像选择相册照片',
+            '选择相册',
+          )
         }
       },
       onSuccess: (path) => {
@@ -657,20 +721,23 @@ class zengyjModel2 extends Component {
           shareContent: '',
           thumbnailUrl: path,
         }
-        this.setState({
-          currentScene: {
-            ...currentScene,
-            ...customScene
+        this.setState(
+          {
+            currentScene: {
+              ...currentScene,
+              ...customScene,
+            },
+            customBg: {
+              ...this.state.customBg,
+              localUrl: path,
+            },
+            coverList: [],
           },
-          customBg: {
-            ...this.state.customBg,
-            localUrl: path
+          () => {
+            // console.log('handleChooseCustom', this.state.currentScene)
           },
-          coverList: []
-        }, () => {
-          // console.log('handleChooseCustom', this.state.currentScene)
-        })
-      }
+        )
+      },
     })
   }
 
@@ -685,42 +752,47 @@ class zengyjModel2 extends Component {
     if (this.isSaving) {
       return
     }
-    this.app.aldstat.sendEvent('保存图片或视频', { '场景名': this.state.currentScene.sceneName, '场景Id': this.state.currentScene.sceneId })
+    this.app.aldstat.sendEvent('保存图片或视频', {
+      场景名: this.state.currentScene.sceneName,
+      场景Id: this.state.currentScene.sceneId,
+    })
     Taro.showLoading({
       title: '照片生成中...',
       mask: true,
     })
     const mySaveNumber = {
       number: Taro.getStorageSync('saveNumber').number + 1,
-      date: Taro.getStorageSync('saveNumber').date
+      date: Taro.getStorageSync('saveNumber').date,
     }
     Taro.setStorageSync('saveNumber', mySaveNumber)
     this.isSaving = true
     const canvasImageUrl = await this.createCanvas()
-    console.log(canvasImageUrl,'这是canvasImageUrl')//图片的本地地址
+    console.log(canvasImageUrl, '这是canvasImageUrl') //图片的本地地址
     Taro.hideLoading()
     this.isSaving = false
-    this.setState({
-      result: {
-        shareImage: {
-          localUrl: canvasImageUrl,
-          remoteUrl: '',
-        },
-        show: true
-      }
-    }, async () => {
-      const { url } = await service.base.upload(canvasImageUrl)
-      this.setState({
+    this.setState(
+      {
         result: {
-          show: this.state.result.show,
           shareImage: {
             localUrl: canvasImageUrl,
-            remoteUrl: url, //获得远端的url
-          }
-        }
-      })
-    })
-
+            remoteUrl: '',
+          },
+          show: true,
+        },
+      },
+      async () => {
+        const { url } = await service.base.upload(canvasImageUrl)
+        this.setState({
+          result: {
+            show: this.state.result.show,
+            shareImage: {
+              localUrl: canvasImageUrl,
+              remoteUrl: url, //获得远端的url
+            },
+          },
+        })
+      },
+    )
 
     // 保存图片到相册
     work.saveSourceToPhotosAlbum({
@@ -731,12 +803,12 @@ class zengyjModel2 extends Component {
         Taro.showToast({
           title: '保存成功!',
           icon: 'success',
-          duration: 2000
+          duration: 2000,
         })
       },
       onAuthFail: () => {
         Taro.authModal({
-          open: true
+          open: true,
         })
         this.setResultModalStatus(false)
       },
@@ -744,9 +816,9 @@ class zengyjModel2 extends Component {
         Taro.showToast({
           title: '保存失败!',
           icon: 'success',
-          duration: 2000
+          duration: 2000,
         })
-      }
+      },
     })
   }
   // 再玩一次
@@ -760,7 +832,7 @@ class zengyjModel2 extends Component {
           remoteUrl: '',
           localUrl: '',
         },
-      }
+      },
     })
   }
 
@@ -768,15 +840,17 @@ class zengyjModel2 extends Component {
 
   publishToQzone = () => {
     const { currentScene } = this.state
-    const shareContent = currentScene.shareContent || (globalData.themeData && globalData.themeData.shareContent)
+    const shareContent =
+      currentScene.shareContent ||
+      (globalData.themeData && globalData.themeData.shareContent)
     qq.openQzonePublish({
       text: shareContent,
       media: [
         {
           type: 'photo',
-          path: this.state.result.shareImage.localUrl
-        }
-      ]
+          path: this.state.result.shareImage.localUrl,
+        },
+      ],
     })
   }
 
@@ -785,8 +859,8 @@ class zengyjModel2 extends Component {
     result.show = flag
     this.setState({
       result: {
-        ...result
-      }
+        ...result,
+      },
     })
   }
 
@@ -803,7 +877,8 @@ class zengyjModel2 extends Component {
       context.draw() //【有点像将之前的设置保存到context中】
       //将生成好的图片保存到本地，需要延迟一会，绘制期间耗时
       setTimeout(function () {
-        Taro.canvasToTempFilePath({ //存储照片
+        Taro.canvasToTempFilePath({
+          //存储照片
           canvasId: canvas.id,
           fileType: 'jpg',
           // 解决vivo手机模糊bug，强制图片质量为原图
@@ -815,9 +890,8 @@ class zengyjModel2 extends Component {
           fail: function (res) {
             reject(res)
           },
-          complete: function () {
-          }
-        });
+          complete: function () {},
+        })
       }, 400)
     })
   }
@@ -825,11 +899,15 @@ class zengyjModel2 extends Component {
   canvasDrawRecommend = async (context) => {
     const { currentScene, frame, canvas } = this.state
 
-    console.log(frame,'frame ===width===height===frame')
+    console.log(frame, 'frame ===width===height===frame')
 
     const postfix = '?x-oss-process=image/resize,h_748,w_560'
     const { ratio = 3 } = canvas
-    const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
+    const sceneInfo = work.getSceneInfoById(
+      currentScene.sceneId,
+      this.themeData.sceneList,
+      'sceneId',
+    )
     let sceneConfig = {}
     try {
       sceneConfig = tool.JSON_parse(sceneInfo.sceneConfig)
@@ -846,7 +924,13 @@ class zengyjModel2 extends Component {
       return
     }
     //防止锯齿，绘的图片是所需图片的3倍
-    context.drawImage(localBgImagePath, 0, 0, frame.width * ratio, frame.height * ratio)
+    context.drawImage(
+      localBgImagePath,
+      0,
+      0,
+      frame.width * ratio,
+      frame.height * ratio,
+    )
     // 绘制元素
     await this.canvasDrawElement(context, ratio)
     // 绘制二维码
@@ -860,7 +944,13 @@ class zengyjModel2 extends Component {
     // 自定义背景为本地图片，不需要下载
     const localBgImagePath = customBg.localUrl
     //防止锯齿，绘的图片是所需图片的3倍
-    context.drawImage(localBgImagePath, customBg.x * ratio, customBg.y * ratio, customBg.width * ratio, customBg.height * ratio)
+    context.drawImage(
+      localBgImagePath,
+      customBg.x * ratio,
+      customBg.y * ratio,
+      customBg.width * ratio,
+      customBg.height * ratio,
+    )
     // 绘制元素
     await this.canvasDrawElement(context, ratio)
     // 绘制二维码
@@ -868,7 +958,13 @@ class zengyjModel2 extends Component {
   }
   // 绘制贴纸，文字，覆盖层所有元素
   canvasDrawElement = async (context, ratio) => {
-    const { currentScene, foreground, frame, canvas, coverList = [] } = this.state
+    const {
+      currentScene,
+      foreground,
+      frame,
+      canvas,
+      coverList = [],
+    } = this.state
     // 收集所有元素进行排序
     let elements: Array<any> = []
     const element_foreground = {
@@ -885,20 +981,22 @@ class zengyjModel2 extends Component {
     // 收集人物
     elements.push(element_foreground)
     // 收集贴纸
-    coverList.filter(v => !v.deleted).forEach(v => {
-      const element_cover = {
-        type: 'cover',
-        zIndex: v.zIndex,
-        id: v.id,
-        remoteUrl: v.remoteUrl,
-        width: v.width * ratio,
-        height: v.height * ratio,
-        x: v.x * ratio,
-        y: v.y * ratio,
-        rotate: v.rotate,
-      }
-      elements.push(element_cover)
-    })
+    coverList
+      .filter((v) => !v.deleted)
+      .forEach((v) => {
+        const element_cover = {
+          type: 'cover',
+          zIndex: v.zIndex,
+          id: v.id,
+          remoteUrl: v.remoteUrl,
+          width: v.width * ratio,
+          height: v.height * ratio,
+          x: v.x * ratio,
+          y: v.y * ratio,
+          rotate: v.rotate,
+        }
+        elements.push(element_cover)
+      })
     // 对元素进行排序
     elements.sort((a, b) => {
       return a.zIndex - b.zIndex
@@ -919,7 +1017,7 @@ class zengyjModel2 extends Component {
     function drawElement({ localUrl, width, height, x, y, rotate }) {
       context.save()
       context.translate(x + 0.5 * width, y + 0.5 * height)
-      context.rotate(rotate * Math.PI / 180)
+      context.rotate((rotate * Math.PI) / 180)
       context.drawImage(localUrl, -0.5 * width, -0.5 * height, width, height)
       context.restore()
       context.stroke()
@@ -978,11 +1076,11 @@ class zengyjModel2 extends Component {
     const { type, ids = [] } = options
     const { coverList } = this.state
     if (type === 'all') {
-      coverList.forEach(v => {
+      coverList.forEach((v) => {
         v['isActive'] = value
       })
     } else {
-      coverList.forEach(v => {
+      coverList.forEach((v) => {
         if (ids.indexOf(v.id) > -1) {
           v['isActive'] = value
         } else {
@@ -991,7 +1089,7 @@ class zengyjModel2 extends Component {
       })
     }
     this.setState({
-      coverList
+      coverList,
     })
   }
 
@@ -1011,7 +1109,7 @@ class zengyjModel2 extends Component {
       x: 0,
       y: 0,
     }
-    if ((originWidth / originHeight) > (frame.width / frame.height)) {
+    if (originWidth / originHeight > frame.width / frame.height) {
       // 图片宽高比大于框
       // 将图片高度放大为与框相同，宽度超出框
       result.autoScale = frame.width / originWidth
@@ -1027,14 +1125,17 @@ class zengyjModel2 extends Component {
     result.height = result.autoHeight
     result.x -= (result.width - frame.width) * 0.5
     result.y -= (result.height - frame.height) * 0.5
-    this.setState({
-      customBg: {
-        ...this.state.customBg,
-        ...result
-      }
-    }, () => {
-      typeof callback === 'function' && callback()
-    })
+    this.setState(
+      {
+        customBg: {
+          ...this.state.customBg,
+          ...result,
+        },
+      },
+      () => {
+        typeof callback === 'function' && callback()
+      },
+    )
   }
   // 人物自适应
   foregroundAuto = (callback?: () => void) => {
@@ -1055,13 +1156,17 @@ class zengyjModel2 extends Component {
 
     const size = this.calcForegroundSize()
     const position = this.calcForegroundPosition(size)
-    console.log(position,'-------see this is position-----')
-    this.setStateTarget('foreground', {
-      ...size,
-      ...position
-    }, () => {
-      typeof callback === 'function' && callback()
-    })
+    console.log(position, '-------see this is position-----')
+    this.setStateTarget(
+      'foreground',
+      {
+        ...size,
+        ...position,
+      },
+      () => {
+        typeof callback === 'function' && callback()
+      },
+    )
   }
 
   // 计算人物尺寸   //映射到背景的尺寸【add by YuJIN Zeng
@@ -1079,7 +1184,7 @@ class zengyjModel2 extends Component {
       autoWidth: 0,
       autoHeight: 0,
       width: 0,
-      height: 0
+      height: 0,
     }
     if (originWidth > originHeight) {
       // 以最短边计算
@@ -1110,7 +1215,7 @@ class zengyjModel2 extends Component {
     const result = {
       x: 0,
       y: 0,
-      rotate: 0
+      rotate: 0,
     }
     switch (type) {
       case '0':
@@ -1150,17 +1255,35 @@ class zengyjModel2 extends Component {
         result.y = (boxHeight - height) * 0.5
         break
       case '9':
-        const result_location = location(position, boxWidth, boxHeight, width, height)
+        const result_location = location(
+          position,
+          boxWidth,
+          boxHeight,
+          width,
+          height,
+        )
         result.x = result_location.x
         result.y = result_location.y
         break
       case '10':
-        const result_center = centerLocation(position, boxWidth, boxHeight, width, height)
+        const result_center = centerLocation(
+          position,
+          boxWidth,
+          boxHeight,
+          width,
+          height,
+        )
         result.x = result_center.x
         result.y = result_center.y
         break
       case '11':
-        const result_faceCenter = faceCenterLocation(position, boxWidth, boxHeight, width, height)
+        const result_faceCenter = faceCenterLocation(
+          position,
+          boxWidth,
+          boxHeight,
+          width,
+          height,
+        )
         result.x = result_faceCenter.x
         result.y = result_faceCenter.y
         break
@@ -1174,7 +1297,7 @@ class zengyjModel2 extends Component {
     function location(position, boxWidth, boxHeight, width, height) {
       const result = {
         x: 0,
-        y: 0
+        y: 0,
       }
       if (position.xAxis.derection === 'left') {
         result.x = position.xAxis.offset * boxWidth
@@ -1194,7 +1317,7 @@ class zengyjModel2 extends Component {
     function centerLocation(position, boxWidth, boxHeight, width, height) {
       const result = {
         x: 0,
-        y: 0
+        y: 0,
       }
       if (position.xAxis.derection === 'left') {
         result.x = position.xAxis.offset * boxWidth - width * 0.5
@@ -1214,14 +1337,16 @@ class zengyjModel2 extends Component {
     function faceCenterLocation(position, boxWidth, boxHeight, width, height) {
       const result = {
         x: 0,
-        y: 0
+        y: 0,
       }
       const faceCenterPosition = (globalData.separateResult &&
-        globalData.separateResult.faceCenterDict && globalData.separateResult.faceCenterDict['16-1']) || [0, 0]
+        globalData.separateResult.faceCenterDict &&
+        globalData.separateResult.faceCenterDict['16-1']) || [0, 0]
       const imageSize = (globalData.separateResult &&
-        globalData.separateResult.imageSizeDict && globalData.separateResult.imageSizeDict['16-1']) || [1, 1]
-      const faceLeft = (faceCenterPosition[0] / imageSize[0]) || 0.5 // 脸部中心点距离左边比例
-      const faceTop = (faceCenterPosition[1] / imageSize[1]) || 0.5 // 脸部中心点距离顶边比例
+        globalData.separateResult.imageSizeDict &&
+        globalData.separateResult.imageSizeDict['16-1']) || [1, 1]
+      const faceLeft = faceCenterPosition[0] / imageSize[0] || 0.5 // 脸部中心点距离左边比例
+      const faceTop = faceCenterPosition[1] / imageSize[1] || 0.5 // 脸部中心点距离顶边比例
       if (position.xAxis.derection === 'left') {
         result.x = position.xAxis.offset * boxWidth - width * faceLeft
       }
@@ -1265,16 +1390,23 @@ class zengyjModel2 extends Component {
       }
     })
 
-    this.setState({
-      coverList: coverList
-    }, () => {
-      typeof callback === 'function' && callback()
-    })
+    this.setState(
+      {
+        coverList: coverList,
+      },
+      () => {
+        typeof callback === 'function' && callback()
+      },
+    )
   }
   calcCoverSize = (originInfo, cover) => {
     const { originWidth, originHeight } = originInfo
     const { frame } = this.state
-    const coverInfo = work.getCoverInfoById(cover.id, this.themeData.rawCoverList, 'id')
+    const coverInfo = work.getCoverInfoById(
+      cover.id,
+      this.themeData.rawCoverList,
+      'id',
+    )
     const imageRatio = originWidth / originHeight
     let autoScale
     if (coverInfo && coverInfo.size) {
@@ -1287,7 +1419,7 @@ class zengyjModel2 extends Component {
       autoWidth: 0,
       autoHeight: 0,
       width: 0,
-      height: 0
+      height: 0,
     }
     if (originWidth > originHeight) {
       // 以最短边计算
@@ -1305,14 +1437,16 @@ class zengyjModel2 extends Component {
 
   //上传图片的操作
   todo = (data) => {
-    console.log(data,'datadatadataOftodo')//授权获得用户信息
-    const { detail: { userInfo } } = data
+    console.log(data, 'datadatadataOftodo') //授权获得用户信息
+    const {
+      detail: { userInfo },
+    } = data
     if (userInfo) {
-      service.base.loginAuth(data.detail)//【上传用户信息】
+      service.base.loginAuth(data.detail) //【上传用户信息】
       globalData.userInfo = userInfo
       if (this.state.hasGuide === true) {
         this.setState({
-          hasGuide: false
+          hasGuide: false,
         })
       }
       work.chooseImage({
@@ -1324,26 +1458,29 @@ class zengyjModel2 extends Component {
             this.app.aldstat.sendEvent('编辑页面选择相册照片', '选择相册')
           }
         },
-        onSuccess: async (path) => {//获得加载图片的路径,这里的success就是用来把加载进来的图片进行处理
+        onSuccess: async (path) => {
+          //获得加载图片的路径,这里的success就是用来把加载进来的图片进行处理
           console.log('choosedImage', path, globalData)
           this.app.aldstat.sendEvent('编辑页面人像成功', '上传成功')
-          globalData.choosedImage = path//存入图片，为之后的处理准备
+          globalData.choosedImage = path //存入图片，为之后的处理准备
           wx.getFileSystemManager().readFile({
             filePath: path,
-            success: (data) => { //这的data是文件内容，所以这个函数的意义是啥？？？
+            success: (data) => {
+              //这的data是文件内容，所以这个函数的意义是啥？？？
               wx.cloud.callFunction({
                 name: 'checkImage',
                 data: {
                   contentType: 'image/png',
-                  value: data.data
+                  value: data.data,
                 },
-                success: async (res) => {//res 为处理信息，跟图片无关；
+                success: async (res) => {
+                  //res 为处理信息，跟图片无关；
                   console.log('checkImage success：', res)
                   // const separateResult = globalData.separateResult = await this.initSegment()
                   // await this.initSeparateData(separateResult)
                   if (res.result !== null && res.result.errCode === 0) {
-                    const separateResult = globalData.separateResult = await this.initSegment()//一个对象、得到分割结果，还不是图像，只是部分路径
-                    console.log(separateResult,'separeteResulting')
+                    const separateResult = (globalData.separateResult = await this.initSegment()) //一个对象、得到分割结果，还不是图像，只是部分路径
+                    console.log(separateResult, 'separeteResulting')
                     await this.initSeparateData(separateResult)
                   } else {
                     work.pageToError()
@@ -1351,31 +1488,32 @@ class zengyjModel2 extends Component {
                 },
                 fail: async (err) => {
                   console.log('checkImage error', err)
-                  const separateResult = globalData.separateResult = await this.initSegment()
+                  const separateResult = (globalData.separateResult = await this.initSegment())
                   await this.initSeparateData(separateResult)
-                }
+                },
               })
             },
-            fail:()=>{
-            }
+            fail: () => {},
           })
-
-        }
+        },
       })
     } else {
       Taro.showToast({
         title: '请授权',
         icon: 'success',
-        duration: 2000
+        duration: 2000,
       })
     }
-
   }
 
   calcCoverPosition = (size = {}, cover = {}) => {
     const { width = 0, height = 0 } = size
     const { frame } = this.state
-    const coverInfo = work.getCoverInfoById(cover.id, this.themeData.rawCoverList, 'id')
+    const coverInfo = work.getCoverInfoById(
+      cover.id,
+      this.themeData.rawCoverList,
+      'id',
+    )
     const { position, rotate = 0 } = coverInfo
     const boxWidth = frame.width
     const boxHeight = frame.height
@@ -1384,7 +1522,7 @@ class zengyjModel2 extends Component {
     const result = {
       x: 0,
       y: 0,
-      rotate: 0
+      rotate: 0,
     }
     switch (type) {
       case '0':
@@ -1424,12 +1562,24 @@ class zengyjModel2 extends Component {
         result.y = (boxHeight - height) * 0.5
         break
       case '9':
-        const result_location = location(position, boxWidth, boxHeight, width, height)
+        const result_location = location(
+          position,
+          boxWidth,
+          boxHeight,
+          width,
+          height,
+        )
         result.x = result_location.x
         result.y = result_location.y
         break
       case '10':
-        const result_center = centerLocation(position, boxWidth, boxHeight, width, height)
+        const result_center = centerLocation(
+          position,
+          boxWidth,
+          boxHeight,
+          width,
+          height,
+        )
         result.x = result_center.x
         result.y = result_center.y
         break
@@ -1443,7 +1593,7 @@ class zengyjModel2 extends Component {
     function location(position, boxWidth, boxHeight, width, height) {
       const result = {
         x: 0,
-        y: 0
+        y: 0,
       }
       if (position.xAxis.derection === 'left') {
         result.x = position.xAxis.offset * boxWidth
@@ -1463,7 +1613,7 @@ class zengyjModel2 extends Component {
     function centerLocation(position, boxWidth, boxHeight, width, height) {
       const result = {
         x: 0,
-        y: 0
+        y: 0,
       }
       if (position.xAxis.derection === 'left') {
         result.x = position.xAxis.offset * boxWidth - width * 0.5
@@ -1492,7 +1642,9 @@ class zengyjModel2 extends Component {
   }
   handleGetUserInfo = (data) => {
     // console.log('handleGetUserInfo', data)
-    const { detail: { userInfo } } = data
+    const {
+      detail: { userInfo },
+    } = data
     if (userInfo) {
       service.base.loginAuth(data.detail)
       globalData.userInfo = userInfo
@@ -1501,18 +1653,24 @@ class zengyjModel2 extends Component {
       Taro.showToast({
         title: '请授权',
         icon: 'success',
-        duration: 2000
+        duration: 2000,
       })
     }
   }
   handelVideoAd() {
     //.catch((err)=>{console.log(err)})
     this.setState({
-      isshow: false
+      isshow: false,
     })
-    this.videoAd = wx.createRewardedVideoAd({ adUnitId: 'adunit-7815bc095ad4a222' })
-    this.videoAd.onLoad(() => { console.log('广告拉取成功') })
-    this.videoAd.onError((err) => { console.log(err) })
+    this.videoAd = wx.createRewardedVideoAd({
+      adUnitId: 'adunit-7815bc095ad4a222',
+    })
+    this.videoAd.onLoad(() => {
+      console.log('广告拉取成功')
+    })
+    this.videoAd.onError((err) => {
+      console.log(err)
+    })
     this.videoAd.onClose((res) => {
       if (res.isEnded) {
         this.handleOpenResult()
@@ -1533,45 +1691,63 @@ class zengyjModel2 extends Component {
   }
   handelCancel() {
     this.setState({
-      isshow: false
+      isshow: false,
     })
-
   }
   changeNav() {
     this.app.aldstat.sendEvent('保存后返回首页', '回到首页')
     Taro.navigateTo({ url: '/pages/home/index' })
   }
   render() {
-    const { loading, rawImage, frame, customBg, foreground, coverList, sceneList, currentScene, result, canvas } = this.state
+    const {
+      loading,
+      rawImage,
+      frame,
+      customBg,
+      foreground,
+      coverList,
+      sceneList,
+      currentScene,
+      result,
+      canvas,
+    } = this.state
     return (
-      <View className='page-editor'>
+      <View className="page-editor">
         <Title
           color="#333"
           leftStyleObj={{ left: Taro.pxTransform(8) }}
           renderLeft={
             <CustomIcon type="back" theme="dark" onClick={this.pageToHome} />
           }
-        >懒人抠图</Title>
+        >
+          懒人抠图
+        </Title>
         <View className="main">
-
           <View className="addTitle">中国银行&&马卡龙</View>
 
           <View className="pic-section">
             {/*<View className={`raw ${(foreground.remoteUrl && foreground.loaded) ? 'hidden' : ''}`} style={{ width: this.state.drawBoard.width, height: this.state.drawBoard.height }}>*/}
-              {/*<Image src={rawImage.localUrl} style="width:100%;height:100%" mode="aspectFit" />*/}
+            {/*<Image src={rawImage.localUrl} style="width:100%;height:100%" mode="aspectFit" />*/}
             {/*</View>*/}
-            <View style={{ width: this.state.drawBoard.width, height: this.state.drawBoard.height }} className={`crop`} id="crop">
-              {currentScene.type === 'recommend' &&
-              <View className="background-image">
-                <Image
-                  src={currentScene.bgUrl}
-                  style="width:100%;height:100%"
-                  mode="scaleToFill"
-                  onLoad={this.handleBgLoaded}
-                  onClick={this.handleBackgroundClick}
-                />
-              </View>
-              }
+            <View
+              style={{
+                width: this.state.drawBoard.width,
+                height: this.state.drawBoard.height,
+              }}
+              className={`crop`}
+              id="crop"
+            >
+              {currentScene.type === 'recommend' && (
+                <View className="background-image">
+                  <Image
+                    src={currentScene.bgUrl}
+                    style="width:100%;height:100%"
+                    mode="scaleToFill"
+                    onLoad={this.handleBgLoaded}
+                    onClick={this.handleBackgroundClick}
+                  />
+                </View>
+              )}
               <Sticker
                 ref="foreground"
                 url={foreground.remoteUrl}
@@ -1583,64 +1759,120 @@ class zengyjModel2 extends Component {
                 onTouchend={this.handleForegroundTouchend}
               />
               {/*{coverList.map(item => {*/}
-                {/*return <Sticker*/}
-                  {/*key={item.id}*/}
-                  {/*url={item.remoteUrl}*/}
-                  {/*stylePrams={item}*/}
-                  {/*framePrams={frame}*/}
-                  {/*onChangeStyle={this.handleChangeCoverStyle}*/}
-                  {/*onImageLoaded={this.onCoverLoaded}*/}
-                  {/*onTouchstart={this.handleCoverTouchstart}*/}
-                  {/*onTouchend={this.handleCoverTouchend}*/}
-                  {/*onDeleteSticker={this.handleDeleteCover.bind(this, item)}*/}
-                {/*/>*/}
+              {/*return <Sticker*/}
+              {/*key={item.id}*/}
+              {/*url={item.remoteUrl}*/}
+              {/*stylePrams={item}*/}
+              {/*framePrams={frame}*/}
+              {/*onChangeStyle={this.handleChangeCoverStyle}*/}
+              {/*onImageLoaded={this.onCoverLoaded}*/}
+              {/*onTouchstart={this.handleCoverTouchstart}*/}
+              {/*onTouchend={this.handleCoverTouchend}*/}
+              {/*onDeleteSticker={this.handleDeleteCover.bind(this, item)}*/}
+              {/*/>*/}
               {/*})}*/}
             </View>
           </View>
 
-          <View className='subSection' style="display:flex;margin-top:22px">
-              <View className="hideIcon">隐藏图标</View>
-              <Button style='flex:1;z-index:2' id='addPhoto' openType="getUserInfo" className="custom-button pink" hoverClass="btn-hover" onGetUserInfo={this.todo}>{this.state.chooseText}</Button>
-              {Taro.getStorageSync('saveNumber').number === 0 ?
-                <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.handleOpenResult} openType="share">分享并保存</Button>
-                : <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.saveImg}>保存</Button>}
+          <View className="subSection" style="display:flex;margin-top:22px">
+            <View className="hideIcon">隐藏图标</View>
+            <Button
+              style="flex:1;z-index:2"
+              id="addPhoto"
+              openType="getUserInfo"
+              className="custom-button pink"
+              hoverClass="btn-hover"
+              onGetUserInfo={this.todo}
+            >
+              {this.state.chooseText}
+            </Button>
+            {Taro.getStorageSync('saveNumber').number === 0 ? (
+              <Button
+                style="flex:1;margin-left:10px"
+                className="custom-button white"
+                hoverClass="btn-hover"
+                onClick={this.handleOpenResult}
+                openType="share"
+              >
+                分享并保存
+              </Button>
+            ) : (
+              <Button
+                style="flex:1;margin-left:10px"
+                className="custom-button white"
+                hoverClass="btn-hover"
+                onClick={this.saveImg}
+              >
+                保存
+              </Button>
+            )}
           </View>
-          {this.state.isshow === true ? <Dialog
-            content={this.state.content}
-            cancelText={this.state.cancelText}
-            confirmText={this.state.confirmText}
-            isshow={this.state.isshow}
-            renderButton={
-              <View className="wx-dialog-footer" style="display:flex;margin-bottom:30rpx">
-                <Button className="wx-dialog-btn" onClick={this.handelCancel} style="flex:1">
-                  {this.state.cancelText}
-                </Button>
-                <Button className="wx-dialog-btn" onClick={this.handelVideoAd} style="flex:1">
-                  {this.state.confirmText}
-                </Button>
-              </View>
-            }
-          /> : ''}
+          {this.state.isshow === true ? (
+            <Dialog
+              content={this.state.content}
+              cancelText={this.state.cancelText}
+              confirmText={this.state.confirmText}
+              isshow={this.state.isshow}
+              renderButton={
+                <View
+                  className="wx-dialog-footer"
+                  style="display:flex;margin-bottom:30rpx"
+                >
+                  <Button
+                    className="wx-dialog-btn"
+                    onClick={this.handelCancel}
+                    style="flex:1"
+                  >
+                    {this.state.cancelText}
+                  </Button>
+                  <Button
+                    className="wx-dialog-btn"
+                    onClick={this.handelVideoAd}
+                    style="flex:1"
+                  >
+                    {this.state.confirmText}
+                  </Button>
+                </View>
+              }
+            />
+          ) : (
+            ''
+          )}
         </View>
 
         <View class="canvas-wrap">
           <Canvas
             disable-scroll={true}
-            style={`width: ${frame.width * canvas.ratio}px; height: ${frame.height * canvas.ratio}px;`}
-            canvasId={canvas.id} />
+            style={`width: ${frame.width * canvas.ratio}px; height: ${
+              frame.height * canvas.ratio
+            }px;`}
+            canvasId={canvas.id}
+          />
         </View>
 
         <Loading visible={loading} />
 
-        <View className='newGuide' style={{ display: this.state.hasGuide === false ? 'none' : 'block' }}>
-          <Image src={addTips} alt="" className='tips' style={{ top: this.state.guiderTop + 'px' }} />
+        <View
+          className="newGuide"
+          style={{ display: this.state.hasGuide === false ? 'none' : 'block' }}
+        >
+          <Image
+            src={addTips}
+            alt=""
+            className="tips"
+            style={{ top: this.state.guiderTop + 'px' }}
+          />
+        </View>
+        <View>
+          {this.state.sceneList.map((item) => {
+            return <Text>{item.sceneName}</Text>
+          })}
         </View>
 
         <AuthModal />
-
       </View>
     )
   }
 }
 
-export default zengyjModel2 as ComponentClass<PageOwnProps, PageState>
+export default Bank as ComponentClass<PageOwnProps, PageState>

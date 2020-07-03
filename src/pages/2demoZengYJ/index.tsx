@@ -1,6 +1,6 @@
 import {ComponentClass} from 'react'
 import Taro, {Component, Config} from '@tarojs/taro'
-import {View, Button, Image, Canvas, ScrollView} from '@tarojs/components'
+import {View, Button, Image, Canvas, ScrollView,Text} from '@tarojs/components'
 import {connect} from '@tarojs/redux'
 
 import {getSystemInfo} from '@/model/actions/global'
@@ -32,11 +32,13 @@ import Dialog from '@/components/Dialog'
 type PageStateProps = {
   global: {
     system: object
+    sceneList: []
   }
 }
 
 type PageDispatchProps = {
   getSystemInfo: (data: object) => void
+  setSceneList: (data: object) => void
 }
 
 type PageOwnProps = {}
@@ -72,10 +74,13 @@ interface Editor {
 }), (dispatch) => ({
   getSystemInfo(data) {
     dispatch(getSystemInfo(data))
-  }
+  },
+  setSceneList(data) {
+    dispatch(setSceneList(data))
+  },
 }))
 
-class zengyjModel2 extends Component {
+class Bank extends Component {
   config: Config = {
     navigationBarTitleText: '懒人抠图',
     disableScroll: true,
@@ -233,6 +238,12 @@ class zengyjModel2 extends Component {
     }
     this.setState({
       titleHeight: totalTopHeight
+    })
+
+    const { global = {} } = this.props
+    let { sceneList } = global
+    this.setState({
+      sceneList,
     })
   }
 
@@ -1691,9 +1702,14 @@ class zengyjModel2 extends Component {
 
           <View className="subMain">
             <View className="addSub">...其他可定制卡片...</View>
-            {this.state.BottomPicture.map(item=>{
-              return<Image></Image>
-            })}
+            {/*{this.state.BottomPicture.map(item=>{*/}
+              {/*return<Image></Image>*/}
+            {/*})}*/}
+            <View>
+              {this.state.sceneList.map((item) => {
+                return <Text>{item.sceneName}</Text>
+              })}
+            </View>
           </View>
 
           <View class="canvas-wrap">
@@ -1717,4 +1733,4 @@ class zengyjModel2 extends Component {
   }
 }
 
-export default zengyjModel2 as ComponentClass<PageOwnProps, PageState>
+export default Bank as ComponentClass<PageOwnProps, PageState>

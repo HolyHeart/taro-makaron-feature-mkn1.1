@@ -6,6 +6,8 @@ let canvasCache = null
 let THREECache = null
 let rendererCache = null
 let timer
+let angle = 0
+let controlsCache
 
 export function renderExample1(canvas, THREE, obj, url) {
   let camera, scene, renderer
@@ -14,7 +16,7 @@ export function renderExample1(canvas, THREE, obj, url) {
   animate()
   function init() {
     camera = new THREE.PerspectiveCamera(
-      100,
+      45,
       canvas.width / canvas.height,
       1,
       1000,
@@ -78,12 +80,6 @@ export function renderExample1(canvas, THREE, obj, url) {
         (texture) => {
           //   console.log(texture, 'texture', objCache.children[0].material.map)
           texture.minFilter = THREE.LinearFilter //解决图片2次幂问题
-          try {
-            texture.image.currentSrc = texture.image.src
-          } catch (e) {
-            console.log(e)
-          }
-          console.log(texture.image.currentSrc, 'src')
 
           objCache.traverse(function (child) {
             if (child.isMesh) {
@@ -99,12 +95,6 @@ export function renderExample1(canvas, THREE, obj, url) {
             objCache.children[0].material.map.image.currentSrc,
             'aaa',
           )
-          //   objCache.children[0].material.map = texture
-          //   console.log(
-          //     objCache,
-          //     'show',
-          //     objCache.children[0].material.map.image.currentSrc,
-          //   )
           objCache.rotation.z = (180 * Math.PI) / 180
           objCache.rotation.y = (180 * Math.PI) / 180
           scene.add(objCache)
@@ -123,15 +113,27 @@ export function renderExample1(canvas, THREE, obj, url) {
     // scene.add(cube)
     const controls = new OrbitControls(camera, renderer.domElement)
     controls.update()
+    controlsCache = controls
 
     let helper = new THREE.GridHelper(1000, 100)
     scene.add(helper)
 
-    camera.position.z = 30
+    for (let i = 0; i < 6; i++) {
+      let y = 43 + 12 * i
+      let pointLight = new THREE.DirectionalLight(0xffffff, 0.5, 100)
+      pointLight.position.set(63, y, 110)
+      scene.add(pointLight)
+    }
+
+    camera.position.z = 60
   }
   function animate() {
     // cube && (cube.rotation.x += 0.01)
     // cube && (cube.rotation.y += 0.01)
+    let speed = Math.cos(angle)
+    angle += 0.06
+    objCache &&
+      (objCache.rotation.y = (angle - (90 * Math.PI) / 180 + speed) / 2)
     timer = canvas.requestAnimationFrame(animate)
     renderer.render(scene, camera)
   }

@@ -168,10 +168,8 @@ class Bank extends Component {
     loading: false,
     result: {
       show: false,
-      shareImage: {
-        remoteUrl: '',
-        localUrl: '',
-      },
+      remoteUrl: '',
+      localUrl: '',
     },
     drawBoard: {
       width: '600rpx',
@@ -185,6 +183,7 @@ class Bank extends Component {
     screenWidth: 0,
     titleHeight: 0,
     tooltipHeight: 0,
+    staticBgUrl:'',
   }
 
   app = Taro.getApp()
@@ -242,9 +241,12 @@ class Bank extends Component {
 
     const { global = {} } = this.props
     let { sceneList } = global
+    let staticUrl=sceneList[0].bgUrl;
     this.setState({
       sceneList,
+      staticBgUrl:staticUrl,
     })
+
   }
 
   componentDidMount() {
@@ -1623,11 +1625,23 @@ class Bank extends Component {
     Taro.navigateTo({url: '/pages/home/index'})
   }
 
+  substituteBgUrl(item){
+    this.setState({
+      currentScene:{staticBgUrl:item.bgUrl}
+    })
+  }
+
+  substituteBgUrl(item){
+    this.setState({
+      staticBgUrl:item.bgUrl
+    })
+  }
+
   render() {
     const {loading, rawImage, frame, customBg, foreground, coverList, sceneList, currentScene, result, canvas} = this.state
     return (
-      <ScrollView scrollY className="scrollPage" style={{ height: this.state.screenHeight - this.state.titleHeight - this.state.tooltipHeight + 'px' }}>
-        <View className='page-editor' style={{background:"../../assets/images/bank@1.jpg"}}>
+      <ScrollView scrollY className="scrollPage" style={{ height: this.state.screenHeight - this.state.titleHeight- this.state.tooltipHeight  + 'px' }}>
+        <View className='page-editor'>
           <Title
             color="#333"
             leftStyleObj={{left: Taro.pxTransform(8)}}
@@ -1648,7 +1662,7 @@ class Bank extends Component {
                 {currentScene.type === 'recommend' &&
                 <View className="background-image">
                   <Image
-                    src={currentScene.bgUrl}
+                    src={this.state.staticBgUrl}
                     style="width:100%;height:100%"
                     mode="scaleToFill"
                     onLoad={this.handleBgLoaded}
@@ -1700,11 +1714,11 @@ class Bank extends Component {
             /> : ''}
           </View>
 
-          <View className="subMain">
+          <View className="subMain" style="width:100%;height:100%">
             <View className="addSub">...其他可定制卡片...</View>
             <View className="pictureList">
               {this.state.sceneList.map((item) => {
-                return <Image src={item.bgUrl}/>
+                return <Image className='singlePicture' src={item.bgUrl} onClick={this.substituteBgUrl.bind(this,item)}/>
               })}
             </View>
           </View>

@@ -425,7 +425,7 @@ class Sticker extends Component {
     //console.log(stylePrams,'this is actual foreground from sticker')
 
     const styleObj = this.formatStyle(this.props.stylePrams)
-    console.log(styleObj,'this is styleObj this is styleObj');
+    //console.log(styleObj,'this is styleObj this is styleObj');
     // console.log('sticker render', this.state.url)
     return (
       <View

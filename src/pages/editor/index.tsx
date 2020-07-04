@@ -276,6 +276,8 @@ class Editor extends Component {
         Taro.setStorageSync('firstViewEditor', true)
       }
     })
+
+
   }
 
 

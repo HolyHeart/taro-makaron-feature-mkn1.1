@@ -68,21 +68,21 @@ const INITIAL_STATE = {
       segmentZIndex: 2.0,
       sceneType: 0,
     },
-    {
-      sceneId: '392438100435144704',
-      sceneName: '油画-雪山湖泊',
-      bgUrl:
-        'https://static01.versa-ai.com/upload/9b7f5b73a84d/d1313539-5048-4fe2-bbcd-b3e08f3f10ac.jpg',
-      thumbnailUrl:
-        'https://static01.versa-ai.com/upload/bb6bfabc0e06/26fb2efb-45a9-49da-b937-71b54d862011.jpg',
-      filterUrl: '',
-      sceneConfig:
-        '{"filter":{"imageUrls":[],"position":{"axis":"x","size":1}},"music":{"fileUrl":""},"fuse":{"support":false},"watermark":false,"position":{"place":"10","xAxis":{"derection":"left","offset":0.5},"yAxis":{"derection":"top","offset":0.5}},"size":{"default":"0.7","zoomInMax":1,"zoomOutMin":1},"rotate":0,"text":{"support":false,"defaultText":"","zIndex":1,"bgColor":"","textColor":"","fontSize":15,"bottom":10},"cover":{"support":true,"list":[{"id":1584540532448,"imageUrl":"https://static01.versa-ai.com/upload/5fc50fc7013d/9ad78040-c815-4be1-9a22-a6609a89597a.png","zIndex":3,"fixed":true,"isActive":false,"size":{"default":1,"zoomInMax":1,"zoomOutMin":1},"rotate":0,"position":{"place":"10","xAxis":{"derection":"left","offset":0.5},"yAxis":{"derection":"top","offset":0.5}}}]}}',
-      segmentType: 0,
-      bgZIndex: 0.0,
-      segmentZIndex: 2.0,
-      sceneType: 0,
-    },
+    // {
+    //   sceneId: '392438100435144704',
+    //   sceneName: '油画-雪山湖泊',
+    //   bgUrl:
+    //     'https://static01.versa-ai.com/upload/9b7f5b73a84d/d1313539-5048-4fe2-bbcd-b3e08f3f10ac.jpg',
+    //   thumbnailUrl:
+    //     'https://static01.versa-ai.com/upload/bb6bfabc0e06/26fb2efb-45a9-49da-b937-71b54d862011.jpg',
+    //   filterUrl: '',
+    //   sceneConfig:
+    //     '{"filter":{"imageUrls":[],"position":{"axis":"x","size":1}},"music":{"fileUrl":""},"fuse":{"support":false},"watermark":false,"position":{"place":"10","xAxis":{"derection":"left","offset":0.5},"yAxis":{"derection":"top","offset":0.5}},"size":{"default":"0.7","zoomInMax":1,"zoomOutMin":1},"rotate":0,"text":{"support":false,"defaultText":"","zIndex":1,"bgColor":"","textColor":"","fontSize":15,"bottom":10},"cover":{"support":true,"list":[{"id":1584540532448,"imageUrl":"https://static01.versa-ai.com/upload/5fc50fc7013d/9ad78040-c815-4be1-9a22-a6609a89597a.png","zIndex":3,"fixed":true,"isActive":false,"size":{"default":1,"zoomInMax":1,"zoomOutMin":1},"rotate":0,"position":{"place":"10","xAxis":{"derection":"left","offset":0.5},"yAxis":{"derection":"top","offset":0.5}}}]}}',
+    //   segmentType: 0,
+    //   bgZIndex: 0.0,
+    //   segmentZIndex: 2.0,
+    //   sceneType: 0,
+    // },
   ],
 }
 

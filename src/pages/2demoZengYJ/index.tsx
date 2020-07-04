@@ -159,7 +159,7 @@ class Bank extends Component {
     guiderTop: '',
     hasGuide: false,
     currentScene: {
-      type: 'recommend', // 'custom' 'recommend'
+      type: '', // 'custom' 'recommend'
     },
     canvas: {
       id: 'shareCanvas',
@@ -208,7 +208,7 @@ class Bank extends Component {
 
   componentWillMount() {//计算设备信息
     const { getSystemInfo } = this.props
-    const systemInfo = Taro.getSystemInfoSync()
+    const systemInfo:any = Taro.getSystemInfoSync()
     if (/iphone x/i.test(systemInfo.model)) {
       // iPhone XS Max China-exclusive<iPhone11,6>
       // 'iPhone X'
@@ -239,13 +239,17 @@ class Bank extends Component {
       titleHeight: totalTopHeight
     })
 
-    const { global = {} } = this.props
-    let { sceneList } = global
-    let staticUrl=sceneList[0].bgUrl;
+    const { global } = this.props
+    let { sceneList }:any = global
+    const scene:any = sceneList[0]
+    let staticUrl=scene.bgUrl;
     this.setState({
       sceneList,
       staticBgUrl:staticUrl,
+      currentScene:scene
     })
+    globalData.sceneConfig = sceneList[0];
+    console.log(sceneList,'sceneList')
 
   }
 
@@ -393,15 +397,15 @@ class Bank extends Component {
         }
       }, () => {
         this.initCoverData()
-        if (Taro.getStorageSync('lastSeparateImage')) {
-          const {foreground} = this.state
-          this.setState({
-            foreground: {
-              ...foreground,
-              remoteUrl: Taro.getStorageSync('lastSeparateImage')
-            }
-          })
-        }
+        // if (Taro.getStorageSync('lastSeparateImage')) {
+        //   const {foreground} = this.state
+        //   this.setState({
+        //     foreground: {
+        //       ...foreground,
+        //       remoteUrl: Taro.getStorageSync('lastSeparateImage')
+        //     }
+        //   })
+        // }
       })
     })
   }
@@ -439,7 +443,7 @@ class Bank extends Component {
     console.log(cover, 'covering this is cover ,this is 边框') //是边框的信息
     this.themeData.rawCoverList = cover.list || []
     const coverList = work.formatRawCoverList(this.themeData.rawCoverList)
-
+    console.log(coverList)
     this.setState({
       coverList: coverList
     })
@@ -705,42 +709,7 @@ class Bank extends Component {
       })
     })
   }
-  // 自定义场景
-  handleChooseCustom = () => {
-    work.chooseImage({
-      onTap: (index) => {
-        if (index === 0) {
-          this.app.aldstat.sendEvent('自定义背景上传人像选择拍摄照片', '选择拍摄')
-        } else if (index === 1) {
-          this.app.aldstat.sendEvent('自定义背景上传人像选择相册照片', '选择相册')
-        }
-      },
-      onSuccess: (path) => {
-        const {currentScene} = this.state
-        const customScene = {
-          type: 'custom',
-          bgUrl: path,
-          sceneId: '',
-          sceneName: '',
-          shareContent: '',
-          thumbnailUrl: path,
-        }
-        this.setState({
-          currentScene: {
-            ...currentScene,
-            ...customScene
-          },
-          customBg: {
-            ...this.state.customBg,
-            localUrl: path
-          },
-          coverList: []
-        }, () => {
-          // console.log('handleChooseCustom', this.state.currentScene)
-        })
-      }
-    })
-  }
+  
 
   // 保存
   handleOpenResult = async () => {
@@ -1389,46 +1358,40 @@ class Bank extends Component {
           hasGuide: false
         })
       }
-      work.chooseImage({
-        onTap: (index) => {
-          // console.log('tap index', index)
-          if (index === 0) {
-            this.app.aldstat.sendEvent('编辑页面选择拍摄照片', '选择拍摄')
-          } else if (index === 1) {
-            this.app.aldstat.sendEvent('编辑页面选择相册照片', '选择相册')
-          }
-        },
+      work.chooseImageSimple({
         onSuccess: async (path) => {//获得加载图片的路径,这里的success就是用来把加载进来的图片进行处理
           console.log('choosedImage', path, globalData)
           this.app.aldstat.sendEvent('编辑页面人像成功', '上传成功')
           globalData.choosedImage = path//存入图片，为之后的处理准备
-          wx.getFileSystemManager().readFile({
+          Taro.getFileSystemManager().readFile({
             filePath: path,
-            success: (data) => { //这的data是文件内容，所以这个函数的意义是啥？？？
-              wx.cloud.callFunction({
-                name: 'checkImage',
-                data: {
-                  contentType: 'image/png',
-                  value: data.data
-                },
-                success: async (res) => {//res 为处理信息，跟图片无关；
-                  console.log('checkImage success：', res)
-                  // const separateResult = globalData.separateResult = await this.initSegment()
-                  // await this.initSeparateData(separateResult)
-                  if (res.result !== null && res.result.errCode === 0) {
-                    const separateResult = globalData.separateResult = await this.initSegment()//一个对象、得到分割结果，还不是图像，只是部分路径
-                    console.log(separateResult, 'separeteResulting')
-                    await this.initSeparateData(separateResult)
-                  } else {
-                    work.pageToError()
-                  }
-                },
-                fail: async (err) => {
-                  console.log('checkImage error', err)
-                  const separateResult = globalData.separateResult = await this.initSegment()
-                  await this.initSeparateData(separateResult)
-                }
-              })
+            success: (data:any) => { //这的data是文件内容，所以这个函数的意义是啥？？？
+                Taro.cloud.callFunction(
+                    {
+                        name: 'checkImage',
+                        data: {
+                          contentType: 'image/png',
+                          value: data.data
+                        },
+                        success: async (res:any) => {//res 为处理信息，跟图片无关；
+                          console.log('checkImage success：', res)
+                          // const separateResult = globalData.separateResult = await this.initSegment()
+                          // await this.initSeparateData(separateResult)
+                          if (res.result !== null && res.result.errCode === 0) {
+                            const separateResult = globalData.separateResult = await this.initSegment()//一个对象、得到分割结果，还不是图像，只是部分路径
+                            console.log(separateResult, 'separeteResulting~~~~~~~~~~~~~~~~')
+                            await this.initSeparateData(separateResult)
+                          } else {
+                            work.pageToError()
+                          }
+                        },
+                        fail: async (err) => {
+                          console.log('checkImage error', err)
+                          const separateResult = globalData.separateResult = await this.initSegment()
+                          await this.initSeparateData(separateResult)
+                        }
+                      }
+                )
             },
             fail: () => {
             }
@@ -1626,19 +1589,17 @@ class Bank extends Component {
   }
 
   substituteBgUrl(item){
+    globalData.sceneConfig = item;
     this.setState({
-      currentScene:{staticBgUrl:item.bgUrl}
-    })
-  }
-
-  substituteBgUrl(item){
-    this.setState({
+      currentScene: item,
       staticBgUrl:item.bgUrl
     })
+    this.initSceneData(()=>{});
   }
 
   render() {
     const {loading, rawImage, frame, customBg, foreground, coverList, sceneList, currentScene, result, canvas} = this.state
+    console.log(currentScene,'currentScene')
     return (
       <ScrollView scrollY className="scrollPage" style={{ height: this.state.screenHeight - this.state.titleHeight- this.state.tooltipHeight  + 'px' }}>
         <View className='page-editor'>
@@ -1725,6 +1686,7 @@ class Bank extends Component {
 
           <View class="canvas-wrap">
             <Canvas
+              type="2d"
               disable-scroll={true}
               style={`width: ${frame.width * canvas.ratio}px; height: ${frame.height * canvas.ratio}px;`}
               canvasId={canvas.id}/>

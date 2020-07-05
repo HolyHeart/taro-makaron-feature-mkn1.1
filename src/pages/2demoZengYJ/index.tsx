@@ -1690,13 +1690,13 @@ class Bank extends Component {
               disable-scroll={true}
               style={`width: ${frame.width * canvas.ratio}px; height: ${frame.height * canvas.ratio}px;`}
               canvasId={canvas.id}/>
-          </View>>
+          </View>
 
           <Loading visible={loading}/>
 
-          <View className='newGuide' style={{display: this.state.hasGuide === false ? 'none' : 'block'}}>
+          {/* <View className='newGuide' style={{display: this.state.hasGuide === false ? 'none' : 'block'}}>
             <Image src={addTips} alt="" className='tips' style={{top: this.state.guiderTop + 'px'}}/>
-          </View>
+          </View> */}
 
           {/*<AuthModal/>*/}
         </View>

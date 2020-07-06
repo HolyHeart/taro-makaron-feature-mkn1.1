@@ -87,6 +87,8 @@ class Bank extends Component {
     enablePullDownRefresh: false
   }
   state = {
+      showBankLogo: true,
+      showMyLogo: true,
       playing: false,
     showType: 1, // 0 展示模式 1 修改模式
     rawImage: {
@@ -445,7 +447,6 @@ class Bank extends Component {
     console.log(cover, 'covering this is cover ,this is 边框') //是边框的信息
     this.themeData.rawCoverList = cover.list || []
     const coverList = work.formatRawCoverList(this.themeData.rawCoverList)
-    console.log(coverList)
     this.setState({
       coverList: coverList
     })
@@ -1321,6 +1322,7 @@ class Bank extends Component {
       autoHeight: 0,
       width: 0,
       height: 0,
+      type: coverInfo.type,
       visible: coverInfo.visible,
       show: coverInfo.show,
       deleted: coverInfo.deleted
@@ -1574,6 +1576,13 @@ class Bank extends Component {
     }
   }
 
+  hideLogo(){
+      this.setState({
+          showBankLogo: !this.state.showBankLogo,
+          showMyLogo: !this.state.showMyLogo
+      })
+  }
+
   saveImg() {
     this.setState({
       isshow: true,
@@ -1604,8 +1613,9 @@ class Bank extends Component {
 
   render() {
     const {loading, rawImage, frame, customBg, foreground, coverList, sceneList, currentScene, result, canvas, showType} = this.state
-    let cover = coverList.map(item => {
-        console.log(item.show,item)
+    let cover = coverList.filter(item => {
+        return item.type === 'normal'
+    }).map(item => {
         if(!this.state.playing || item.show){
             return <Sticker
                 key={item.id}
@@ -1620,7 +1630,23 @@ class Bank extends Component {
             />
         }
       })
-    console.log(currentScene,'currentScene')
+    let bankLogo = coverList.filter(item => {
+        return item.type === 'bankLogo' || item.type === 'myLogo'
+    }).map(item => {
+        if(this.state.showBankLogo){
+            return <Sticker
+                key={item.id}
+                url={item.remoteUrl}
+                stylePrams={item}
+                framePrams={frame}
+                onChangeStyle={this.handleChangeCoverStyle}
+                onImageLoaded={this.onCoverLoaded}
+                onTouchstart={this.handleCoverTouchstart}
+                onTouchend={this.handleCoverTouchend}
+                onDeleteSticker={this.handleDeleteCover.bind(this, item)}
+            />
+        }
+      })
     return (
       <ScrollView scrollY className="scrollPage">
         <View className='page-editor'>
@@ -1664,6 +1690,7 @@ class Bank extends Component {
                   onTouchend={this.handleForegroundTouchend}
                 />
                 {cover}
+                {bankLogo}
               </View> :
               <View className='testImage' style={{width: this.state.drawBoard.width, height: this.state.drawBoard.height}}>
                   <Image
@@ -1678,7 +1705,7 @@ class Bank extends Component {
             </View>
 
             <View className='subSection'>
-              <View className="hideIcon">隐藏卡面图标</View>
+              <View className="hideIcon" onClick={()=>this.hideLogo()}>隐藏卡面图标</View>
               {showType ? <View className="buttonPart">
                 <Button style='flex:1;z-index:2' id='addPhoto' openType="getUserInfo" className="custom-button white border"
                         hoverClass="btn-hover" onGetUserInfo={this.todo}>{this.state.chooseText}</Button>

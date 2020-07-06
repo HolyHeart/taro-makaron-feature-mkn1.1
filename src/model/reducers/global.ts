@@ -12,7 +12,7 @@ const INITIAL_STATE = {
       sceneId: '392438488064331776',
       sceneName: '油画-盛开杏花',
       bgUrl:
-        'https://static01.versa-ai.com/upload/1d18132615ec/6f420d17-ded7-436e-9977-fb5a1d519933.jpg',
+        'https://static01.versa-ai.com/upload/6eef8db51499/c0df4ab7-52ed-4742-82e0-5e43b12bb425.png',
       thumbnailUrl:
         'https://static01.versa-ai.com/upload/2ec5941c0a21/076f2e08-5a69-4e53-8095-aae72a72cb4c.jpg',
       filterUrl: '',
@@ -27,7 +27,7 @@ const INITIAL_STATE = {
       sceneId: '392439168623710208',
       sceneName: '油画-花园小路',
       bgUrl:
-        'https://static01.versa-ai.com/upload/b695ee5a5d45/4933ebce-6f7e-4e06-940f-0d1a84ecff05.jpg',
+        'https://static01.versa-ai.com/upload/fb218452ab60/ab428f2e-6fa5-4c3f-aacb-0a9797f6fe41.png',
       thumbnailUrl:
         'https://static01.versa-ai.com/upload/e1145a1eddca/048e6d3a-ac6a-48d5-bbbf-dc59933125fd.jpg',
       filterUrl: '',
@@ -42,7 +42,7 @@ const INITIAL_STATE = {
       sceneId: '392439445053509632',
       sceneName: '油画-花簇',
       bgUrl:
-        'https://static01.versa-ai.com/upload/9d7156815eae/9dd3d4ab-f817-47c8-8037-55cca428d91d.jpg',
+        'https://static01.versa-ai.com/upload/ba7d5855f64f/c527d391-7871-4e50-b921-b6b2776d32fe.png',
       thumbnailUrl:
         'https://static01.versa-ai.com/upload/db9d54ffac09/e837a0bc-0295-4072-960c-ca8c915e8af2.jpg',
       filterUrl: '',
@@ -57,7 +57,7 @@ const INITIAL_STATE = {
       sceneId: '392439715867140096',
       sceneName: '油画-湖畔',
       bgUrl:
-        'https://static01.versa-ai.com/upload/08c32438e455/ccba35af-dc16-4e3f-b5f6-46d17e74f5d6.jpg',
+        'https://static01.versa-ai.com/upload/ba7d5855f64f/c527d391-7871-4e50-b921-b6b2776d32fe.png',
       thumbnailUrl:
         'https://static01.versa-ai.com/upload/fc5c99c5f7ff/4978d76e-5e68-4239-9bd2-9ad82d70c33f.jpg',
       filterUrl: '',

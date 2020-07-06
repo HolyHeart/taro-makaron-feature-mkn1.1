@@ -15,14 +15,20 @@ button::after{
   }
   &.pink {
     background:#FF3366;
+    border: 1px solid #FF3366;
   }
   &.dark {
     background:#333;
   }
   &.white{
     background: #fff;
-  color: #FF3366;
-  border: 1px solid #FF3366;
+    color: #FF3366;
+    border: 1px solid #FF3366;
+    &.border{
+        background: initial;
+        color:#fff;
+        border: 1px solid #fff;
+    }
   }
 }
 .tooltip-item {

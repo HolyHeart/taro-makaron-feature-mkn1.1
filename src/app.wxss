@@ -25,6 +25,11 @@ button::after {
   color: #FF3366;
   border: 1px solid #FF3366;
 }
+.custom-button.white.border{
+    background: initial;
+    color:#fff;
+    border: 1px solid #fff;
+}
 .tooltip-item {
   width: 150px;
   height: 60px;

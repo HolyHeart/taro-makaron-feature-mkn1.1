@@ -87,6 +87,7 @@ class Bank extends Component {
     enablePullDownRefresh: false
   }
   state = {
+    showType: 0, // 0 展示模式 1 修改模式
     rawImage: {
       localUrl: '',
       remoteUrl: ''
@@ -115,7 +116,7 @@ class Bank extends Component {
       y: 0,
       rotate: 0,
     },
-    chooseText: '添加人像照片',
+    chooseText: '替换人像照片',
     foreground: {  //存储任务切图信息
       id: 'foreground',
       remoteUrl: '',
@@ -546,30 +547,17 @@ class Bank extends Component {
     })
   }
   handleBgLoaded = ({detail}) => {
-    console.log(detail)//背景图片的尺寸-eg：背景图 900,1200---整个框包括白板也是这么大
-    if ((detail.width / detail.height) >= (3 / 4)) {
+      let k = detail.width / detail.height;
       this.setState({
         drawBoard: {
-          width: '600rpx',
-          height: '380rpx'//`${detail.height * 345 / detail.width * 2}rpx` //690 920
+          width: `600rpx`,
+          height: `${600 / k}rpx`//`${detail.height * 345 / detail.width * 2}rpx` //690 920
         }
       }, () => {
         setTimeout(() => {
           this.calFrameRect()
         }, 250);
       })
-    } else {
-      this.setState({
-        drawBoard: {
-          height: '600rpx',
-          width: '380rpx'//`${detail.width * 460 / detail.height * 2}rpx`
-        }
-      }, () => {
-        setTimeout(() => {
-          this.calFrameRect()
-        }, 250);
-      })
-    }
   }
   handleChangeCustomBgStyle = (data) => {
     // console.log('handleChangeCustomBgStyle', data)
@@ -730,11 +718,11 @@ class Bank extends Component {
       title: '照片生成中...',
       mask: true,
     })
-    const mySaveNumber = {
-      number: Taro.getStorageSync('saveNumber').number + 1,
-      date: Taro.getStorageSync('saveNumber').date
-    }
-    Taro.setStorageSync('saveNumber', mySaveNumber)
+    // const mySaveNumber = {
+    //   number: Taro.getStorageSync('saveNumber').number + 1,
+    //   date: Taro.getStorageSync('saveNumber').date
+    // }
+    // Taro.setStorageSync('saveNumber', mySaveNumber)
     this.isSaving = true
     const canvasImageUrl = await this.createCanvas()
     console.log(canvasImageUrl, '这是canvasImageUrl')//图片的本地地址
@@ -842,7 +830,8 @@ class Bank extends Component {
       //绘制图片
       context.draw() //【有点像将之前的设置保存到context中】
       //将生成好的图片保存到本地，需要延迟一会，绘制期间耗时
-      setTimeout(function () {
+      setTimeout( () => {
+          console.log(canvas.id,666666)
         Taro.canvasToTempFilePath({ //存储照片
           canvasId: canvas.id,
           fileType: 'jpg',
@@ -869,10 +858,11 @@ class Bank extends Component {
 
     const postfix = '?x-oss-process=image/resize,h_748,w_560'
     const {ratio = 3} = canvas
-    const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
+    const sceneInfo = currentScene
     let sceneConfig = {}
     try {
       sceneConfig = tool.JSON_parse(sceneInfo.sceneConfig)
+      console.log(sceneInfo,sceneInfo.sceneConfig,'aaaaaa')
     } catch (err) {
       console.log('canvasDrawRecommend 解析sceneConfig JSON字符串失败', err)
     }
@@ -890,9 +880,9 @@ class Bank extends Component {
     // 绘制元素
     await this.canvasDrawElement(context, ratio)
     // 绘制二维码
-    if (sceneConfig.watermark) {
-      this.canvasDrawLogo(context, ratio)
-    }
+    // if (sceneConfig.watermark) {
+    //   this.canvasDrawLogo(context, ratio)
+    // }
   }
   canvasDrawCustom = async (context) => {
     const {customBg, canvas} = this.state
@@ -1399,6 +1389,9 @@ class Bank extends Component {
 
         }
       })
+      this.setState({
+          showType: 1
+      })
     } else {
       Taro.showToast({
         title: '请授权',
@@ -1598,10 +1591,10 @@ class Bank extends Component {
   }
 
   render() {
-    const {loading, rawImage, frame, customBg, foreground, coverList, sceneList, currentScene, result, canvas} = this.state
+    const {loading, rawImage, frame, customBg, foreground, coverList, sceneList, currentScene, result, canvas, showType} = this.state
     console.log(currentScene,'currentScene')
     return (
-      <ScrollView scrollY className="scrollPage" style={{ height: this.state.screenHeight - this.state.titleHeight- this.state.tooltipHeight  + 'px' }}>
+      <ScrollView scrollY className="scrollPage">
         <View className='page-editor'>
           <Title
             color="#333"
@@ -1609,16 +1602,16 @@ class Bank extends Component {
             renderLeft={
               <CustomIcon type="back" theme="dark" onClick={this.pageToHome}/>
             }
-          >懒人抠图</Title>
+          >中行跨次元卡</Title>
           <View className="main">
 
-            <View className="addTitle">中国银行&&马卡龙</View>
+            <View className="addTitle"></View>
 
             <View className="pic-section">
               {/*<View className={`raw ${(foreground.remoteUrl && foreground.loaded) ? 'hidden' : ''}`} style={{ width: this.state.drawBoard.width, height: this.state.drawBoard.height }}>*/}
               {/*<Image src={rawImage.localUrl} style="width:100%;height:100%" mode="aspectFit" />*/}
               {/*</View>*/}
-              <View style={{width: this.state.drawBoard.width, height: this.state.drawBoard.height}} className={`crop`}
+              {showType ? <View style={{width: this.state.drawBoard.width, height: this.state.drawBoard.height}} className={`crop`}
                     id="crop">
                 {currentScene.type === 'recommend' &&
                 <View className="background-image">
@@ -1641,20 +1634,33 @@ class Bank extends Component {
                   onTouchstart={this.handleForegroundTouchstart}
                   onTouchend={this.handleForegroundTouchend}
                 />
+              </View> :
+              <View className='testImage' style={{width: this.state.drawBoard.width, height: this.state.drawBoard.height}}>
+                  <Image
+                    src={this.state.staticBgUrl}
+                    style="width:100%;height:100%"
+                    mode="scaleToFill"
+                    // onLoad={this.handleBgLoaded}
+                  />
               </View>
+              }
+              
             </View>
 
             <View className='subSection'>
               <View className="hideIcon">隐藏卡面图标</View>
-              <View className="buttonPart">
-                <Button style='flex:1;z-index:2' id='addPhoto' openType="getUserInfo" className="custom-button pink"
+              {showType ? <View className="buttonPart">
+                <Button style='flex:1;z-index:2' id='addPhoto' openType="getUserInfo" className="custom-button white border"
                         hoverClass="btn-hover" onGetUserInfo={this.todo}>{this.state.chooseText}</Button>
-                {Taro.getStorageSync('saveNumber').number === 0 ?
-                  <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover"
-                          onClick={this.handleOpenResult} openType="share">分享并保存</Button>
-                  : <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover"
-                            onClick={this.saveImg}>保存</Button>}
-              </View>
+                <Button style='flex:1;margin-left:10px' className="custom-button pink" hoverClass="btn-hover"
+                          onClick={this.handleOpenResult}>完成定制</Button>
+              </View> :
+                <View className="buttonPart">
+                    <Button style='flex:1;z-index:2' id='addPhoto' openType="getUserInfo" className="custom-button pink"
+                        hoverClass="btn-hover" onGetUserInfo={this.todo}>{this.state.chooseText}</Button>
+                </View>
+              }
+              
             </View>
 
             {this.state.isshow === true ? <Dialog
@@ -1686,7 +1692,6 @@ class Bank extends Component {
 
           <View class="canvas-wrap">
             <Canvas
-              type="2d"
               disable-scroll={true}
               style={`width: ${frame.width * canvas.ratio}px; height: ${frame.height * canvas.ratio}px;`}
               canvasId={canvas.id}/>

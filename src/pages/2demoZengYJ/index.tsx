@@ -697,7 +697,7 @@ class Bank extends Component {
       })
     })
   }
-  
+
 
   // 保存
   handleOpenResult = async () => {
@@ -1624,7 +1624,7 @@ class Bank extends Component {
               {/*<View className={`raw ${(foreground.remoteUrl && foreground.loaded) ? 'hidden' : ''}`} style={{ width: this.state.drawBoard.width, height: this.state.drawBoard.height }}>*/}
               {/*<Image src={rawImage.localUrl} style="width:100%;height:100%" mode="aspectFit" />*/}
               {/*</View>*/}
-              {showType ? 
+              {showType ?
               <View style={{width: this.state.drawBoard.width, height: this.state.drawBoard.height}} className={`crop`}
                     id="crop">
                 {currentScene.type === 'recommend' &&
@@ -1659,7 +1659,7 @@ class Bank extends Component {
                   />
               </View>
               }
-              
+
             </View>
 
             <View className='subSection'>
@@ -1675,7 +1675,7 @@ class Bank extends Component {
                         hoverClass="btn-hover" onGetUserInfo={this.todo}>{this.state.chooseText}</Button>
                 </View>
               }
-              
+
             </View>
 
             {this.state.isshow === true ? <Dialog
@@ -1703,9 +1703,9 @@ class Bank extends Component {
                 return (<View style={{background:`url(${item.boxUrl}) no-repeat center`,backgroundSize:'contain'}} className='singlePicture'>
                             <Image src={item.exampleUrl} onClick={this.substituteBgUrl.bind(this,item)}/>
                             {currentScene.index === item.index ? <View className='currentIcon'></View> : null}
-                            
+
                         </View>)
-                    
+
               })}
             </View>
           </View>

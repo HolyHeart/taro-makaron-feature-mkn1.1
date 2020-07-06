@@ -21,42 +21,75 @@ const INITIAL_STATE = {
       cover:[],
       sceneConfig:
         {
-          filter: { imageUrls: [], position: { axis: 'x', size: 1 } },
-          music: { fileUrl: '' },
-          fuse: { support: false },
-          watermark: false,
-          position: {
-            place: '6',
-            xAxis: { derection: 'left', offset: 0.5 },
-            yAxis: { derection: 'top', offset: 0.5 }
-          },
-          size: { default: '0.7', zoomInMax: 1, zoomOutMin: 1 },
-          rotate: 0,
-          text: {
-            support: false,
-            defaultText: '',
-            zIndex: 1,
-            bgColor: '',
-            textColor: '',
-            fontSize: 15,
-            bottom: 10
-          },
-          cover: { support: true, list: [
-            {
-              id: 1584540623141,
-              imageUrl: 'https://static01.versa-ai.com/upload/930ca3bc2c12/4721854d-bf68-4dca-9892-8f47576584a5.png',
-              zIndex: 3,
-              fixed: true,
-              isActive: false,
-              size: { default: 1, zoomInMax: 1, zoomOutMin: 1 },
-              rotate: 0,
-              position: {
-                place: '10',
-                xAxis: { derection: 'left', offset: 0.5 },
-                yAxis: { derection: 'top', offset: 0.5 }
-              }
+          "filter": {
+            "imageUrls": [],
+            "position": {
+              "axis": "x",
+              "size": 1
             }
-          ] }
+          },
+          "music": {
+            "fileUrl": ""
+          },
+          "fuse": {
+            "support": false
+          },
+          "watermark": false,
+          "position": {
+            "place": "6",
+            "xAxis": {
+              "derection": "left",
+              "offset": 0.5
+            },
+            "yAxis": {
+              "derection": "top",
+              "offset": 0.5
+            }
+          },
+          "size": {
+            "default": "0.7",
+            "zoomInMax": 1,
+            "zoomOutMin": 1
+          },
+          "rotate": 0,
+          "text": {
+            "support": false,
+            "defaultText": "",
+            "zIndex": 1,
+            "bgColor": "",
+            "textColor": "",
+            "fontSize": 15,
+            "bottom": 10
+          },
+          "cover": {
+            "support": true,
+            "list": [
+              {
+                "id": 1584540623141,
+                "imageUrl": "https://static01.versa-ai.com/upload/930ca3bc2c12/4721854d-bf68-4dca-9892-8f47576584a5.png",
+                "zIndex": 3,
+                "fixed": true,
+                "isActive": false,
+                "size": {
+                  "default": 1,
+                  "zoomInMax": 1,
+                  "zoomOutMin": 1
+                },
+                "rotate": 0,
+                "position": {
+                  "place": "10",
+                  "xAxis": {
+                    "derection": "left",
+                    "offset": 0.5
+                  },
+                  "yAxis": {
+                    "derection": "top",
+                    "offset": 0.5
+                  }
+                }
+              }
+            ]
+          }
         },
       segmentType: 0,
       bgZIndex: 0.0,
@@ -77,42 +110,74 @@ const INITIAL_STATE = {
       cover:[],
       sceneConfig:
         {
-          filter: { imageUrls: [], position: { axis: 'x', size: 1 } },
-          music: { fileUrl: '' },
-          fuse: { support: false },
-          watermark: false,
-          position: {
-            place: '6',
-            xAxis: { derection: 'left', offset: 0.5 },
-            yAxis: { derection: 'top', offset: 0.5 }
-          },
-          size: { default: '0.7', zoomInMax: 1, zoomOutMin: 1 },
-          rotate: 0,
-          text: {
-            support: false,
-            defaultText: '',
-            zIndex: 1,
-            bgColor: '',
-            textColor: '',
-            fontSize: 15,
-            bottom: 10
-          },
-          cover: {
-            support: true,
-            list: {
-              id: 1584540787583,
-              imageUrl: 'https://static01.versa-ai.com/upload/44dba1fc2256/8b084ec2-b72e-440d-9503-9caa2b6bf532.png',
-              zIndex: 3,
-              fixed: true,
-              isActive: false,
-              size: { default: 1, zoomInMax: 1, zoomOutMin: 1 },
-              rotate: 0,
-              position: {
-                place: '10',
-                xAxis: { derection: 'left', offset: 0.5 },
-                yAxis: { derection: 'top', offset: 0.5 }
-              }
+          "filter": {
+            "imageUrls": [],
+            "position": {
+              "axis": "x",
+              "size": 1
             }
+          },
+          "music": {
+            "fileUrl": ""
+          },
+          "fuse": {
+            "support": false
+          },
+          "watermark": false,
+          "position": {
+            "place": "6",
+            "xAxis": {
+              "derection": "left",
+              "offset": 0.5
+            },
+            "yAxis": {
+              "derection": "top",
+              "offset": 0.5
+            }
+          },
+          "size": {
+            "default": "0.7",
+            "zoomInMax": 1,
+            "zoomOutMin": 1
+          },
+          "rotate": 0,
+          "text": {
+            "support": false,
+            "defaultText": "",
+            "zIndex": 1,
+            "bgColor": "",
+            "textColor": "",
+            "fontSize": 15,
+            "bottom": 10
+          },
+          "cover": {
+            "support": true,
+            "list": [
+              {
+                "id": 1584540787583,
+                "imageUrl": "https://static01.versa-ai.com/upload/44dba1fc2256/8b084ec2-b72e-440d-9503-9caa2b6bf532.png",
+                "zIndex": 3,
+                "fixed": true,
+                "isActive": false,
+                "size": {
+                  "default": 1,
+                  "zoomInMax": 1,
+                  "zoomOutMin": 1
+                },
+                "rotate": 0,
+                "position": {
+                  "place": "10",
+                  "xAxis": {
+                    "derection": "left",
+                    "offset": 0.5
+                  },
+                  "yAxis": {
+                    "derection": "top",
+                    "offset": 0.5
+                  }
+                }
+              }
+            ]
           }
         },
       segmentType: 0,
@@ -132,46 +197,77 @@ const INITIAL_STATE = {
         'https://static01.versa-ai.com/upload/db9d54ffac09/e837a0bc-0295-4072-960c-ca8c915e8af2.jpg',
       filterUrl: '',
       cover: [],
-      sceneConfig:
-        {
-          filter: { imageUrls: [], position: { axis: 'x', size: 1 } },
-          music: { fileUrl: '' },
-          fuse: { support: false },
-          watermark: false,
-          position: {
-            place: '6',
-            xAxis: { derection: 'left', offset: 0.5 },
-            yAxis: { derection: 'top', offset: 0.5 }
-          },
-          size: { default: '0.7', zoomInMax: 1, zoomOutMin: 1 },
-          rotate: 0,
-          text: {
-            support: false,
-            defaultText: '',
-            zIndex: 1,
-            bgColor: '',
-            textColor: '',
-            fontSize: 15,
-            bottom: 10
-          },
-          cover: {
-            support: true,
-            list: {
-              id: 1584540852727,
-              imageUrl: 'https://static01.versa-ai.com/upload/d95e22f1fa3b/b7b9db70-f94c-4d02-a444-ac830698a74b.png',
-              zIndex: 3,
-              fixed: true,
-              isActive: false,
-              size: { default: 1, zoomInMax: 1, zoomOutMin: 1 },
-              rotate: 0,
-              position: {
-                place: '10',
-                xAxis: { derection: 'left', offset: 0.5 },
-                yAxis: { derection: 'top', offset: 0.5 }
-              }
-            }
+      sceneConfig:{
+        "filter": {
+          "imageUrls": [],
+          "position": {
+            "axis": "x",
+            "size": 1
           }
         },
+        "music": {
+          "fileUrl": ""
+        },
+        "fuse": {
+          "support": false
+        },
+        "watermark": false,
+        "position": {
+          "place": "6",
+          "xAxis": {
+            "derection": "left",
+            "offset": 0.5
+          },
+          "yAxis": {
+            "derection": "top",
+            "offset": 0.5
+          }
+        },
+        "size": {
+          "default": "0.7",
+          "zoomInMax": 1,
+          "zoomOutMin": 1
+        },
+        "rotate": 0,
+        "text": {
+          "support": false,
+          "defaultText": "",
+          "zIndex": 1,
+          "bgColor": "",
+          "textColor": "",
+          "fontSize": 15,
+          "bottom": 10
+        },
+        "cover": {
+          "support": true,
+          "list": [
+            {
+              "id": 1584540852727,
+              "imageUrl": "https://static01.versa-ai.com/upload/d95e22f1fa3b/b7b9db70-f94c-4d02-a444-ac830698a74b.png",
+              "zIndex": 3,
+              "fixed": true,
+              "isActive": false,
+              "size": {
+                "default": 1,
+                "zoomInMax": 1,
+                "zoomOutMin": 1
+              },
+              "rotate": 0,
+              "position": {
+                "place": "10",
+                "xAxis": {
+                  "derection": "left",
+                  "offset": 0.5
+                },
+                "yAxis": {
+                  "derection": "top",
+                  "offset": 0.5
+                }
+              }
+            }
+          ]
+        }
+      },
       segmentType: 0,
       bgZIndex: 0.0,
       segmentZIndex: 2.0,
@@ -211,42 +307,74 @@ const INITIAL_STATE = {
       ],
       sceneConfig:
         {
-          filter: { imageUrls: [], position: { axis: 'x', size: 1 } },
-          music: { fileUrl: '' },
-          fuse: { support: false },
-          watermark: false,
-          position: {
-            place: '6',
-            xAxis: { derection: 'left', offset: 0.5 },
-            yAxis: { derection: 'top', offset: 0.5 }
-          },
-          size: { default: '0.7', zoomInMax: 1, zoomOutMin: 1 },
-          rotate: 0,
-          text: {
-            support: false,
-            defaultText: '',
-            zIndex: 1,
-            bgColor: '',
-            textColor: '',
-            fontSize: 15,
-            bottom: 10
-          },
-          cover: {
-            support: true,
-            list: {
-              id: 1584540917921,
-              imageUrl: 'https://static01.versa-ai.com/upload/43527d78b19a/b6bd79e5-036f-4874-a9d0-d5fda35ba684.png',
-              zIndex: 3,
-              fixed: true,
-              isActive: false,
-              size: { default: 1, zoomInMax: 1, zoomOutMin: 1 },
-              rotate: 0,
-              position: {
-                place: '10',
-                xAxis: { derection: 'left', offset: 0.5 },
-                yAxis: { derection: 'top', offset: 0.5 }
-              }
+          "filter": {
+            "imageUrls": [],
+            "position": {
+              "axis": "x",
+              "size": 1
             }
+          },
+          "music": {
+            "fileUrl": ""
+          },
+          "fuse": {
+            "support": false
+          },
+          "watermark": false,
+          "position": {
+            "place": "6",
+            "xAxis": {
+              "derection": "left",
+              "offset": 0.5
+            },
+            "yAxis": {
+              "derection": "top",
+              "offset": 0.5
+            }
+          },
+          "size": {
+            "default": "0.7",
+            "zoomInMax": 1,
+            "zoomOutMin": 1
+          },
+          "rotate": 0,
+          "text": {
+            "support": false,
+            "defaultText": "",
+            "zIndex": 1,
+            "bgColor": "",
+            "textColor": "",
+            "fontSize": 15,
+            "bottom": 10
+          },
+          "cover": {
+            "support": true,
+            "list": [
+              {
+                "id": 1584540917921,
+                "imageUrl": "https://static01.versa-ai.com/upload/43527d78b19a/b6bd79e5-036f-4874-a9d0-d5fda35ba684.png",
+                "zIndex": 3,
+                "fixed": true,
+                "isActive": false,
+                "size": {
+                  "default": 1,
+                  "zoomInMax": 1,
+                  "zoomOutMin": 1
+                },
+                "rotate": 0,
+                "position": {
+                  "place": "10",
+                  "xAxis": {
+                    "derection": "left",
+                    "offset": 0.5
+                  },
+                  "yAxis": {
+                    "derection": "top",
+                    "offset": 0.5
+                  }
+                }
+              }
+            ]
           }
         },
       segmentType: 0,

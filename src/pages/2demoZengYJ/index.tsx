@@ -87,7 +87,7 @@ class Bank extends Component {
     enablePullDownRefresh: false
   }
   state = {
-    showType: 0, // 0 展示模式 1 修改模式
+    showType: 1, // 0 展示模式 1 修改模式
     rawImage: {
       localUrl: '',
       remoteUrl: ''
@@ -1592,6 +1592,19 @@ class Bank extends Component {
 
   render() {
     const {loading, rawImage, frame, customBg, foreground, coverList, sceneList, currentScene, result, canvas, showType} = this.state
+    let cover = coverList.map(item => {
+        return <Sticker
+          key={item.id}
+          url={item.remoteUrl}
+          stylePrams={item}
+          framePrams={frame}
+          onChangeStyle={this.handleChangeCoverStyle}
+          onImageLoaded={this.onCoverLoaded}
+          onTouchstart={this.handleCoverTouchstart}
+          onTouchend={this.handleCoverTouchend}
+          onDeleteSticker={this.handleDeleteCover.bind(this, item)}
+        />
+      })
     console.log(currentScene,'currentScene')
     return (
       <ScrollView scrollY className="scrollPage">
@@ -1611,7 +1624,8 @@ class Bank extends Component {
               {/*<View className={`raw ${(foreground.remoteUrl && foreground.loaded) ? 'hidden' : ''}`} style={{ width: this.state.drawBoard.width, height: this.state.drawBoard.height }}>*/}
               {/*<Image src={rawImage.localUrl} style="width:100%;height:100%" mode="aspectFit" />*/}
               {/*</View>*/}
-              {showType ? <View style={{width: this.state.drawBoard.width, height: this.state.drawBoard.height}} className={`crop`}
+              {showType ? 
+              <View style={{width: this.state.drawBoard.width, height: this.state.drawBoard.height}} className={`crop`}
                     id="crop">
                 {currentScene.type === 'recommend' &&
                 <View className="background-image">
@@ -1634,6 +1648,7 @@ class Bank extends Component {
                   onTouchstart={this.handleForegroundTouchstart}
                   onTouchend={this.handleForegroundTouchend}
                 />
+                {cover}
               </View> :
               <View className='testImage' style={{width: this.state.drawBoard.width, height: this.state.drawBoard.height}}>
                   <Image

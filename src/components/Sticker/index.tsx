@@ -142,6 +142,7 @@ class Sticker extends Component {
   }
 
   stickerOntouchstart = (e) => {
+    e.stopPropagation()
     if (this.isFixed()) {
       // 若固定则不能移动
       return

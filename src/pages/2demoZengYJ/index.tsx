@@ -1697,7 +1697,7 @@ class Bank extends Component {
           </View>
 
           <View className="subMain" style="width:100%;height:100%">
-            <View className="addSub">...其他可定制卡片...</View>
+            <View className="addSub">&middot;&middot;其他可定制卡片&middot;&middot;</View>
             <View className="pictureList">
               {this.state.sceneList.map((item) => {
                 return (<View style={{background:`url(${item.boxUrl}) no-repeat center`,backgroundSize:'contain'}} className='singlePicture'>
@@ -1709,6 +1709,7 @@ class Bank extends Component {
               })}
             </View>
           </View>
+          <Image className='bottomTip' src='https://static01.versa-ai.com/upload/ac05476db5da/e0f294b1-ae32-4e96-b4ed-637fed563de3.png'/>
 
           <View class="canvas-wrap">
             <Canvas

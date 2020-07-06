@@ -63,7 +63,7 @@ class Title extends Component {
     const { color, leftStyleObj,isScrollToTop } = this.props
     const {statusBarHeight, titleBarHeight} = this.state
     return (
-      <View className='title-wrap' style={{backgroundColor:isScrollToTop?'rgba(255,255,255,0)':'rgba(255,255,255,0.9)',...this.calcStyle()}}>
+      <View className='title-wrap' style={{backgroundColor:isScrollToTop?'rgba(255,255,255,0)':'rgba(255,255,255,1)',...this.calcStyle()}}>
         <View className="left" style={{top:`${statusBarHeight+titleBarHeight/2}px`,...leftStyleObj}}>
           {this.props.renderLeft}
         </View>

@@ -132,7 +132,7 @@ const calcVideoSize = function (maxWidth = 612, maxHeight = 816, width, height) 
 }
 
 
-const tool = {  
+const tool = {
   formatQueryUrl,
   deepClone,
   uuid: function () { // 生产uuid
@@ -152,7 +152,7 @@ const tool = {
       Taro.setStorageSync('deviceId', this.uuid())
     }
     return Taro.getStorageSync('deviceId')
-  },  
+  },
   createImgName: function (length = 32) {
     var s:Array<any> = []
     var hexDigits = '0123456789abcdef'
@@ -177,10 +177,14 @@ const tool = {
       hash[arr[i]] = true
     }
     return false
-  },   
+  },
   JSON_parse: function (str) {
     try {
-      return JSON.parse(str)
+      if (typeof str==='string'){
+        return JSON.parse(str)
+      }else{
+        return str
+      }
     } catch (err) {
       console.log('解析JSON出错', err)
       return {}
@@ -201,7 +205,7 @@ const tool = {
     }
   },
   getRotateAngle,
-  calcCenterPosition, 
+  calcCenterPosition,
   calcSourceType,
   calcVideoSize
 }

@@ -10,9 +10,12 @@ import Title from '@/components/Title'
 import CustomIcon from '@/components/Icon'
 import globalData from '@/services/global_data'
 import './index.less'
+
+import BankCard from '@/components/BankCard'
+
 // import { createScopedThreejs } from 'threejs-miniprogram'
 import * as THREE from '../../utils/libs/three.weapp'
-import { renderExample1 as renderExample, change } from '../../utils/example.js'
+import { renderExample1 as renderExample, change } from '@/utils/example.js'
 
 type PageStateProps = {
   global: {
@@ -60,6 +63,8 @@ class Editor extends Component {
   }
 
   state = {
+    url: 'hello',
+    imageURL: 'https://activity-dev.versa-ai.com/cardB.gltf',
     rawImage: {
       localUrl: '',
       remoteUrl: '',
@@ -160,80 +165,25 @@ class Editor extends Component {
     sceneList: [],
     rawCoverList: [], // 原始贴纸数据
   }
-
-  // cache = {
-  //     foreground: createCache('foreground'),
-  //     cover: createCache('cover'),
-  //     source: createCache('source')
-  // };
-
-  isSaving = false // 是否正在保存
-  saveNumber = {
-    number: 0,
-    date: 0,
-  }
-
-  THREE: any
-
   componentDidMount() {
-    // console.log(THREE.WebGLRenderer, 111)
-    // const cvsCtx = Taro.createCanvasContext('c', this.$scope)
-    // console.log(cvsCtx, 222)
-    // const render = new THREE.WebGLRenderer({
-    //   context: cvsCtx,
-    //   antialias: true,
-    // })
-
-    const query = Taro.createSelectorQuery().in(this.$scope)
-    query
-      .select('#c')
-      .node((res) => {
-        // const canvas = res[0].node
-        // console.log(res)
-        // const THREE = createScopedThreejs(canvas)
-        // renderExample(canvas, THREE)
-        // this.THREE = THREE
-        console.log(111, res)
-        const canvas = THREE.global.registerCanvas(res.node)
-        renderExample(canvas, THREE)
-        this.THREE = THREE
-        console.log(THREE.ObjectLoader, 111)
-        console.log(123)
-      })
-      .exec()
-    console.log(0)
   }
 
   render() {
     return (
       <View className="page-editor">
-        <Canvas
-          type="webgl"
-          onTouchStart={this.touchStart}
-          onTouchMove={this.touchMove}
-          onTouchEnd={this.touchEnd}
-          onTouchCancel={this.touchCancel}
-          style={{
-            width: `100%`,
-            height: '50%',
-            position: 'absolute',
-            left: 0,
-            top: 0,
-            zIndex: 99,
-          }}
-          canvasId="poster"
-          className="canvas"
-          id="c"
-        />
-        <View className="change_btn" onClick={this.changeHandler}>
-          点击替换
-          <Image src="https://static01.versa-ai.com/versa-website/static/img/src/pages/offical/pc/index/img/-view-11.cfa33dc.jpg" />
+        <BankCard imageURL={this.state.imageURL}></BankCard>
+        <br></br>
+        <View className="change_btn2" onClick={this.changeHandler}>
+          <button> 第二张图 </button>
         </View>
+        
+       
       </View>
     )
   }
   touchStart(e) {
     this.THREE.global.touchEventHandlerFactory('canvas', 'touchstart')(e)
+    
   }
   touchMove(e) {
     this.THREE.global.touchEventHandlerFactory('canvas', 'touchmove')(e)
@@ -245,6 +195,11 @@ class Editor extends Component {
 
   changeHandler() {
     change()
+  }
+
+  changePhoto = (image) =>{
+    //change(image)
+    this.state.imageURL = image
   }
 }
 

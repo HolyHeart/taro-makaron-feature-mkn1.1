@@ -40,7 +40,7 @@ export function renderExample1(canvas, THREE, obj, url) {
       let GLTFLoader = gLTF(THREE)
       const gltfLoader = new GLTFLoader()
       gltfLoader.load(
-        'https://activity-dev.versa-ai.com/cardB.gltf',
+        obj,
         (gltf) => {
           gltf.scene.traverse(function (child) {
             if (child.isMesh) {
@@ -59,28 +59,10 @@ export function renderExample1(canvas, THREE, obj, url) {
         },
       )
     } else {
-      //   let material = new THREE.MeshBasicMaterial({
-      //     map: THREE.ImageUtils.loadTexture(
-      //       'https://static01.versa-ai.com/versa-website/static/img/src/pages/offical/pc/index/img/-view-11.cfa33dc.jpg',
-      //     ),
-      //   })
-      //   objCache.traverse(function (child) {
-      //     if (child.isMesh) {
-      //       child.material.emissive = child.material.color
-      //       child.material.emissiveMap = child.material.map
-      //       child.material.needsUpdate = true
-      //     }
-      //   })
-
-      //   objCache.children[0].material = material
-      //   scene.add(objCache)
-
       const texture = new THREE.TextureLoader().load(
         require('../assets/images/avatar.png'),
         (texture) => {
-          //   console.log(texture, 'texture', objCache.children[0].material.map)
           texture.minFilter = THREE.LinearFilter //解决图片2次幂问题
-
           objCache.traverse(function (child) {
             if (child.isMesh) {
               //   child.material.map = texture
@@ -95,8 +77,8 @@ export function renderExample1(canvas, THREE, obj, url) {
             objCache.children[0].material.map.image.currentSrc,
             'aaa',
           )
-          objCache.rotation.z = (180 * Math.PI) / 180
-          objCache.rotation.y = (180 * Math.PI) / 180
+          // objCache.rotation.z = (180 * Math.PI) / 180
+          // objCache.rotation.y = (180 * Math.PI) / 180
           scene.add(objCache)
         },
         (err) => {
@@ -128,12 +110,14 @@ export function renderExample1(canvas, THREE, obj, url) {
     camera.position.z = 60
   }
   function animate() {
-    // cube && (cube.rotation.x += 0.01)
-    // cube && (cube.rotation.y += 0.01)
+    
     let speed = Math.cos(angle)
-    angle += 0.06
-    objCache &&
-      (objCache.rotation.y = (angle - (90 * Math.PI) / 180 + speed) / 2)
+    //console.log(Math.cos(angle))
+    // -1<Math.cos(angle)<1
+    angle += 0.02
+    if(objCache){
+        objCache.rotation.y = Math.cos(angle)*1.2
+    }
     timer = canvas.requestAnimationFrame(animate)
     renderer.render(scene, camera)
   }

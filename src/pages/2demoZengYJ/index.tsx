@@ -1685,7 +1685,12 @@ class Bank extends Component {
             <View className="addSub">...其他可定制卡片...</View>
             <View className="pictureList">
               {this.state.sceneList.map((item) => {
-                return <Image className='singlePicture' src={item.bgUrl} onClick={this.substituteBgUrl.bind(this,item)}/>
+                return (<View style={{background:`url(${item.boxUrl}) no-repeat center`,backgroundSize:'contain'}} className='singlePicture'>
+                            <Image src={item.exampleUrl} onClick={this.substituteBgUrl.bind(this,item)}/>
+                            {currentScene.index === item.index ? <View className='currentIcon'></View> : null}
+                            
+                        </View>)
+                    
               })}
             </View>
           </View>

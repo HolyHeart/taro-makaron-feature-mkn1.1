@@ -18,7 +18,6 @@ const INITIAL_STATE = {
       thumbnailUrl:
         'https://static01.versa-ai.com/upload/2ec5941c0a21/076f2e08-5a69-4e53-8095-aae72a72cb4c.jpg',
       filterUrl: '',
-      cover:[],
       sceneConfig:
         {
           "filter": {
@@ -66,7 +65,7 @@ const INITIAL_STATE = {
             "list": [
               {
                 "id": 1584540623141,
-                "imageUrl": "https://static01.versa-ai.com/upload/930ca3bc2c12/4721854d-bf68-4dca-9892-8f47576584a5.png",
+                "imageUrl": "https://static01.versa-ai.com/upload/a3bd721438a0/e100d737-3cb0-46e1-9c3b-4a14c7910ebf.png",
                 "zIndex": 3,
                 "fixed": true,
                 "isActive": false,
@@ -86,7 +85,9 @@ const INITIAL_STATE = {
                     "derection": "top",
                     "offset": 0.5
                   }
-                }
+                },
+                visible: true,
+                deleted: true
               }
             ]
           }
@@ -107,7 +108,6 @@ const INITIAL_STATE = {
       thumbnailUrl:
         'https://static01.versa-ai.com/upload/e1145a1eddca/048e6d3a-ac6a-48d5-bbbf-dc59933125fd.jpg',
       filterUrl: '',
-      cover:[],
       sceneConfig:
         {
           "filter": {
@@ -155,7 +155,7 @@ const INITIAL_STATE = {
             "list": [
               {
                 "id": 1584540787583,
-                "imageUrl": "https://static01.versa-ai.com/upload/44dba1fc2256/8b084ec2-b72e-440d-9503-9caa2b6bf532.png",
+                "imageUrl": "https://static01.versa-ai.com/upload/bf6da4097ae8/e1c4a749-810c-4114-af2f-731440d5602b.png",
                 "zIndex": 3,
                 "fixed": true,
                 "isActive": false,
@@ -175,7 +175,9 @@ const INITIAL_STATE = {
                     "derection": "top",
                     "offset": 0.5
                   }
-                }
+                },
+                visible: true,
+                deleted: true
               }
             ]
           }
@@ -189,14 +191,12 @@ const INITIAL_STATE = {
     {
       sceneId: '392439445053509632',
       sceneName: '油画-花簇',
-      boxUrl:'https://static01.versa-ai.com/upload/d9e00ce76b1b/354d9087-c8c6-406b-a9ac-2b11ad5f7d2b.png'
+      boxUrl:'https://static01.versa-ai.com/upload/d9e00ce76b1b/354d9087-c8c6-406b-a9ac-2b11ad5f7d2b.png',
       exampleUrl:'https://static01.versa-ai.com/upload/ccdbed6e2101/13e95f1c-aef5-4d4c-ae4c-e0b6da4f3c18.png',
-      bgUrl:
-        'https://static01.versa-ai.com/upload/ba7d5855f64f/c527d391-7871-4e50-b921-b6b2776d32fe.png',
+      bgUrl:'https://static01.versa-ai.com/upload/9137dd556acf/d83ca599-6884-474f-8c04-24ba10e22490.png',
       thumbnailUrl:
         'https://static01.versa-ai.com/upload/db9d54ffac09/e837a0bc-0295-4072-960c-ca8c915e8af2.jpg',
       filterUrl: '',
-      cover: [],
       sceneConfig:{
         "filter": {
           "imageUrls": [],
@@ -243,7 +243,7 @@ const INITIAL_STATE = {
           "list": [
             {
               "id": 1584540852727,
-              "imageUrl": "https://static01.versa-ai.com/upload/d95e22f1fa3b/b7b9db70-f94c-4d02-a444-ac830698a74b.png",
+              "imageUrl": "https://static01.versa-ai.com/upload/919e0e0de387/eb7c1359-7064-4dcb-bd3f-d5256c52926f.png",
               "zIndex": 3,
               "fixed": true,
               "isActive": false,
@@ -263,7 +263,35 @@ const INITIAL_STATE = {
                   "derection": "top",
                   "offset": 0.5
                 }
-              }
+              },
+              visible: true,
+              deleted: true
+            },
+            {
+              "id": 1584540917922,
+              "imageUrl": "https://static01.versa-ai.com/upload/43527d78b19a/b6bd79e5-036f-4874-a9d0-d5fda35ba684.png",
+              "zIndex": 6,
+              "fixed": true,
+              "isActive": false,
+              "size": {
+                "default": 1,
+                "zoomInMax": 1,
+                "zoomOutMin": 1
+              },
+              "rotate": 0,
+              "position": {
+                "place": "10",
+                "xAxis": {
+                  "derection": "left",
+                  "offset": 0.5
+                },
+                "yAxis": {
+                  "derection": "top",
+                  "offset": 0.5
+                }
+              },
+              visible: true,
+              show: true
             }
           ]
         }
@@ -279,8 +307,7 @@ const INITIAL_STATE = {
       sceneName: '油画-湖畔',
       boxUrl:'https://static01.versa-ai.com/upload/cb05d18f2638/0790a5e6-d57a-4cc4-b9ed-60121efd0d5f.png',
       exampleUrl:'https://static01.versa-ai.com/upload/2755acdf8317/79b5e1b8-464f-4210-a3ca-9a601080deea.png',
-      bgUrl:
-        'https://static01.versa-ai.com/upload/9137dd556acf/d83ca599-6884-474f-8c04-24ba10e22490.png',
+      bgUrl:'https://static01.versa-ai.com/upload/ba7d5855f64f/c527d391-7871-4e50-b921-b6b2776d32fe.png',
       thumbnailUrl:
         'https://static01.versa-ai.com/upload/fc5c99c5f7ff/4978d76e-5e68-4239-9bd2-9ad82d70c33f.jpg',
       filterUrl: '',
@@ -303,7 +330,26 @@ const INITIAL_STATE = {
         },
         size: {default: 1, zoomInMax: 1, zoomOutMin: 1},
         zIndex: 3
-        }
+        },
+        {
+            fixed: true,
+            id: 1584540917921,
+            imageUrl: "https://static01.versa-ai.com/upload/92921a7cd085/dfc0cfcf-1b13-4754-9095-555a53b04461.png",
+            isActive: false,
+            position: {
+                place: "10",
+                xAxis: {
+                    derection: "left",
+                    offset: 0.5
+                },
+                yAxis: {
+                    derection: "top",
+                    offset: 0.5
+                }
+            },
+            size: {default: 1, zoomInMax: 1, zoomOutMin: 1},
+            zIndex: 3
+            }
       ],
       sceneConfig:
         {
@@ -352,7 +398,7 @@ const INITIAL_STATE = {
             "list": [
               {
                 "id": 1584540917921,
-                "imageUrl": "https://static01.versa-ai.com/upload/43527d78b19a/b6bd79e5-036f-4874-a9d0-d5fda35ba684.png",
+                "imageUrl": "https://static01.versa-ai.com/upload/0832b2dbdfe2/ae729999-b62c-4129-92fc-25b9e0333664.png",
                 "zIndex": 3,
                 "fixed": true,
                 "isActive": false,
@@ -372,7 +418,9 @@ const INITIAL_STATE = {
                     "derection": "top",
                     "offset": 0.5
                   }
-                }
+                },
+                visible: true,
+                deleted: true
               }
             ]
           }
@@ -411,7 +459,7 @@ export default function setGlobal(state = INITIAL_STATE, action) {
     case SCENELIST:
       return {
         ...state,
-        sceneList: action.data,
+        sceneList: {...state.sceneList,...action.data},
       }
     default:
       return state

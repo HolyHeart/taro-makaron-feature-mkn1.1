@@ -3,7 +3,7 @@ import Taro, {Component, Config} from '@tarojs/taro'
 import {View, Button, Image, Canvas, ScrollView,Text} from '@tarojs/components'
 import {connect} from '@tarojs/redux'
 
-import {getSystemInfo} from '@/model/actions/global'
+import {getSystemInfo,setSceneList} from '@/model/actions/global'
 import tool from '@/utils/tool'
 import work from '@/utils/work'
 import Title from '@/components/Title'
@@ -87,6 +87,7 @@ class Bank extends Component {
     enablePullDownRefresh: false
   }
   state = {
+      playing: false,
     showType: 1, // 0 展示模式 1 修改模式
     rawImage: {
       localUrl: '',
@@ -856,13 +857,12 @@ class Bank extends Component {
 
     console.log(frame, 'frame ===width===height===frame')
 
-    const postfix = '?x-oss-process=image/resize,h_748,w_560'
+    const postfix = '?x-oss-process=image/resize,w_748,h_560'
     const {ratio = 3} = canvas
     const sceneInfo = currentScene
     let sceneConfig = {}
     try {
       sceneConfig = tool.JSON_parse(sceneInfo.sceneConfig)
-      console.log(sceneInfo,sceneInfo.sceneConfig,'aaaaaa')
     } catch (err) {
       console.log('canvasDrawRecommend 解析sceneConfig JSON字符串失败', err)
     }
@@ -1320,7 +1320,10 @@ class Bank extends Component {
       autoWidth: 0,
       autoHeight: 0,
       width: 0,
-      height: 0
+      height: 0,
+      visible: coverInfo.visible,
+      show: coverInfo.show,
+      deleted: coverInfo.deleted
     }
     if (originWidth > originHeight) {
       // 以最短边计算
@@ -1348,6 +1351,15 @@ class Bank extends Component {
           hasGuide: false
         })
       }
+    // this.state.currentScene.sceneConfig.cover.list[0].visible = false;
+    // let newCoverList = JSON.parse(JSON.stringify(this.state.currentScene.sceneConfig.cover.list));
+    // let sceneList = JSON.parse(JSON.stringify(this.props.global.sceneList));
+    // sceneList[this.state.currentScene.index].sceneConfig.cover.list = newCoverList;
+    // this.props.setSceneList(sceneList);
+    // console.log(this.props.global.sceneList,'~~~~~~~~~~~~~~~~~~~~~~~')
+    this.setState({
+        playing: true
+    })
       work.chooseImageSimple({
         onSuccess: async (path) => {//获得加载图片的路径,这里的success就是用来把加载进来的图片进行处理
           console.log('choosedImage', path, globalData)
@@ -1593,17 +1605,20 @@ class Bank extends Component {
   render() {
     const {loading, rawImage, frame, customBg, foreground, coverList, sceneList, currentScene, result, canvas, showType} = this.state
     let cover = coverList.map(item => {
-        return <Sticker
-          key={item.id}
-          url={item.remoteUrl}
-          stylePrams={item}
-          framePrams={frame}
-          onChangeStyle={this.handleChangeCoverStyle}
-          onImageLoaded={this.onCoverLoaded}
-          onTouchstart={this.handleCoverTouchstart}
-          onTouchend={this.handleCoverTouchend}
-          onDeleteSticker={this.handleDeleteCover.bind(this, item)}
-        />
+        console.log(item.show,item)
+        if(!this.state.playing || item.show){
+            return <Sticker
+                key={item.id}
+                url={item.remoteUrl}
+                stylePrams={item}
+                framePrams={frame}
+                onChangeStyle={this.handleChangeCoverStyle}
+                onImageLoaded={this.onCoverLoaded}
+                onTouchstart={this.handleCoverTouchstart}
+                onTouchend={this.handleCoverTouchend}
+                onDeleteSticker={this.handleDeleteCover.bind(this, item)}
+            />
+        }
       })
     console.log(currentScene,'currentScene')
     return (

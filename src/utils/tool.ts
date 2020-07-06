@@ -179,8 +179,9 @@ const tool = {
     return false
   },
   JSON_parse: function (str) {
+      console.log(str,99999999999)
     try {
-      if (typeof str==='string'){
+      if (typeof str === 'string'){
         return JSON.parse(str)
       }else{
         return str

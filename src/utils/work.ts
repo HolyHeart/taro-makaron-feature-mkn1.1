@@ -6,44 +6,53 @@ import tool from './tool'
 import globalData from '@/services/global_data'
 
 interface saveSourceOptions {
-  location: string,
-  sourceUrl: any,
-  sourceType: string,
-  onSuccess?: () => void,
-  onAuthFail?: () => void,
-  onFail?: () => void,
+  location: string
+  sourceUrl: any
+  sourceType: string
+  onSuccess?: () => void
+  onAuthFail?: () => void
+  onFail?: () => void
 }
 interface chooseImageOptions {
-  onSuccess?: (path?:any) => void,
-  onTap?: (index?:any) => void,
+  onSuccess?: (path?: any) => void
+  onTap?: (index?: any) => void
 }
 const pageToHome = () => {
   Taro.redirectTo({
-    url: '/pages/home/index'
+    url: '/pages/home/index',
   })
 }
 const pageToError = () => {
   Taro.redirectTo({
-    url: '/pages/error/index'
+    url: '/pages/error/index',
   })
 }
-const getDomRect = (id:string, callback?:(rect:object)=>void) => {
-  Taro.createSelectorQuery().select('#' + id).boundingClientRect(function(rect){
-    // rect.id      // 节点的ID
-    // rect.dataset // 节点的dataset
-    // rect.left    // 节点的左边界坐标
-    // rect.right   // 节点的右边界坐标
-    // rect.top     // 节点的上边界坐标
-    // rect.bottom  // 节点的下边界坐标
-    // rect.width   // 节点的宽度
-    // rect.height  // 节点的高度
-    typeof callback === 'function' && callback(rect)
-  }).exec()
+const getDomRect = (id: string, callback?: (rect: object) => void) => {
+  Taro.createSelectorQuery()
+    .select('#' + id)
+    .boundingClientRect(function (rect) {
+      // rect.id      // 节点的ID
+      // rect.dataset // 节点的dataset
+      // rect.left    // 节点的左边界坐标
+      // rect.right   // 节点的右边界坐标
+      // rect.top     // 节点的上边界坐标
+      // rect.bottom  // 节点的下边界坐标
+      // rect.width   // 节点的宽度
+      // rect.height  // 节点的高度
+      typeof callback === 'function' && callback(rect)
+    })
+    .exec()
 }
-const getPreBgList = function (preBgList:Array<object> =[]){
+const getPreBgList = function (preBgList: Array<object> = []) {
   const result = []
-  preBgList.forEach(v => {
-    const {backgroundImageName, thumbnailUrl, config, backgroundUrl,preBackgroundId} = v
+  preBgList.forEach((v) => {
+    const {
+      backgroundImageName,
+      thumbnailUrl,
+      config,
+      backgroundUrl,
+      preBackgroundId,
+    } = v
     // let supportMusic = false
     // let hasIcon = false
     // if (config) {
@@ -54,26 +63,37 @@ const getPreBgList = function (preBgList:Array<object> =[]){
     //   hasIcon = true
     // }
     result.push({
-      bgUrl:backgroundUrl,
-      sceneName:backgroundImageName,
+      bgUrl: backgroundUrl,
+      sceneName: backgroundImageName,
       thumbnailUrl,
-      sceneConfig:config,
-      sceneId:preBackgroundId
-      })
+      sceneConfig: config,
+      sceneId: preBackgroundId,
+    })
   })
   return result
 }
-const getSceneList = function (sceneList:Array<object> = []) {
+const getSceneList = function (sceneList: Array<object> = []) {
   const result = []
-  sceneList.forEach(v => {
-    const {sceneType, bgUrl, sceneId, sceneName, shareContent, thumbnailUrl, sceneConfig, segmentType, segmentZIndex, bgZIndex} = v
+  sceneList.forEach((v) => {
+    const {
+      sceneType,
+      bgUrl,
+      sceneId,
+      sceneName,
+      shareContent,
+      thumbnailUrl,
+      sceneConfig,
+      segmentType,
+      segmentZIndex,
+      bgZIndex,
+    } = v
     let supportMusic = false
     let hasIcon = false
     if (sceneConfig) {
-      const {music = {}} = tool.JSON_parse(sceneConfig)
+      const { music = {} } = tool.JSON_parse(sceneConfig)
       supportMusic = music.fileUrl ? true : false
     }
-    if (sceneType === 2 || sceneType === 1 ) {
+    if (sceneType === 2 || sceneType === 1) {
       hasIcon = true
     }
     result.push({
@@ -88,22 +108,23 @@ const getSceneList = function (sceneList:Array<object> = []) {
       segmentZIndex,
       bgZIndex,
       supportMusic,
-      hasIcon})
+      hasIcon,
+    })
   })
   return result
 }
-const getSceneInfoById = (id:string, list:Array<any> = [], key:string) => {
-  return list.filter(v => {
+const getSceneInfoById = (id: string, list: Array<any> = [], key: string) => {
+  return list.filter((v) => {
     return v[key] === id
   })[0]
 }
-const getCoverInfoById = (id:string, list:Array<any> = [], key:string) => {
-  return list.filter(v => {
+const getCoverInfoById = (id: string, list: Array<any> = [], key: string) => {
+  return list.filter((v) => {
     return v[key] === id
   })[0]
 }
-const formatRawCoverList = (list:Array<any> = []) => {
-  return list.map(v => {
+const formatRawCoverList = (list: Array<any> = []) => {
+  return list.map((v) => {
     const cover_model = {
       id: '',
       remoteUrl: '',
@@ -123,7 +144,7 @@ const formatRawCoverList = (list:Array<any> = []) => {
       visible: false,
       deleted: false,
       deleteable: true,
-      name : '贴纸'
+      name: '贴纸',
     }
     cover_model.remoteUrl = v.imageUrl
     cover_model.id = v.id || tool.uuid()
@@ -137,8 +158,8 @@ const formatRawCoverList = (list:Array<any> = []) => {
     return cover_model
   })
 }
-const formatIcanPsCoverList = (list:Array<any> =[]) =>{
-  return list.map((v,index) => {
+const formatIcanPsCoverList = (list: Array<any> = []) => {
+  return list.map((v, index) => {
     const cover_model = {
       id: '',
       remoteUrl: '',
@@ -158,17 +179,17 @@ const formatIcanPsCoverList = (list:Array<any> =[]) =>{
       visible: false,
       deleted: false,
       // deleteable: true,
-      name : '贴纸'
+      name: '贴纸',
     }
     cover_model.remoteUrl = v.imageUrl
     cover_model.id = v.id || tool.uuid()
-    cover_model.zIndex = index+1 || 0
+    cover_model.zIndex = index + 1 || 0
     cover_model.fixed = v.fixed || false
     cover_model.isActive = v.isActive || false
-    if(index===0){
+    if (index === 0) {
       cover_model.visible = true
       cover_model.deleted = false
-    }else{
+    } else {
       cover_model.visible = false
       cover_model.deleted = true
     }
@@ -186,7 +207,7 @@ const downloadRemoteImage = async (remoteUrl = '') => {
     return cacheImg.get(cacheKey)
   } else {
     try {
-      const result = await service.base.downloadFile(remoteUrl)
+      const result = await service.base.downloadFile(remoteUrl) //得到本地路径
       localImagePath = result.tempFilePath
     } catch (err) {
       console.log('下载图片失败', err)
@@ -196,7 +217,7 @@ const downloadRemoteImage = async (remoteUrl = '') => {
   return cacheImg.set(cacheKey, localImagePath)
 }
 // 将本地或远程资源存储到相册
-const saveSourceToPhotosAlbum = async (options:saveSourceOptions) => {
+const saveSourceToPhotosAlbum = async (options: saveSourceOptions) => {
   options.location = options.location || 'local'
   // 更改options.location为options.sourceType，解决iPhone无法保存视频的bug    by Shichao
   options.sourceType = options.sourceType || 'image'
@@ -215,30 +236,31 @@ const saveSourceToPhotosAlbum = async (options:saveSourceOptions) => {
   try {
     if (options.sourceType === 'video') {
       globalData.videoQQZonePublishLocalUrl = localUrl
-      await Taro.saveVideoToPhotosAlbum({filePath: localUrl})
+      await Taro.saveVideoToPhotosAlbum({ filePath: localUrl }) //不支持网络存储的路径，所以一定要转为local
     } else {
-      await Taro.saveImageToPhotosAlbum({filePath: localUrl})
+      await Taro.saveImageToPhotosAlbum({ filePath: localUrl })
     }
-  //  console.log('保存成功')
-   typeof options.onSuccess === 'function' && options.onSuccess()
+    //  console.log('保存成功')
+    typeof options.onSuccess === 'function' && options.onSuccess()
   } catch (err) {
     Taro.getSetting({
-      success (setting) {
-        const {authSetting} = setting
+      //获取用户的当前设置
+      success(setting) {
+        const { authSetting } = setting
         if (!authSetting['scope.writePhotosAlbum']) {
           typeof options.onAuthFail === 'function' && options.onAuthFail()
         }
       },
-      fail () {
+      fail() {
         typeof options.onFail === 'function' && options.onFail()
-      }
+      },
     })
   }
 }
 const calcVideoSize = (maxWidth = 306, maxHeight = 408, width, height) => {
   const frame_ratio = maxWidth / maxHeight
   const video_ratio = width / height
-  if ( frame_ratio < video_ratio ) {
+  if (frame_ratio < video_ratio) {
     width = maxWidth
     height = width / video_ratio
   } else {
@@ -247,108 +269,114 @@ const calcVideoSize = (maxWidth = 306, maxHeight = 408, width, height) => {
   }
   return {
     width,
-    height
+    height,
   }
 }
-const chooseImage = async ({onTap, onSuccess}:chooseImageOptions) => {
+const chooseImage = async ({ onTap, onSuccess }: chooseImageOptions) => {
   Taro.showActionSheet({
-    itemList: [
-      '拍摄人像照',
-      '从相册选择带有人像的照片',
-    ],
-    success: function ({tapIndex}) {
+    itemList: ['拍摄人像照', '从相册选择带有人像的照片'], //【显示操作菜单】
+    success: function ({ tapIndex }) {
       typeof onTap === 'function' && onTap(tapIndex)
       if (tapIndex === 0) {
         Taro.authorize({
-          scope: "scope.camera",
-        }).then(res => {
-          Taro.chooseImage({
-            count: 1,
-            sourceType: ['camera'],
-            sizeType: ['compressed'],
-          }).then(({tempFilePaths: [path]}) => {
-            typeof onSuccess === 'function' && onSuccess(path)
-          })
-        }, err => {
-          Taro.getSetting().then(authSetting => {
-            if (authSetting['scope.camera']) {
-            } else {
-              Taro.showModal({
-                title: '拍摄图片需要授权',
-                content: '拍摄图片需要授权\n可以授权吗？',
-                confirmText: "允许",
-                cancelText: "拒绝",
-              }).then(res => {
-                if (res.confirm) {
-                  Taro.authModal({
-                    open: true
-                  })
-                }
-              })
-            }
-          })
-        })
+          scope: 'scope.camera',
+        }).then(
+          (res) => {
+            Taro.chooseImage({
+              count: 1,
+              sourceType: ['camera'],
+              sizeType: ['compressed'],
+            }).then(({ tempFilePaths: [path] }) => {
+              typeof onSuccess === 'function' && onSuccess(path)
+            })
+          },
+          (err) => {
+            Taro.getSetting().then((authSetting) => {
+              if (authSetting['scope.camera']) {
+              } else {
+                Taro.showModal({
+                  title: '拍摄图片需要授权',
+                  content: '拍摄图片需要授权\n可以授权吗？',
+                  confirmText: '允许',
+                  cancelText: '拒绝',
+                }).then((res) => {
+                  if (res.confirm) {
+                    Taro.authModal({
+                      open: true,
+                    })
+                  }
+                })
+              }
+            })
+          },
+        )
       } else if (tapIndex === 1) {
         Taro.chooseImage({
           count: 1,
           sourceType: ['album'],
-        }).then(({tempFilePaths: [path]}) => {
+        }).then(({ tempFilePaths: [path] }) => {
           typeof onSuccess === 'function' && onSuccess(path)
         })
       }
-    }
-  }).catch(err => console.log(err))
+    },
+  }).catch((err) => console.log(err))
 }
-const chooseImageBg = async ({onTap, onSuccess}:chooseImageOptions) => {
-  
+const chooseImageSimple = async ({ onSuccess }: chooseImageOptions) => {
+  Taro.chooseImage({
+    count: 1,
+    sourceType: ['album'],
+  }).then(({ tempFilePaths: [path] }) => {
+    typeof onSuccess === 'function' && onSuccess(path)
+  })
+}
+const chooseImageBg = async ({ onTap, onSuccess }: chooseImageOptions) => {
   Taro.showActionSheet({
-    itemList: ([
-      '拍摄照片',
-      '从相册选择图片作为背景',
-    ]),
-    success: function ({tapIndex}) {
+    itemList: ['拍摄照片', '从相册选择图片作为背景'],
+    success: function ({ tapIndex }) {
       typeof onTap === 'function' && onTap(tapIndex)
       if (tapIndex === 0) {
         Taro.authorize({
-          scope: "scope.camera",
-        }).then(res => {
-          Taro.chooseImage({
-            count: 1,
-            sourceType: ['camera'],
-            sizeType: ['compressed'],
-          }).then(({tempFilePaths: [path]}) => {
-            typeof onSuccess === 'function' && onSuccess(path)
-          })
-        }, err => {
-          Taro.getSetting().then(authSetting => {
-            if (authSetting['scope.camera']) {
-            } else {
-              Taro.showModal({
-                title: '拍摄图片需要授权',
-                content: '拍摄图片需要授权\n可以授权吗？',
-                confirmText: "允许",
-                cancelText: "拒绝",
-              }).then(res => {
-                if (res.confirm) {
-                  Taro.authModal({
-                    open: true
-                  })
-                }
-              })
-            }
-          })
-        })
+          scope: 'scope.camera',
+        }).then(
+          (res) => {
+            Taro.chooseImage({
+              count: 1,
+              sourceType: ['camera'],
+              sizeType: ['compressed'],
+            }).then(({ tempFilePaths: [path] }) => {
+              typeof onSuccess === 'function' && onSuccess(path)
+            })
+          },
+          (err) => {
+            Taro.getSetting().then((authSetting) => {
+              if (authSetting['scope.camera']) {
+              } else {
+                Taro.showModal({
+                  title: '拍摄图片需要授权',
+                  content: '拍摄图片需要授权\n可以授权吗？',
+                  confirmText: '允许',
+                  cancelText: '拒绝',
+                }).then((res) => {
+                  if (res.confirm) {
+                    Taro.authModal({
+                      open: true,
+                    })
+                  }
+                })
+              }
+            })
+          },
+        )
       } else if (tapIndex === 1) {
         Taro.chooseImage({
           count: 1,
           sourceType: ['album'],
-        }).then(({tempFilePaths: [path]}) => {
+        }).then(({ tempFilePaths: [path] }) => {
           typeof onSuccess === 'function' && onSuccess(path)
-          
         })
       }
-    }
-  }).catch(err => console.log(err))
+    },
+  }).catch((err) => console.log(err))
 }
 const work = {
   pageToHome,
@@ -362,8 +390,9 @@ const work = {
   saveSourceToPhotosAlbum,
   calcVideoSize,
   chooseImage,
+  chooseImageSimple,
   getPreBgList,
   formatIcanPsCoverList,
-  chooseImageBg
+  chooseImageBg,
 }
 export default work

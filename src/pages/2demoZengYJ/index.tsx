@@ -1,9 +1,9 @@
-import { ComponentClass } from 'react'
-import Taro, { Component, Config } from '@tarojs/taro'
-import { View, Button, Image, Canvas } from '@tarojs/components'
-import { connect } from '@tarojs/redux'
+import {ComponentClass} from 'react'
+import Taro, {Component, Config} from '@tarojs/taro'
+import {View, Button, Image, Canvas, ScrollView,Text} from '@tarojs/components'
+import {connect} from '@tarojs/redux'
 
-import { getSystemInfo } from '@/model/actions/global'
+import {getSystemInfo} from '@/model/actions/global'
 import tool from '@/utils/tool'
 import work from '@/utils/work'
 import Title from '@/components/Title'
@@ -18,8 +18,8 @@ import ResultModal from '@/components/ResultModal'
 import globalData from '@/services/global_data'
 import Session from '@/services/session'
 import service from '@/services/service'
-import { appConfig } from '@/services/config'
-import { createCache } from '@/services/cache'
+import {appConfig} from '@/services/config'
+import {createCache} from '@/services/cache'
 import './index.less'
 import image_code from '@/assets/images/code.png'
 import image_versa from '@/assets/images/versa.png'
@@ -32,11 +32,13 @@ import Dialog from '@/components/Dialog'
 type PageStateProps = {
   global: {
     system: object
+    sceneList: []
   }
 }
 
 type PageDispatchProps = {
   getSystemInfo: (data: object) => void
+  setSceneList: (data: object) => void
 }
 
 type PageOwnProps = {}
@@ -63,26 +65,29 @@ type PageState = {
 
 type IProps = PageStateProps & PageDispatchProps & PageOwnProps
 
-interface Editor {
+interface Bank {
   props: IProps;
 }
 
-@connect(({ global }) => ({
+@connect(({global}) => ({
   global
 }), (dispatch) => ({
   getSystemInfo(data) {
     dispatch(getSystemInfo(data))
-  }
+  },
+  setSceneList(data) {
+    dispatch(setSceneList(data))
+  },
 }))
 
-class Editor extends Component {
+class Bank extends Component {
   config: Config = {
     navigationBarTitleText: '懒人抠图',
     disableScroll: true,
     enablePullDownRefresh: false
   }
-
   state = {
+    showType: 1, // 0 展示模式 1 修改模式
     rawImage: {
       localUrl: '',
       remoteUrl: ''
@@ -111,8 +116,8 @@ class Editor extends Component {
       y: 0,
       rotate: 0,
     },
-    chooseText: '添加人像照片',
-    foreground: {  //存储切图信息
+    chooseText: '替换人像照片',
+    foreground: {  //存储任务切图信息
       id: 'foreground',
       remoteUrl: '',
       zIndex: 2,
@@ -155,7 +160,7 @@ class Editor extends Component {
     guiderTop: '',
     hasGuide: false,
     currentScene: {
-      type: 'recommend', // 'custom' 'recommend'
+      type: '', // 'custom' 'recommend'
     },
     canvas: {
       id: 'shareCanvas',
@@ -164,16 +169,22 @@ class Editor extends Component {
     loading: false,
     result: {
       show: false,
-      shareImage: {
-        remoteUrl: '',
-        localUrl: '',
-      },
+      remoteUrl: '',
+      localUrl: '',
     },
     drawBoard: {
-      width: '690rpx',
-      height: '920rpx'
+      width: '600rpx',
+      height: '380rpx'
     },
-    ableToShareToQZone: false
+    ableToShareToQZone: false,
+
+    BottomPicture: [], //存储底部数据
+
+    screenHeight: 0,//计算滚动用
+    screenWidth: 0,
+    titleHeight: 0,
+    tooltipHeight: 0,
+    staticBgUrl:'',
   }
 
   app = Taro.getApp()
@@ -195,7 +206,54 @@ class Editor extends Component {
     number: 0,
     date: 0,
   }
-  componentWillMount() { }
+
+  componentWillMount() {//计算设备信息
+    const { getSystemInfo } = this.props
+    const systemInfo:any = Taro.getSystemInfoSync()
+    if (/iphone x/i.test(systemInfo.model)) {
+      // iPhone XS Max China-exclusive<iPhone11,6>
+      // 'iPhone X'
+      systemInfo.isIphoneX = true
+    } else {
+      systemInfo.isIphoneX = false
+    }
+    getSystemInfo(systemInfo)
+    const setTop = Taro.getStorageSync('setTop')
+    let tooltipHeight = 0
+    if (!setTop) {
+      tooltipHeight = systemInfo.screenWidth / 750 * 92
+    }
+    console.log('🔥初始化高度🔥', '屏幕高度：', systemInfo.screenHeight, '屏幕宽度：', systemInfo.screenWidth, '系统参数：', systemInfo)
+    this.setState({
+      screenHeight: systemInfo.screenHeight,
+      screenWidth: systemInfo.screenWidth,
+      tooltipHeight: tooltipHeight,
+      picHeight: systemInfo.screenWidth * 0.8 * 0.94 * 0.5 * 0.9 + 1
+    })
+    let totalTopHeight = 72
+    if (systemInfo.model.indexOf('iPhone X') !== -1) {
+      totalTopHeight = 85
+    } else if (systemInfo.model.indexOf('iPhone') !== -1) {
+      totalTopHeight = 62
+    }
+    this.setState({
+      titleHeight: totalTopHeight
+    })
+
+    const { global } = this.props
+    let { sceneList }:any = global
+    const scene:any = sceneList[0]
+    let staticUrl=scene.bgUrl;
+    this.setState({
+      sceneList,
+      staticBgUrl:staticUrl,
+      currentScene:scene
+    })
+    globalData.sceneConfig = sceneList[0];
+    console.log(sceneList,'sceneList')
+
+  }
+
   componentDidMount() {
     wx.cloud.init()
     this._initPage()
@@ -213,19 +271,30 @@ class Editor extends Component {
       Taro.setStorageSync('saveNumber', this.saveNumber)
     }
   }
+
   componentWillReceiveProps(nextProps) {
     // console.log(this.props, nextProps)
   }
-  componentWillUnmount() { }
-  componentDidShow() { }
-  componentDidHide() { }
+
+  componentWillUnmount() {
+  }
+
+  componentDidShow() {
+  }
+
+  componentDidHide() {
+  }
+
   onShareAppMessage(res) {
     // if (res.from === 'button') {
     //   console.log('页面按钮分享', res.target)
     // }
-    this.app.aldstat.sendEvent('生成页分享', { '场景名': this.state.currentScene.sceneName, '场景Id': this.state.currentScene.sceneId })
-    const { currentScene, result = {} } = this.state
-    const { shareImage = {} } = result
+    this.app.aldstat.sendEvent('生成页分享', {
+      '场景名': this.state.currentScene.sceneName,
+      '场景Id': this.state.currentScene.sceneId
+    })
+    const {currentScene, result = {}} = this.state
+    const {shareImage = {}} = result
     const shareContent = currentScene.shareContent || ''
     const shareImageUrl = `${shareImage.remoteUrl}?x-oss-process=image/resize,m_pad,h_420,w_525`
     const data = {
@@ -234,7 +303,7 @@ class Editor extends Component {
       sceneId: currentScene.sceneId || '',
     }
 
-    const { userInfo = {} } = globalData
+    const {userInfo = {}} = globalData
     const path = `/pages/index?shareSource=${shareImageUrl}`
     // console.log('url',path)
     // const title = `@${userInfo.nickName}：${shareContent}`
@@ -276,8 +345,6 @@ class Editor extends Component {
         Taro.setStorageSync('firstViewEditor', true)
       }
     })
-
-
   }
 
 
@@ -296,7 +363,7 @@ class Editor extends Component {
 
   // 公共方法
   pageToHome = () => {
-    Taro.navigateBack({ delta: 1 })
+    Taro.navigateBack({delta: 1})
   }
   showLoading = () => {
     this.setState({
@@ -331,21 +398,21 @@ class Editor extends Component {
         }
       }, () => {
         this.initCoverData()
-        if (Taro.getStorageSync('lastSeparateImage')) {
-          const { foreground } = this.state
-          this.setState({
-            foreground: {
-              ...foreground,
-              remoteUrl: Taro.getStorageSync('lastSeparateImage')
-            }
-          })
-        }
+        // if (Taro.getStorageSync('lastSeparateImage')) {
+        //   const {foreground} = this.state
+        //   this.setState({
+        //     foreground: {
+        //       ...foreground,
+        //       remoteUrl: Taro.getStorageSync('lastSeparateImage')
+        //     }
+        //   })
+        // }
       })
     })
   }
 
   initRawImage = () => {
-    const { rawImage } = this.state
+    const {rawImage} = this.state
     globalData.choosedImage = globalData.choosedImage || 'http://tmp/wxcfe56965f4d986f0.o6zAJsztn2DIgXEGteELseHpiOtU.6gRGsIZIvyytf45cffd60a62912bada466d51e03f6fa.jpg'
     this.setState({
       rawImage: {
@@ -357,7 +424,7 @@ class Editor extends Component {
   // 初始化场景信息
   initSceneData = async (callback) => {
     const currentScene = globalData.sceneConfig//来自于主页给每一项设置的，
-    console.log(currentScene,'initiating the first scene&&adding')
+    console.log(currentScene, 'initiating the first scene&&adding')
     this.setState({
       currentScene: {
         ...this.state.currentScene,
@@ -370,14 +437,14 @@ class Editor extends Component {
   }
   // 初始化贴纸
   initCoverData = () => {
-    const { currentScene } = this.state
+    const {currentScene} = this.state
     // const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
     const sceneConfig = tool.JSON_parse(currentScene.sceneConfig)
-    const { cover = {} } = sceneConfig
-    console.log(cover,'covering this is cover ,this is 边框') //是边框的信息
+    const {cover = {}} = sceneConfig
+    console.log(cover, 'covering this is cover ,this is 边框') //是边框的信息
     this.themeData.rawCoverList = cover.list || []
     const coverList = work.formatRawCoverList(this.themeData.rawCoverList)
-
+    console.log(coverList)
     this.setState({
       coverList: coverList
     })
@@ -409,9 +476,9 @@ class Editor extends Component {
         }
       })// 得到已经分割好的图片
 
-      console.log(separateRes,'this is first separateRes'); //部分url
+      console.log(separateRes, 'this is first separateRes'); //部分url
 
-      const { cateImageDict = {} } = separateRes.result || {}
+      const {cateImageDict = {}} = separateRes.result || {}
 
       if (!cateImageDict['16'] && !cateImageDict['16-1']) {
         console.log('技术犯规了')
@@ -427,7 +494,7 @@ class Editor extends Component {
   }
 
   initSeparateData = async (separateResult) => {
-    const { currentScene, foreground } = this.state
+    const {currentScene, foreground} = this.state
     this.changeSceneChooseSegment(currentScene, separateResult, (res = {}) => {
       Taro.setStorageSync('lastSeparateImage', res.separateUrl)
       this.setState({
@@ -443,14 +510,14 @@ class Editor extends Component {
 
   // 根据场景决定头像
   async changeSceneChooseSegment(currentScene, separateResult = {}, callback) {
-    const { imageHost } = appConfig
+    const {imageHost} = appConfig
     if (!separateResult.cateImageDict) {
       return
     }
     // 判断分离的是全身还是头像    //adding by YUjinZENG-explanation segmentType是导入数据的时候就定义好了的
     let separateUrl = ''
     let separateMaskUrl = ''
-    console.log(currentScene,'currentScenceing---ing')
+    console.log(currentScene, 'currentScenceing---ing')
     if (currentScene.segmentType === 1) { //目前的数据都是0；所以下面的选项也不影响
       separateUrl = imageHost + separateResult.cateImageDict['16-1']//['16-1']没有这个key啊
       separateMaskUrl = imageHost + separateResult.maskImageDict['16-1']
@@ -467,11 +534,11 @@ class Editor extends Component {
   // 背景
   handleBackgroundClick = () => {
     this.setForegroundActiveStatus(false)
-    this.setCoverListActiveStatus({ type: 'all' }, false)
+    this.setCoverListActiveStatus({type: 'all'}, false)
   }
   // 自定义背景
   onCustomBgLoaded = (detail: object) => {
-    const { width, height } = detail
+    const {width, height} = detail
     this.setStateTarget('customBg', {
       originWidth: width,
       originHeight: height
@@ -479,35 +546,22 @@ class Editor extends Component {
       this.customBgAuto()
     })
   }
-  handleBgLoaded = ({ detail }) => {
-    console.log(detail)//背景图片的尺寸-eg：背景图 900,1200---整个框包括白板也是这么大
-    if ((detail.width / detail.height) >= (3 / 4)) {
+  handleBgLoaded = ({detail}) => {
+      let k = detail.width / detail.height;
       this.setState({
         drawBoard: {
-          width: '690rpx',
-          height: `${detail.height * 345 / detail.width * 2}rpx` //690 920
+          width: `600rpx`,
+          height: `${600 / k}rpx`//`${detail.height * 345 / detail.width * 2}rpx` //690 920
         }
       }, () => {
         setTimeout(() => {
           this.calFrameRect()
         }, 250);
       })
-    } else {
-      this.setState({
-        drawBoard: {
-          height: '920rpx',
-          width: `${detail.width * 460 / detail.height * 2}rpx`
-        }
-      }, () => {
-        setTimeout(() => {
-          this.calFrameRect()
-        }, 250);
-      })
-    }
   }
   handleChangeCustomBgStyle = (data) => {
     // console.log('handleChangeCustomBgStyle', data)
-    const { frame } = this.state
+    const {frame} = this.state
     if (data.x > 0) {
       data.x = 0
     }
@@ -520,7 +574,7 @@ class Editor extends Component {
     if (frame.height - data.height > data.y) {
       data.y = frame.height - data.height
     }
-    const { customBg } = this.state
+    const {customBg} = this.state
     this.setState({
       customBg: {
         ...customBg,
@@ -532,16 +586,16 @@ class Editor extends Component {
   handleCustomBgTouchstart = () => {
     // console.log('handleCustomBgTouchstart')
     this.setForegroundActiveStatus(false)
-    this.setCoverListActiveStatus({ type: 'all' }, false)
+    this.setCoverListActiveStatus({type: 'all'}, false)
   }
   handleCustomBgTouchend = () => {
     // console.log('handleCustomBgTouchend')
   }
   // 人物
   onForegroundLoaded = (detail: object, item?: any) => {
-     //console.log('handleForegroundLoaded', detail, item) // item 就是foreground存的信息
+    //console.log('handleForegroundLoaded', detail, item) // item 就是foreground存的信息
     this.hideLoading()
-    const { width, height } = detail
+    const {width, height} = detail
     this.setStateTarget('foreground', {
       originWidth: width,
       originHeight: height,
@@ -551,8 +605,8 @@ class Editor extends Component {
     })
   }
   handleChangeStyle = (data) => {
-    const { foreground } = this.state
-    console.log(data,'====== this is to check data =====')
+    const {foreground} = this.state
+    console.log(data, '====== this is to check data =====')
     this.setState({
       foreground: {
         ...foreground,
@@ -564,7 +618,7 @@ class Editor extends Component {
   handleForegroundTouchstart = (sticker) => {
     // console.log('handleForegroundTouchstart', sticker)
     this.setForegroundActiveStatus(true)
-    this.setCoverListActiveStatus({ type: 'all' }, false)
+    this.setCoverListActiveStatus({type: 'all'}, false)
   }
   handleForegroundTouchend = () => {
     this.storeForegroundInfo()
@@ -572,7 +626,7 @@ class Editor extends Component {
   // 贴纸
   onCoverLoaded = (detail: object, item?: any) => {
     // console.log('onCoverLoaded', detail, item)
-    const { width, height } = detail
+    const {width, height} = detail
     const originInfo = {
       originWidth: width,
       originHeight: height
@@ -580,9 +634,9 @@ class Editor extends Component {
     this.coverAuto(originInfo, item)
   }
   handleChangeCoverStyle = (data) => {
-    console.log(data,'---------this is to check data to check id -------')
-    const { id } = data
-    const { coverList } = this.state
+    console.log(data, '---------this is to check data to check id -------')
+    const {id} = data
+    const {coverList} = this.state
     coverList.forEach((v, i) => {
       if (v.id === id) {
         coverList[i] = data
@@ -594,18 +648,18 @@ class Editor extends Component {
   }
   handleCoverTouchstart = (sticker) => {
     // console.log('handleCoverTouchstart', sticker)
-    this.setCoverListActiveStatus({ type: 'some', ids: [sticker.id] }, true)
+    this.setCoverListActiveStatus({type: 'some', ids: [sticker.id]}, true)
     this.setForegroundActiveStatus(false)
   }
   handleCoverTouchend = (sticker) => {
     // console.log('handleCoverTouchend', sticker)
     this.storeCoverInfo(sticker)
-    this.app.aldstat.sendEvent('贴纸使用', { '贴纸Id': sticker.id })
+    this.app.aldstat.sendEvent('贴纸使用', {'贴纸Id': sticker.id})
   }
   handleDeleteCover = (sticker) => {
     // console.log('handleDeleteCover', sticker)
-    const { id } = sticker
-    const { coverList } = this.state
+    const {id} = sticker
+    const {coverList} = this.state
     coverList.forEach((v, i) => {
       if (v.id === id) {
         coverList[i] = {
@@ -618,12 +672,12 @@ class Editor extends Component {
     this.setState({
       coverList: coverList
     })
-    this.app.aldstat.sendEvent('贴纸删除', { '贴纸Id': sticker.id })
+    this.app.aldstat.sendEvent('贴纸删除', {'贴纸Id': sticker.id})
   }
 
   // 更换场景
   handleChooseScene = (scene) => {
-    const { currentScene } = this.state
+    const {currentScene} = this.state
     if (currentScene.sceneId === scene.sceneId) {
       return
     }
@@ -637,45 +691,13 @@ class Editor extends Component {
       // console.log('handleChooseScene', this.state.currentScene)
       this.foregroundAuto()
       this.initCoverData()
-      this.app.aldstat.sendEvent('选择场景', { '场景名': this.state.currentScene.sceneName, '场景Id': this.state.currentScene.sceneId })
+      this.app.aldstat.sendEvent('选择场景', {
+        '场景名': this.state.currentScene.sceneName,
+        '场景Id': this.state.currentScene.sceneId
+      })
     })
   }
-  // 自定义场景
-  handleChooseCustom = () => {
-    work.chooseImage({
-      onTap: (index) => {
-        if (index === 0) {
-          this.app.aldstat.sendEvent('自定义背景上传人像选择拍摄照片', '选择拍摄')
-        } else if (index === 1) {
-          this.app.aldstat.sendEvent('自定义背景上传人像选择相册照片', '选择相册')
-        }
-      },
-      onSuccess: (path) => {
-        const { currentScene } = this.state
-        const customScene = {
-          type: 'custom',
-          bgUrl: path,
-          sceneId: '',
-          sceneName: '',
-          shareContent: '',
-          thumbnailUrl: path,
-        }
-        this.setState({
-          currentScene: {
-            ...currentScene,
-            ...customScene
-          },
-          customBg: {
-            ...this.state.customBg,
-            localUrl: path
-          },
-          coverList: []
-        }, () => {
-          // console.log('handleChooseCustom', this.state.currentScene)
-        })
-      }
-    })
-  }
+  
 
   // 保存
   handleOpenResult = async () => {
@@ -688,19 +710,22 @@ class Editor extends Component {
     if (this.isSaving) {
       return
     }
-    this.app.aldstat.sendEvent('保存图片或视频', { '场景名': this.state.currentScene.sceneName, '场景Id': this.state.currentScene.sceneId })
+    this.app.aldstat.sendEvent('保存图片或视频', {
+      '场景名': this.state.currentScene.sceneName,
+      '场景Id': this.state.currentScene.sceneId
+    })
     Taro.showLoading({
       title: '照片生成中...',
       mask: true,
     })
-    const mySaveNumber = {
-      number: Taro.getStorageSync('saveNumber').number + 1,
-      date: Taro.getStorageSync('saveNumber').date
-    }
-    Taro.setStorageSync('saveNumber', mySaveNumber)
+    // const mySaveNumber = {
+    //   number: Taro.getStorageSync('saveNumber').number + 1,
+    //   date: Taro.getStorageSync('saveNumber').date
+    // }
+    // Taro.setStorageSync('saveNumber', mySaveNumber)
     this.isSaving = true
     const canvasImageUrl = await this.createCanvas()
-    console.log(canvasImageUrl,'这是canvasImageUrl')//图片的本地地址
+    console.log(canvasImageUrl, '这是canvasImageUrl')//图片的本地地址
     Taro.hideLoading()
     this.isSaving = false
     this.setState({
@@ -712,7 +737,7 @@ class Editor extends Component {
         show: true
       }
     }, async () => {
-      const { url } = await service.base.upload(canvasImageUrl)
+      const {url} = await service.base.upload(canvasImageUrl)
       this.setState({
         result: {
           show: this.state.result.show,
@@ -770,7 +795,7 @@ class Editor extends Component {
   // 发布到QQ空间
 
   publishToQzone = () => {
-    const { currentScene } = this.state
+    const {currentScene} = this.state
     const shareContent = currentScene.shareContent || (globalData.themeData && globalData.themeData.shareContent)
     qq.openQzonePublish({
       text: shareContent,
@@ -784,7 +809,7 @@ class Editor extends Component {
   }
 
   setResultModalStatus = (flag = false) => {
-    const { result } = this.state
+    const {result} = this.state
     result.show = flag
     this.setState({
       result: {
@@ -795,7 +820,7 @@ class Editor extends Component {
 
   createCanvas = async () => {
     return new Promise(async (resolve, reject) => {
-      const { currentScene, canvas } = this.state
+      const {currentScene, canvas} = this.state
       const context = Taro.createCanvasContext(canvas.id, this) //组件绘图的上下文
       if (currentScene.type === 'custom') {
         await this.canvasDrawCustom(context)
@@ -805,7 +830,8 @@ class Editor extends Component {
       //绘制图片
       context.draw() //【有点像将之前的设置保存到context中】
       //将生成好的图片保存到本地，需要延迟一会，绘制期间耗时
-      setTimeout(function () {
+      setTimeout( () => {
+          console.log(canvas.id,666666)
         Taro.canvasToTempFilePath({ //存储照片
           canvasId: canvas.id,
           fileType: 'jpg',
@@ -826,16 +852,17 @@ class Editor extends Component {
   }
 
   canvasDrawRecommend = async (context) => {
-    const { currentScene, frame, canvas } = this.state
+    const {currentScene, frame, canvas} = this.state
 
-    console.log(frame,'frame ===width===height===frame')
+    console.log(frame, 'frame ===width===height===frame')
 
     const postfix = '?x-oss-process=image/resize,h_748,w_560'
-    const { ratio = 3 } = canvas
-    const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
+    const {ratio = 3} = canvas
+    const sceneInfo = currentScene
     let sceneConfig = {}
     try {
       sceneConfig = tool.JSON_parse(sceneInfo.sceneConfig)
+      console.log(sceneInfo,sceneInfo.sceneConfig,'aaaaaa')
     } catch (err) {
       console.log('canvasDrawRecommend 解析sceneConfig JSON字符串失败', err)
     }
@@ -853,13 +880,13 @@ class Editor extends Component {
     // 绘制元素
     await this.canvasDrawElement(context, ratio)
     // 绘制二维码
-    if (sceneConfig.watermark) {
-      this.canvasDrawLogo(context, ratio)
-    }
+    // if (sceneConfig.watermark) {
+    //   this.canvasDrawLogo(context, ratio)
+    // }
   }
   canvasDrawCustom = async (context) => {
-    const { customBg, canvas } = this.state
-    const { ratio = 3 } = canvas
+    const {customBg, canvas} = this.state
+    const {ratio = 3} = canvas
     // 自定义背景为本地图片，不需要下载
     const localBgImagePath = customBg.localUrl
     //防止锯齿，绘的图片是所需图片的3倍
@@ -871,7 +898,7 @@ class Editor extends Component {
   }
   // 绘制贴纸，文字，覆盖层所有元素
   canvasDrawElement = async (context, ratio) => {
-    const { currentScene, foreground, frame, canvas, coverList = [] } = this.state
+    const {currentScene, foreground, frame, canvas, coverList = []} = this.state
     // 收集所有元素进行排序
     let elements: Array<any> = []
     const element_foreground = {
@@ -918,8 +945,9 @@ class Editor extends Component {
         continue
       }
     }
+
     // console.log('elements', elements)
-    function drawElement({ localUrl, width, height, x, y, rotate }) {
+    function drawElement({localUrl, width, height, x, y, rotate}) {
       context.save()
       context.translate(x + 0.5 * width, y + 0.5 * height)
       context.rotate(rotate * Math.PI / 180)
@@ -930,7 +958,7 @@ class Editor extends Component {
   }
   // 绘制二维码和logo
   canvasDrawLogo = (context, ratio) => {
-    const { frame } = this.state
+    const {frame} = this.state
     // const localCodeImagePath = '../../assets/images/code.png'
     const codeWidth = 67.5 * 1.5
     const codeHeight = 67.5 * 1.5
@@ -974,12 +1002,12 @@ class Editor extends Component {
 
   // 设置人物状态
   setForegroundActiveStatus = (value = false) => {
-    this.setStateTarget('foreground', { isActive: value })
+    this.setStateTarget('foreground', {isActive: value})
   }
   // 设置贴纸状态
   setCoverListActiveStatus = (options = {}, value = false) => {
-    const { type, ids = [] } = options
-    const { coverList } = this.state
+    const {type, ids = []} = options
+    const {coverList} = this.state
     if (type === 'all') {
       coverList.forEach(v => {
         v['isActive'] = value
@@ -1001,8 +1029,8 @@ class Editor extends Component {
   // 自定义背景自适应
   customBgAuto = (callback?: () => void) => {
     // 获取图片原始大小
-    const { customBg, frame } = this.state
-    const { originWidth = 0, originHeight = 0 } = customBg || {}
+    const {customBg, frame} = this.state
+    const {originWidth = 0, originHeight = 0} = customBg || {}
     const imageRatio = originWidth / originHeight
     // 计算宽高比例
     const result = {
@@ -1042,7 +1070,7 @@ class Editor extends Component {
   // 人物自适应
   foregroundAuto = (callback?: () => void) => {
     // 先判断是否有缓存
-    const { currentScene } = this.state
+    const {currentScene} = this.state
     // const sceneId = currentScene.sceneId || 'demo_scene'
     // const cache_foreground = this.cache['foreground']
     // const scene_foreground_params = cache_foreground.get(sceneId)
@@ -1058,7 +1086,7 @@ class Editor extends Component {
 
     const size = this.calcForegroundSize()
     const position = this.calcForegroundPosition(size)
-    console.log(position,'-------see this is position-----')
+    console.log(position, '-------see this is position-----')
     this.setStateTarget('foreground', {
       ...size,
       ...position
@@ -1066,10 +1094,11 @@ class Editor extends Component {
       typeof callback === 'function' && callback()
     })
   }
+
   // 计算人物尺寸   //映射到背景的尺寸【add by YuJIN Zeng
   calcForegroundSize = () => {
-    const { currentScene, sceneList, foreground, frame } = this.state
-    const { originWidth, originHeight } = foreground
+    const {currentScene, sceneList, foreground, frame} = this.state
+    const {originWidth, originHeight} = foreground
     // const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
 
     const imageRatio = originWidth / originHeight
@@ -1097,9 +1126,9 @@ class Editor extends Component {
     return result
   }
   // 计算人物位置
-  calcForegroundPosition = ({ width, height } = {}) => {
-    const { currentScene, sceneList, foreground, frame } = this.state
-    const { originWidth, originHeight } = foreground
+  calcForegroundPosition = ({width, height} = {}) => {
+    const {currentScene, sceneList, foreground, frame} = this.state
+    const {originWidth, originHeight} = foreground
     width = width || foreground.width
     height = height || foreground.height
     // const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
@@ -1107,7 +1136,7 @@ class Editor extends Component {
     const boxWidth = frame.width
     const boxHeight = frame.height
     const sceneConfig = tool.JSON_parse(currentScene.sceneConfig)
-    const { position } = sceneConfig
+    const {position} = sceneConfig
     const type = position.place || '0'
     const result = {
       x: 0,
@@ -1192,6 +1221,7 @@ class Editor extends Component {
       }
       return result
     }
+
     // 中心点设置位置
     function centerLocation(position, boxWidth, boxHeight, width, height) {
       const result = {
@@ -1212,6 +1242,7 @@ class Editor extends Component {
       }
       return result
     }
+
     // 脸部中心点设置位置
     function faceCenterLocation(position, boxWidth, boxHeight, width, height) {
       const result = {
@@ -1241,7 +1272,7 @@ class Editor extends Component {
   }
   // 缓存人物尺寸位置
   storeForegroundInfo = () => {
-    const { foreground, currentScene } = this.state
+    const {foreground, currentScene} = this.state
     const clone_foreground = tool.deepClone(foreground)
     clone_foreground.isActive = false
     const sceneId = currentScene.sceneId || 'demo_scene'
@@ -1253,7 +1284,7 @@ class Editor extends Component {
   coverAuto = (originInfo, cover, callback?: () => void) => {
     const size = this.calcCoverSize(originInfo, cover)
     const position = this.calcCoverPosition(size, cover)
-    const { coverList = [], currentScene } = this.state
+    const {coverList = [], currentScene} = this.state
     coverList.forEach((v, i) => {
       if (v.id === cover.id) {
         // 判断是否有缓存
@@ -1262,7 +1293,7 @@ class Editor extends Component {
         if (cacheRes) {
           coverList[i] = cacheRes
         } else {
-          coverList[i] = { ...v, ...size, ...position }
+          coverList[i] = {...v, ...size, ...position}
         }
       }
     })
@@ -1274,8 +1305,8 @@ class Editor extends Component {
     })
   }
   calcCoverSize = (originInfo, cover) => {
-    const { originWidth, originHeight } = originInfo
-    const { frame } = this.state
+    const {originWidth, originHeight} = originInfo
+    const {frame} = this.state
     const coverInfo = work.getCoverInfoById(cover.id, this.themeData.rawCoverList, 'id')
     const imageRatio = originWidth / originHeight
     let autoScale
@@ -1307,8 +1338,8 @@ class Editor extends Component {
 
   //上传图片的操作
   todo = (data) => {
-    console.log(data,'datadatadataOftodo')//授权获得用户信息
-    const { detail: { userInfo } } = data
+    console.log(data, 'datadatadataOftodo')//授权获得用户信息
+    const {detail: {userInfo}} = data
     if (userInfo) {
       service.base.loginAuth(data.detail)//【上传用户信息】
       globalData.userInfo = userInfo
@@ -1317,52 +1348,49 @@ class Editor extends Component {
           hasGuide: false
         })
       }
-      work.chooseImage({
-        onTap: (index) => {
-          // console.log('tap index', index)
-          if (index === 0) {
-            this.app.aldstat.sendEvent('编辑页面选择拍摄照片', '选择拍摄')
-          } else if (index === 1) {
-            this.app.aldstat.sendEvent('编辑页面选择相册照片', '选择相册')
-          }
-        },
+      work.chooseImageSimple({
         onSuccess: async (path) => {//获得加载图片的路径,这里的success就是用来把加载进来的图片进行处理
           console.log('choosedImage', path, globalData)
           this.app.aldstat.sendEvent('编辑页面人像成功', '上传成功')
           globalData.choosedImage = path//存入图片，为之后的处理准备
-          wx.getFileSystemManager().readFile({
+          Taro.getFileSystemManager().readFile({
             filePath: path,
-            success: (data) => { //这的data是文件内容，所以这个函数的意义是啥？？？
-              wx.cloud.callFunction({
-                name: 'checkImage',
-                data: {
-                  contentType: 'image/png',
-                  value: data.data
-                },
-                success: async (res) => {//res 为处理信息，跟图片无关；
-                  console.log('checkImage success：', res)
-                  // const separateResult = globalData.separateResult = await this.initSegment()
-                  // await this.initSeparateData(separateResult)
-                  if (res.result !== null && res.result.errCode === 0) {
-                    const separateResult = globalData.separateResult = await this.initSegment()//一个对象、得到分割结果，还不是图像，只是部分路径
-                    console.log(separateResult,'separeteResulting')
-                    await this.initSeparateData(separateResult)
-                  } else {
-                    work.pageToError()
-                  }
-                },
-                fail: async (err) => {
-                  console.log('checkImage error', err)
-                  const separateResult = globalData.separateResult = await this.initSegment()
-                  await this.initSeparateData(separateResult)
-                }
-              })
+            success: (data:any) => { //这的data是文件内容，所以这个函数的意义是啥？？？
+                Taro.cloud.callFunction(
+                    {
+                        name: 'checkImage',
+                        data: {
+                          contentType: 'image/png',
+                          value: data.data
+                        },
+                        success: async (res:any) => {//res 为处理信息，跟图片无关；
+                          console.log('checkImage success：', res)
+                          // const separateResult = globalData.separateResult = await this.initSegment()
+                          // await this.initSeparateData(separateResult)
+                          if (res.result !== null && res.result.errCode === 0) {
+                            const separateResult = globalData.separateResult = await this.initSegment()//一个对象、得到分割结果，还不是图像，只是部分路径
+                            console.log(separateResult, 'separeteResulting~~~~~~~~~~~~~~~~')
+                            await this.initSeparateData(separateResult)
+                          } else {
+                            work.pageToError()
+                          }
+                        },
+                        fail: async (err) => {
+                          console.log('checkImage error', err)
+                          const separateResult = globalData.separateResult = await this.initSegment()
+                          await this.initSeparateData(separateResult)
+                        }
+                      }
+                )
             },
-            fail:()=>{
+            fail: () => {
             }
           })
 
         }
+      })
+      this.setState({
+          showType: 1
       })
     } else {
       Taro.showToast({
@@ -1375,10 +1403,10 @@ class Editor extends Component {
   }
 
   calcCoverPosition = (size = {}, cover = {}) => {
-    const { width = 0, height = 0 } = size
-    const { frame } = this.state
+    const {width = 0, height = 0} = size
+    const {frame} = this.state
     const coverInfo = work.getCoverInfoById(cover.id, this.themeData.rawCoverList, 'id')
-    const { position, rotate = 0 } = coverInfo
+    const {position, rotate = 0} = coverInfo
     const boxWidth = frame.width
     const boxHeight = frame.height
 
@@ -1461,6 +1489,7 @@ class Editor extends Component {
       }
       return result
     }
+
     // 中心点设置位置
     function centerLocation(position, boxWidth, boxHeight, width, height) {
       const result = {
@@ -1484,7 +1513,7 @@ class Editor extends Component {
   }
   // 缓存贴纸信息
   storeCoverInfo = (sticker) => {
-    const { currentScene } = this.state
+    const {currentScene} = this.state
     const clone_cover = tool.deepClone(sticker)
     // 贴纸存储不激活状态
     clone_cover.isActive = false
@@ -1494,7 +1523,7 @@ class Editor extends Component {
   }
   handleGetUserInfo = (data) => {
     // console.log('handleGetUserInfo', data)
-    const { detail: { userInfo } } = data
+    const {detail: {userInfo}} = data
     if (userInfo) {
       service.base.loginAuth(data.detail)
       globalData.userInfo = userInfo
@@ -1507,14 +1536,19 @@ class Editor extends Component {
       })
     }
   }
+
   handelVideoAd() {
     //.catch((err)=>{console.log(err)})
     this.setState({
       isshow: false
     })
-    this.videoAd = wx.createRewardedVideoAd({ adUnitId: 'adunit-7815bc095ad4a222' })
-    this.videoAd.onLoad(() => { console.log('广告拉取成功') })
-    this.videoAd.onError((err) => { console.log(err) })
+    this.videoAd = wx.createRewardedVideoAd({adUnitId: 'adunit-7815bc095ad4a222'})
+    this.videoAd.onLoad(() => {
+      console.log('广告拉取成功')
+    })
+    this.videoAd.onError((err) => {
+      console.log(err)
+    })
     this.videoAd.onClose((res) => {
       if (res.isEnded) {
         this.handleOpenResult()
@@ -1527,141 +1561,173 @@ class Editor extends Component {
       })
     }
   }
+
   saveImg() {
     this.setState({
       isshow: true,
       content: '观看完整的视频广告后，才可以保存这张图片哦~',
     })
   }
+
   handelCancel() {
     this.setState({
       isshow: false
     })
 
   }
+
   changeNav() {
     this.app.aldstat.sendEvent('保存后返回首页', '回到首页')
-    Taro.navigateTo({ url: '/pages/home/index' })
+    Taro.navigateTo({url: '/pages/home/index'})
   }
+
+  substituteBgUrl(item){
+    globalData.sceneConfig = item;
+    this.setState({
+      currentScene: item,
+      staticBgUrl:item.bgUrl
+    })
+    this.initSceneData(()=>{});
+  }
+
   render() {
-    const { loading, rawImage, frame, customBg, foreground, coverList, sceneList, currentScene, result, canvas } = this.state
+    const {loading, rawImage, frame, customBg, foreground, coverList, sceneList, currentScene, result, canvas, showType} = this.state
+    let cover = coverList.map(item => {
+        return <Sticker
+          key={item.id}
+          url={item.remoteUrl}
+          stylePrams={item}
+          framePrams={frame}
+          onChangeStyle={this.handleChangeCoverStyle}
+          onImageLoaded={this.onCoverLoaded}
+          onTouchstart={this.handleCoverTouchstart}
+          onTouchend={this.handleCoverTouchend}
+          onDeleteSticker={this.handleDeleteCover.bind(this, item)}
+        />
+      })
+    console.log(currentScene,'currentScene')
     return (
-      <View className='page-editor'>
-        <Title
-          color="#333"
-          leftStyleObj={{ left: Taro.pxTransform(8) }}
-          renderLeft={
-            <CustomIcon type="back" theme="dark" onClick={this.pageToHome} />
-          }
-        >懒人抠图</Title>
-        <View className="main">
-          <View className="pic-section">
-            <View className={`raw ${(foreground.remoteUrl && foreground.loaded) ? 'hidden' : ''}`} style={{ width: this.state.drawBoard.width, height: this.state.drawBoard.height }}>
-              <Image src={rawImage.localUrl} style="width:100%;height:100%" mode="aspectFit" />
-            </View>
-            <View style={{ width: this.state.drawBoard.width, height: this.state.drawBoard.height }} className={`crop`} id="crop">
-              {currentScene.type === 'recommend' &&
+      <ScrollView scrollY className="scrollPage">
+        <View className='page-editor'>
+          <Title
+            color="#333"
+            leftStyleObj={{left: Taro.pxTransform(8)}}
+            renderLeft={
+              <CustomIcon type="back" theme="dark" onClick={this.pageToHome}/>
+            }
+          >中行跨次元卡</Title>
+          <View className="main">
+
+            <View className="addTitle"></View>
+
+            <View className="pic-section">
+              {/*<View className={`raw ${(foreground.remoteUrl && foreground.loaded) ? 'hidden' : ''}`} style={{ width: this.state.drawBoard.width, height: this.state.drawBoard.height }}>*/}
+              {/*<Image src={rawImage.localUrl} style="width:100%;height:100%" mode="aspectFit" />*/}
+              {/*</View>*/}
+              {showType ? 
+              <View style={{width: this.state.drawBoard.width, height: this.state.drawBoard.height}} className={`crop`}
+                    id="crop">
+                {currentScene.type === 'recommend' &&
                 <View className="background-image">
                   <Image
-                    src={currentScene.bgUrl}
+                    src={this.state.staticBgUrl}
                     style="width:100%;height:100%"
                     mode="scaleToFill"
                     onLoad={this.handleBgLoaded}
                     onClick={this.handleBackgroundClick}
                   />
                 </View>
-              }
-              <Sticker
-                ref="foreground"
-                url={foreground.remoteUrl}
-                stylePrams={foreground}
-                framePrams={frame}
-                onChangeStyle={this.handleChangeStyle}
-                onImageLoaded={this.onForegroundLoaded}
-                onTouchstart={this.handleForegroundTouchstart}
-                onTouchend={this.handleForegroundTouchend}
-              />
-              {coverList.map(item => {
-                return <Sticker
-                  key={item.id}
-                  url={item.remoteUrl}
-                  stylePrams={item}
+                }
+                <Sticker
+                  ref="foreground"
+                  url={foreground.remoteUrl}
+                  stylePrams={foreground}
                   framePrams={frame}
-                  onChangeStyle={this.handleChangeCoverStyle}
-                  onImageLoaded={this.onCoverLoaded}
-                  onTouchstart={this.handleCoverTouchstart}
-                  onTouchend={this.handleCoverTouchend}
-                  onDeleteSticker={this.handleDeleteCover.bind(this, item)}
+                  onChangeStyle={this.handleChangeStyle}
+                  onImageLoaded={this.onForegroundLoaded}
+                  onTouchstart={this.handleForegroundTouchstart}
+                  onTouchend={this.handleForegroundTouchend}
                 />
+                {cover}
+              </View> :
+              <View className='testImage' style={{width: this.state.drawBoard.width, height: this.state.drawBoard.height}}>
+                  <Image
+                    src={this.state.staticBgUrl}
+                    style="width:100%;height:100%"
+                    mode="scaleToFill"
+                    // onLoad={this.handleBgLoaded}
+                  />
+              </View>
+              }
+              
+            </View>
+
+            <View className='subSection'>
+              <View className="hideIcon">隐藏卡面图标</View>
+              {showType ? <View className="buttonPart">
+                <Button style='flex:1;z-index:2' id='addPhoto' openType="getUserInfo" className="custom-button white border"
+                        hoverClass="btn-hover" onGetUserInfo={this.todo}>{this.state.chooseText}</Button>
+                <Button style='flex:1;margin-left:10px' className="custom-button pink" hoverClass="btn-hover"
+                          onClick={this.handleOpenResult}>完成定制</Button>
+              </View> :
+                <View className="buttonPart">
+                    <Button style='flex:1;z-index:2' id='addPhoto' openType="getUserInfo" className="custom-button pink"
+                        hoverClass="btn-hover" onGetUserInfo={this.todo}>{this.state.chooseText}</Button>
+                </View>
+              }
+              
+            </View>
+
+            {this.state.isshow === true ? <Dialog
+              content={this.state.content}
+              cancelText={this.state.cancelText}
+              confirmText={this.state.confirmText}
+              isshow={this.state.isshow}
+              renderButton={
+                <View className="wx-dialog-footer" style="display:flex;margin-bottom:30rpx">
+                  <Button className="wx-dialog-btn" onClick={this.handelCancel} style="flex:1">
+                    {this.state.cancelText}
+                  </Button>
+                  <Button className="wx-dialog-btn" onClick={this.handelVideoAd} style="flex:1">
+                    {this.state.confirmText}
+                  </Button>
+                </View>
+              }
+            /> : ''}
+          </View>
+
+          <View className="subMain" style="width:100%;height:100%">
+            <View className="addSub">...其他可定制卡片...</View>
+            <View className="pictureList">
+              {this.state.sceneList.map((item) => {
+                return (<View style={{background:`url(${item.boxUrl}) no-repeat center`,backgroundSize:'contain'}} className='singlePicture'>
+                            <Image src={item.exampleUrl} onClick={this.substituteBgUrl.bind(this,item)}/>
+                            {currentScene.index === item.index ? <View className='currentIcon'></View> : null}
+                            
+                        </View>)
+                    
               })}
             </View>
           </View>
 
-          <MarginTopWrap config={{ large: 60, small: 40, default: 20 }} >
-            <View style="display:flex;margin-top:120rpx">
-              <Button style='flex:1;z-index:2' id='addPhoto' openType="getUserInfo" className="custom-button pink" hoverClass="btn-hover" onGetUserInfo={this.todo}>{this.state.chooseText}</Button>
-              {Taro.getStorageSync('saveNumber').number === 0 ?
-                <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.handleOpenResult} openType="share">分享并保存</Button>
-                : <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.saveImg}>保存</Button>}
-            </View>
-          </MarginTopWrap>
-          {this.state.isshow === true ? <Dialog
-            content={this.state.content}
-            cancelText={this.state.cancelText}
-            confirmText={this.state.confirmText}
-            isshow={this.state.isshow}
-            renderButton={
-              <View className="wx-dialog-footer" style="display:flex;margin-bottom:30rpx">
-                <Button className="wx-dialog-btn" onClick={this.handelCancel} style="flex:1">
-                  {this.state.cancelText}
-                </Button>
-                <Button className="wx-dialog-btn" onClick={this.handelVideoAd} style="flex:1">
-                  {this.state.confirmText}
-                </Button>
-              </View>
-            }
-          /> : ''}
+          <View class="canvas-wrap">
+            <Canvas
+              disable-scroll={true}
+              style={`width: ${frame.width * canvas.ratio}px; height: ${frame.height * canvas.ratio}px;`}
+              canvasId={canvas.id}/>
+          </View>
+
+          <Loading visible={loading}/>
+
+          {/* <View className='newGuide' style={{display: this.state.hasGuide === false ? 'none' : 'block'}}>
+            <Image src={addTips} alt="" className='tips' style={{top: this.state.guiderTop + 'px'}}/>
+          </View> */}
+
+          {/*<AuthModal/>*/}
         </View>
-
-        <View class="canvas-wrap">
-          <Canvas
-            disable-scroll={true}
-            style={`width: ${frame.width * canvas.ratio}px; height: ${frame.height * canvas.ratio}px;`}
-            canvasId={canvas.id} />
-        </View>
-
-        <Loading visible={loading} />
-
-        <View className='newGuide' style={{ display: this.state.hasGuide === false ? 'none' : 'block' }}>
-          <Image src={addTips} alt="" className='tips' style={{ top: this.state.guiderTop + 'px' }} />
-        </View>
-
-        <AuthModal />
-        {result.show &&
-          <ResultModal
-            type='image'
-            image={{
-              url: result.shareImage.localUrl,
-            }}
-            cropHeight={this.state.drawBoard.height}
-            cropWidth={this.state.drawBoard.width}
-            renderButton={
-              <View className="btn-wrap">
-                <Button className="custom-button pink btn-1" hoverClass="btn-hover" id="btnNav" openType="share">继续分享</Button>
-                {this.state.ableToShareToQZone ?
-                  <View>
-                    <Button className="custom-button dark btn-2" hoverClass="btn-hover" onClick={this.publishToQzone}>同步到说说</Button>
-                    <Button className="custom-button dark btn-3" hoverClass="btn-hover" onClick={this.handlePlayAgain}>再玩一次</Button>
-                  </View> : <View>
-                    <Button className="custom-button dark btn-4" hoverClass="btn-hover" onClick={this.changeNav}>回到首页</Button>
-                  </View>}
-              </View>
-            }
-          />
-        }
-      </View>
+      </ScrollView>
     )
   }
 }
 
-export default Editor as ComponentClass<PageOwnProps, PageState>
+export default Bank as ComponentClass<PageOwnProps, PageState>

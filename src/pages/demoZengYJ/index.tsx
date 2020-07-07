@@ -65,7 +65,7 @@ connect(({ global }) => ({
   }
 }))
 
-class Share extends Component {
+class demoZengYJ extends Component {
   config: Config = {
     navigationBarTitleText: '懒人抠图'
   }
@@ -140,12 +140,12 @@ class Share extends Component {
     showDialogWidth: 258,
     showDialogHeight: 345,
     userXcx: {
-    //   userImage: '',
-    //   userName: '',
-    //   likeNumber: 0,
-    //   uid: '',
-    //   worksId: '',
-    //   liked: 0
+      //   userImage: '',
+      //   userName: '',
+      //   likeNumber: 0,
+      //   uid: '',
+      //   worksId: '',
+      //   liked: 0
     },
     result: {
       show: false,
@@ -159,15 +159,15 @@ class Share extends Component {
       recommendShowUrl:'https://static01.versa-ai.com/upload/f8b8cb0ff2e8/f0348bbf-6667-46d4-96eb-f34869a43867.png',
       sort:1
     },
-    {
-      themeId:'wx37543a814ef773a5',
-      recommendShowUrl:'https://static01.versa-ai.com/upload/028e459b3c1a/1a48a5c5-b26a-49d1-bbf3-c597888c0f5a.png',
-      sort:2
-    },{
-      themeId:'wx21630a5d4651096a',
-      recommendShowUrl:'https://static01.versa-ai.com/upload/028e459b3c1a/1a48a5c5-b26a-49d1-bbf3-c597888c0f5a.png',
-      sort:3
-    }],
+      {
+        themeId:'wx37543a814ef773a5',
+        recommendShowUrl:'https://static01.versa-ai.com/upload/028e459b3c1a/1a48a5c5-b26a-49d1-bbf3-c597888c0f5a.png',
+        sort:2
+      },{
+        themeId:'wx21630a5d4651096a',
+        recommendShowUrl:'https://static01.versa-ai.com/upload/028e459b3c1a/1a48a5c5-b26a-49d1-bbf3-c597888c0f5a.png',
+        sort:3
+      }],
     qrCode:'',
     hotMarginTop: 0,
   }
@@ -231,6 +231,9 @@ class Share extends Component {
 
   singleWorkList = async () => {
     const singleWorkData = await service.share.singleWorkList(this.state.user.worksId)
+
+    console.log(singleWorkData,'this is singleWorkData')
+
     const sessionId = Taro.getStorageSync('session')
     const deviceId = Taro.getStorageSync('deviceId')
     if (singleWorkData.status === 'success') {
@@ -264,9 +267,9 @@ class Share extends Component {
       this.userInfo = Taro.getStorageSync('userInfo')
       let liked
       if( typeof(this.$router.params.isLiked) === 'undefined') {
-         liked = data.liked
+        liked = data.liked
       } else {
-         liked = parseInt(this.$router.params.isLiked)
+        liked = parseInt(this.$router.params.isLiked)
       }
       const shareSourceWidth = data.renderPictureInfo.imageWidth
       const shareSourceHeight = data.renderPictureInfo.imageHeight
@@ -307,8 +310,8 @@ class Share extends Component {
         const width = rect.width
         const height = rect.height
         this.setState({
-         bgImageWidth: width,
-         bgImageHeight: height
+          bgImageWidth: width,
+          bgImageHeight: height
         })
       }).exec()
   }
@@ -464,18 +467,46 @@ class Share extends Component {
 
   getRecommendList = async () => {
     if (this.state.user.templateCode) {
-      // console.log(333333)
+      console.log(333333)
       const hotData = await service.share.getHotList(this.state.user.templateCode)
-      // console.log('hotData', hotData)
+      console.log('hotData', hotData)
       this.setState({
         recommendList: (hotData.result && hotData.result.result) || []
       })
     } else {
-      const size = 6
+      const size = 4 //6
       const recommendData = await service.share.getrecommendList(size)
+
+      console.log(recommendData.result.result,'---this is recommendData.result.result---');
+
+      let urlList=[{url:'https://static01.versa-ai.com/upload/456db36d2256/D36AE0F4-8209-40EA-A00B-D1B059548220.png',worksId:151439060106571776},
+        {url:'https://static01.versa-ai.com/upload/6cccddc45193/22AF7111-8A9E-4A8C-BE80-522D73DAA527.png',worksId:247273876981997568},
+        {url:'https://static01.versa-ai.com/upload/456db36d2256/D36AE0F4-8209-40EA-A00B-D1B059548220.png',worksId:151439060106571776},
+        {url:'https://static01.versa-ai.com/upload/6cccddc45193/22AF7111-8A9E-4A8C-BE80-522D73DAA527.png',worksId:247273876981997568}]
+
+      let tempRecommendList=recommendData.result.result.map((item,index)=>{
+            item.originPictureInfo.url=urlList[index].url;
+            item.renderPictureInfo.url=urlList[index].url;
+            item.worksId=urlList[index].worksId;
+            item.originPictureInfo.worksType='pic';
+            item.renderPictureInfo.worksType='pic';
+            item.worksType='pic';
+            return item
+      });
+
+      //console.log(tempRecommendList,'---to check tempRecommendList---')
+      // this.setState({
+      //   recommendList: (recommendData.result && recommendData.result.result) || []
+      // })
       this.setState({
-        recommendList: (recommendData.result && recommendData.result.result) || []
+        recommendList:(recommendData.result && tempRecommendList) || []
       })
+      // this.setState({
+      //   recommendList:['https://static01.versa-ai.com/upload/94d3748b8577/c2cb0c03-ddaa-43d7-8a95-e604b22ed3d8.jpg',
+      //     'https://static01.versa-ai.com/upload/ea415cfc0899/133b0dd6-0bde-4aaf-8a0f-109a59005529.jpg',
+      //     'https://static01.versa-ai.com/upload/63bc2e0e523e/3954291d-be5c-4092-b9f3-1e04298955aa.jpg',
+      //     'https://static01.versa-ai.com/upload/9a62e01ab882/9534f788-7d5c-4aec-8e5c-756777eef9a5.jpg']
+      // })
     }
   }
 
@@ -602,7 +633,7 @@ class Share extends Component {
       })
       if(result.status === 'success') {
         if (this.state.liked === 0) {
-         this.addLike(this.userInfo)
+          this.addLike(this.userInfo)
         } else {
           this.deleteLike(this.userInfo)
         }
@@ -623,8 +654,8 @@ class Share extends Component {
         const width = rect.width
         const height = rect.height
         this.setState({
-         dialogImageWidth: width,
-         dialogImageHeight: height
+          dialogImageWidth: width,
+          dialogImageHeight: height
         },()=>{
           const showDialogHeight = this.state.user.shareSourceHeight * this.state.dialogImageWidth /this.state.user.shareSourceWidth
           const showDialogWidth = this.state.user.shareSourceWidth * this.state.dialogImageHeight /this.state.user.shareSourceHeight
@@ -644,10 +675,10 @@ class Share extends Component {
         const width = rect.width
         const height = rect.height
         this.setState({
-         frame:{
-           width: width,
-           height: height
-         }
+          frame:{
+            width: width,
+            height: height
+          }
         },()=> {
           this.getDialogRect()
         })
@@ -661,10 +692,10 @@ class Share extends Component {
         const width = rect.width
         const height = rect.height
         this.setState({
-         dialogFooter:{
-           width: width,
-           height: height
-         }
+          dialogFooter:{
+            width: width,
+            height: height
+          }
         })
       }).exec()
   }
@@ -911,37 +942,37 @@ class Share extends Component {
         }
       })
     })
-      // 保存图片到相册
-      work.saveSourceToPhotosAlbum({
-        location: 'local',
-        sourceUrl: canvasImageUrl,
-        sourceType: 'image',
-        onSuccess: () => {
-          Taro.showToast({
-            title: '保存成功!',
-            icon: 'success',
-            duration: 2000
-          })
-          this.setState({
-            savePoint: true
-          })
-        },
-        onAuthFail: () => {
-          console.log(33333)
-          Taro.authModal({
-            open: true
-          })
-          this.setResultModalStatus(false)
-        },
-        onFail: () => {
-          console.log(22222)
-          Taro.showToast({
-            title: '保存失败!',
-            icon: 'success',
-            duration: 2000
-          })
-        }
-      })
+    // 保存图片到相册
+    work.saveSourceToPhotosAlbum({
+      location: 'local',
+      sourceUrl: canvasImageUrl,
+      sourceType: 'image',
+      onSuccess: () => {
+        Taro.showToast({
+          title: '保存成功!',
+          icon: 'success',
+          duration: 2000
+        })
+        this.setState({
+          savePoint: true
+        })
+      },
+      onAuthFail: () => {
+        console.log(33333)
+        Taro.authModal({
+          open: true
+        })
+        this.setResultModalStatus(false)
+      },
+      onFail: () => {
+        console.log(22222)
+        Taro.showToast({
+          title: '保存失败!',
+          icon: 'success',
+          duration: 2000
+        })
+      }
+    })
   }
 
   handlePlayClick = (data) => {
@@ -971,12 +1002,12 @@ class Share extends Component {
         likedNumber = this.state.likeNumber
       }
       const addLiked = await service.share.addLikeWork(this.state.user.worksId,data.uid,data.userToken)
-        if (addLiked.status === 'success') {
-          this.setState({
-            liked: 1,
-            likeNumber: likedNumber
-          })
-        }
+      if (addLiked.status === 'success') {
+        this.setState({
+          liked: 1,
+          likeNumber: likedNumber
+        })
+      }
     } catch (error) {
       console.log(222, error)
     }
@@ -1015,70 +1046,80 @@ class Share extends Component {
           color='#333'
         >懒人抠图</Title>
         <View className='main-section' style={{marginTop:(this.state.titleHeight + hotMarginTop/2) + 'rpx' }}>
-        {shareSourceType === 'image' && isFromApp && shareSource !== '' && !isWorksId &&
-          <View>
-            <View className="showImage">
-              <View className="blur" style={{backgroundImage: `url(${shareSource})`}}></View>
-              <Image src={shareSource} mode="aspectFill"  className="bgImageVertical" />
+
+          <View className="addTitle">中国银行&&马卡龙</View>
+
+
+          <View className='wrapPicture'>
+
+
+            {shareSourceType === 'image' && isFromApp && shareSource !== '' && !isWorksId &&
+            <View>
+              <View className="showImage">
+                <View className="blur" style={{backgroundImage: `url(${shareSource})`}}></View>
+                <Image src={shareSource} mode="aspectFill"  className="bgImageVertical" />
+              </View>
             </View>
-          </View>
-        }
-        {shareSourceType === 'video' && isFromApp && shareSource !== '' && !isWorksId &&
-          <View className='showImage'>
-            <View className="showImage blur" style={{backgroundImage: `url(${videoPoster})`}}></View>
-             <Video
-              className="bgImageVertical"
-              loop
-              autoplay
-              src={shareSource}
-              poster={videoPoster}
-              objectFit='cover'
-              controls
+            }
+            {shareSourceType === 'video' && isFromApp && shareSource !== '' && !isWorksId &&
+            <View className='showImage'>
+              <View className="showImage blur" style={{backgroundImage: `url(${videoPoster})`}}></View>
+              <Video
+                className="bgImageVertical"
+                loop
+                autoplay
+                src={shareSource}
+                poster={videoPoster}
+                objectFit='cover'
+                controls
               >
               </Video>
-          </View>
-        }
-        { isXcx && shareSourceType === 'image' &&
-          <View>
-            <View className="showImage">
-               <View className="showImage blur" style={{backgroundImage: `url(${shareSource})`}}></View>
+            </View>
+            }
+            { isXcx && shareSourceType === 'image' &&
+            <View>
+              <View className="showImage">
+                <View className="showImage blur" style={{backgroundImage: `url(${shareSource})`}}></View>
                 <Image src={shareSource} mode="aspectFill"  className="bgImage" />
+              </View>
             </View>
-          </View>
-        }
-        {isXcx && shareSourceType === 'video' &&
-          <View className='video-wrap showImage'>
-            <View className="blur" style={{backgroundImage: `url(${videoPoster})`}}></View>
-             <Video
-              className="video bgImage"
-              loop
-              autoplay
-              src={shareSource}
-              poster={videoPoster}
-              objectFit='cover'
-              controls
+            }
+            {isXcx && shareSourceType === 'video' &&
+            <View className='video-wrap showImage'>
+              <View className="blur" style={{backgroundImage: `url(${videoPoster})`}}></View>
+              <Video
+                className="video bgImage"
+                loop
+                autoplay
+                src={shareSource}
+                poster={videoPoster}
+                objectFit='cover'
+                controls
               >
               </Video>
-          </View>
-        }
-        {
-          (user.shareSourceHeight / user.shareSourceWidth) >= ((bgImageHeight/bgImageWidth)) && user.worksType === 'pic' &&
-          <View className="showImage" id="positionImage">
-            <View className="blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
-            <Image src={user.shareSource}   className="bgImageVertical"
-            style={{width:`${user.caluWidth}px` }}/>
-           </View>
-        }
-        {
-          (user.shareSourceHeight / user.shareSourceWidth) < (bgImageHeight/bgImageWidth) && user.worksType === 'pic' &&
-            <View className="showImage" id="positionImage">
-              <View className="blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
-              <Image src={user.shareSource}   className="bgImageHorizontal"
-              style={{height:`${user.caluHeight}px` }}
-              />
             </View>
-        }
-        { (user.shareSourceHeight / user.shareSourceWidth) >= ((bgImageHeight/bgImageWidth)) && user.worksType === 'video' && user.type === 'video' &&
+            }
+
+            {
+              (user.shareSourceHeight / user.shareSourceWidth) >= ((bgImageHeight/bgImageWidth)) && user.worksType === 'pic' &&
+              <View className="showImage" id="positionImage">
+                <View className="blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
+                <Image src={user.shareSource}   className="bgImageVertical"
+                       style={{width:`${user.caluWidth}px` }}/>
+              </View>
+            }
+
+            {
+              (user.shareSourceHeight / user.shareSourceWidth) < (bgImageHeight/bgImageWidth) && user.worksType === 'pic' &&
+              <View className="showImage" id="positionImage">
+                <View className="blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
+                <Image src={user.shareSource}   className="bgImageHorizontal"
+                       style={{height:`${user.caluHeight}px` }}
+                />
+              </View>
+            }
+
+            { (user.shareSourceHeight / user.shareSourceWidth) >= ((bgImageHeight/bgImageWidth)) && user.worksType === 'video' && user.type === 'video' &&
             <View className="showImage" id="positionImage">
               <View className="blur" style={{backgroundImage: `url(${user.firstFrame})`}}></View>
               {/* <Image src={user.firstFrame} className="bgImageVertical" style={{width:`${user.caluWidth}px` }}/> */}
@@ -1093,8 +1134,9 @@ class Share extends Component {
                 controls
               ></Video>
             </View>
-        }
-        { (user.shareSourceHeight / user.shareSourceWidth) < (bgImageHeight/bgImageWidth) && user.worksType === 'video' && user.type === 'video' &&
+            }
+
+            { (user.shareSourceHeight / user.shareSourceWidth) < (bgImageHeight/bgImageWidth) && user.worksType === 'video' && user.type === 'video' &&
             <View className="showImage" id="positionImage">
               <View className="blur" style={{backgroundImage: `url(${user.firstFrame})`}}></View>
               {/* <Image src={user.firstFrame} className="bgImageHorizontal" style={{height:`${user.caluHeight}px`}}/> */}
@@ -1109,84 +1151,116 @@ class Share extends Component {
                 controls
               ></Video>
             </View>
-        }
-        { (user.shareSourceHeight / user.shareSourceWidth) >= ((bgImageHeight/bgImageWidth)) && user.worksType === 'video' && user.type === 'pic' &&
+            }
+
+            { (user.shareSourceHeight / user.shareSourceWidth) >= ((bgImageHeight/bgImageWidth)) && user.worksType === 'video' && user.type === 'pic' &&
             <View className="showImage" id="positionImage">
               <View className="blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
               <Image src={user.shareSource} className="bgImageVertical" style={{width:`${user.caluWidth}px` }}/>
             </View>
-        }
-        { (user.shareSourceHeight / user.shareSourceWidth) < (bgImageHeight/bgImageWidth) && user.worksType === 'video' && user.type === 'pic' &&
+            }
+
+            { (user.shareSourceHeight / user.shareSourceWidth) < (bgImageHeight/bgImageWidth) && user.worksType === 'video' && user.type === 'pic' &&
             <View className="showImage" id="positionImage">
               <View className="blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
               <Image src={user.shareSource} className="bgImageHorizontal" style={{height:`${user.caluHeight}px`}}/>
             </View>
-        }
-          <View className="userMessage">
-            {
-              (user.userImage) ||  isXcx  || !isWorksId ? <Image className="user" src={user.userImage} /> : <Image className="user" src={titleImage} />
             }
-            <View className='userName'>{user.userName}</View>
-            {isWorksId &&
-              <Button openType="getUserInfo" onGetUserInfo={this.getUserInfo}  className="likeAuth">
-                { this.state.liked === 0 && <Image src={like}  className="like" />}
-                { this.state.liked === 1 && <Image src={isliked}  className="like" />}
-              </Button>
-            }
-            { isWorksId &&<View style="" className="likeNum">{this.state.likeNumber}</View>}
-            { isWorksId &&
-              <Button openType="share" className="share wx">
-                <Image src={wx} className="wx"/>
-              </Button>
-            }
-            { isWorksId && <Image src={pyq} onClick={this.shareHandle} className="pyq"/>}
+
+            {/*<Sticker*/}
+              {/*ref="foreground"*/}
+              {/*url={foreground.remoteUrl}*/}
+              {/*stylePrams={foreground}*/}
+              {/*framePrams={frame}*/}
+              {/*onChangeStyle={this.handleChangeStyle}*/}
+              {/*onImageLoaded={this.onForegroundLoaded}*/}
+              {/*onTouchstart={this.handleForegroundTouchstart}*/}
+              {/*onTouchend={this.handleForegroundTouchend}*/}
+            {/*/>*/}
+            {/*{coverList.map(item => {*/}
+              {/*return <Sticker*/}
+                {/*key={item.id}*/}
+                {/*url={item.remoteUrl}*/}
+                {/*stylePrams={item}*/}
+                {/*framePrams={frame}*/}
+                {/*onChangeStyle={this.handleChangeCoverStyle}*/}
+                {/*onImageLoaded={this.onCoverLoaded}*/}
+                {/*onTouchstart={this.handleCoverTouchstart}*/}
+                {/*onTouchend={this.handleCoverTouchend}*/}
+                {/*onDeleteSticker={this.handleDeleteCover.bind(this, item)}*/}
+              {/*/>*/}
+            {/*})}*/}
+
           </View>
+
+          {/*<View className="userMessage">*/}
+            {/*{*/}
+              {/*(user.userImage) ||  isXcx  || !isWorksId ? <Image className="user" src={user.userImage} /> : <Image className="user" src={titleImage} />*/}
+            {/*}*/}
+            {/*<View className='userName'>{user.userName}</View>*/}
+            {/*{isWorksId &&*/}
+            {/*<Button openType="getUserInfo" onGetUserInfo={this.getUserInfo}  className="likeAuth">*/}
+              {/*{ this.state.liked === 0 && <Image src={like}  className="like" />}*/}
+              {/*{ this.state.liked === 1 && <Image src={isliked}  className="like" />}*/}
+            {/*</Button>*/}
+            {/*}*/}
+            {/*{ isWorksId &&<View style="" className="likeNum">{this.state.likeNumber}</View>}*/}
+            {/*{ isWorksId &&*/}
+            {/*<Button openType="share" className="share wx">*/}
+              {/*<Image src={wx} className="wx"/>*/}
+            {/*</Button>*/}
+            {/*}*/}
+            {/*{ isWorksId && <Image src={pyq} onClick={this.shareHandle} className="pyq"/>}*/}
+          {/*</View>*/}
+
+          <View className="hideIcon">---waiting 隐藏卡片图标 waiting ---</View>
+
           {
             isshow === true ?
-            <View className="wx_dialog_container">
-              <View className="wx-mask"></View>
-              <View className="wx-dialog">
-                {savePoint === true && user.worksType === 'pic' ? <View className="wx-dialog-save">{saveTitlePic}</View> : <View className="wx-dialog-save"></View>}
-                {savePoint === true && user.worksType === 'video'? <View className="wx-dialog-save">{saveTitleVideo}</View> : <View className="wx-dialog-save"></View>}
-                <View className="wx-dialog-content" id="dialogSize">
+              <View className="wx_dialog_container">
+                <View className="wx-mask"></View>
+                <View className="wx-dialog">
+                  {savePoint === true && user.worksType === 'pic' ? <View className="wx-dialog-save">{saveTitlePic}</View> : <View className="wx-dialog-save"></View>}
+                  {savePoint === true && user.worksType === 'video'? <View className="wx-dialog-save">{saveTitleVideo}</View> : <View className="wx-dialog-save"></View>}
+                  <View className="wx-dialog-content" id="dialogSize">
                     <View className="bgUrl" id="dialogPosition">
-                    {
-                      user.worksType === 'pic' && (user.shareSourceHeight / user.shareSourceWidth) < ((dialogImageHeight/dialogImageWidth)) &&
+                      {
+                        user.worksType === 'pic' && (user.shareSourceHeight / user.shareSourceWidth) < ((dialogImageHeight/dialogImageWidth)) &&
                         <Image src={user.shareSource} className="bgUrlSizeHorizontal" style={{height:`${showDialogHeight}px` }}/>
-                    }
-                    {
-                      user.worksType === 'pic' && (user.shareSourceHeight / user.shareSourceWidth) >= ((dialogImageHeight/dialogImageWidth)) &&
-                      <Image src={user.shareSource} className="bgUrlSizeVertical" style={{width:`${showDialogWidth}px` }}/>
-                    }
-                    {
-                      user.worksType === 'video' && (user.shareSourceHeight / user.shareSourceWidth) < ((dialogImageHeight/dialogImageWidth)) && user.type === 'video' &&
-                      <View className="bgUrl">
-                        <View className="blur" style={{backgroundImage: `url(${user.firstFrame})`}}></View>
-                        <Image src={user.firstFrame} className="bgUrlSizeHorizontal" style={{height:`${showDialogHeight}px` }}/>
-                      </View>
-                    }
-                    {
-                      user.worksType === 'video' && (user.shareSourceHeight / user.shareSourceWidth) >= ((dialogImageHeight/dialogImageWidth)) && user.type === 'video' &&
-                      <View className="bgUrl">
-                        <View className="blur" style={{backgroundImage: `url(${user.firstFrame})`}}></View>
-                        <Image src={user.firstFrame} className="bgUrlSizeVertical" style={{width:`${showDialogWidth}px` }}/>
-                    </View>
-                    }
+                      }
+                      {
+                        user.worksType === 'pic' && (user.shareSourceHeight / user.shareSourceWidth) >= ((dialogImageHeight/dialogImageWidth)) &&
+                        <Image src={user.shareSource} className="bgUrlSizeVertical" style={{width:`${showDialogWidth}px` }}/>
+                      }
+                      {
+                        user.worksType === 'video' && (user.shareSourceHeight / user.shareSourceWidth) < ((dialogImageHeight/dialogImageWidth)) && user.type === 'video' &&
+                        <View className="bgUrl">
+                          <View className="blur" style={{backgroundImage: `url(${user.firstFrame})`}}></View>
+                          <Image src={user.firstFrame} className="bgUrlSizeHorizontal" style={{height:`${showDialogHeight}px` }}/>
+                        </View>
+                      }
+                      {
+                        user.worksType === 'video' && (user.shareSourceHeight / user.shareSourceWidth) >= ((dialogImageHeight/dialogImageWidth)) && user.type === 'video' &&
+                        <View className="bgUrl">
+                          <View className="blur" style={{backgroundImage: `url(${user.firstFrame})`}}></View>
+                          <Image src={user.firstFrame} className="bgUrlSizeVertical" style={{width:`${showDialogWidth}px` }}/>
+                        </View>
+                      }
 
-                    {
-                      user.worksType === 'video' && (user.shareSourceHeight / user.shareSourceWidth) < ((dialogImageHeight/dialogImageWidth)) && user.type === 'pic' &&
-                      <View className="bgUrl">
-                        <View className="blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
-                        <Image src={user.firstFrame} className="bgUrlSizeHorizontal" style={{height:`${showDialogHeight}px` }}/>
-                      </View>
-                    }
-                    {
-                      user.worksType === 'video' && (user.shareSourceHeight / user.shareSourceWidth) >= ((dialogImageHeight/dialogImageWidth)) && user.type === 'pic' &&
-                      <View className="bgUrl">
-                        <View className="blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
-                        <Image src={user.firstFrame} className="bgUrlSizeVertical" style={{width:`${showDialogWidth}px` }}/>
-                    </View>
-                    }
+                      {
+                        user.worksType === 'video' && (user.shareSourceHeight / user.shareSourceWidth) < ((dialogImageHeight/dialogImageWidth)) && user.type === 'pic' &&
+                        <View className="bgUrl">
+                          <View className="blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
+                          <Image src={user.firstFrame} className="bgUrlSizeHorizontal" style={{height:`${showDialogHeight}px` }}/>
+                        </View>
+                      }
+                      {
+                        user.worksType === 'video' && (user.shareSourceHeight / user.shareSourceWidth) >= ((dialogImageHeight/dialogImageWidth)) && user.type === 'pic' &&
+                        <View className="bgUrl">
+                          <View className="blur" style={{backgroundImage: `url(${user.shareSource})`}}></View>
+                          <Image src={user.firstFrame} className="bgUrlSizeVertical" style={{width:`${showDialogWidth}px` }}/>
+                        </View>
+                      }
 
                     </View>
                     <View className="userInfo" id="dialogFooterSize">
@@ -1207,17 +1281,19 @@ class Share extends Component {
                         <Image className="logo" src={makaron} />
                       </View>
                     </View>
-                  <AuthModal />
-                </View>
-                <View className="wx-dialog-footer">
-                  <Button className="wx-dialog-btn" onClick={this.handelSave}  style="flex:1" >
+                    <AuthModal />
+                  </View>
+                  <View className="wx-dialog-footer">
+                    <Button className="wx-dialog-btn" onClick={this.handelSave}  style="flex:1" >
                       {confirmText}
-                  </Button>
+                    </Button>
+                  </View>
                 </View>
               </View>
-            </View>
-            : ''
+              : ''
           }
+
+
           <View className="canvas-wrap">
             <Canvas
               disable-scroll={true}
@@ -1226,7 +1302,9 @@ class Share extends Component {
           </View>
 
         </View>
+
         <View className='sub-section'>
+
           {
             this.state.sceneType == 5 ? <View className='originalWrap'>
               <View className='ImageWrap'>
@@ -1239,25 +1317,28 @@ class Share extends Component {
                 openType="getUserInfo"
                 onGetUserInfo={this.handleGetUserInfo}
                 onClick={this.handleMainButton}
-                formType='submit'>我也要玩</Button>
+                formType='submit'>替换人像照片</Button>
             </View> : <Form onSubmit={this.handleFormSubmit} reportSubmit>
-                {isFromApp && !isPlay?
-                  <Button
-                    open-type="contact"
-                    className="custom-button pink"
-                    hoverClass="btnhover"
-                    onClick={this.handleContact}
-                  >制作同款作品</Button> :
-                  <Button
-                    className="custom-button pink"
-                    hoverClass="btnhover"
-                    openType="getUserInfo"
-                    onGetUserInfo={this.handleGetUserInfo}
-                    onClick={this.handleMainButton}
-                    formType='submit'>我也要玩</Button>
-                }
-              </Form>
+              {isFromApp && !isPlay?
+                <Button
+                  open-type="contact"
+                  className="custom-button pink"
+                  hoverClass="btnhover"
+                  onClick={this.handleContact}
+                >制作同款作品</Button> :
+                <Button
+                  className="custom-button pink"
+                  hoverClass="btnhover"
+                  openType="getUserInfo"
+                  onGetUserInfo={this.handleGetUserInfo}
+                  onClick={this.handleMainButton}
+                  formType='submit'>我也要玩</Button>
+              }
+            </Form>
           }
+
+
+
           <View className='recommend-wrap' style={{ marginTop: hotMarginTop/2 + 'rpx'}}>
             <View className='recommend-title'>热门作品</View>
             <RecommendList
@@ -1265,37 +1346,41 @@ class Share extends Component {
               onClick={this.handleRecommendClick}
             />
           </View>
-          <View className='recommend-wrap'>
-            <View className='recommend-title'>更多好玩</View>
-            <View className="recommend" >
-              <ScrollView className="scroll" scrollX>
-                {
-                  morePlayList.map((item) => {
-                    return <View className="recommend-item" onClick={this.handlePlayClick.bind(this,item)} >
-                    {
-                      item.sort === 1 &&
-                      <Button className="recommend-button" hoverClass="btn-hover" formType='submit'>
-                        <Image className='recommend-image' src={qlPro} style='width: 100%; height: 100%' mode='scaleToFill'/>
-                      </Button>
-                    }
-                    {
-                      item.sort === 2 &&
-                      <Button className="recommend-button" hoverClass="btn-hover" formType='submit'>
-                        <Image className='recommend-image' src={newYear} style='width: 100%; height: 100%' mode='scaleToFill'/>
-                      </Button>
-                    }
-                    {
-                      item.sort === 3 &&
-                      <Button className="recommend-button" hoverClass="btn-hover" formType='submit'>
-                        <Image className='recommend-image' src={soul} style='width: 100%; height: 100%' mode='scaleToFill'/>
-                      </Button>
-                    }
-                  </View>
-                  })
-                }
-              </ScrollView>
-            </View>
-          </View>
+
+
+          {/*<View className='recommend-wrap'>*/}
+            {/*<View className='recommend-title'>更多好玩</View>*/}
+            {/*<View className="recommend" >*/}
+              {/*<ScrollView className="scroll" scrollX>*/}
+                {/*{*/}
+                  {/*morePlayList.map((item) => {*/}
+                    {/*return <View className="recommend-item" onClick={this.handlePlayClick.bind(this,item)} >*/}
+                      {/*{*/}
+                        {/*item.sort === 1 &&*/}
+                        {/*<Button className="recommend-button" hoverClass="btn-hover" formType='submit'>*/}
+                          {/*<Image className='recommend-image' src={qlPro} style='width: 100%; height: 100%' mode='scaleToFill'/>*/}
+                        {/*</Button>*/}
+                      {/*}*/}
+                      {/*{*/}
+                        {/*item.sort === 2 &&*/}
+                        {/*<Button className="recommend-button" hoverClass="btn-hover" formType='submit'>*/}
+                          {/*<Image className='recommend-image' src={newYear} style='width: 100%; height: 100%' mode='scaleToFill'/>*/}
+                        {/*</Button>*/}
+                      {/*}*/}
+                      {/*{*/}
+                        {/*item.sort === 3 &&*/}
+                        {/*<Button className="recommend-button" hoverClass="btn-hover" formType='submit'>*/}
+                          {/*<Image className='recommend-image' src={soul} style='width: 100%; height: 100%' mode='scaleToFill'/>*/}
+                        {/*</Button>*/}
+                      {/*}*/}
+                    {/*</View>*/}
+                  {/*})*/}
+                {/*}*/}
+              {/*</ScrollView>*/}
+            {/*</View>*/}
+          {/*</View> */}
+
+
         </View>
         {isGoAPP && isFromApp && <BackApp onClick={this.handleOpenApp} styleObj={{marginTop:(this.state.titleHeight + hotMarginTop/2) + 'rpx'} }/>}
         <AuthModal />
@@ -1304,5 +1389,5 @@ class Share extends Component {
   }
 }
 
-export default Share as ComponentClass<PageOwnProps, PageState>
+export default demoZengYJ as ComponentClass<PageOwnProps, PageState>
 

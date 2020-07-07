@@ -97,7 +97,8 @@ class Sticker extends Component {
 
   componentWillReceiveProps (nextProps) {
     // console.log('sticker componentWillReceiveProps', this.props, nextProps)
-    let { framePrams, url } = this.props
+    let { framePrams, url } = this.props//远端url传过来
+    //framPrams width 294 height 392 left 13 top 73
     let hasChange = false
     if (nextProps.framePrams && nextProps.framePrams.width !== this.props.framePrams.width) {
       framePrams = nextProps.framePrams
@@ -123,7 +124,10 @@ class Sticker extends Component {
   }
 
   isFixed = () => {
-    const {stylePrams} = this.props
+    const {stylePrams} = this.props;
+
+    //console.log(stylePrams,'this is stylePrams from Editor!!!') 图片的属性；原大小-自动大小-实时大小
+
     return stylePrams.fixed || false
   }
 
@@ -142,7 +146,7 @@ class Sticker extends Component {
       // 若固定则不能移动
       return
     }
-    // console.log('stickerOntouchstart', e)
+    //console.log('!!! stickerOntouchstart !!!', e)
     const {gesture} = this
     const {framePrams} = this.state
     const frameOffsetX = framePrams.left
@@ -262,7 +266,7 @@ class Sticker extends Component {
       return
     }
     const {gesture} = this
-    const {stylePrams} = this.props
+    const {stylePrams} = this.props //是foreground传过来的
     const {framePrams} = this.state
     const frameOffsetX = framePrams.left
     const frameOffsetY = framePrams.top
@@ -417,7 +421,11 @@ class Sticker extends Component {
 
   render() {
     const { stylePrams } = this.props
+
+    //console.log(stylePrams,'this is actual foreground from sticker')
+
     const styleObj = this.formatStyle(this.props.stylePrams)
+    //console.log(styleObj,'this is styleObj this is styleObj');
     // console.log('sticker render', this.state.url)
     return (
       <View
@@ -430,7 +438,7 @@ class Sticker extends Component {
         {this.state.url &&
           <Image
             src={this.state.url}
-            mode="widthFix"
+            mode="scaleToFill"
             style="width:100%;height:100%"
             onLoad={this.handleImageLoaded}
             onTouchstart={this.stickerOntouchstart}

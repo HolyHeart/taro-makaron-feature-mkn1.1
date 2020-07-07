@@ -1,0 +1,163 @@
+page {
+  width: 100%;
+  height: 100%;
+  overflow-y: hidden;
+}
+
+.scrollPage {
+  height: 100%;
+  background: data-uri('./src/assets/images/bank@1.jpg') no-repeat center 136px;
+  background-size: 100%;
+}
+
+.page-editor {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 172px 0 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+
+  .addTitle {
+    display: flex;
+    justify-content: center;
+    margin: 79px 0 0 0;
+    height: 42px;
+    background: url('https://static01.versa-ai.com/upload/3d4455cc4584/56be68da-93ab-417d-874c-d3dc90e33e14.png') no-repeat top center;
+    background-size: contain;
+  }
+
+  .pic-section {
+    position: relative;
+    width: 743px;
+    height: 463px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+
+    .testImage{
+        width: 100%;
+        height: 100%;
+    }
+
+    .crop {
+      position: relative;
+      width: 100%;
+      height: 380px;
+      // background: #ccc;
+      transition: all 0.2s;
+      overflow: hidden;
+      box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.3);
+
+      &.hidden {
+        opacity: 0;
+      }
+
+      .background-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      .raw-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
+
+  .subSection {
+    margin-top: 22px;
+
+    .hideIcon {
+      align-items: center;
+      margin: 0 auto;
+      position: relative;
+      display: flex;
+      height: 34px;
+      font-size: 34px;
+      text-align: center;
+      justify-content: center;
+      border: 1px solid black;
+    }
+
+    .buttonPart {
+      display: flex;
+      margin-top: 30px;
+      height: 90px;
+    }
+  }
+}
+
+.subMain {
+  margin-top: 118px;
+
+  .addSub {
+    align-items: center;
+    position: relative;
+    display: flex;
+    height: 34px;
+    font-size: 34px;
+    text-align: center;
+    justify-content: center;
+    border: 1px solid black;
+  }
+
+  .pictureList {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    margin: 0 48px 0 48px;
+    margin-top: 30px;
+
+    .singlePicture {
+        display: flex;
+        position: relative;
+        justify-content: center;
+        align-items: center;
+      width: 150px;
+      height: 176px;
+      border-radius: 10px;
+      box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.2);
+      .currentIcon{
+          position: absolute;
+          left: 50%;
+          bottom: 16px;
+          width: 32px;
+          height: 32px;
+          background: url('https://static01.versa-ai.com/upload/7b667e4184f6/96eeaf3f-ec56-481a-b372-cd188249dbc9.png') no-repeat center;
+          background-size: contain;
+          transform: translate(-50%,0);
+      }
+      image{
+          width: 122px;
+          height: 76px;
+      }
+    }
+  }
+}
+
+
+.button-section {
+  margin-top: 20px;
+
+  &.high {
+    margin-top: 60px
+  }
+}
+
+.canvas-wrap {
+  position: fixed;
+  left: 0;
+  bottom: -3050px;
+  z-index: -2;
+  opacity: 0;
+  visibility: none;
+}

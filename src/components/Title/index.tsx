@@ -1,6 +1,6 @@
 import { ComponentClass } from 'react'
 import Taro, { Component } from '@tarojs/taro'
-import { View, Text } from '@tarojs/components'
+import { View, Text, CoverView } from '@tarojs/components'
 import globalData from "@/services/global_data"
 
 import './index.less'
@@ -63,12 +63,12 @@ class Title extends Component {
     const { color, leftStyleObj,isScrollToTop } = this.props
     const {statusBarHeight, titleBarHeight} = this.state
     return (
-      <View className='title-wrap' style={{backgroundColor:isScrollToTop?'rgba(255,255,255,0)':'rgba(255,255,255,1)',...this.calcStyle()}}>
+      <CoverView className='title-wrap' style={{backgroundColor:isScrollToTop?'rgba(255,255,255,0)':'rgba(255,255,255,1)',...this.calcStyle()}}>
         <View className="left" style={{top:`${statusBarHeight+titleBarHeight/2}px`,...leftStyleObj}}>
           {this.props.renderLeft}
         </View>
-        <Text style={{color}}>{this.props.children}</Text>
-      </View>
+        <CoverView style={{color}}>{this.props.children}</CoverView>
+      </CoverView>
     )
   }
 }

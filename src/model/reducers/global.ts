@@ -92,7 +92,7 @@ const INITIAL_STATE = {
               width: 300
             },
             {
-              "id": 1584540623146,
+              "id": 15845406231464,
               type: 'myLogo',
               "imageUrl": "https://static01.versa-ai.com/upload/ce29be05e80a/947c8a95-62b1-4eef-8db4-9b22d3561620.png",
               "zIndex": 3,

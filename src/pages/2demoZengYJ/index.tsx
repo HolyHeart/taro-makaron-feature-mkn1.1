@@ -578,7 +578,7 @@ class Bank extends Component {
   }
   // 贴纸
   onCoverLoaded = (detail: object, item?: any) => {
-    // // console.log('onCoverLoaded', detail, item)
+    console.log('onCoverLoaded', detail, item,111111111111111111)
     const {width, height} = detail
     const originInfo = {
       originWidth: width,
@@ -1251,6 +1251,7 @@ class Bank extends Component {
         }
       }
     })
+    console.log(size,'autoautoautoautoautoautoautoautoautoautoautoauto')
 
     this.setState({
       coverList: coverList
@@ -1551,12 +1552,10 @@ class Bank extends Component {
     this.setState({
       currentScene: item,
       staticBgUrl:item.bgUrl,
-      imageURL: item.card1
+      imageURL: item.card1,
+      coverList: []
     })
-    this.initSceneData(()=>{
-        // this.foregroundAuto()
-        // this.initCoverData();
-    });
+    this.initSceneData(()=>{});
     
   }
 

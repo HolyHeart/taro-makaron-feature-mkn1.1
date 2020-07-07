@@ -419,16 +419,9 @@ class Bank extends Component {
         type: -1,
         loading: true,
         showLoading: () => {
-          // console.log('showLoading')
-          // Taro.showLoading({
-          //   title: '照片变身中...',
-          //   mask: true,
-          // })
           this.showLoading()
         },
         hideLoading: () => {
-          // console.log('hideLoading')
-          // Taro.hideLoading()
           if (this.state.foreground.loaded) {
             this.hideLoading()
           }

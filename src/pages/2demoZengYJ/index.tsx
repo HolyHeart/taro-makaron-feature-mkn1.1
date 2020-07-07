@@ -88,7 +88,7 @@ class Bank extends Component {
     showBankLogo: true,
     showMyLogo: true,
     playing: false,
-    showType: 0, // 0 展示模式 1 修改模式
+    showType: 0, // 0 展示模式 1 修改模式 2 结束
     rawImage: {
       localUrl: '',
       remoteUrl: ''
@@ -206,7 +206,7 @@ class Bank extends Component {
     if (!setTop) {
       tooltipHeight = systemInfo.screenWidth / 750 * 92
     }
-    console.log('🔥初始化高度🔥', '屏幕高度：', systemInfo.screenHeight, '屏幕宽度：', systemInfo.screenWidth, '系统参数：', systemInfo)
+    // console.log('🔥初始化高度🔥', '屏幕高度：', systemInfo.screenHeight, '屏幕宽度：', systemInfo.screenWidth, '系统参数：', systemInfo)
     this.setState({
       screenHeight: systemInfo.screenHeight,
       screenWidth: systemInfo.screenWidth,
@@ -233,7 +233,7 @@ class Bank extends Component {
       currentScene:scene
     })
     globalData.sceneConfig = sceneList[0];
-    console.log(sceneList,'sceneList')
+    // console.log(sceneList,'sceneList')
 
   }
 
@@ -256,7 +256,7 @@ class Bank extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    // console.log(this.props, nextProps)
+    // // console.log(this.props, nextProps)
   }
 
   componentWillUnmount() {
@@ -270,7 +270,7 @@ class Bank extends Component {
 
   onShareAppMessage(res) {
     // if (res.from === 'button') {
-    //   console.log('页面按钮分享', res.target)
+    //   // console.log('页面按钮分享', res.target)
     // }
     this.app.aldstat.sendEvent('生成页分享', {
       '场景名': this.state.currentScene.sceneName,
@@ -288,24 +288,24 @@ class Bank extends Component {
 
     const {userInfo = {}} = globalData
     const path = `/pages/index?shareSource=${shareImageUrl}`
-    // console.log('url',path)
+    // // console.log('url',path)
     // const title = `@${userInfo.nickName}：${shareContent}`
     if (!shareImage.remoteUrl) {
-      console.log('shareImage.remoteUrl', shareImage.remoteUrl)
+      // console.log('shareImage.remoteUrl', shareImage.remoteUrl)
       return {
         // title: title,
         path: '/pages/home/index',
         imageUrl: currentScene.thumbnailUrl,
       }
     }
-    // console.log('789',title, path, shareImageUrl)
+    // // console.log('789',title, path, shareImageUrl)
     // Taro.navigateTo({ url: `/pages/index?shareSource=${shareImageUrl}` })
     return {
       // title: title,
       path: path,
       imageUrl: shareImageUrl,
       success: () => {
-        console.log('分享成功')
+        // console.log('分享成功')
       },
     }
   }
@@ -334,12 +334,12 @@ class Bank extends Component {
   // qq空间分享兼容性检测
   canIShareToQQZone = () => {
     if (wx.canIUse('openQzonePublish')) {
-      console.log('🔥🔥🔥可以分享到空间')
+      // console.log('🔥🔥🔥可以分享到空间')
       this.setState({
         ableToShareToQZone: true
       })
     } else {
-      console.log('微信版本小程序不支持分享到QQ空间')
+      // console.log('微信版本小程序不支持分享到QQ空间')
     }
   }
 
@@ -385,7 +385,7 @@ class Bank extends Component {
   // 初始化场景信息
   initSceneData = async (callback) => {
     const currentScene = globalData.sceneConfig//来自于主页给每一项设置的，
-    console.log(currentScene, 'initiating the first scene&&adding')
+    // console.log(currentScene, 'initiating the first scene&&adding')
     this.setState({
       currentScene: {
         ...this.state.currentScene,
@@ -402,7 +402,7 @@ class Bank extends Component {
     // const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
     const sceneConfig = tool.JSON_parse(currentScene.sceneConfig)
     const {cover = {}} = sceneConfig
-    console.log(cover, 'covering this is cover ,this is 边框') //是边框的信息
+    // console.log(cover, 'covering this is cover ,this is 边框') //是边框的信息
     this.themeData.rawCoverList = cover.list || []
     const coverList = work.formatRawCoverList(this.themeData.rawCoverList)
     this.setState({
@@ -415,7 +415,7 @@ class Bank extends Component {
   initSegment = async () => {
     let separateRes
     try {
-      console.log('trying trying trying')
+      // console.log('trying trying trying')
       separateRes = await service.core.separateLocalImg(globalData.choosedImage, {
         type: -1,
         loading: true,
@@ -429,17 +429,17 @@ class Bank extends Component {
         }
       })// 得到已经分割好的图片
 
-      console.log(separateRes, 'this is first separateRes'); //部分url
+      // console.log(separateRes, 'this is first separateRes'); //部分url
 
       const {cateImageDict = {}} = separateRes.result || {}
 
       if (!cateImageDict['16'] && !cateImageDict['16-1']) {
-        console.log('技术犯规了')
+        // console.log('技术犯规了')
         work.pageToError()
         return
       }
     } catch (err) {
-      console.log('catch', err)
+      // console.log('catch', err)
       this.hideLoading()
       return {}
     }
@@ -470,7 +470,7 @@ class Bank extends Component {
     // 判断分离的是全身还是头像    //adding by YUjinZENG-explanation segmentType是导入数据的时候就定义好了的
     let separateUrl = ''
     let separateMaskUrl = ''
-    console.log(currentScene, 'currentScenceing---ing')
+    // console.log(currentScene, 'currentScenceing---ing')
     if (currentScene.segmentType === 1) { //目前的数据都是0；所以下面的选项也不影响
       separateUrl = imageHost + separateResult.cateImageDict['16-1']//['16-1']没有这个key啊
       separateMaskUrl = imageHost + separateResult.maskImageDict['16-1']
@@ -513,7 +513,7 @@ class Bank extends Component {
       })
   }
   handleChangeCustomBgStyle = (data) => {
-    // console.log('handleChangeCustomBgStyle', data)
+    // // console.log('handleChangeCustomBgStyle', data)
     const {frame} = this.state
     if (data.x > 0) {
       data.x = 0
@@ -537,16 +537,16 @@ class Bank extends Component {
     })
   }
   handleCustomBgTouchstart = () => {
-    // console.log('handleCustomBgTouchstart')
+    // // console.log('handleCustomBgTouchstart')
     this.setForegroundActiveStatus(false)
     this.setCoverListActiveStatus({type: 'all'}, false)
   }
   handleCustomBgTouchend = () => {
-    // console.log('handleCustomBgTouchend')
+    // // console.log('handleCustomBgTouchend')
   }
   // 人物
   onForegroundLoaded = (detail: object, item?: any) => {
-    //console.log('handleForegroundLoaded', detail, item) // item 就是foreground存的信息
+    //// console.log('handleForegroundLoaded', detail, item) // item 就是foreground存的信息
     this.hideLoading()
     const {width, height} = detail
     this.setStateTarget('foreground', {
@@ -559,7 +559,7 @@ class Bank extends Component {
   }
   handleChangeStyle = (data) => {
     const {foreground} = this.state
-    console.log(data, '====== this is to check data =====')
+    // console.log(data, '====== this is to check data =====')
     this.setState({
       foreground: {
         ...foreground,
@@ -569,7 +569,7 @@ class Bank extends Component {
     })
   }
   handleForegroundTouchstart = (sticker) => {
-    // console.log('handleForegroundTouchstart', sticker)
+    // // console.log('handleForegroundTouchstart', sticker)
     this.setForegroundActiveStatus(true)
     this.setCoverListActiveStatus({type: 'all'}, false)
   }
@@ -578,7 +578,7 @@ class Bank extends Component {
   }
   // 贴纸
   onCoverLoaded = (detail: object, item?: any) => {
-    // console.log('onCoverLoaded', detail, item)
+    // // console.log('onCoverLoaded', detail, item)
     const {width, height} = detail
     const originInfo = {
       originWidth: width,
@@ -587,7 +587,7 @@ class Bank extends Component {
     this.coverAuto(originInfo, item)
   }
   handleChangeCoverStyle = (data) => {
-    console.log(data, '---------this is to check data to check id -------')
+    // console.log(data, '---------this is to check data to check id -------')
     const {id} = data
     const {coverList} = this.state
     coverList.forEach((v, i) => {
@@ -600,17 +600,17 @@ class Bank extends Component {
     })
   }
   handleCoverTouchstart = (sticker) => {
-    // console.log('handleCoverTouchstart', sticker)
+    // // console.log('handleCoverTouchstart', sticker)
     this.setCoverListActiveStatus({type: 'some', ids: [sticker.id]}, true)
     this.setForegroundActiveStatus(false)
   }
   handleCoverTouchend = (sticker) => {
-    // console.log('handleCoverTouchend', sticker)
+    // // console.log('handleCoverTouchend', sticker)
     this.storeCoverInfo(sticker)
     this.app.aldstat.sendEvent('贴纸使用', {'贴纸Id': sticker.id})
   }
   handleDeleteCover = (sticker) => {
-    // console.log('handleDeleteCover', sticker)
+    // // console.log('handleDeleteCover', sticker)
     const {id} = sticker
     const {coverList} = this.state
     coverList.forEach((v, i) => {
@@ -641,7 +641,7 @@ class Bank extends Component {
         type: 'recommend'
       }
     }, () => {
-      // console.log('handleChooseScene', this.state.currentScene)
+      // // console.log('handleChooseScene', this.state.currentScene)
       this.foregroundAuto()
       this.initCoverData()
       this.app.aldstat.sendEvent('选择场景', {
@@ -678,7 +678,7 @@ class Bank extends Component {
     // Taro.setStorageSync('saveNumber', mySaveNumber)
     this.isSaving = true
     const canvasImageUrl = await this.createCanvas()
-    console.log(canvasImageUrl, '这是canvasImageUrl')//图片的本地地址
+    // console.log(canvasImageUrl, '这是canvasImageUrl')//图片的本地地址
     Taro.hideLoading()
     this.isSaving = false
     this.setState({
@@ -713,6 +713,9 @@ class Bank extends Component {
           title: '保存成功!',
           icon: 'success',
           duration: 2000
+        })
+        this.setState({
+            showType: 2
         })
       },
       onAuthFail: () => {
@@ -783,7 +786,7 @@ class Bank extends Component {
       context.draw() //【有点像将之前的设置保存到context中】
       //将生成好的图片保存到本地，需要延迟一会，绘制期间耗时
       setTimeout( () => {
-          console.log(canvas.id,666666)
+          // console.log(canvas.id,666666)
         Taro.canvasToTempFilePath({ //存储照片
           canvasId: canvas.id,
           fileType: 'jpg',
@@ -806,7 +809,7 @@ class Bank extends Component {
   canvasDrawRecommend = async (context) => {
     const {currentScene, frame, canvas} = this.state
 
-    console.log(frame, 'frame ===width===height===frame')
+    // console.log(frame, 'frame ===width===height===frame')
 
     const postfix = '?x-oss-process=image/resize,w_748,h_560'
     const {ratio = 3} = canvas
@@ -815,7 +818,7 @@ class Bank extends Component {
     try {
       sceneConfig = tool.JSON_parse(sceneInfo.sceneConfig)
     } catch (err) {
-      console.log('canvasDrawRecommend 解析sceneConfig JSON字符串失败', err)
+      // console.log('canvasDrawRecommend 解析sceneConfig JSON字符串失败', err)
     }
     // 下载远程背景图片
     let localBgImagePath = ''
@@ -823,7 +826,7 @@ class Bank extends Component {
       const bgUrl = currentScene.bgUrl + postfix
       localBgImagePath = await this.downloadRemoteImage(bgUrl)
     } catch (err) {
-      console.log('下载背景图片失败', err)
+      // console.log('下载背景图片失败', err)
       return
     }
     //防止锯齿，绘的图片是所需图片的3倍
@@ -892,12 +895,12 @@ class Bank extends Component {
         element.localUrl = localImagePath
         drawElement(element)
       } catch (err) {
-        console.log('下载贴纸图片失败', err)
+        // console.log('下载贴纸图片失败', err)
         continue
       }
     }
 
-    // console.log('elements', elements)
+    // // console.log('elements', elements)
     function drawElement({localUrl, width, height, x, y, rotate}) {
       context.save()
       context.translate(x + 0.5 * width, y + 0.5 * height)
@@ -938,14 +941,14 @@ class Bank extends Component {
 
     let localImagePath = ''
     if (cache_source.get(cacheKey)) {
-      // console.log('get-cache', cacheKey, cache_source.get(cacheKey))
+      // // console.log('get-cache', cacheKey, cache_source.get(cacheKey))
       return cache_source.get(cacheKey)
     } else {
       try {
         const result = await service.base.downloadFile(remoteUrl)
         localImagePath = result.tempFilePath
       } catch (err) {
-        console.log('下载图片失败', err)
+        // console.log('下载图片失败', err)
       }
     }
     return this.cache['source'].set(cacheKey, localImagePath)
@@ -1037,7 +1040,7 @@ class Bank extends Component {
 
     const size = this.calcForegroundSize()
     const position = this.calcForegroundPosition(size)
-    console.log(position, '-------see this is position-----')
+    // console.log(position, '-------see this is position-----')
     this.setStateTarget('foreground', {
       ...size,
       ...position
@@ -1228,7 +1231,7 @@ class Bank extends Component {
     clone_foreground.isActive = false
     const sceneId = currentScene.sceneId || 'demo_scene'
     this.cache['foreground'].set(sceneId, clone_foreground)
-    // console.log('this.cache.foreground', this.cache['foreground'].get(sceneId))
+    // // console.log('this.cache.foreground', this.cache['foreground'].get(sceneId))
   }
 
   // 贴纸自适应
@@ -1277,6 +1280,7 @@ class Bank extends Component {
       show: coverInfo.show,
       deleted: coverInfo.deleted
     }
+    console.log(frame,'aaaaaaaaaaaaaaaaa')
     if (originWidth > originHeight) {
       // 以最短边计算
       result.autoWidth = frame.width * autoScale
@@ -1293,7 +1297,7 @@ class Bank extends Component {
 
   //上传图片的操作
   todo = (data) => {
-    console.log(data, 'datadatadataOftodo')//授权获得用户信息
+    // console.log(data, 'datadatadataOftodo')//授权获得用户信息
     const {detail: {userInfo}} = data
     if (userInfo) {
       service.base.loginAuth(data.detail)//【上传用户信息】
@@ -1305,7 +1309,7 @@ class Bank extends Component {
     },()=>{
         work.chooseImageSimple({
             onSuccess: async (path) => {//获得加载图片的路径,这里的success就是用来把加载进来的图片进行处理
-              console.log('choosedImage', path, globalData)
+              // console.log('choosedImage', path, globalData)
               this.app.aldstat.sendEvent('编辑页面人像成功', '上传成功')
               globalData.choosedImage = path//存入图片，为之后的处理准备
               Taro.getFileSystemManager().readFile({
@@ -1319,19 +1323,19 @@ class Bank extends Component {
                               value: data.data
                             },
                             success: async (res:any) => {//res 为处理信息，跟图片无关；
-                              console.log('checkImage success：', res)
+                              // console.log('checkImage success：', res)
                               // const separateResult = globalData.separateResult = await this.initSegment()
                               // await this.initSeparateData(separateResult)
                               if (res.result !== null && res.result.errCode === 0) {
                                 const separateResult = globalData.separateResult = await this.initSegment()//一个对象、得到分割结果，还不是图像，只是部分路径
-                                console.log(separateResult, 'separeteResulting~~~~~~~~~~~~~~~~')
+                                // console.log(separateResult, 'separeteResulting~~~~~~~~~~~~~~~~')
                                 await this.initSeparateData(separateResult)
                               } else {
                                 work.pageToError()
                               }
                             },
                             fail: async (err) => {
-                              console.log('checkImage error', err)
+                              // console.log('checkImage error', err)
                               const separateResult = globalData.separateResult = await this.initSegment()
                               await this.initSeparateData(separateResult)
                             }
@@ -1476,7 +1480,7 @@ class Bank extends Component {
     this.cache['cover'].set(cacheKey, clone_cover)
   }
   handleGetUserInfo = (data) => {
-    // console.log('handleGetUserInfo', data)
+    // // console.log('handleGetUserInfo', data)
     const {detail: {userInfo}} = data
     if (userInfo) {
       service.base.loginAuth(data.detail)
@@ -1492,16 +1496,16 @@ class Bank extends Component {
   }
 
   handelVideoAd() {
-    //.catch((err)=>{console.log(err)})
+    //.catch((err)=>{// console.log(err)})
     this.setState({
       isshow: false
     })
     this.videoAd = wx.createRewardedVideoAd({adUnitId: 'adunit-7815bc095ad4a222'})
     this.videoAd.onLoad(() => {
-      console.log('广告拉取成功')
+      // console.log('广告拉取成功')
     })
     this.videoAd.onError((err) => {
-      console.log(err)
+      // console.log(err)
     })
     this.videoAd.onClose((res) => {
       if (res.isEnded) {
@@ -1549,11 +1553,15 @@ class Bank extends Component {
       staticBgUrl:item.bgUrl,
       imageURL: item.card1
     })
-    this.initSceneData(()=>{});
+    this.initSceneData(()=>{
+        // this.foregroundAuto()
+        // this.initCoverData();
+    });
+    
   }
 
   render() {
-      console.log(this.state.coverList,333333)
+      // console.log(this.state.coverList,333333)
     const {loading, rawImage, frame, customBg, foreground, coverList, sceneList, currentScene, result, canvas, showType} = this.state
     let cover = coverList.filter(item => {
         return item.type === 'normal'
@@ -1575,6 +1583,7 @@ class Bank extends Component {
     let bankLogo = coverList.filter(item => {
         return item.type === 'bankLogo' || item.type === 'myLogo'
     }).map(item => {
+        console.log(item,'ccccccccccccc')
         if(this.state.showBankLogo){
             return <Sticker
                 key={item.id}
@@ -1641,13 +1650,20 @@ class Bank extends Component {
             </View>
 
             <View className='subSection'>
-              <View className="hideIcon" onClick={()=>this.hideLogo()}>隐藏卡面图标</View>
-              {showType ? <View className="buttonPart">
+                <View className="hideIcon" onClick={()=>this.hideLogo()}>{this.state.showBankLogo ? '隐藏卡面图标' : '显示卡面图标'}</View>
+              {showType ? 
+              (showType === 1 ? <View className="buttonPart">
                 <Button style='flex:1;z-index:2' id='addPhoto' openType="getUserInfo" className="custom-button white border"
                         hoverClass="btn-hover" onGetUserInfo={this.todo}>{this.state.chooseText}</Button>
-                <Button style='flex:1;margin-left:10px' className="custom-button pink" hoverClass="btn-hover"
-                          onClick={this.handleOpenResult}>完成定制</Button>
+                <Button style='flex:1;margin-left:10px' className="custom-button pink" hoverClass="btn-hover" onClick={this.handleOpenResult}>
+                    完成定制
+                </Button>
               </View> :
+                <View className="buttonPart">
+                    <Button style='flex:1;z-index:2' id='addPhoto' openType="getUserInfo" className="custom-button pink" hoverClass="btn-hover" onGetUserInfo={this.todo}>
+                            提交至银行
+                    </Button>
+                </View>):
                 <View className="buttonPart">
                     <Button style='flex:1;z-index:2' id='addPhoto' openType="getUserInfo" className="custom-button pink"
                         hoverClass="btn-hover" onGetUserInfo={this.todo}>{this.state.chooseText}</Button>
@@ -1655,38 +1671,22 @@ class Bank extends Component {
               }
 
             </View>
-
-            {/* {this.state.isshow === true ? <Dialog
-              content={this.state.content}
-              cancelText={this.state.cancelText}
-              confirmText={this.state.confirmText}
-              isshow={this.state.isshow}
-              renderButton={
-                <View className="wx-dialog-footer" style="display:flex;margin-bottom:30rpx">
-                  <Button className="wx-dialog-btn" onClick={this.handelCancel} style="flex:1">
-                    {this.state.cancelText}
-                  </Button>
-                  <Button className="wx-dialog-btn" onClick={this.handelVideoAd} style="flex:1">
-                    {this.state.confirmText}
-                  </Button>
-                </View>
-              }
-            /> : ''} */}
           </View>
-
-          <View className="subMain" style="width:100%;height:100%">
+          {showType !== 2 ? 
+            <View className="subMain" style="width:100%;height:100%">
             <View className="addSub">&middot;&middot;其他可定制卡片&middot;&middot;</View>
             <View className="pictureList">
-              {this.state.sceneList.map((item) => {
-                return (<View style={{background:`url(${item.boxUrl}) no-repeat center`,backgroundSize:'contain'}} className='singlePicture'>
-                            <Image src={item.exampleUrl} onClick={this.substituteBgUrl.bind(this,item)}/>
-                            {currentScene.index === item.index ? <View className='currentIcon'></View> : null}
+                {this.state.sceneList.map((item) => {
+                    return (<View style={{background:`url(${item.boxUrl}) no-repeat center`,backgroundSize:'contain'}} className='singlePicture'>
+                                <Image src={item.exampleUrl} onClick={this.substituteBgUrl.bind(this,item)}/>
+                                {currentScene.index === item.index ? <View className='currentIcon'></View> : null}
 
-                        </View>)
-
-              })}
-            </View>
-          </View>
+                            </View>)
+                })}
+                </View>
+            </View> :
+            <View className='save_success_tip'>「 图片已自动保存到手机相册 」</View>
+          }
           <Image className='bottomTip' src='https://static01.versa-ai.com/upload/ac05476db5da/e0f294b1-ae32-4e96-b4ed-637fed563de3.png'/>
           <View class="canvas-wrap">
             <Canvas

@@ -62,33 +62,7 @@ const INITIAL_STATE = {
         },
         "cover": {
           "support": true,
-          "list": [{
-              "id": 1584540623141,
-              type: 'normal',
-              "imageUrl": "https://static01.versa-ai.com/upload/a3bd721438a0/e100d737-3cb0-46e1-9c3b-4a14c7910ebf.png",
-              "zIndex": 3,
-              "fixed": true,
-              "isActive": false,
-              "size": {
-                "default": 1,
-                "zoomInMax": 1,
-                "zoomOutMin": 1
-              },
-              "rotate": 0,
-              "position": {
-                "place": "10",
-                "xAxis": {
-                  "derection": "left",
-                  "offset": 0.5
-                },
-                "yAxis": {
-                  "derection": "top",
-                  "offset": 0.5
-                }
-              },
-              visible: true,
-              deleted: true
-            },
+          "list": [
             {
               "id": 1584540623143,
               type: 'bankLogo',
@@ -114,7 +88,8 @@ const INITIAL_STATE = {
                 }
               },
               visible: true,
-              deleted: true
+              deleted: true,
+              width: 300
             },
             {
               "id": 1584540623146,
@@ -204,33 +179,7 @@ const INITIAL_STATE = {
         },
         "cover": {
           "support": true,
-          "list": [{
-              "id": 1584540787583,
-              type: 'normal',
-              "imageUrl": "https://static01.versa-ai.com/upload/bf6da4097ae8/e1c4a749-810c-4114-af2f-731440d5602b.png",
-              "zIndex": 3,
-              "fixed": true,
-              "isActive": false,
-              "size": {
-                "default": 1,
-                "zoomInMax": 1,
-                "zoomOutMin": 1
-              },
-              "rotate": 0,
-              "position": {
-                "place": "10",
-                "xAxis": {
-                  "derection": "left",
-                  "offset": 0.5
-                },
-                "yAxis": {
-                  "derection": "top",
-                  "offset": 0.5
-                }
-              },
-              visible: true,
-              deleted: true
-            },
+          "list": [
             {
               "id": 1584540623143,
               type: 'bankLogo',
@@ -256,7 +205,8 @@ const INITIAL_STATE = {
                 }
               },
               visible: true,
-              deleted: true
+              deleted: true,
+              width: 300
             },
             {
               "id": 1584540623146,
@@ -283,7 +233,8 @@ const INITIAL_STATE = {
                 }
               },
               visible: true,
-              deleted: true
+              deleted: true,
+              width: 300
             }
           ]
         }
@@ -346,33 +297,7 @@ const INITIAL_STATE = {
         },
         "cover": {
           "support": true,
-          "list": [{
-              "id": 1584540852727,
-              type: 'normal',
-              "imageUrl": "https://static01.versa-ai.com/upload/919e0e0de387/eb7c1359-7064-4dcb-bd3f-d5256c52926f.png",
-              "zIndex": 3,
-              "fixed": true,
-              "isActive": false,
-              "size": {
-                "default": 1,
-                "zoomInMax": 1,
-                "zoomOutMin": 1
-              },
-              "rotate": 0,
-              "position": {
-                "place": "10",
-                "xAxis": {
-                  "derection": "left",
-                  "offset": 0.5
-                },
-                "yAxis": {
-                  "derection": "top",
-                  "offset": 0.5
-                }
-              },
-              visible: true,
-              deleted: true
-            },
+          "list": [
             {
               "id": 1584540917922,
               type: 'normal',
@@ -398,7 +323,8 @@ const INITIAL_STATE = {
                 }
               },
               visible: true,
-              show: true
+              show: true,
+              width: 300
             },
             {
               "id": 1584540623143,
@@ -425,7 +351,8 @@ const INITIAL_STATE = {
                 }
               },
               visible: true,
-              deleted: true
+              deleted: true,
+              width: 300
             },
             {
               "id": 1584540623146,
@@ -452,7 +379,8 @@ const INITIAL_STATE = {
                 }
               },
               visible: true,
-              deleted: true
+              deleted: true,
+              width: 300
             }
           ]
         }
@@ -562,33 +490,7 @@ const INITIAL_STATE = {
         },
         "cover": {
           "support": true,
-          "list": [{
-              "id": 1584540917921,
-              type: 'normal',
-              "imageUrl": "https://static01.versa-ai.com/upload/0832b2dbdfe2/ae729999-b62c-4129-92fc-25b9e0333664.png",
-              "zIndex": 3,
-              "fixed": true,
-              "isActive": false,
-              "size": {
-                "default": 1,
-                "zoomInMax": 1,
-                "zoomOutMin": 1
-              },
-              "rotate": 0,
-              "position": {
-                "place": "10",
-                "xAxis": {
-                  "derection": "left",
-                  "offset": 0.5
-                },
-                "yAxis": {
-                  "derection": "top",
-                  "offset": 0.5
-                }
-              },
-              visible: true,
-              deleted: true
-            },
+          "list": [
             {
               "id": 1584540623143,
               type: 'bankLogo',
@@ -614,7 +516,8 @@ const INITIAL_STATE = {
                 }
               },
               visible: true,
-              deleted: true
+              deleted: true,
+              width: 300
             },
             {
               "id": 1584540623146,
@@ -641,7 +544,8 @@ const INITIAL_STATE = {
                 }
               },
               visible: true,
-              deleted: true
+              deleted: true,
+              width: 300
             }
           ]
         }

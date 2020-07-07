@@ -62,7 +62,7 @@ export function renderExample1(canvas, THREE, obj, url) {
       )
     } else {
       const texture = new THREE.TextureLoader().load(
-        '',
+        url,
         (texture) => {
           texture.minFilter = THREE.LinearFilter //解决图片2次幂问题
           objCache.traverse(function (child) {
@@ -108,5 +108,5 @@ export function renderExample1(canvas, THREE, obj, url) {
 
 export function change(url) {
   canvasCache.cancelAnimationFrame(timer)
-  renderExample1(canvasCache, THREECache, objCache, 1)
+  renderExample1(canvasCache, THREECache, objCache, url)
 }

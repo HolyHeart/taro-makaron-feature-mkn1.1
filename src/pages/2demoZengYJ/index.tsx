@@ -83,7 +83,8 @@ class Bank extends Component {
     enablePullDownRefresh: false
   }
   state = {
-    imageURL: 'https://activity-dev.versa-ai.com/cardB.gltf',
+    gltfURL: 'https://activity-dev.versa-ai.com/cardB.gltf',
+    imageURL: '',
     showBankLogo: true,
     showMyLogo: true,
     playing: false,
@@ -1555,7 +1556,8 @@ class Bank extends Component {
     globalData.sceneConfig = item;
     this.setState({
       currentScene: item,
-      staticBgUrl:item.bgUrl
+      staticBgUrl:item.bgUrl,
+      imageURL: item.card1
     })
     this.initSceneData(()=>{});
   }
@@ -1644,7 +1646,7 @@ class Bank extends Component {
                     mode="scaleToFill"
                     // onLoad={this.handleBgLoaded}
                   /> */}
-                <BankCard imageURL={this.state.imageURL}></BankCard>
+                <BankCard gltfURL={this.state.gltfURL} imageURL={this.state.imageURL}></BankCard>
               </View>
             </View>
 

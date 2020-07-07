@@ -8,13 +8,17 @@ let rendererCache = null
 let timer
 let angle = 0
 let controlsCache
+let stopAnimation
 
-export function renderExample1(canvas, THREE, obj, url) {
+export function renderExample1(canvas, THREE, obj, url, first = false) {
   let camera, scene, renderer
   var cube
   init()
   animate()
   function init() {
+    angle = 0
+    objCache && (objCache.rotation.x = 0)
+    objCache && (objCache.rotation.y = 0)
     // let gl = canvas.getContext('webgl', { alpha: true })
     // gl.clearColor(0, 0, 0, 0)
     // gl.clear(gl.COLOR_BUFFER_BIT)
@@ -26,7 +30,7 @@ export function renderExample1(canvas, THREE, obj, url) {
     )
     scene = new THREE.Scene()
 
-    if (!url) {
+    if (first) {
       renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
       renderer.setPixelRatio(wx.getSystemInfoSync().pixelRatio)
       renderer.setSize(canvas.width, canvas.height)
@@ -38,7 +42,7 @@ export function renderExample1(canvas, THREE, obj, url) {
 
     let geometry = new THREE.BoxGeometry(10, 10, 10)
 
-    if (!url) {
+    if (first) {
       let GLTFLoader = gLTF(THREE)
       const gltfLoader = new GLTFLoader()
       gltfLoader.load(
@@ -48,13 +52,34 @@ export function renderExample1(canvas, THREE, obj, url) {
             if (child.isMesh) {
               child.material.emissive = child.material.color
               child.material.emissiveMap = child.material.map
+              console.log(child.material.map, 123123123)
             }
           })
+
           const root = gltf.scene
           objCache = root
           canvasCache = canvas
           THREECache = THREE
-          scene.add(root)
+
+          const texture = new THREE.TextureLoader().load(
+            url,
+            (texture) => {
+              texture.minFilter = THREE.LinearFilter //解决图片2次幂问题
+              objCache.traverse(function (child) {
+                if (child.isMesh) {
+                  child.material.emissive = child.material.color
+                  child.material.emissiveMap = texture
+                  child.material.map = texture
+                }
+              })
+              scene.add(objCache)
+              objCache.rotation.z += (180 * Math.PI) / 180
+            },
+            (err) => {
+              console.error(err)
+            },
+          )
+          //   scene.add(root)
         },
         (e) => {
           console.log(e)
@@ -70,6 +95,7 @@ export function renderExample1(canvas, THREE, obj, url) {
               child.material.emissive = child.material.color
               child.material.emissiveMap = texture
               child.material.map = texture
+              console.log(texture, 666666)
             }
           })
           scene.add(objCache)
@@ -91,15 +117,17 @@ export function renderExample1(canvas, THREE, obj, url) {
       scene.add(pointLight)
     }
 
-    camera.position.z = 60
+    camera.position.z = 50
   }
   function animate() {
     let speed = Math.cos(angle)
     //console.log(Math.cos(angle))
     // -1<Math.cos(angle)<1
-    angle += 0.02
-    if (objCache) {
-      objCache.rotation.y = Math.cos(angle) * 1.2
+    if (!stopAnimation) {
+      angle += 0.02
+      if (objCache) {
+        objCache.rotation.y = Math.cos(angle) * 1.2
+      }
     }
     timer = canvas.requestAnimationFrame(animate)
     renderer.render(scene, camera)
@@ -109,4 +137,8 @@ export function renderExample1(canvas, THREE, obj, url) {
 export function change(url) {
   canvasCache.cancelAnimationFrame(timer)
   renderExample1(canvasCache, THREECache, objCache, url)
+}
+
+export function stop() {
+  stopAnimation = true
 }

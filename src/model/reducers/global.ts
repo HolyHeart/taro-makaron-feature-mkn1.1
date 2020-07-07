@@ -13,7 +13,7 @@ const INITIAL_STATE = {
   sceneList: [{
       sceneId: '392438488064331776',
       sceneName: '卡1',
-      card1:'https://static01.versa-ai.com/upload/4985ab24e686/4bb9bf20-c4b9-4d0e-be3d-e2fcb84e5cb4.png',
+      card1:'https://static01.versa-ai.com/upload/2c7d654de708/730a7f8a-4795-444c-baed-6857346a51ab.card_03',
       boxUrl: 'https://static01.versa-ai.com/upload/a606d3115987/98e6b329-7b25-40cb-934d-e9812617d322.png',
       exampleUrl: 'https://static01.versa-ai.com/upload/7172c425f570/9912fad8-bfab-4a15-8014-9c98d8ab2e43.png',
       bgUrl: 'https://static01.versa-ai.com/upload/6eef8db51499/c0df4ab7-52ed-4742-82e0-5e43b12bb425.png',
@@ -155,7 +155,7 @@ const INITIAL_STATE = {
     {
       sceneId: '392439168623710208',
       sceneName: '卡2',
-      card1: 'https://static01.versa-ai.com/upload/b555f3bea8eb/01417358-f715-4144-b586-c75ad9adab81.png',
+      card1: 'https://static01.versa-ai.com/upload/506854e1f208/93ada06e-3c17-4d94-b390-0b58358c7a5e.png',
       boxUrl: 'https://static01.versa-ai.com/upload/efc91c9f0499/588410ee-9e18-46da-a39d-b69fba5cd6bc.png',
       exampleUrl: 'https://static01.versa-ai.com/upload/50bcea0f761a/226d1817-979a-4fac-8588-f7e2fa751ec4.png',
       bgUrl: 'https://static01.versa-ai.com/upload/fb218452ab60/ab428f2e-6fa5-4c3f-aacb-0a9797f6fe41.png',
@@ -297,7 +297,7 @@ const INITIAL_STATE = {
     {
       sceneId: '392439445053509632',
       sceneName: '卡3',
-      card1: 'https://static01.versa-ai.com/upload/94b23f5974d4/993667c5-1cc5-4614-adb5-a4631fc78e6a.card_03png',
+      card1: 'https://static01.versa-ai.com/upload/4c6f9c91eb3d/e9d71aa5-c88d-4eb7-9e65-c74ebcfb7181.card_04',
       boxUrl: 'https://static01.versa-ai.com/upload/d9e00ce76b1b/354d9087-c8c6-406b-a9ac-2b11ad5f7d2b.png',
       exampleUrl: 'https://static01.versa-ai.com/upload/ccdbed6e2101/13e95f1c-aef5-4d4c-ae4c-e0b6da4f3c18.png',
       bgUrl: 'https://static01.versa-ai.com/upload/9137dd556acf/d83ca599-6884-474f-8c04-24ba10e22490.png',
@@ -466,7 +466,7 @@ const INITIAL_STATE = {
     {
       sceneId: '392439715867140096',
       sceneName: '卡4',
-      card1: 'https://static01.versa-ai.com/upload/c2ebc92744ea/d2885e78-fbba-4b66-812d-f176891cccfd.png',
+      card1: 'https://static01.versa-ai.com/upload/1a718d7cf2b3/cff82f57-6840-49be-a34d-6467c3bab5d4.card_02',
       boxUrl: 'https://static01.versa-ai.com/upload/cb05d18f2638/0790a5e6-d57a-4cc4-b9ed-60121efd0d5f.png',
       exampleUrl: 'https://static01.versa-ai.com/upload/2755acdf8317/79b5e1b8-464f-4210-a3ca-9a601080deea.png',
       bgUrl: 'https://static01.versa-ai.com/upload/ba7d5855f64f/c527d391-7871-4e50-b921-b6b2776d32fe.png',

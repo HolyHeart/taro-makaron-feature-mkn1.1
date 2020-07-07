@@ -83,8 +83,8 @@ class Bank extends Component {
     enablePullDownRefresh: false
   }
   state = {
-    gltfURL: 'https://activity-dev.versa-ai.com/cardB.gltf',
-    imageURL: '',
+    gltfURL: 'https://static01.versa-ai.com/upload/e8eebc591fa1/0e044c3f-0aaa-40ce-95a3-41efa721ba35.gltf',
+    imageURL: 'https://static01.versa-ai.com/upload/2c7d654de708/730a7f8a-4795-444c-baed-6857346a51ab.card_03',
     showBankLogo: true,
     showMyLogo: true,
     playing: false,
@@ -1299,60 +1299,50 @@ class Bank extends Component {
       service.base.loginAuth(data.detail)//【上传用户信息】
       globalData.userInfo = userInfo
  
-    // this.state.currentScene.sceneConfig.cover.list[0].visible = false;
-    // let newCoverList = JSON.parse(JSON.stringify(this.state.currentScene.sceneConfig.cover.list));
-    // let sceneList = JSON.parse(JSON.stringify(this.props.global.sceneList));
-    // sceneList[this.state.currentScene.index].sceneConfig.cover.list = newCoverList;
-    // this.props.setSceneList(sceneList);
-    // console.log(this.props.global.sceneList,'~~~~~~~~~~~~~~~~~~~~~~~')
     this.setState({
         playing: true,
         showType: 1
     },()=>{
-        setTimeout(() => {
-            work.chooseImageSimple({
-                onSuccess: async (path) => {//获得加载图片的路径,这里的success就是用来把加载进来的图片进行处理
-                  console.log('choosedImage', path, globalData)
-                  this.app.aldstat.sendEvent('编辑页面人像成功', '上传成功')
-                  globalData.choosedImage = path//存入图片，为之后的处理准备
-                  Taro.getFileSystemManager().readFile({
-                    filePath: path,
-                    success: (data:any) => { //这的data是文件内容，所以这个函数的意义是啥？？？
-                        Taro.cloud.callFunction(
-                            {
-                                name: 'checkImage',
-                                data: {
-                                  contentType: 'image/png',
-                                  value: data.data
-                                },
-                                success: async (res:any) => {//res 为处理信息，跟图片无关；
-                                  console.log('checkImage success：', res)
-                                  // const separateResult = globalData.separateResult = await this.initSegment()
-                                  // await this.initSeparateData(separateResult)
-                                  if (res.result !== null && res.result.errCode === 0) {
-                                    const separateResult = globalData.separateResult = await this.initSegment()//一个对象、得到分割结果，还不是图像，只是部分路径
-                                    console.log(separateResult, 'separeteResulting~~~~~~~~~~~~~~~~')
-                                    await this.initSeparateData(separateResult)
-                                  } else {
-                                    work.pageToError()
-                                  }
-                                },
-                                fail: async (err) => {
-                                  console.log('checkImage error', err)
-                                  const separateResult = globalData.separateResult = await this.initSegment()
-                                  await this.initSeparateData(separateResult)
-                                }
+        work.chooseImageSimple({
+            onSuccess: async (path) => {//获得加载图片的路径,这里的success就是用来把加载进来的图片进行处理
+              console.log('choosedImage', path, globalData)
+              this.app.aldstat.sendEvent('编辑页面人像成功', '上传成功')
+              globalData.choosedImage = path//存入图片，为之后的处理准备
+              Taro.getFileSystemManager().readFile({
+                filePath: path,
+                success: (data:any) => { //这的data是文件内容，所以这个函数的意义是啥？？？
+                    Taro.cloud.callFunction(
+                        {
+                            name: 'checkImage',
+                            data: {
+                              contentType: 'image/png',
+                              value: data.data
+                            },
+                            success: async (res:any) => {//res 为处理信息，跟图片无关；
+                              console.log('checkImage success：', res)
+                              // const separateResult = globalData.separateResult = await this.initSegment()
+                              // await this.initSeparateData(separateResult)
+                              if (res.result !== null && res.result.errCode === 0) {
+                                const separateResult = globalData.separateResult = await this.initSegment()//一个对象、得到分割结果，还不是图像，只是部分路径
+                                console.log(separateResult, 'separeteResulting~~~~~~~~~~~~~~~~')
+                                await this.initSeparateData(separateResult)
+                              } else {
+                                work.pageToError()
                               }
-                        )
-                    },
-                    fail: () => {
-                    }
-                  })
-        
+                            },
+                            fail: async (err) => {
+                              console.log('checkImage error', err)
+                              const separateResult = globalData.separateResult = await this.initSegment()
+                              await this.initSeparateData(separateResult)
+                            }
+                          }
+                    )
+                },
+                fail: () => {
                 }
               })
-        }, 3000);
-        
+            }
+          })
     })
       
       
@@ -1639,7 +1629,7 @@ class Bank extends Component {
                 {bankLogo}
               </View> : null
               }
-            <View className={showType ? 'bank_card_container hide' : 'bank_card_container'} style={{width: this.state.drawBoard.width, height: this.state.drawBoard.height}}>
+            <View className={showType ? 'bank_card_container hide' : 'bank_card_container'}>
                   {/* <Image
                     src={this.state.staticBgUrl}
                     style="width:100%;height:100%"

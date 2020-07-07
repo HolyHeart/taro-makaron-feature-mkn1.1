@@ -2,7 +2,11 @@ import { ComponentClass } from 'react'
 import Taro, { Component } from '@tarojs/taro'
 import { View, Canvas } from '@tarojs/components'
 import * as THREE from '../../utils/libs/three.weapp'
-import { renderExample1 as renderExample, change } from '../../utils/example.js'
+import {
+  renderExample1 as renderExample,
+  change,
+  stop,
+} from '../../utils/example.js'
 import './index.less'
 
 type ComponentStateProps = {}
@@ -42,14 +46,19 @@ class BankCard extends Component {
         console.log(111, res)
         const canvas = THREE.global.registerCanvas(res.node)
         this._imageUrl = imageURL
-        renderExample(canvas, THREE, gltfURL, imageURL)
+        renderExample(canvas, THREE, gltfURL, imageURL,true)
         this.THREE = THREE
       })
       .exec()
     console.log(0)
   }
 
+  stopPropagation(e){
+    e.stopPropagation()
+  }
+
   touchStart(e) {
+    stop()
     this.THREE.global.touchEventHandlerFactory('canvas', 'touchstart')(e)
   }
   touchMove(e) {
@@ -62,7 +71,7 @@ class BankCard extends Component {
 
   render() {
     return (
-      <View className="bankCard">
+      <View className="bankCard" onTouchStart={this.stopPropagation}>
         <Canvas
           type="webgl"
           style={{

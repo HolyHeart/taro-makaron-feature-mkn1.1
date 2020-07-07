@@ -36,8 +36,6 @@ class BankCard extends Component {
         const canvas = THREE.global.registerCanvas(res.node)
         renderExample(canvas, THREE, imageURL)
         this.THREE = THREE
-        console.log(THREE.ObjectLoader, 111)
-        console.log(123)
       })
       .exec()
     console.log(0)
@@ -57,21 +55,19 @@ class BankCard extends Component {
   render() {
     
     return (
-     <view>
-        <Canvas
-          type="webgl"
-          style={{
-            width: `120%`,
-            height: '120%',
-            position: 'absolute',
-            
-            zIndex: 99,
-          }}
-          canvasId="poster"
-          className="canvas"
-          id="c"
-        />
-     </view>
+        <View className='bankCard'>
+            <Canvas
+                type="webgl"
+                style={{
+                width: `100%`,
+                height: '100%',
+                }}
+                canvasId="poster"
+                className="canvas"
+                id="c"
+            />
+        </View>
+        
     )
   }
 }

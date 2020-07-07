@@ -84,10 +84,10 @@ class Bank extends Component {
   }
   state = {
     imageURL: 'https://activity-dev.versa-ai.com/cardB.gltf',
-      showBankLogo: true,
-      showMyLogo: true,
-      playing: false,
-    showType: 1, // 0 展示模式 1 修改模式
+    showBankLogo: true,
+    showMyLogo: true,
+    playing: false,
+    showType: 0, // 0 展示模式 1 修改模式
     rawImage: {
       localUrl: '',
       remoteUrl: ''
@@ -1304,11 +1304,7 @@ class Bank extends Component {
     if (userInfo) {
       service.base.loginAuth(data.detail)//【上传用户信息】
       globalData.userInfo = userInfo
-      if (this.state.hasGuide === true) {
-        this.setState({
-          hasGuide: false
-        })
-      }
+ 
     // this.state.currentScene.sceneConfig.cover.list[0].visible = false;
     // let newCoverList = JSON.parse(JSON.stringify(this.state.currentScene.sceneConfig.cover.list));
     // let sceneList = JSON.parse(JSON.stringify(this.props.global.sceneList));
@@ -1316,8 +1312,12 @@ class Bank extends Component {
     // this.props.setSceneList(sceneList);
     // console.log(this.props.global.sceneList,'~~~~~~~~~~~~~~~~~~~~~~~')
     this.setState({
-        playing: true
+        playing: true,
+        showType: 1
     })
+    // this.setState({
+    //     showType: 1
+    // })
       work.chooseImageSimple({
         onSuccess: async (path) => {//获得加载图片的路径,这里的success就是用来把加载进来的图片进行处理
           console.log('choosedImage', path, globalData)
@@ -1359,9 +1359,7 @@ class Bank extends Component {
 
         }
       })
-      this.setState({
-          showType: 1
-      })
+      
     } else {
       Taro.showToast({
         title: '请授权',
@@ -1615,19 +1613,19 @@ class Bank extends Component {
             <View className="addTitle"></View>
 
             <View className="pic-section">
-              {showType ?
+              {!showType ?
               <View style={{width: this.state.drawBoard.width, height: this.state.drawBoard.height}} className={`crop`}
                     id="crop">
                 {currentScene.type === 'recommend' &&
                 <View className="background-image">
-                  {/* <Image
+                  <Image
                     src={this.state.staticBgUrl}
                     style="width:100%;height:100%"
                     mode="scaleToFill"
                     onLoad={this.handleBgLoaded}
                     onClick={this.handleBackgroundClick}
-                  /> */}
-                  <BankCard imageURL={this.state.imageURL}></BankCard>
+                  />
+                  {/* <BankCard imageURL={this.state.imageURL}></BankCard> */}
                 </View>
                 }
                 <Sticker

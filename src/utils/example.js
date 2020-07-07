@@ -15,6 +15,9 @@ export function renderExample1(canvas, THREE, obj, url) {
   init()
   animate()
   function init() {
+    // let gl = canvas.getContext('webgl', { alpha: true })
+    // gl.clearColor(0, 0, 0, 0)
+    // gl.clear(gl.COLOR_BUFFER_BIT)
     camera = new THREE.PerspectiveCamera(
       45,
       canvas.width / canvas.height,
@@ -22,7 +25,6 @@ export function renderExample1(canvas, THREE, obj, url) {
       1000,
     )
     scene = new THREE.Scene()
-    // scene.background = new THREE.Color(0xf0f0f0)
 
     if (!url) {
       renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
@@ -65,34 +67,19 @@ export function renderExample1(canvas, THREE, obj, url) {
           texture.minFilter = THREE.LinearFilter //解决图片2次幂问题
           objCache.traverse(function (child) {
             if (child.isMesh) {
-              //   child.material.map = texture
               child.material.emissive = child.material.color
               child.material.emissiveMap = texture
               child.material.map = texture
-              //   child.material.image = texture.image
             }
           })
-          console.log(
-            objCache,
-            objCache.children[0].material.map.image.currentSrc,
-            'aaa',
-          )
-          // objCache.rotation.z = (180 * Math.PI) / 180
-          // objCache.rotation.y = (180 * Math.PI) / 180
           scene.add(objCache)
         },
         (err) => {
           console.error(err)
         },
       )
-      //   const material = new THREE.MeshBasicMaterial({ map: texture })
-      //   objCache.children[0].material = material
-      //   scene.add(objCache)
     }
 
-    // var material = new THREE.MeshBasicMaterial({ color: 0xed3ed3 })
-    // cube = new THREE.Mesh(geometry, material)
-    // scene.add(cube)
     const controls = new OrbitControls(camera, renderer.domElement)
     controls.update()
     controlsCache = controls

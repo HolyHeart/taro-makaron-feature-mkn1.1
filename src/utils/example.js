@@ -97,9 +97,6 @@ export function renderExample1(canvas, THREE, obj, url) {
     controls.update()
     controlsCache = controls
 
-    let helper = new THREE.GridHelper(1000, 100)
-    scene.add(helper)
-
     for (let i = 0; i < 6; i++) {
       let y = 43 + 12 * i
       let pointLight = new THREE.DirectionalLight(0xffffff, 0.5, 100)

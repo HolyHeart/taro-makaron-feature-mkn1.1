@@ -4,6 +4,7 @@ page {
   overflow-y: hidden;
 }
 
+
 .scrollPage {
   height: 100%;
   background: data-uri('./src/assets/images/bank@1.jpg') no-repeat center top;
@@ -49,7 +50,6 @@ page {
       // background: #ccc;
       transition: all 0.2s;
       overflow: hidden;
-      box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.3);
 
       &.hidden {
         opacity: 0;
@@ -59,8 +59,10 @@ page {
         position: absolute;
         top: 0;
         left: 0;
-        width: 100%;
-        height: 100%;
+        margin-left: -40%;
+        margin-top: -30%;
+        width: 150%;
+        height: 150%;
       }
 
       .raw-image {

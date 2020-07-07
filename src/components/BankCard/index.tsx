@@ -60,16 +60,11 @@ class BankCard extends Component {
      <view>
         <Canvas
           type="webgl"
-          onTouchStart={this.touchStart}
-          onTouchMove={this.touchMove}
-          onTouchEnd={this.touchEnd}
-          onTouchCancel={this.touchCancel}
           style={{
-            width: `100%`,
-            height: '50%',
+            width: `120%`,
+            height: '120%',
             position: 'absolute',
-            left: 0,
-            top: 0,
+            
             zIndex: 99,
           }}
           canvasId="poster"

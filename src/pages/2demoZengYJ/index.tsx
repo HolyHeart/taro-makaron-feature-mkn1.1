@@ -1,13 +1,13 @@
 import {ComponentClass} from 'react'
 import Taro, {Component, Config} from '@tarojs/taro'
-import {View, Button, Image, Canvas, ScrollView,Text} from '@tarojs/components'
+import {View, Button, Image, Canvas, ScrollView} from '@tarojs/components'
 import {connect} from '@tarojs/redux'
 
 import {getSystemInfo,setSceneList} from '@/model/actions/global'
 import tool from '@/utils/tool'
 import work from '@/utils/work'
 import Title from '@/components/Title'
-import CustomIcon from '@/components/Icon'
+// import CustomIcon from '@/components/Icon'
 import Sticker from '@/components/Sticker'
 import Loading from '@/components/Loading'
 import globalData from '@/services/global_data'
@@ -19,7 +19,7 @@ import './index.less'
 import image_code from '@/assets/images/code.png'
 import image_versa from '@/assets/images/versa.png'
 import addTips from "@/assets/images/tips_addpic@2x.png";
-import Dialog from '@/components/Dialog'
+// import Dialog from '@/components/Dialog'
 
 import BankCard from '@/components/BankCard'
 import * as THREE from '../../utils/libs/three.weapp'
@@ -1609,9 +1609,6 @@ class Bank extends Component {
           <Title
             color="#333"
             leftStyleObj={{left: Taro.pxTransform(8)}}
-            renderLeft={
-              <CustomIcon type="back" theme="dark"/>
-            }
           >中行跨次元卡</Title>
           <View className="main">
 
@@ -1674,7 +1671,7 @@ class Bank extends Component {
 
             </View>
 
-            {this.state.isshow === true ? <Dialog
+            {/* {this.state.isshow === true ? <Dialog
               content={this.state.content}
               cancelText={this.state.cancelText}
               confirmText={this.state.confirmText}
@@ -1689,7 +1686,7 @@ class Bank extends Component {
                   </Button>
                 </View>
               }
-            /> : ''}
+            /> : ''} */}
           </View>
 
           <View className="subMain" style="width:100%;height:100%">

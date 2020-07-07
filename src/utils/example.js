@@ -60,7 +60,7 @@ export function renderExample1(canvas, THREE, obj, url) {
       )
     } else {
       const texture = new THREE.TextureLoader().load(
-        require('../assets/images/avatar.png'),
+        '',
         (texture) => {
           texture.minFilter = THREE.LinearFilter //解决图片2次幂问题
           objCache.traverse(function (child) {
@@ -107,13 +107,12 @@ export function renderExample1(canvas, THREE, obj, url) {
     camera.position.z = 60
   }
   function animate() {
-    
     let speed = Math.cos(angle)
     //console.log(Math.cos(angle))
     // -1<Math.cos(angle)<1
     angle += 0.02
-    if(objCache){
-        objCache.rotation.y = Math.cos(angle)*1.2
+    if (objCache) {
+      objCache.rotation.y = Math.cos(angle) * 1.2
     }
     timer = canvas.requestAnimationFrame(animate)
     renderer.render(scene, camera)

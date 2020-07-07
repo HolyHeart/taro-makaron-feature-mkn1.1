@@ -142,6 +142,7 @@ class Sticker extends Component {
   }
 
   stickerOntouchstart = (e) => {
+    e.stopPropagation()
     if (this.isFixed()) {
       // 若固定则不能移动
       return
@@ -368,7 +369,6 @@ class Sticker extends Component {
   handleImageLoaded = (e) => {
     const { onImageLoaded, stylePrams } = this.props
     onImageLoaded && onImageLoaded(e.detail, stylePrams)
-    console.log(e,"123123")
   }
 
   handleDeleteSticker = () => {

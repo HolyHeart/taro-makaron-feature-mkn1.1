@@ -3,7 +3,7 @@ import Taro, {Component, Config} from '@tarojs/taro'
 import {View, Button, Image, Canvas, ScrollView,Text} from '@tarojs/components'
 import {connect} from '@tarojs/redux'
 
-import {getSystemInfo} from '@/model/actions/global'
+import {getSystemInfo,setSceneList} from '@/model/actions/global'
 import tool from '@/utils/tool'
 import work from '@/utils/work'
 import Title from '@/components/Title'
@@ -87,6 +87,9 @@ class Bank extends Component {
     enablePullDownRefresh: false
   }
   state = {
+      showBankLogo: true,
+      showMyLogo: true,
+      playing: false,
     showType: 1, // 0 展示模式 1 修改模式
     rawImage: {
       localUrl: '',
@@ -444,7 +447,6 @@ class Bank extends Component {
     console.log(cover, 'covering this is cover ,this is 边框') //是边框的信息
     this.themeData.rawCoverList = cover.list || []
     const coverList = work.formatRawCoverList(this.themeData.rawCoverList)
-    console.log(coverList)
     this.setState({
       coverList: coverList
     })
@@ -697,7 +699,7 @@ class Bank extends Component {
       })
     })
   }
-  
+
 
   // 保存
   handleOpenResult = async () => {
@@ -856,13 +858,12 @@ class Bank extends Component {
 
     console.log(frame, 'frame ===width===height===frame')
 
-    const postfix = '?x-oss-process=image/resize,h_748,w_560'
+    const postfix = '?x-oss-process=image/resize,w_748,h_560'
     const {ratio = 3} = canvas
     const sceneInfo = currentScene
     let sceneConfig = {}
     try {
       sceneConfig = tool.JSON_parse(sceneInfo.sceneConfig)
-      console.log(sceneInfo,sceneInfo.sceneConfig,'aaaaaa')
     } catch (err) {
       console.log('canvasDrawRecommend 解析sceneConfig JSON字符串失败', err)
     }
@@ -1320,7 +1321,11 @@ class Bank extends Component {
       autoWidth: 0,
       autoHeight: 0,
       width: 0,
-      height: 0
+      height: 0,
+      type: coverInfo.type,
+      visible: coverInfo.visible,
+      show: coverInfo.show,
+      deleted: coverInfo.deleted
     }
     if (originWidth > originHeight) {
       // 以最短边计算
@@ -1348,6 +1353,15 @@ class Bank extends Component {
           hasGuide: false
         })
       }
+    // this.state.currentScene.sceneConfig.cover.list[0].visible = false;
+    // let newCoverList = JSON.parse(JSON.stringify(this.state.currentScene.sceneConfig.cover.list));
+    // let sceneList = JSON.parse(JSON.stringify(this.props.global.sceneList));
+    // sceneList[this.state.currentScene.index].sceneConfig.cover.list = newCoverList;
+    // this.props.setSceneList(sceneList);
+    // console.log(this.props.global.sceneList,'~~~~~~~~~~~~~~~~~~~~~~~')
+    this.setState({
+        playing: true
+    })
       work.chooseImageSimple({
         onSuccess: async (path) => {//获得加载图片的路径,这里的success就是用来把加载进来的图片进行处理
           console.log('choosedImage', path, globalData)
@@ -1562,6 +1576,13 @@ class Bank extends Component {
     }
   }
 
+  hideLogo(){
+      this.setState({
+          showBankLogo: !this.state.showBankLogo,
+          showMyLogo: !this.state.showMyLogo
+      })
+  }
+
   saveImg() {
     this.setState({
       isshow: true,
@@ -1592,20 +1613,40 @@ class Bank extends Component {
 
   render() {
     const {loading, rawImage, frame, customBg, foreground, coverList, sceneList, currentScene, result, canvas, showType} = this.state
-    let cover = coverList.map(item => {
-        return <Sticker
-          key={item.id}
-          url={item.remoteUrl}
-          stylePrams={item}
-          framePrams={frame}
-          onChangeStyle={this.handleChangeCoverStyle}
-          onImageLoaded={this.onCoverLoaded}
-          onTouchstart={this.handleCoverTouchstart}
-          onTouchend={this.handleCoverTouchend}
-          onDeleteSticker={this.handleDeleteCover.bind(this, item)}
-        />
+    let cover = coverList.filter(item => {
+        return item.type === 'normal'
+    }).map(item => {
+        if(!this.state.playing || item.show){
+            return <Sticker
+                key={item.id}
+                url={item.remoteUrl}
+                stylePrams={item}
+                framePrams={frame}
+                onChangeStyle={this.handleChangeCoverStyle}
+                onImageLoaded={this.onCoverLoaded}
+                onTouchstart={this.handleCoverTouchstart}
+                onTouchend={this.handleCoverTouchend}
+                onDeleteSticker={this.handleDeleteCover.bind(this, item)}
+            />
+        }
       })
-    console.log(currentScene,'currentScene')
+    let bankLogo = coverList.filter(item => {
+        return item.type === 'bankLogo' || item.type === 'myLogo'
+    }).map(item => {
+        if(this.state.showBankLogo){
+            return <Sticker
+                key={item.id}
+                url={item.remoteUrl}
+                stylePrams={item}
+                framePrams={frame}
+                onChangeStyle={this.handleChangeCoverStyle}
+                onImageLoaded={this.onCoverLoaded}
+                onTouchstart={this.handleCoverTouchstart}
+                onTouchend={this.handleCoverTouchend}
+                onDeleteSticker={this.handleDeleteCover.bind(this, item)}
+            />
+        }
+      })
     return (
       <ScrollView scrollY className="scrollPage">
         <View className='page-editor'>
@@ -1624,7 +1665,7 @@ class Bank extends Component {
               {/*<View className={`raw ${(foreground.remoteUrl && foreground.loaded) ? 'hidden' : ''}`} style={{ width: this.state.drawBoard.width, height: this.state.drawBoard.height }}>*/}
               {/*<Image src={rawImage.localUrl} style="width:100%;height:100%" mode="aspectFit" />*/}
               {/*</View>*/}
-              {showType ? 
+              {showType ?
               <View style={{width: this.state.drawBoard.width, height: this.state.drawBoard.height}} className={`crop`}
                     id="crop">
                 {currentScene.type === 'recommend' &&
@@ -1649,6 +1690,7 @@ class Bank extends Component {
                   onTouchend={this.handleForegroundTouchend}
                 />
                 {cover}
+                {bankLogo}
               </View> :
               <View className='testImage' style={{width: this.state.drawBoard.width, height: this.state.drawBoard.height}}>
                   <Image
@@ -1659,11 +1701,11 @@ class Bank extends Component {
                   />
               </View>
               }
-              
+
             </View>
 
             <View className='subSection'>
-              <View className="hideIcon">隐藏卡面图标</View>
+              <View className="hideIcon" onClick={()=>this.hideLogo()}>隐藏卡面图标</View>
               {showType ? <View className="buttonPart">
                 <Button style='flex:1;z-index:2' id='addPhoto' openType="getUserInfo" className="custom-button white border"
                         hoverClass="btn-hover" onGetUserInfo={this.todo}>{this.state.chooseText}</Button>
@@ -1675,7 +1717,7 @@ class Bank extends Component {
                         hoverClass="btn-hover" onGetUserInfo={this.todo}>{this.state.chooseText}</Button>
                 </View>
               }
-              
+
             </View>
 
             {this.state.isshow === true ? <Dialog
@@ -1697,18 +1739,19 @@ class Bank extends Component {
           </View>
 
           <View className="subMain" style="width:100%;height:100%">
-            <View className="addSub">...其他可定制卡片...</View>
+            <View className="addSub">&middot;&middot;其他可定制卡片&middot;&middot;</View>
             <View className="pictureList">
               {this.state.sceneList.map((item) => {
                 return (<View style={{background:`url(${item.boxUrl}) no-repeat center`,backgroundSize:'contain'}} className='singlePicture'>
                             <Image src={item.exampleUrl} onClick={this.substituteBgUrl.bind(this,item)}/>
                             {currentScene.index === item.index ? <View className='currentIcon'></View> : null}
-                            
+
                         </View>)
-                    
+
               })}
             </View>
           </View>
+          <Image className='bottomTip' src='https://static01.versa-ai.com/upload/ac05476db5da/e0f294b1-ae32-4e96-b4ed-637fed563de3.png'/>
 
           <View class="canvas-wrap">
             <Canvas

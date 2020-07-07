@@ -6,14 +6,14 @@ page {
 
 .scrollPage {
   height: 100%;
-  background: data-uri('./src/assets/images/bank@1.jpg') no-repeat center 136px;
+  background: data-uri('./src/assets/images/bank@1.jpg') no-repeat center top;
   background-size: 100%;
 }
 
 .page-editor {
   position: relative;
   width: 100%;
-  height: 100%;
+  height: 200%;
   padding: 172px 0 0 0;
   display: flex;
   flex-direction: column;
@@ -23,7 +23,7 @@ page {
   .addTitle {
     display: flex;
     justify-content: center;
-    margin: 79px 0 0 0;
+    margin: 79px 0 90px 0;
     height: 42px;
     background: url('https://static01.versa-ai.com/upload/3d4455cc4584/56be68da-93ab-417d-874c-d3dc90e33e14.png') no-repeat top center;
     background-size: contain;
@@ -32,7 +32,7 @@ page {
   .pic-section {
     position: relative;
     width: 743px;
-    height: 463px;
+    height: 406px;
     display: flex;
     justify-content: center;
     align-items: flex-start;
@@ -77,20 +77,23 @@ page {
     margin-top: 22px;
 
     .hideIcon {
+      display: flex;
+      justify-content: center;
       align-items: center;
       margin: 0 auto;
+      padding: 0 0 30px 0;
       position: relative;
-      display: flex;
       height: 34px;
-      font-size: 34px;
+      font-size:24px;
+      font-weight:400;
+      color: #DEAFFA;
       text-align: center;
-      justify-content: center;
-      border: 1px solid black;
     }
 
     .buttonPart {
       display: flex;
-      margin-top: 30px;
+      margin: auto;
+      width: 700px;
       height: 90px;
     }
   }
@@ -100,14 +103,15 @@ page {
   margin-top: 118px;
 
   .addSub {
-    align-items: center;
-    position: relative;
     display: flex;
-    height: 34px;
-    font-size: 34px;
-    text-align: center;
+    position: relative;
     justify-content: center;
-    border: 1px solid black;
+    align-items: center;
+    height: 34px;
+    font-size: 24px;
+    font-weight: 300;
+    color: #FFFFFF;
+    text-align: center;
   }
 
   .pictureList {
@@ -151,6 +155,12 @@ page {
   &.high {
     margin-top: 60px
   }
+}
+
+.bottomTip{
+    margin: 60px 0 60px 0;
+    width: 296px;
+    height: 20px;
 }
 
 .canvas-wrap {

@@ -1307,51 +1307,53 @@ class Bank extends Component {
     this.setState({
         playing: true,
         showType: 1
+    },()=>{
+        setTimeout(() => {
+            work.chooseImageSimple({
+                onSuccess: async (path) => {//获得加载图片的路径,这里的success就是用来把加载进来的图片进行处理
+                  console.log('choosedImage', path, globalData)
+                  this.app.aldstat.sendEvent('编辑页面人像成功', '上传成功')
+                  globalData.choosedImage = path//存入图片，为之后的处理准备
+                  Taro.getFileSystemManager().readFile({
+                    filePath: path,
+                    success: (data:any) => { //这的data是文件内容，所以这个函数的意义是啥？？？
+                        Taro.cloud.callFunction(
+                            {
+                                name: 'checkImage',
+                                data: {
+                                  contentType: 'image/png',
+                                  value: data.data
+                                },
+                                success: async (res:any) => {//res 为处理信息，跟图片无关；
+                                  console.log('checkImage success：', res)
+                                  // const separateResult = globalData.separateResult = await this.initSegment()
+                                  // await this.initSeparateData(separateResult)
+                                  if (res.result !== null && res.result.errCode === 0) {
+                                    const separateResult = globalData.separateResult = await this.initSegment()//一个对象、得到分割结果，还不是图像，只是部分路径
+                                    console.log(separateResult, 'separeteResulting~~~~~~~~~~~~~~~~')
+                                    await this.initSeparateData(separateResult)
+                                  } else {
+                                    work.pageToError()
+                                  }
+                                },
+                                fail: async (err) => {
+                                  console.log('checkImage error', err)
+                                  const separateResult = globalData.separateResult = await this.initSegment()
+                                  await this.initSeparateData(separateResult)
+                                }
+                              }
+                        )
+                    },
+                    fail: () => {
+                    }
+                  })
+        
+                }
+              })
+        }, 3000);
+        
     })
-    // this.setState({
-    //     showType: 1
-    // })
-      work.chooseImageSimple({
-        onSuccess: async (path) => {//获得加载图片的路径,这里的success就是用来把加载进来的图片进行处理
-          console.log('choosedImage', path, globalData)
-          this.app.aldstat.sendEvent('编辑页面人像成功', '上传成功')
-          globalData.choosedImage = path//存入图片，为之后的处理准备
-          Taro.getFileSystemManager().readFile({
-            filePath: path,
-            success: (data:any) => { //这的data是文件内容，所以这个函数的意义是啥？？？
-                Taro.cloud.callFunction(
-                    {
-                        name: 'checkImage',
-                        data: {
-                          contentType: 'image/png',
-                          value: data.data
-                        },
-                        success: async (res:any) => {//res 为处理信息，跟图片无关；
-                          console.log('checkImage success：', res)
-                          // const separateResult = globalData.separateResult = await this.initSegment()
-                          // await this.initSeparateData(separateResult)
-                          if (res.result !== null && res.result.errCode === 0) {
-                            const separateResult = globalData.separateResult = await this.initSegment()//一个对象、得到分割结果，还不是图像，只是部分路径
-                            console.log(separateResult, 'separeteResulting~~~~~~~~~~~~~~~~')
-                            await this.initSeparateData(separateResult)
-                          } else {
-                            work.pageToError()
-                          }
-                        },
-                        fail: async (err) => {
-                          console.log('checkImage error', err)
-                          const separateResult = globalData.separateResult = await this.initSegment()
-                          await this.initSeparateData(separateResult)
-                        }
-                      }
-                )
-            },
-            fail: () => {
-            }
-          })
-
-        }
-      })
+      
       
     } else {
       Taro.showToast({
@@ -1559,6 +1561,7 @@ class Bank extends Component {
   }
 
   render() {
+      console.log(this.state.coverList,333333)
     const {loading, rawImage, frame, customBg, foreground, coverList, sceneList, currentScene, result, canvas, showType} = this.state
     let cover = coverList.filter(item => {
         return item.type === 'normal'
@@ -1606,7 +1609,7 @@ class Bank extends Component {
             <View className="addTitle"></View>
 
             <View className="pic-section">
-              {!showType ?
+              {showType ?
               <View style={{width: this.state.drawBoard.width, height: this.state.drawBoard.height}} className={`crop`}
                     id="crop">
                 {currentScene.type === 'recommend' &&
@@ -1618,7 +1621,6 @@ class Bank extends Component {
                     onLoad={this.handleBgLoaded}
                     onClick={this.handleBackgroundClick}
                   />
-                  {/* <BankCard imageURL={this.state.imageURL}></BankCard> */}
                 </View>
                 }
                 <Sticker
@@ -1633,17 +1635,17 @@ class Bank extends Component {
                 />
                 {cover}
                 {bankLogo}
-              </View> :
-              <View className='testImage' style={{width: this.state.drawBoard.width, height: this.state.drawBoard.height}}>
-                  <Image
+              </View> : null
+              }
+            <View className={showType ? 'bank_card_container hide' : 'bank_card_container'} style={{width: this.state.drawBoard.width, height: this.state.drawBoard.height}}>
+                  {/* <Image
                     src={this.state.staticBgUrl}
                     style="width:100%;height:100%"
                     mode="scaleToFill"
                     // onLoad={this.handleBgLoaded}
-                  />
+                  /> */}
+                <BankCard imageURL={this.state.imageURL}></BankCard>
               </View>
-              }
-
             </View>
 
             <View className='subSection'>
@@ -1694,7 +1696,6 @@ class Bank extends Component {
             </View>
           </View>
           <Image className='bottomTip' src='https://static01.versa-ai.com/upload/ac05476db5da/e0f294b1-ae32-4e96-b4ed-637fed563de3.png'/>
-
           <View class="canvas-wrap">
             <Canvas
               disable-scroll={true}

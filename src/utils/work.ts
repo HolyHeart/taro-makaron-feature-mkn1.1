@@ -324,7 +324,7 @@ const chooseImage = async ({ onTap, onSuccess }: chooseImageOptions) => {
   }).catch((err) => console.log(err))
 }
 const chooseImageSimple = async ({ onSuccess }: chooseImageOptions) => {
-  Taro.chooseImage({
+  wx.chooseImage({
     count: 1,
     sourceType: ['album'],
   }).then(({ tempFilePaths: [path] }) => {

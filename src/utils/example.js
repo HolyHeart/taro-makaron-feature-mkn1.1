@@ -1,4 +1,4 @@
-import { OrbitControls } from './jsm/controls/OrbitControls'
+// import { OrbitControls } from './jsm/controls/OrbitControls'
 import gLTF from './jsm/loaders/GLTFLoader'
 
 let objCache = null
@@ -7,7 +7,7 @@ let THREECache = null
 let rendererCache = null
 let timer
 let angle = 0
-let controlsCache
+// let controlsCache
 let stopAnimation
 
 export function renderExample1(canvas, THREE, obj, url, first = false) {
@@ -106,9 +106,9 @@ export function renderExample1(canvas, THREE, obj, url, first = false) {
       )
     }
 
-    const controls = new OrbitControls(camera, renderer.domElement)
-    controls.update()
-    controlsCache = controls
+    // const controls = new OrbitControls(camera, renderer.domElement)
+    // controls.update()
+    // controlsCache = controls
 
     for (let i = 0; i < 6; i++) {
       let y = 43 + 12 * i

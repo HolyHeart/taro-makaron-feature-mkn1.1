@@ -193,7 +193,7 @@ class Bank extends Component {
   componentWillMount() {//计算设备信息
     const { getSystemInfo } = this.props
     const systemInfo:any = Taro.getSystemInfoSync()
-    if (/iphone x/i.test(systemInfo.model)) {
+    if (/iphone x/i.test(systemInfo.model) || (/iphone/i.test(systemInfo.model) && /unknown/.test(systemInfo.model)) || /iphone\s11/i.test(systemInfo.model)) {
       // iPhone XS Max China-exclusive<iPhone11,6>
       // 'iPhone X'
       systemInfo.isIphoneX = true
@@ -206,7 +206,7 @@ class Bank extends Component {
     if (!setTop) {
       tooltipHeight = systemInfo.screenWidth / 750 * 92
     }
-    // console.log('🔥初始化高度🔥', '屏幕高度：', systemInfo.screenHeight, '屏幕宽度：', systemInfo.screenWidth, '系统参数：', systemInfo)
+    console.log('🔥初始化高度🔥', '屏幕高度：', systemInfo.screenHeight, '屏幕宽度：', systemInfo.screenWidth, '系统参数：', systemInfo)
     this.setState({
       screenHeight: systemInfo.screenHeight,
       screenWidth: systemInfo.screenWidth,
@@ -214,11 +214,12 @@ class Bank extends Component {
       picHeight: systemInfo.screenWidth * 0.8 * 0.94 * 0.5 * 0.9 + 1
     })
     let totalTopHeight = 72
-    if (systemInfo.model.indexOf('iPhone X') !== -1) {
+    if (/iphone x/i.test(systemInfo.model) || (/iphone/i.test(systemInfo.model) && /unknown/.test(systemInfo.model)) || /iphone\s11/i.test(systemInfo.model)) {
       totalTopHeight = 85
     } else if (systemInfo.model.indexOf('iPhone') !== -1) {
       totalTopHeight = 62
     }
+    console.log(totalTopHeight,'tttttttttttttttttttttt')
     this.setState({
       titleHeight: totalTopHeight
     })
@@ -1598,7 +1599,7 @@ class Bank extends Component {
         }
       })
     return (
-      <ScrollView scrollY className="scrollPage">
+      <ScrollView scrollY className="scrollPage" style={{ height: this.state.screenHeight + 'px' }}>
         <View className='page-editor'>
           <Title
             color="#333"

@@ -168,6 +168,11 @@ class Bank extends Component {
     titleHeight: 0,
     tooltipHeight: 0,
     staticBgUrl:'',
+
+    logo:{
+      myLogo:"https://static01.versa-ai.com/upload/ce29be05e80a/947c8a95-62b1-4eef-8db4-9b22d3561620.png",
+      bankLogo:"https://static01.versa-ai.com/upload/4a72479c5a83/298bd350-21ff-4e39-9189-25967ad4cb94.png"
+    }
   }
 
   app = Taro.getApp()
@@ -1304,7 +1309,7 @@ class Bank extends Component {
     if (userInfo) {
       service.base.loginAuth(data.detail)//【上传用户信息】
       globalData.userInfo = userInfo
- 
+
     this.setState({
         playing: true,
         showType: 1
@@ -1350,8 +1355,8 @@ class Bank extends Component {
             }
           })
     })
-      
-      
+
+
     } else {
       Taro.showToast({
         title: '请授权',
@@ -1557,7 +1562,7 @@ class Bank extends Component {
       coverList: []
     })
     this.initSceneData(()=>{});
-    
+
   }
 
   render() {
@@ -1635,7 +1640,13 @@ class Bank extends Component {
                   onTouchend={this.handleForegroundTouchend}
                 />
                 {cover}
-                {bankLogo}
+                {/*{bankLogo}*/}
+
+                <View className="logo">
+                  {this.state.showBankLogo? <Image className="subLogo" src={this.state.logo.bankLogo} />:''}
+                  <Image className="subLogo" src={this.state.logo.myLogo} />
+                </View>
+
               </View> : null
               }
             <View className={showType ? 'bank_card_container hide' : 'bank_card_container'}>
@@ -1651,7 +1662,7 @@ class Bank extends Component {
 
             <View className='subSection'>
                 <View className="hideIcon" onClick={()=>this.hideLogo()}>{this.state.showBankLogo ? '隐藏卡面图标' : '显示卡面图标'}</View>
-              {showType ? 
+              {showType ?
               (showType === 1 ? <View className="buttonPart">
                 <Button style='flex:1;z-index:2' id='addPhoto' openType="getUserInfo" className="custom-button white border"
                         hoverClass="btn-hover" onGetUserInfo={this.todo}>{this.state.chooseText}</Button>
@@ -1672,7 +1683,7 @@ class Bank extends Component {
 
             </View>
           </View>
-          {showType !== 2 ? 
+          {showType !== 2 ?
             <View className="subMain" style="width:100%;height:100%">
             <View className="addSub">&middot;&middot;其他可定制卡片&middot;&middot;</View>
             <View className="pictureList">

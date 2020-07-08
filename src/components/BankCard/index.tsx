@@ -6,6 +6,7 @@ import {
   renderExample1 as renderExample,
   change,
   stop,
+  update
 } from '../../utils/example.js'
 import './index.less'
 
@@ -24,9 +25,15 @@ interface BankCard {
   props: IProps
 }
 
+
 class BankCard extends Component {
   _imageUrl: string
   THREE: any
+  startX:number
+  moveX:number
+  lastMoveX: number
+  offsetX: number
+
 
   componentDidUpdate() {
     console.log('change', this._imageUrl, this.props.imageURL)
@@ -59,13 +66,16 @@ class BankCard extends Component {
 
   touchStart(e) {
     stop()
-    this.THREE.global.touchEventHandlerFactory('canvas', 'touchstart')(e)
+    this.lastMoveX = e.touches[0].x;
   }
   touchMove(e) {
-    this.THREE.global.touchEventHandlerFactory('canvas', 'touchmove')(e)
+    this.moveX = e.touches[0].x;
+    this.offsetX = this.moveX - this.lastMoveX;
+    this.lastMoveX = this.moveX;
+    update(this.offsetX);
   }
   touchEnd(e) {
-    this.THREE.global.touchEventHandlerFactory('canvas', 'touchend')(e)
+    this.startX = this.moveX = this.offsetX = 0;
   }
   touchCancel(e) {}
 

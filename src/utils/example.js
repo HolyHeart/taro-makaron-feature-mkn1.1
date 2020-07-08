@@ -142,3 +142,8 @@ export function change(url) {
 export function stop() {
   stopAnimation = true
 }
+
+export function update(offset) {
+  console.log(offset)
+  objCache.rotation.y += offset * 0.01
+}

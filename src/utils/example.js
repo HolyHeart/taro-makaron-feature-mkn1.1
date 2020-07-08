@@ -9,8 +9,16 @@ let timer
 let angle = 0
 // let controlsCache
 let stopAnimation
+let screenWidthCache
 
-export function renderExample1(canvas, THREE, obj, url, first = false) {
+export function renderExample1(
+  canvas,
+  THREE,
+  obj,
+  url,
+  first = false,
+  screenWidth = screenWidthCache,
+) {
   let camera, scene, renderer
   var cube
   init()
@@ -112,11 +120,11 @@ export function renderExample1(canvas, THREE, obj, url, first = false) {
 
     for (let i = 0; i < 6; i++) {
       let y = 43 + 12 * i
-      let pointLight = new THREE.DirectionalLight(0xffffff, 0.5, 100)
+      let pointLight = new THREE.DirectionalLight(0xffffff, 0.001, 100)
       pointLight.position.set(63, y, 110)
       scene.add(pointLight)
     }
-
+    screenWidthCache = screenWidth
     camera.position.z = 50
   }
   function animate() {

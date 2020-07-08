@@ -40,7 +40,7 @@ class Title extends Component {
     const systemInfo = Taro.getSystemInfoSync()
     const statusBarHeight = systemInfo.statusBarHeight || 20
     let totalTopHeight = 72
-    if (systemInfo.model.indexOf('iPhone X') !== -1) {
+    if (/iphone x/i.test(systemInfo.model) || (/iphone/i.test(systemInfo.model) && /unknown/.test(systemInfo.model)) || /iphone\s11/i.test(systemInfo.model)) {
       totalTopHeight = 85
     } else if (systemInfo.model.indexOf('iPhone') !== -1) {
       totalTopHeight = 62

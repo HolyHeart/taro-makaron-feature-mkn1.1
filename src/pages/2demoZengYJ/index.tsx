@@ -661,7 +661,11 @@ class Bank extends Component {
   // 保存
   handleOpenResult = async () => {
     if (!this.state.foreground.remoteUrl) {
-      return
+      return Taro.showToast({
+        title: '图片中没有人物，请重新上传。',
+        icon: 'none',
+        duration: 2000
+      })
     }
     if (!this.state.currentScene.bgUrl) {
       return
@@ -1321,33 +1325,35 @@ class Bank extends Component {
               globalData.choosedImage = path//存入图片，为之后的处理准备
               Taro.getFileSystemManager().readFile({
                 filePath: path,
-                success: (data:any) => { //这的data是文件内容，所以这个函数的意义是啥？？？
-                    Taro.cloud.callFunction(
-                        {
-                            name: 'checkImage',
-                            data: {
-                              contentType: 'image/png',
-                              value: data.data
-                            },
-                            success: async (res:any) => {//res 为处理信息，跟图片无关；
-                              // console.log('checkImage success：', res)
-                              // const separateResult = globalData.separateResult = await this.initSegment()
-                              // await this.initSeparateData(separateResult)
-                              if (res.result !== null && res.result.errCode === 0) {
-                                const separateResult = globalData.separateResult = await this.initSegment()//一个对象、得到分割结果，还不是图像，只是部分路径
-                                // console.log(separateResult, 'separeteResulting~~~~~~~~~~~~~~~~')
-                                await this.initSeparateData(separateResult)
-                              } else {
-                                work.pageToError()
-                              }
-                            },
-                            fail: async (err) => {
-                              // console.log('checkImage error', err)
-                              const separateResult = globalData.separateResult = await this.initSegment()
+                success: async (data:any) => { //这的data是文件内容，所以这个函数的意义是啥？？？
+                    const separateResult = globalData.separateResult = await this.initSegment()
                               await this.initSeparateData(separateResult)
-                            }
-                          }
-                    )
+                    // Taro.cloud.callFunction(
+                    //     {
+                    //         name: 'checkImage',
+                    //         data: {
+                    //           contentType: 'image/png',
+                    //           value: data.data
+                    //         },
+                    //         success: async (res:any) => {//res 为处理信息，跟图片无关；
+                    //           // console.log('checkImage success：', res)
+                    //           // const separateResult = globalData.separateResult = await this.initSegment()
+                    //           // await this.initSeparateData(separateResult)
+                    //           if (res.result !== null && res.result.errCode === 0) {
+                    //             const separateResult = globalData.separateResult = await this.initSegment()//一个对象、得到分割结果，还不是图像，只是部分路径
+                    //             // console.log(separateResult, 'separeteResulting~~~~~~~~~~~~~~~~')
+                    //             await this.initSeparateData(separateResult)
+                    //           } else {
+                    //             work.pageToError()
+                    //           }
+                    //         },
+                    //         fail: async (err) => {
+                    //           // console.log('checkImage error', err)
+                    //           const separateResult = globalData.separateResult = await this.initSegment()
+                    //           await this.initSeparateData(separateResult)
+                    //         }
+                    //       }
+                    // )
                 },
                 fail: () => {
                 }
@@ -1567,7 +1573,7 @@ class Bank extends Component {
 
   render() {
       // console.log(this.state.coverList,333333)
-    const {loading, rawImage, frame, customBg, foreground, coverList, sceneList, currentScene, result, canvas, showType} = this.state
+    const {loading, rawImage, frame, customBg, foreground, coverList, sceneList, currentScene, result, canvas, showType, screenWidth, showBankLogo} = this.state
     let cover = coverList.filter(item => {
         return item.type === 'normal'
     }).map(item => {
@@ -1627,6 +1633,7 @@ class Bank extends Component {
                     onLoad={this.handleBgLoaded}
                     onClick={this.handleBackgroundClick}
                   />
+                  <Image className='card_shadow' src='https://static01.versa-ai.com/upload/abc2f38a4d4d/cab30fe0-349f-4498-95f8-f594f089e43c.png'/>
                 </View>
                 }
                 <Sticker
@@ -1649,19 +1656,23 @@ class Bank extends Component {
 
               </View> : null
               }
-            <View className={showType ? 'bank_card_container hide' : 'bank_card_container'}>
+            <View className={showType ? 'bank_card_container hide' : 'bank_card_container'} style={{height: screenWidth * 0.7+'px'}}>
                   {/* <Image
                     src={this.state.staticBgUrl}
                     style="width:100%;height:100%"
                     mode="scaleToFill"
                     // onLoad={this.handleBgLoaded}
                   /> */}
-                <BankCard gltfURL={this.state.gltfURL} imageURL={this.state.imageURL}></BankCard>
+                <BankCard gltfURL={this.state.gltfURL} imageURL={this.state.imageURL} screenWidth={screenWidth}></BankCard>
               </View>
             </View>
 
             <View className='subSection'>
-                <View className="hideIcon" onClick={()=>this.hideLogo()}>{this.state.showBankLogo ? '隐藏卡面图标' : '显示卡面图标'}</View>
+              {showType === 1 && 
+                <View className="hideIcon" onClick={()=>this.hideLogo()}>
+                    <Image className='eye_icon' src={showBankLogo ?'https://static01.versa-ai.com/upload/c34b3d6329a5/bde7562a-5fd4-4ed6-b4c3-e9e339810964.png':'https://static01.versa-ai.com/upload/619f7ec1bc56/9a122af8-3414-4eb6-bdab-0ff4b0dd43a5.png'}/>
+                    <Text>{this.state.showBankLogo ? '隐藏卡面图标' : '显示卡面图标'}</Text>
+                </View>}
               {showType ?
               (showType === 1 ? <View className="buttonPart">
                 <Button style='flex:1;z-index:2' id='addPhoto' openType="getUserInfo" className="custom-button white border"

@@ -15,6 +15,7 @@ type ComponentStateProps = {}
 type ComponentOwnProps = {
   imageURL: string
   gltfURL: string
+  screenWidth: number
 }
 
 type ComponentState = {}
@@ -53,7 +54,7 @@ class BankCard extends Component {
         console.log(111, res)
         const canvas = THREE.global.registerCanvas(res.node)
         this._imageUrl = imageURL
-        renderExample(canvas, THREE, gltfURL, imageURL,true)
+        renderExample(canvas, THREE, gltfURL, imageURL,true,this.props.screenWidth)
         this.THREE = THREE
       })
       .exec()

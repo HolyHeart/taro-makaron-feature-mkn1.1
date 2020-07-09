@@ -7,7 +7,7 @@ let THREECache = null
 let rendererCache = null
 let timer
 let angle
-// let controlsCache
+let shadowCache
 let stopAnimation
 let screenWidthCache
 
@@ -125,6 +125,23 @@ export function renderExample1(
       scene.add(pointLight)
     }
 
+    const shadowTexture = new THREE.TextureLoader().load(
+      'https://static01.versa-ai.com/upload/abc2f38a4d4d/cab30fe0-349f-4498-95f8-f594f089e43c.png',
+      (texture) => {
+        texture.minFilter = THREE.LinearFilter //解决图片2次幂问题
+      },
+    )
+    const shadowGeometry = new THREE.PlaneGeometry(50, 10)
+    const shadowMaterial = new THREE.MeshLambertMaterial({
+      map: shadowTexture,
+    })
+    // const shadowMesh = new THREE.Mesh(shadowGeometry, shadowMaterial)
+    // // shadowMesh.rotation.z = (180 * Math.PI) / 180
+    // // shadowMesh.rotation.x = (-90 * Math.PI) / 180
+    // shadowMesh.position.y = -10
+    // scene.add(shadowMesh)
+    // shadowCache = shadowMesh
+
     screenWidthCache = screenWidth
     camera.position.z = 50
   }
@@ -156,7 +173,12 @@ export function stop() {
 
 export function update(offsetX, offsetY) {
   objCache.rotation.y += offsetX * 0.01
-  objCache.rotation.x += offsetY * 0.01
-  objCache.rotation.x < -0.5 && (objCache.rotation.x = -0.5)
-  objCache.rotation.x > 0.5 && (objCache.rotation.x = 0.5)
+  //   objCache.rotation.x += offsetY * 0.01
+  //   objCache.rotation.x < -0.5 && (objCache.rotation.x = -0.5)
+  //   objCache.rotation.x > 0.5 && (objCache.rotation.x = 0.5)
+
+  //   shadowCache.rotation.y += offsetX * 0.01
+  //   shadowCache.rotation.x += offsetY * 0.01
+  //   shadowCache.rotation.x < -0.5 && (shadowCache.rotation.x = -0.5)
+  //   shadowCache.rotation.x > 0.5 && (shadowCache.rotation.x = 0.5)
 }

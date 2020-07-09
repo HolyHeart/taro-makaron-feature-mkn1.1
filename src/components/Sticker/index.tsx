@@ -478,7 +478,7 @@ class Sticker extends Component {
             <Image src={close} mode="widthFix" style="width:80%;height:80%" />
           </View>
         }
-        <View className={`control mirror active`}
+        <View className={`control mirror ${stylePrams.isActive ? 'active' : ''}`}
           onTouchstart={this.mirrorOntouchstart}
         //   onTouchmove={this.throttledArrowOntouchmove}
         //   onTouchend={this.arrowOntouchend}

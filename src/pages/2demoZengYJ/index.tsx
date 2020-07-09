@@ -1,6 +1,6 @@
 import {ComponentClass} from 'react'
 import Taro, {Component, Config} from '@tarojs/taro'
-import {View, Button, Image, Canvas, ScrollView} from '@tarojs/components'
+import {View, Button, Image, Canvas, ScrollView, CoverView} from '@tarojs/components'
 import {connect} from '@tarojs/redux'
 
 import {getSystemInfo,setSceneList} from '@/model/actions/global'
@@ -621,7 +621,7 @@ class Bank extends Component {
       showType: 0
   })
     //Taro.navigateBack({ delta: 1 })
-    
+
   }
 
   handleDeleteCover = (sticker) => {
@@ -1622,15 +1622,15 @@ class Bank extends Component {
     return (
       <ScrollView scrollY className="scrollPage" style={{ height: this.state.screenHeight + 'px' }}>
         <View className='page-editor'>
-          {(showType === 1 ? 
+          {(showType === 1 ?
               <Title
                 color="#333"
                 leftStyleObj={{left: Taro.pxTransform(8)}}
                 renderLeft={
-                  <cover-view>
+                  <CoverView style = "zIndex: 999">
                       <CustomIcon type="back" theme="dark" onClick={this.pageToHome} />
-                  </cover-view>
-                }      
+                  </CoverView>
+                }
               >中行跨次元卡</Title>
                : <Title
                color="#333"

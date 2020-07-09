@@ -30,10 +30,12 @@ interface BankCard {
 class BankCard extends Component {
   _imageUrl: string
   THREE: any
-  startX:number
   moveX:number
   lastMoveX: number
   offsetX: number
+  moveY:number
+  lastMoveY: number
+  offsetY: number
 
 
   componentDidUpdate() {
@@ -51,7 +53,6 @@ class BankCard extends Component {
     query
       .select('#c')
       .node((res) => {
-        console.log(111, res)
         const canvas = THREE.global.registerCanvas(res.node)
         this._imageUrl = imageURL
         renderExample(canvas, THREE, gltfURL, imageURL,true,this.props.screenWidth)
@@ -68,12 +69,16 @@ class BankCard extends Component {
   touchStart(e) {
     stop()
     this.lastMoveX = e.touches[0].x;
+    this.lastMoveY = e.touches[0].y;
   }
   touchMove(e) {
     this.moveX = e.touches[0].x;
     this.offsetX = this.moveX - this.lastMoveX;
     this.lastMoveX = this.moveX;
-    update(this.offsetX);
+    this.moveY= e.touches[0].y;
+    this.offsetY = this.moveY - this.lastMoveY;
+    this.lastMoveY = this.moveY;
+    update(this.offsetX,this.offsetY);
   }
   touchEnd(e) {
     this.startX = this.moveX = this.offsetX = 0;

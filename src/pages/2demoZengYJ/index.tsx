@@ -7,7 +7,7 @@ import {getSystemInfo,setSceneList} from '@/model/actions/global'
 import tool from '@/utils/tool'
 import work from '@/utils/work'
 import Title from '@/components/Title'
-// import CustomIcon from '@/components/Icon'
+import CustomIcon from '@/components/Icon'
 import Sticker from '@/components/Sticker'
 import Loading from '@/components/Loading'
 import globalData from '@/services/global_data'
@@ -615,6 +615,15 @@ class Bank extends Component {
     this.storeCoverInfo(sticker)
     this.app.aldstat.sendEvent('贴纸使用', {'贴纸Id': sticker.id})
   }
+
+  pageToHome = () => {
+    this.setState({
+      showType: 0
+  })
+    //Taro.navigateBack({ delta: 1 })
+    
+  }
+
   handleDeleteCover = (sticker) => {
     // // console.log('handleDeleteCover', sticker)
     const {id} = sticker
@@ -1574,6 +1583,7 @@ class Bank extends Component {
   render() {
       // console.log(this.state.coverList,333333)
     const {loading, rawImage, frame, customBg, foreground, coverList, sceneList, currentScene, result, canvas, showType, screenWidth, showBankLogo} = this.state
+
     let cover = coverList.filter(item => {
         return item.type === 'normal'
     }).map(item => {
@@ -1612,10 +1622,26 @@ class Bank extends Component {
     return (
       <ScrollView scrollY className="scrollPage" style={{ height: this.state.screenHeight + 'px' }}>
         <View className='page-editor'>
-          <Title
-            color="#333"
-            leftStyleObj={{left: Taro.pxTransform(8)}}
-          >中行跨次元卡</Title>
+          {(showType === 1 ? 
+              <Title
+                color="#333"
+                leftStyleObj={{left: Taro.pxTransform(8)}}
+                renderLeft={
+                  <cover-view>
+                      <CustomIcon type="back" theme="dark" onClick={this.pageToHome} />
+                  </cover-view>
+                }      
+              >中行跨次元卡</Title>
+               : <Title
+               color="#333"
+               leftStyleObj={{left: Taro.pxTransform(8)}}
+               >中行跨次元卡</Title>)
+              }
+
+
+
+
+
           <View className="main">
 
             <View className="addTitle"></View>

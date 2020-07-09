@@ -1652,8 +1652,11 @@ class Bank extends Component {
                 {/*{bankLogo}*/}
 
                 <View className="logo">
-                  {this.state.showBankLogo? <Image className="subLogo" src={this.state.logo.bankLogo} />:''}
-                  <Image className="subLogo" src={this.state.logo.myLogo} />
+                  {this.state.showBankLogo?
+                    <View>
+                      <Image className="subLogo" src={this.state.logo.myLogo} />
+                      <Image className="subLogo" src={this.state.logo.bankLogo} />
+                    </View>:''}
                 </View>
 
               </View> : null
@@ -1670,7 +1673,7 @@ class Bank extends Component {
             </View>
 
             <View className='subSection'>
-              {showType === 1 &&
+              {(showType!==0) &&
                 <View className="hideIcon" onClick={()=>this.hideLogo()}>
                     <Image className='eye_icon' src={showBankLogo ?'https://static01.versa-ai.com/upload/c34b3d6329a5/bde7562a-5fd4-4ed6-b4c3-e9e339810964.png':'https://static01.versa-ai.com/upload/619f7ec1bc56/9a122af8-3414-4eb6-bdab-0ff4b0dd43a5.png'}/>
                     <Text>{this.state.showBankLogo ? '隐藏卡面图标' : '显示卡面图标'}</Text>
@@ -1684,12 +1687,12 @@ class Bank extends Component {
                 </Button>
               </View> :
                 <View className="buttonPart">
-                    <Button style='flex:1;z-index:2' id='addPhoto' openType="getUserInfo" className="custom-button pink" hoverClass="btn-hover" onGetUserInfo={this.todo}>
+                    <Button id='addPhotoFit1' openType="getUserInfo" className="custom-button pink" hoverClass="btn-hover" onGetUserInfo={this.todo}>
                             提交至银行
                     </Button>
                 </View>):
                 <View className="buttonPart">
-                    <Button id='addPhotoFit' openType="getUserInfo" className="custom-button pink"
+                    <Button id='addPhotoFit2' openType="getUserInfo" className="custom-button pink"
                         hoverClass="btn-hover" onGetUserInfo={this.todo}>{this.state.chooseText}</Button>
                 </View>
               }

@@ -39,11 +39,18 @@
     }
     &.move {
       right:-25rpx;
-      bottom:-25rpx;
+      top:-25rpx;
     }
     &.close {
       top:-25rpx;
       left:-25rpx;
     }
+    &.mirror{
+        left: -25rpx;
+        top: -25rpx;
+    }
+  }
+  .isMirror{
+      transform: scale(-1,1);
   }
 }

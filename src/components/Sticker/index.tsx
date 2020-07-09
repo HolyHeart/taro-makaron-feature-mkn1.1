@@ -74,6 +74,7 @@ class Sticker extends Component {
       top: 0,
     },
     url: this.props.url,
+    isMirror: false
   }
 
   gesture = {
@@ -83,7 +84,7 @@ class Sticker extends Component {
     distance: 0,
     preV: {x:null, y:null},
     center: {x:0, y:0}, // 中心点y坐标
-    scale: 1
+    scale: 1,
   }
 
   constructor (props) {
@@ -93,6 +94,17 @@ class Sticker extends Component {
   }
 
   componentWillMount () {
+  }
+
+  mirrorOntouchstart(){
+      let isMirror = !this.state.isMirror;
+      this.setState({
+        isMirror
+      },()=>{
+        this.changeStyleParams({
+            isMirror
+          })
+      })
   }
 
   componentWillReceiveProps (nextProps) {
@@ -263,6 +275,7 @@ class Sticker extends Component {
   }
 
   arrowOntouchstart = (e) => {
+    e.stopPropagation()
     if (this.isFixed()) {
       // 若固定则不能移动
       return
@@ -394,6 +407,8 @@ class Sticker extends Component {
         ...obj
       }
     }
+    newStylePrams.isMirror = this.state.isMirror
+    console.log(newStylePrams,'nnnnnnnnnnn')
     typeof onChangeStyle === 'function' && onChangeStyle(newStylePrams)
   }
 
@@ -445,6 +460,7 @@ class Sticker extends Component {
             onTouchstart={this.stickerOntouchstart}
             onTouchmove={this.throttledStickerOntouchmove}
             onTouchend={this.stickerOntouchend}
+            className={this.state.isMirror ? 'isMirror' : ''}
           />
         }
         <View className={`border ${stylePrams.isActive ? 'active' : ''}`}></View>
@@ -462,6 +478,13 @@ class Sticker extends Component {
             <Image src={close} mode="widthFix" style="width:80%;height:80%" />
           </View>
         }
+        <View className={`control mirror active`}
+          onTouchstart={this.mirrorOntouchstart}
+        //   onTouchmove={this.throttledArrowOntouchmove}
+        //   onTouchend={this.arrowOntouchend}
+        >
+          <Image src={scale} mode="widthFix" style="width:50%;height:50%"/>
+        </View>
       </View>
     )
   }

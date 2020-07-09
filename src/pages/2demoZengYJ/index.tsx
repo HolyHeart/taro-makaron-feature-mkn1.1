@@ -54,7 +54,8 @@ type PageState = {
     autoHeight: number,
     autoScale: number,
     fixed: boolean,
-    visible: boolean
+    visible: boolean,
+    isMirror: boolean
   },
   coverList: Array<object>
 }
@@ -897,9 +898,11 @@ class Bank extends Component {
       x: foreground.x * ratio,
       y: foreground.y * ratio,
       rotate: foreground.rotate,
+      isMirror: foreground.isMirror
     }
     // 收集人物
     elements.push(element_foreground)
+    console.log(elements,'eeeeee')
     // 收集贴纸
     coverList.filter(v => !v.deleted).forEach(v => {
       const element_cover = {
@@ -933,9 +936,10 @@ class Bank extends Component {
     }
 
     // // console.log('elements', elements)
-    function drawElement({localUrl, width, height, x, y, rotate}) {
+    function drawElement({localUrl, width, height, x, y, rotate,isMirror}) {
       context.save()
       context.translate(x + 0.5 * width, y + 0.5 * height)
+      isMirror && context.scale(-1,1);
       context.rotate(rotate * Math.PI / 180)
       context.drawImage(localUrl, -0.5 * width, -0.5 * height, width, height)
       context.restore()

@@ -479,7 +479,7 @@ class Home extends Component {
       } else if (scene.sceneType === 5){
         Taro.navigateTo({ url: '/pages/myBackground/index' })
       } else {
-        Taro.navigateTo({ url: '/pages/2demoZengYJ/index' })//在主页面每个图都是sceneType===0
+        Taro.navigateTo({ url: '/pages/editor/index' })//在主页面每个图都是sceneType===0
       }
     }
   }

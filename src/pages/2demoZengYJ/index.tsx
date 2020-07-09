@@ -1621,6 +1621,9 @@ class Bank extends Component {
             <View className="addTitle"></View>
 
             <View className="pic-section">
+                {showType === 1 &&
+                  <Image className='card_shadow' src='https://static01.versa-ai.com/upload/abc2f38a4d4d/cab30fe0-349f-4498-95f8-f594f089e43c.png'/>
+                }
               {showType ?
               <View style={{width: this.state.drawBoard.width, height: this.state.drawBoard.height}} className={`crop`}
                     id="crop">
@@ -1633,7 +1636,6 @@ class Bank extends Component {
                     onLoad={this.handleBgLoaded}
                     onClick={this.handleBackgroundClick}
                   />
-                  <Image className='card_shadow' src='https://static01.versa-ai.com/upload/abc2f38a4d4d/cab30fe0-349f-4498-95f8-f594f089e43c.png'/>
                 </View>
                 }
                 <Sticker

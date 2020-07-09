@@ -6,7 +6,7 @@ let canvasCache = null
 let THREECache = null
 let rendererCache = null
 let timer
-let angle = 0
+let angle
 // let controlsCache
 let stopAnimation
 let screenWidthCache
@@ -24,7 +24,7 @@ export function renderExample1(
   init()
   animate()
   function init() {
-    angle = 0
+    angle = 1.5
     objCache && (objCache.rotation.x = 0)
     objCache && (objCache.rotation.y = 0)
     // let gl = canvas.getContext('webgl', { alpha: true })
@@ -124,6 +124,7 @@ export function renderExample1(
       pointLight.position.set(63, y, 110)
       scene.add(pointLight)
     }
+
     screenWidthCache = screenWidth
     camera.position.z = 50
   }
@@ -145,13 +146,17 @@ export function renderExample1(
 export function change(url) {
   canvasCache.cancelAnimationFrame(timer)
   renderExample1(canvasCache, THREECache, objCache, url)
+  angle = 1.5
+  objCache && (objCache.rotation.y = 0)
 }
 
 export function stop() {
   stopAnimation = true
 }
 
-export function update(offset) {
-  console.log(offset)
-  objCache.rotation.y += offset * 0.01
+export function update(offsetX, offsetY) {
+  objCache.rotation.y += offsetX * 0.01
+  objCache.rotation.x += offsetY * 0.01
+  objCache.rotation.x < -0.5 && (objCache.rotation.x = -0.5)
+  objCache.rotation.x > 0.5 && (objCache.rotation.x = 0.5)
 }

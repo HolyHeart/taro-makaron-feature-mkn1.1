@@ -175,6 +175,8 @@ class Bank extends Component {
     }
   }
 
+  tempForground
+
   app = Taro.getApp()
 
   // 全局主题数据
@@ -707,7 +709,9 @@ class Bank extends Component {
           remoteUrl: '',
         },
         show: true
-      }
+      },
+      // staticBgUrl:canvasImageUrl,
+      // foreground:{visible:true,fixed:true}
     }, async () => {
       const {url} = await service.base.upload(canvasImageUrl)
       this.setState({
@@ -717,7 +721,8 @@ class Bank extends Component {
             localUrl: canvasImageUrl,
             remoteUrl: url, //获得远端的url
           }
-        }
+        },
+
       })
     })
 
@@ -733,8 +738,13 @@ class Bank extends Component {
           icon: 'success',
           duration: 2000
         })
+        this.tempForground=this.state.foreground;
+        let temp={...this.tempForground}
+        temp.fixed=true;
+        temp.isActive=false;
         this.setState({
-            showType: 2
+          showType: 2,
+          foreground:{...temp}
         })
       },
       onAuthFail: () => {
@@ -751,6 +761,9 @@ class Bank extends Component {
         })
       }
     })
+
+
+    //console.log(this.state.foreground,'this is foreground when showtype is 2')
   }
   // 再玩一次
   handlePlayAgain = () => {
@@ -1323,9 +1336,13 @@ class Bank extends Component {
       service.base.loginAuth(data.detail)//【上传用户信息】
       globalData.userInfo = userInfo
 
+      if(this.state.showType===2){
+        // this.tempForground.fixed=false;
+        this.setState({foreground:{...this.tempForground}})
+      }
     this.setState({
         playing: true,
-        showType: 1
+        showType: 1,
     },()=>{
         work.chooseImageSimple({
             onSuccess: async (path) => {//获得加载图片的路径,这里的success就是用来把加载进来的图片进行处理

@@ -173,9 +173,9 @@ export function stop() {
 
 export function update(offsetX, offsetY) {
   objCache.rotation.y += offsetX * 0.01
-  //   objCache.rotation.x += offsetY * 0.01
-  //   objCache.rotation.x < -0.5 && (objCache.rotation.x = -0.5)
-  //   objCache.rotation.x > 0.5 && (objCache.rotation.x = 0.5)
+  objCache.rotation.x += offsetY * 0.01
+  objCache.rotation.x < -0.5 && (objCache.rotation.x = -0.5)
+  objCache.rotation.x > 0.5 && (objCache.rotation.x = 0.5)
 
   //   shadowCache.rotation.y += offsetX * 0.01
   //   shadowCache.rotation.x += offsetY * 0.01

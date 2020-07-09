@@ -1,6 +1,6 @@
 import { ComponentClass } from 'react'
 import Taro, { Component } from '@tarojs/taro'
-import { View } from '@tarojs/components'
+import { View, CoverView, Text, CoverImage } from '@tarojs/components'
 
 import menu_light from '@/assets/images/icon_menu_light.png'
 import menu_dark from '@/assets/images/icon_menu_dark.png'
@@ -35,11 +35,11 @@ class Icon extends Component {
   render() {
     const { type, theme } = this.props
     return (
-      <View className='icon' onClick={this.handleClick}>
-        {type === 'menu' ? <image class="icon-menu" src={theme === 'light' ? menu_light : menu_dark} mode="scaleToFill" /> : null}         
-        {type === 'back' ? <image class="icon-back" src={theme === 'light' ? back_light : back_dark} mode="scaleToFill" /> : null}  
-        {type === 'home' ? <image class="icon-home" src={home_dark} mode="scaleToFill" /> : null}         
-      </View>
+      <CoverView className='icon' onClick={this.handleClick}>
+        {type === 'menu' ? <CoverImage class="icon-menu" src={theme === 'light' ? menu_light : menu_dark} mode="scaleToFill" /> : null}         
+        {type === 'back' ? <CoverImage class="icon-back" src={theme === 'light' ? back_light : back_dark} mode="scaleToFill" /> : null}  
+        {type === 'home' ? <CoverImage class="icon-home" src={home_dark} mode="scaleToFill" /> : null}         
+      </CoverView>
     )
   }
 }

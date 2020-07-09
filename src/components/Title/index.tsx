@@ -2,17 +2,19 @@ import { ComponentClass } from 'react'
 import Taro, { Component } from '@tarojs/taro'
 import { View, Text, CoverView } from '@tarojs/components'
 import globalData from "@/services/global_data"
+import CustomIcon from '@/components/Icon'
 
 import './index.less'
 
 type ComponentStateProps = {}
 
 type ComponentOwnProps = {
-  renderLeft: any,
+  showBack: any,
   children: any,
   color?: string,
   leftStyleObj?: object,
-  isScrollToTop?:boolean
+  isScrollToTop?:boolean,
+  backHandler?: any
 }
 
 type ComponentState = {}
@@ -64,9 +66,11 @@ class Title extends Component {
     const {statusBarHeight, titleBarHeight} = this.state
     return (
       <CoverView className='title-wrap' style={{backgroundColor:isScrollToTop?'rgba(255,255,255,0)':'rgba(255,255,255,1)',...this.calcStyle()}}>
-        <View className="left" style={{top:`${statusBarHeight+titleBarHeight/2}px`,...leftStyleObj}}>
-          {this.props.renderLeft}
-        </View>
+        <CoverView className="left" style={{top:`${statusBarHeight+titleBarHeight/2}px`,...leftStyleObj}}>
+        <CoverView>
+            {this.props.showBack && <CustomIcon type="back" theme="dark" onClick={this.props.backHandler} />}
+        </CoverView>
+        </CoverView>
         <CoverView style={{color}}>{this.props.children}</CoverView>
       </CoverView>
     )

@@ -1626,26 +1626,12 @@ class Bank extends Component {
     return (
       <ScrollView scrollY className="scrollPage" style={{ height: this.state.screenHeight + 'px' }}>
         <View className='page-editor'>
-          {(showType === 1 ?
-              <Title
+            <Title
                 color="#333"
                 leftStyleObj={{left: Taro.pxTransform(8)}}
-                renderLeft={
-                  <CoverView style = "zIndex: 999">
-                      <CustomIcon type="back" theme="dark" onClick={this.pageToHome} />
-                  </CoverView>
-                }
+                showBack={showType === 1 ? 1 : 0}
+                backHandler={this.pageToHome}
               >中行跨次元卡</Title>
-               : <Title
-               color="#333"
-               leftStyleObj={{left: Taro.pxTransform(8)}}
-               >中行跨次元卡</Title>)
-              }
-
-
-
-
-
           <View className="main">
 
             <View className="addTitle"></View>

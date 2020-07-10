@@ -88,7 +88,6 @@ class Bank extends Component {
     imageURL: 'https://static01.versa-ai.com/upload/2c7d654de708/730a7f8a-4795-444c-baed-6857346a51ab.card_03',
     showBankLogo: true,
     showMyLogo: true,
-    playing: false,
     showType: 0, // 0 展示模式 1 修改模式 2 结束
     rawImage: {
       localUrl: '',
@@ -138,8 +137,7 @@ class Bank extends Component {
       loaded: false, // 是否加载完毕
       visible: true, // 是否显示
     },
-    coverList: [  //存储边框信息
-    ],
+    coverList: [],
     sceneList: [],
     guiderTop: '',
     hasGuide: false,
@@ -587,7 +585,6 @@ class Bank extends Component {
   }
   // 贴纸
   onCoverLoaded = (detail: object, item?: any) => {
-    console.log('onCoverLoaded', detail, item,111111111111111111)
     const {width, height} = detail
     const originInfo = {
       originWidth: width,
@@ -1287,7 +1284,6 @@ class Bank extends Component {
         }
       }
     })
-    console.log(size,'autoautoautoautoautoautoautoautoautoautoautoauto')
 
     this.setState({
       coverList: coverList
@@ -1317,7 +1313,6 @@ class Bank extends Component {
       show: coverInfo.show,
       deleted: coverInfo.deleted
     }
-    console.log(frame,'aaaaaaaaaaaaaaaaa')
     if (originWidth > originHeight) {
       // 以最短边计算
       result.autoWidth = frame.width * autoScale
@@ -1345,7 +1340,6 @@ class Bank extends Component {
         this.setState({foreground:{...this.tempForground}})
       }
     this.setState({
-        playing: true,
         showType: 1,
     },()=>{
         work.chooseImageSimple({
@@ -1590,6 +1584,7 @@ class Bank extends Component {
   }
 
   substituteBgUrl(item){
+    if(item.sceneId === this.state.currentScene.sceneId) return false;
     globalData.sceneConfig = item;
     this.setState({
       currentScene: item,
@@ -1608,9 +1603,9 @@ class Bank extends Component {
     let cover = coverList.filter(item => {
         return item.type === 'normal'
     }).map(item => {
-        if(!this.state.playing || item.show){
+        if(showType === 1 || item.show){
             return <Sticker
-                key={item.id}
+                key={new Date().getTime()}
                 url={item.remoteUrl}
                 stylePrams={item}
                 framePrams={frame}
@@ -1625,7 +1620,6 @@ class Bank extends Component {
     let bankLogo = coverList.filter(item => {
         return item.type === 'bankLogo' || item.type === 'myLogo'
     }).map(item => {
-        console.log(item,'ccccccccccccc')
         if(this.state.showBankLogo){
             return <Sticker
                 key={item.id}

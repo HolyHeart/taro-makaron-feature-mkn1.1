@@ -108,8 +108,6 @@ class Sticker extends Component {
   }
 
   componentWillReceiveProps (nextProps) {
-
-    console.log('sticker componentWillReceiveProps', this.props, nextProps)
     let { framePrams, url } = this.props//远端url传过来
     //framPrams width 294 height 392 left 13 top 73
     let hasChange = false

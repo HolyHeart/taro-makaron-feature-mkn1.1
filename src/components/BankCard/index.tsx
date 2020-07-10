@@ -39,7 +39,6 @@ class BankCard extends Component {
 
 
   componentDidUpdate() {
-    console.log('change', this._imageUrl, this.props.imageURL)
     if (this._imageUrl !== this.props.imageURL) {
       change(this.props.imageURL)
     }

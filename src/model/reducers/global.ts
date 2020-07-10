@@ -324,7 +324,6 @@ const INITIAL_STATE = {
               },
               visible: true,
               show: true,
-              width: 300
             },
             {
               "id": 1584540623143,
@@ -352,7 +351,6 @@ const INITIAL_STATE = {
               },
               visible: true,
               deleted: true,
-              width: 300
             },
             {
               "id": 1584540623146,
@@ -380,7 +378,6 @@ const INITIAL_STATE = {
               },
               visible: true,
               deleted: true,
-              width: 300
             }
           ]
         }

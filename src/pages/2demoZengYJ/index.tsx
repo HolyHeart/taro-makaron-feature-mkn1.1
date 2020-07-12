@@ -83,7 +83,11 @@ class Bank extends Component {
     disableScroll: true,
     enablePullDownRefresh: false
   }
+  bgImg3dUrl = 'https://static01.versa-ai.com/upload/506854e1f208/93ada06e-3c17-4d94-b390-0b58358c7a5e.png'
+  previewBack = false
   state = {
+    lockScene: false,
+    show3d: true,
     gltfURL: 'https://static01.versa-ai.com/upload/e8eebc591fa1/0e044c3f-0aaa-40ce-95a3-41efa721ba35.gltf',
     imageURL: 'https://static01.versa-ai.com/upload/2c7d654de708/730a7f8a-4795-444c-baed-6857346a51ab.card_03',
     showBankLogo: true,
@@ -136,6 +140,7 @@ class Bank extends Component {
       isActive: true, // 是否激活
       loaded: false, // 是否加载完毕
       visible: true, // 是否显示
+      isMirror: false
     },
     coverList: [],
     sceneList: [],
@@ -554,12 +559,17 @@ class Bank extends Component {
   // 人物
   onForegroundLoaded = (detail: object, item?: any) => {
     //// console.log('handleForegroundLoaded', detail, item) // item 就是foreground存的信息
+    if(this.previewBack){
+        this.previewBack = false;
+        return false;
+    }
     this.hideLoading()
     const {width, height} = detail
     this.setStateTarget('foreground', {
       originWidth: width,
       originHeight: height,
-      loaded: true
+      loaded: true,
+      isMirror: false
     }, () => {
       this.foregroundAuto()
     })
@@ -590,7 +600,11 @@ class Bank extends Component {
       originWidth: width,
       originHeight: height
     }
-    this.coverAuto(originInfo, item)
+    this.coverAuto(originInfo, item,()=>{
+        this.setState({
+            lockScene: false
+        })
+    })
   }
   handleChangeCoverStyle = (data) => {
     // console.log(data, '---------this is to check data to check id -------')
@@ -836,7 +850,103 @@ class Bank extends Component {
     })
   }
 
-  canvasDrawRecommend = async (context) => {
+  async preview(){
+      this.showLoading();
+      this.tempForground = this.state.foreground;
+      let imageURL = await this.createCanvas3d();
+      let show3d = !this.state.show3d
+      this.previewBack = show3d ? false : true
+    //   let { url } = await service.base.upload(imageURL)
+    //   url = 'https://static01.versa-ai.com/upload/4c6f9c91eb3d/e9d71aa5-c88d-4eb7-9e65-c74ebcfb7181.card_04'
+    // url = 'https://static01.versa-ai.com/upload/c02c1a4ffdb8/dab6ddcc4f3e4df7.jpg'
+
+      this.setState({
+        show3d,
+        imageURL,
+        coverList: []
+    });
+    this.hideLoading();
+  }
+
+  createCanvas3d = async () => {
+    const {canvas} = this.state
+    const context = Taro.createCanvasContext(canvas.id, this) //组件绘图的上下文
+    return new Promise(async (resolve,reject)=>{
+        await this.canvasDrawRecommend(context,true) //【将背景图片&&边框，放到画布】
+        setTimeout(() => {
+            const cardImage = Taro.canvasToTempFilePath({
+                canvasId:canvas.id,
+                fileType: 'png',
+                quality: 1,
+                success: async res=> {
+                    const context = Taro.createCanvasContext('canvas3d', this)
+                    await this.canvasDraw3d(context,res.tempFilePath)
+                    context.draw();
+                    setTimeout( () => {
+                        console.log(canvas.id,666666)
+                    Taro.canvasToTempFilePath({ //存储照片
+                        canvasId: 'canvas3d',
+                        fileType: 'png',
+                        destWidth: 1024,
+                        destHeight: 1024,
+                        // 解决vivo手机模糊bug，强制图片质量为原图
+                        quality: 1,
+                        success: function (res) {
+                        let tempFilePath = res.tempFilePath
+                        console.log(tempFilePath,'3d3d3d')
+                        resolve(tempFilePath)
+                        },
+                        fail: function (res) {
+                          reject(res)
+                        },
+                        complete: function () {
+                        }
+                    });
+                    }, 400)
+                }
+            })
+        }, 500);
+        context.draw()
+    })
+    
+    
+
+
+
+    // return new Promise(async (resolve, reject) => {
+    //   const {currentScene, canvas} = this.state
+    //   const context = Taro.createCanvasContext('canvas3d', this) //组件绘图的上下文
+    //   await this.canvasDraw3d(context)
+    //   if (currentScene.type === 'custom') {
+    //     await this.canvasDrawCustom(context)
+    //   } else if (currentScene.type === 'recommend') {
+    //     await this.canvasDrawRecommend(context) //【将背景图片&&边框，放到画布】
+    //   }
+    //   //绘制图片
+    //   context.draw() //【有点像将之前的设置保存到context中】
+    //   //将生成好的图片保存到本地，需要延迟一会，绘制期间耗时
+    //   setTimeout( () => {
+    //       // console.log(canvas.id,666666)
+    //     Taro.canvasToTempFilePath({ //存储照片
+    //       canvasId: canvas.id,
+    //       fileType: 'jpg',
+    //       // 解决vivo手机模糊bug，强制图片质量为原图
+    //       quality: 1,
+    //       success: function (res) {
+    //         let tempFilePath = res.tempFilePath
+    //         resolve(tempFilePath)
+    //       },
+    //       fail: function (res) {
+    //         reject(res)
+    //       },
+    //       complete: function () {
+    //       }
+    //     });
+    //   }, 400)
+    // })
+  }
+
+  canvasDrawRecommend = async (context, hasLogo=false) => {
     const {currentScene, frame, canvas} = this.state
 
     // console.log(frame, 'frame ===width===height===frame')
@@ -859,10 +969,43 @@ class Bank extends Component {
       // console.log('下载背景图片失败', err)
       return
     }
+    console.log(localBgImagePath,666666)
     //防止锯齿，绘的图片是所需图片的3倍
     context.drawImage(localBgImagePath, 0, 0, frame.width * ratio, frame.height * ratio)
     // 绘制元素
-    await this.canvasDrawElement(context, ratio)
+    await this.canvasDrawElement(context, ratio, hasLogo)
+    // 绘制二维码
+    // if (sceneConfig.watermark) {
+    //   this.canvasDrawLogo(context, ratio)
+    // }
+  }
+
+  canvasDraw3d = async (context,imageUrl) => {
+    const {currentScene, frame, canvas} = this.state
+
+    // console.log(frame, 'frame ===width===height===frame')
+
+    const postfix = '?x-oss-process=image/resize,w_1024,h_1024'
+    const sceneInfo = currentScene
+    let sceneConfig = {}
+    try {
+      sceneConfig = tool.JSON_parse(sceneInfo.sceneConfig)
+    } catch (err) {
+      // console.log('canvasDrawRecommend 解析sceneConfig JSON字符串失败', err)
+    }
+    // 下载远程背景图片
+    let localBgImagePath = ''
+    try {
+      const bgUrl = this.bgImg3dUrl + postfix
+      localBgImagePath = await this.downloadRemoteImage(bgUrl)
+    } catch (err) {
+      // console.log('下载背景图片失败', err)
+      return
+    }
+    //防止锯齿，绘的图片是所需图片的3倍
+    context.drawImage(localBgImagePath, 0, 0, 1024, 1024)
+    // 绘制元素
+    context.drawImage(imageUrl,8,48,733,475)
     // 绘制二维码
     // if (sceneConfig.watermark) {
     //   this.canvasDrawLogo(context, ratio)
@@ -881,7 +1024,7 @@ class Bank extends Component {
     this.canvasDrawLogo(context, ratio)
   }
   // 绘制贴纸，文字，覆盖层所有元素
-  canvasDrawElement = async (context, ratio) => {
+  canvasDrawElement = async (context, ratio, hasLogo = false) => {
     const {currentScene, foreground, frame, canvas, coverList = []} = this.state
     // 收集所有元素进行排序
     let elements: Array<any> = []
@@ -901,7 +1044,7 @@ class Bank extends Component {
     elements.push(element_foreground)
     console.log(elements,'eeeeee')
     // 收集贴纸
-    coverList.filter(v => !v.deleted).forEach(v => {
+    coverList.filter(v => (hasLogo ? true : !v.deleted)).forEach(v => {
       const element_cover = {
         type: 'cover',
         zIndex: v.zIndex,
@@ -936,8 +1079,8 @@ class Bank extends Component {
     function drawElement({localUrl, width, height, x, y, rotate,isMirror}) {
       context.save()
       context.translate(x + 0.5 * width, y + 0.5 * height)
-      isMirror && context.scale(-1,1);
       context.rotate(rotate * Math.PI / 180)
+      isMirror && context.scale(-1,1);
       context.drawImage(localUrl, -0.5 * width, -0.5 * height, width, height)
       context.restore()
       context.stroke()
@@ -1337,10 +1480,11 @@ class Bank extends Component {
 
       if(this.state.showType===2){
         // this.tempForground.fixed=false;
-        this.setState({foreground:{...this.tempForground}})
+        this.setState({foreground:{...this.tempForground}, coverList:[]})
       }
     this.setState({
         showType: 1,
+        show3d: false
     },()=>{
         work.chooseImageSimple({
             onSuccess: async (path) => {//获得加载图片的路径,这里的success就是用来把加载进来的图片进行处理
@@ -1584,13 +1728,15 @@ class Bank extends Component {
   }
 
   substituteBgUrl(item){
-    if(item.sceneId === this.state.currentScene.sceneId) return false;
+    if(item.sceneId === this.state.currentScene.sceneId || this.state.lockScene) return false;
     globalData.sceneConfig = item;
+    let lockScene = this.state.show3d ? false : true;
     this.setState({
       currentScene: item,
       staticBgUrl:item.bgUrl,
       imageURL: item.card1,
-      coverList: []
+      coverList: [],
+      lockScene
     })
     this.initSceneData(()=>{});
 
@@ -1598,14 +1744,14 @@ class Bank extends Component {
 
   render() {
       // console.log(this.state.coverList,333333)
-    const {loading, rawImage, frame, customBg, foreground, coverList, sceneList, currentScene, result, canvas, showType, screenWidth, showBankLogo} = this.state
+    const {loading, rawImage, frame, customBg, foreground, coverList, sceneList, currentScene, result, canvas, showType, screenWidth, showBankLogo, show3d} = this.state
 
     let cover = coverList.filter(item => {
         return item.type === 'normal'
     }).map(item => {
-        if(showType === 1 || item.show){
+        if(item.show){
             return <Sticker
-                key={new Date().getTime()}
+                key={item.id}
                 url={item.remoteUrl}
                 stylePrams={item}
                 framePrams={frame}
@@ -1648,10 +1794,10 @@ class Bank extends Component {
             <View className="addTitle"></View>
 
             <View className="pic-section">
-                {showType === 1 &&
+                {!show3d &&
                   <Image className='card_shadow' src='https://static01.versa-ai.com/upload/abc2f38a4d4d/cab30fe0-349f-4498-95f8-f594f089e43c.png'/>
                 }
-              {showType ?
+              {!show3d &&
               <View style={{width: this.state.drawBoard.width, height: this.state.drawBoard.height}} className={`crop`}
                     id="crop">
                 {currentScene.type === 'recommend' &&
@@ -1676,7 +1822,7 @@ class Bank extends Component {
                   onTouchend={this.handleForegroundTouchend}
                 />
                 {cover}
-                {/*{bankLogo}*/}
+                {bankLogo}
 
                 <View className="logo">
                   {this.state.showBankLogo?
@@ -1685,10 +1831,9 @@ class Bank extends Component {
                       <Image className="subLogo" src={this.state.logo.bankLogo} />
                     </View>:''}
                 </View>
-
-              </View> : null
+              </View>
               }
-            <View className={showType ? 'bank_card_container hide' : 'bank_card_container'} style={{height: screenWidth * 0.7+'px'}}>
+            <View className={show3d ? 'bank_card_container' : 'bank_card_container hide'} style={{height: screenWidth * 0.7+'px'}}>
                   {/* <Image
                     src={this.state.staticBgUrl}
                     style="width:100%;height:100%"
@@ -1723,12 +1868,13 @@ class Bank extends Component {
                         hoverClass="btn-hover" onGetUserInfo={this.todo}>{this.state.chooseText}</Button>
                 </View>
               }
-
             </View>
           </View>
+          {/* <Image src={this.state.imageURL}/> */}
           {showType !== 2 ?
             <View className="subMain" style="width:100%;height:100%">
             <View className="addSub">&middot;&middot;其他可定制卡片&middot;&middot;</View>
+            <View className="addSub" onClick={this.preview}>&middot;&middot;预览&middot;&middot;</View>
             <View className="pictureList">
                 {this.state.sceneList.map((item) => {
                     return (<View style={{background:`url(${item.boxUrl}) no-repeat center`,backgroundSize:'contain'}} className='singlePicture'>
@@ -1747,6 +1893,12 @@ class Bank extends Component {
               disable-scroll={true}
               style={`width: ${frame.width * canvas.ratio}px; height: ${frame.height * canvas.ratio}px;`}
               canvasId={canvas.id}/>
+          </View>
+          <View class="canvas-wrap">
+            <Canvas
+              disable-scroll={true}
+              style={`width: 1024px; height: 1024px;`}
+              canvasId='canvas3d'/>
           </View>
 
           <Loading visible={loading}/>

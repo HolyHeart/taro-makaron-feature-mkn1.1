@@ -60,7 +60,6 @@ export function renderExample1(
             if (child.isMesh) {
               child.material.emissive = child.material.color
               child.material.emissiveMap = child.material.map
-              console.log(child.material.map, 123123123)
             }
           })
 
@@ -94,6 +93,7 @@ export function renderExample1(
         },
       )
     } else {
+      console.log(url, '??????')
       const texture = new THREE.TextureLoader().load(
         url,
         (texture) => {

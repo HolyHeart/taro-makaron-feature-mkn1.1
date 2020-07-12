@@ -6,11 +6,12 @@ import './index.less'
 import loading from '../../assets/images/pic_loading.png'
 import scale from '../../assets/images/scale.png'
 import close from '@/assets/images/icon_close_dark.png'
+import mirror from '@/assets/images/Sticker_Flip.png'
 
 type ComponentStateProps = {}
 
 type ComponentOwnProps = {
-  onChangeStyle: () => void,
+  onChangeStyle: (data:any) => void,
   onTouchend: (data?:any) => void,
   onTouchstart: (data?:any) => void,
   onImageLoaded?: (detail:object, item?:any) => void,
@@ -57,6 +58,8 @@ class Sticker extends Component {
       isActive: false, // 是否激活
       visible: true, // 是否显示
       deleteable: false, //是否可以删除
+      isMirror: false
+
     },
     framePrams: {
       width: 0,
@@ -74,7 +77,6 @@ class Sticker extends Component {
       top: 0,
     },
     url: this.props.url,
-    isMirror: false
   }
 
   gesture = {
@@ -97,13 +99,9 @@ class Sticker extends Component {
   }
 
   mirrorOntouchstart(){
-      let isMirror = !this.state.isMirror;
-      this.setState({
+      let isMirror = !this.props.stylePrams.isMirror;
+      this.changeStyleParams({
         isMirror
-      },()=>{
-        this.changeStyleParams({
-            isMirror
-          })
       })
   }
 
@@ -381,6 +379,7 @@ class Sticker extends Component {
   handleImageLoaded = (e) => {
     const { onImageLoaded, stylePrams } = this.props
     onImageLoaded && onImageLoaded(e.detail, stylePrams)
+    console.log(stylePrams,'lll')
   }
 
   handleDeleteSticker = () => {
@@ -405,8 +404,6 @@ class Sticker extends Component {
         ...obj
       }
     }
-    newStylePrams.isMirror = this.state.isMirror
-    console.log(newStylePrams,'nnnnnnnnnnn')
     typeof onChangeStyle === 'function' && onChangeStyle(newStylePrams)
   }
 
@@ -458,7 +455,7 @@ class Sticker extends Component {
             onTouchstart={this.stickerOntouchstart}
             onTouchmove={this.throttledStickerOntouchmove}
             onTouchend={this.stickerOntouchend}
-            className={this.state.isMirror ? 'isMirror' : ''}
+            className={this.props.stylePrams.isMirror ? 'isMirror' : ''}
           />
         }
         <View className={`border ${stylePrams.isActive ? 'active' : ''}`}></View>
@@ -481,7 +478,7 @@ class Sticker extends Component {
         //   onTouchmove={this.throttledArrowOntouchmove}
         //   onTouchend={this.arrowOntouchend}
         >
-          <Image src={scale} mode="widthFix" style="width:50%;height:50%"/>
+          <Image src={mirror} mode="widthFix" style="width:100%;height:100%"/>
         </View>
       </View>
     )

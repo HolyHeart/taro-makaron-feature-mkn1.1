@@ -87,7 +87,7 @@ const INITIAL_STATE = {
                   "offset": 0.5
                 }
               },
-              visible: true,
+              visible: false,
               deleted: true,
               width: 300
             },
@@ -115,7 +115,7 @@ const INITIAL_STATE = {
                   "offset": 0.5
                 }
               },
-              visible: true,
+              visible: false,
               deleted: true
             }
           ]
@@ -204,7 +204,7 @@ const INITIAL_STATE = {
                   "offset": 0.5
                 }
               },
-              visible: true,
+              visible: false,
               deleted: true,
               width: 300
             },
@@ -232,7 +232,7 @@ const INITIAL_STATE = {
                   "offset": 0.5
                 }
               },
-              visible: true,
+              visible: false,
               deleted: true,
               width: 300
             }
@@ -349,7 +349,7 @@ const INITIAL_STATE = {
                   "offset": 0.5
                 }
               },
-              visible: true,
+              visible: false,
               deleted: true,
             },
             {
@@ -376,7 +376,7 @@ const INITIAL_STATE = {
                   "offset": 0.5
                 }
               },
-              visible: true,
+              visible: false,
               deleted: true,
             }
           ]
@@ -512,7 +512,7 @@ const INITIAL_STATE = {
                   "offset": 0.5
                 }
               },
-              visible: true,
+              visible: false,
               deleted: true,
               width: 300
             },
@@ -540,7 +540,7 @@ const INITIAL_STATE = {
                   "offset": 0.5
                 }
               },
-              visible: true,
+              visible: false,
               deleted: true,
               width: 300
             }

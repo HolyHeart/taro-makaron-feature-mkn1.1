@@ -12,6 +12,8 @@ let shadowCache
 let stopAnimation
 let screenWidthCache
 
+const initAngle = 1.3
+
 export function renderExample1(
   canvas,
   THREE,
@@ -25,7 +27,7 @@ export function renderExample1(
   init()
   animate()
   function init() {
-    angle = 1.5
+    angle = initAngle
     objCache && (objCache.rotation.x = 0)
     objCache && (objCache.rotation.y = 0)
     // let gl = canvas.getContext('webgl', { alpha: true })
@@ -146,13 +148,10 @@ export function renderExample1(
     camera.position.z = 50
   }
   function animate() {
-    let speed = Math.cos(angle)
-    //console.log(Math.cos(angle))
-    // -1<Math.cos(angle)<1
     if (!stopAnimation) {
-      angle += 0.02
       if (objCache) {
         objCache.rotation.y = Math.cos(angle) * 1.2
+        angle += 0.02
       }
     }
     timer = canvas.requestAnimationFrame(animate)
@@ -163,12 +162,17 @@ export function renderExample1(
 export function change(url) {
   canvasCache.cancelAnimationFrame(timer)
   renderExample1(canvasCache, THREECache, objCache, url)
-  angle = 1.5
-  objCache && (objCache.rotation.y = 0)
+  angle = initAngle
+  objCache && (objCache.rotation.y = Math.cos(angle) * 1.2)
 }
 
 export function stop() {
   stopAnimation = true
+}
+
+export function begin() {
+  angle = initAngle
+  stopAnimation = false
 }
 
 export function update(offsetX, offsetY) {
@@ -176,9 +180,4 @@ export function update(offsetX, offsetY) {
   objCache.rotation.x += offsetY * 0.01
   objCache.rotation.x < -0.5 && (objCache.rotation.x = -0.5)
   objCache.rotation.x > 0.5 && (objCache.rotation.x = 0.5)
-
-  //   shadowCache.rotation.y += offsetX * 0.01
-  //   shadowCache.rotation.x += offsetY * 0.01
-  //   shadowCache.rotation.x < -0.5 && (shadowCache.rotation.x = -0.5)
-  //   shadowCache.rotation.x > 0.5 && (shadowCache.rotation.x = 0.5)
 }

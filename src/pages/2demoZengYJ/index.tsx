@@ -88,6 +88,7 @@ class Bank extends Component {
   state = {
     lockScene: false,
     show3d: true,
+    load3d: false,
     gltfURL: 'https://static01.versa-ai.com/upload/e8eebc591fa1/0e044c3f-0aaa-40ce-95a3-41efa721ba35.gltf',
     imageURL: 'https://static01.versa-ai.com/upload/2c7d654de708/730a7f8a-4795-444c-baed-6857346a51ab.card_03',
     showBankLogo: true,
@@ -561,6 +562,7 @@ class Bank extends Component {
     //// console.log('handleForegroundLoaded', detail, item) // item 就是foreground存的信息
     if(this.previewBack){
         this.previewBack = false;
+        console.log('stop auto ')
         return false;
     }
     this.hideLoading()
@@ -571,6 +573,7 @@ class Bank extends Component {
       loaded: true,
       isMirror: false
     }, () => {
+        console.log('aaaaaa')
       this.foregroundAuto()
     })
   }
@@ -856,6 +859,7 @@ class Bank extends Component {
       let imageURL = await this.createCanvas3d();
       let show3d = !this.state.show3d
       this.previewBack = show3d ? false : true
+      let coverList = show3d ? this.state.coverList : []
     //   let { url } = await service.base.upload(imageURL)
     //   url = 'https://static01.versa-ai.com/upload/4c6f9c91eb3d/e9d71aa5-c88d-4eb7-9e65-c74ebcfb7181.card_04'
     // url = 'https://static01.versa-ai.com/upload/c02c1a4ffdb8/dab6ddcc4f3e4df7.jpg'
@@ -863,7 +867,7 @@ class Bank extends Component {
       this.setState({
         show3d,
         imageURL,
-        coverList: []
+        coverList
     });
     this.hideLoading();
   }
@@ -1735,16 +1739,44 @@ class Bank extends Component {
       currentScene: item,
       staticBgUrl:item.bgUrl,
       imageURL: item.card1,
-      coverList: [],
-      lockScene
+      lockScene,
+      coverList: []
     })
-    this.initSceneData(()=>{});
-
+    this.initSceneData(()=>{
+        if(this.state.show3d){
+            this.previewBack = true
+            this.showLoading();
+            this.setState({
+                show3d: false,
+                load3d: true
+            },()=>{
+                this.showLoading();
+                setTimeout(async () => {
+                    this.showLoading();
+                    this.tempForground = this.state.foreground;
+                    let imageURL = await this.createCanvas3d();
+                    let show3d = true
+                    this.setState({
+                        show3d,
+                        imageURL,
+                        load3d: false
+                    });
+                    this.hideLoading();
+                    }, 2000);
+                })
+        }
+    });
+    
+  }
+  jumpToUndertake(){
+      Taro.navigateTo({
+          url: '/pages/undertakeBank/index'
+      });
   }
 
   render() {
       // console.log(this.state.coverList,333333)
-    const {loading, rawImage, frame, customBg, foreground, coverList, sceneList, currentScene, result, canvas, showType, screenWidth, showBankLogo, show3d} = this.state
+    const {loading, rawImage, frame, customBg, foreground, coverList, sceneList, currentScene, result, canvas, showType, screenWidth, showBankLogo, show3d, load3d} = this.state
 
     let cover = coverList.filter(item => {
         return item.type === 'normal'
@@ -1793,7 +1825,7 @@ class Bank extends Component {
 
             <View className="addTitle"></View>
 
-            <View className="pic-section">
+            <View className="pic-section" style={{opacity: load3d ? 0 : 1}}>
                 {!show3d &&
                   <Image className='card_shadow' src='https://static01.versa-ai.com/upload/abc2f38a4d4d/cab30fe0-349f-4498-95f8-f594f089e43c.png'/>
                 }
@@ -1833,7 +1865,7 @@ class Bank extends Component {
                 </View>
               </View>
               }
-            <View className={show3d ? 'bank_card_container' : 'bank_card_container hide'} style={{height: screenWidth * 0.7+'px'}}>
+            <View className={(show3d) ? 'bank_card_container' : 'bank_card_container hide'} style={{height: screenWidth * 0.7+'px'}}>
                   {/* <Image
                     src={this.state.staticBgUrl}
                     style="width:100%;height:100%"
@@ -1845,7 +1877,7 @@ class Bank extends Component {
             </View>
 
             <View className='subSection'>
-              {(showType!==0) &&
+              {(showType!==0 && showType!==2 && !show3d) &&
                 <View className="hideIcon" onClick={()=>this.hideLogo()}>
                     <Image className='eye_icon' src={showBankLogo ?'https://static01.versa-ai.com/upload/c34b3d6329a5/bde7562a-5fd4-4ed6-b4c3-e9e339810964.png':'https://static01.versa-ai.com/upload/619f7ec1bc56/9a122af8-3414-4eb6-bdab-0ff4b0dd43a5.png'}/>
                     <Text>{this.state.showBankLogo ? '隐藏卡面图标' : '显示卡面图标'}</Text>
@@ -1859,7 +1891,7 @@ class Bank extends Component {
                 </Button>
               </View> :
                 <View className="buttonPart">
-                    <Button id='addPhotoFit1' openType="getUserInfo" className="custom-button pink" hoverClass="btn-hover" onGetUserInfo={this.todo}>
+                    <Button id='addPhotoFit1' openType="getUserInfo" className="custom-button pink" hoverClass="btn-hover" onGetUserInfo={this.jumpToUndertake}>
                             提交至银行
                     </Button>
                 </View>):

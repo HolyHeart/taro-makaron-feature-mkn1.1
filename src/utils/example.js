@@ -1,5 +1,6 @@
 // import { OrbitControls } from './jsm/controls/OrbitControls'
 import gLTF from './jsm/loaders/GLTFLoader'
+import card from '../assets/card.jpg'
 
 let objCache = null
 let canvasCache = null
@@ -54,7 +55,7 @@ export function renderExample1(
       let GLTFLoader = gLTF(THREE)
       const gltfLoader = new GLTFLoader()
       gltfLoader.load(
-        obj,
+        card,
         (gltf) => {
           gltf.scene.traverse(function (child) {
             if (child.isMesh) {
@@ -93,7 +94,6 @@ export function renderExample1(
         },
       )
     } else {
-      console.log(url, '??????')
       const texture = new THREE.TextureLoader().load(
         url,
         (texture) => {

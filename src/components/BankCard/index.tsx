@@ -6,7 +6,8 @@ import {
   renderExample1 as renderExample,
   change,
   stop,
-  update
+  update,
+  begin
 } from '../../utils/example.js'
 import './index.less'
 
@@ -41,6 +42,10 @@ class BankCard extends Component {
   componentDidUpdate() {
     if (this._imageUrl !== this.props.imageURL) {
       change(this.props.imageURL)
+      stop();
+      setTimeout(() => {
+        begin();
+      }, 1000);
     }
     this._imageUrl = this.props.imageURL
   }

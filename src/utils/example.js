@@ -160,7 +160,7 @@ export function renderExample1(
 }
 
 export function change(url) {
-  canvasCache.cancelAnimationFrame(timer)
+  canvasCache && canvasCache.cancelAnimationFrame(timer)
   renderExample1(canvasCache, THREECache, objCache, url)
   angle = initAngle
   objCache && (objCache.rotation.y = Math.cos(angle) * 1.2)

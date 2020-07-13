@@ -50,7 +50,7 @@ interface Bank {
 class Bank extends Component {
  
   render() {
-      return <WebView src='https://cloud.bankofchina.com/sh/api/net/common/url/adr?id=picturecardthirdpart' />
+      return <WebView src='https://mp.weixin.qq.com/s/-BV5wtaJNPuXBqahG6PkyQ' />
   }
 }
 

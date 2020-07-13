@@ -52,7 +52,7 @@ class _App extends Component {
     window: {
       backgroundTextStyle: 'light',
       navigationBarBackgroundColor: '#fff',
-      navigationBarTitleText: 'wechat',
+      navigationBarTitleText: '中行跨次元卡',
       navigationStyle: 'custom',
       navigationBarTextStyle: 'black',
     },

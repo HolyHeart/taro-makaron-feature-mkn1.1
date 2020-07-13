@@ -639,7 +639,9 @@ class Bank extends Component {
 
   pageToHome = () => {
     this.setState({
-      showType: 0
+      showType: 0,
+      show3d: true,
+      coverList: []
   })
     //Taro.navigateBack({ delta: 1 })
 
@@ -1914,11 +1916,19 @@ class Bank extends Component {
             </View>
 
             <View className='subSection'>
-              {(showType!==0 && showType!==2 && !show3d) &&
-                <View className="hideIcon" onClick={()=>this.hideLogo()}>
-                    <Image className='eye_icon' src={showBankLogo ?'https://static01.versa-ai.com/upload/c34b3d6329a5/bde7562a-5fd4-4ed6-b4c3-e9e339810964.png':'https://static01.versa-ai.com/upload/619f7ec1bc56/9a122af8-3414-4eb6-bdab-0ff4b0dd43a5.png'}/>
-                    <Text>{this.state.showBankLogo ? '隐藏卡面图标' : '显示卡面图标'}</Text>
+              <View className={'show_buttons' + (show3d ? ' show3d' : '')}>
+                {showType === 0 ? null : 
+                <View className="addSub" onClick={this.preview}>
+                  <Image className='eye_icon' src={show3d ?'https://static01.versa-ai.com/upload/914001ed696e/b6d792dd-8f22-4c7e-a771-a318717a3090.png':'https://static01.versa-ai.com/upload/d795c515acbe/58ad6490-e0c4-4f59-b898-b816df4c65d6.png'}/>
+                <Text>{show3d?'切换到普通浏览':'切换到3D浏览'}</Text>
                 </View>}
+                {(showType!==0 && !show3d) &&
+                  <View className="hideIcon" onClick={()=>this.hideLogo()}>
+                      <Image className='eye_icon' src={showBankLogo ?'https://static01.versa-ai.com/upload/c34b3d6329a5/bde7562a-5fd4-4ed6-b4c3-e9e339810964.png':'https://static01.versa-ai.com/upload/619f7ec1bc56/9a122af8-3414-4eb6-bdab-0ff4b0dd43a5.png'}/>
+                      <Text>{this.state.showBankLogo ? '隐藏卡面图标' : '显示卡面图标'}</Text>
+                  </View>}
+              </View>
+              {showType === 2 && <View className='save_success_tip'>「 图片已自动保存到手机相册 」</View>}
               {showType ?
               (showType === 1 ? <View className="buttonPart">
                 <Button style='flex:1;z-index:2' id='addPhoto' openType="getUserInfo" className="custom-button white border"
@@ -1940,10 +1950,10 @@ class Bank extends Component {
             </View>
           </View>
           {/* <Image src={this.state.imageURL}/> */}
-          {showType !== 2 ?
+          {showType !== 2 &&
             <View className="subMain" style="width:100%;height:100%">
             <View className="addSub">&middot;&middot;其他可定制卡片&middot;&middot;</View>
-            <View className="addSub" onClick={this.preview}>&middot;&middot;预览&middot;&middot;</View>
+            
             <View className="pictureList">
                 {this.state.sceneList.map((item) => {
                     return (<View style={{background:`url(${item.boxUrl}) no-repeat center`,backgroundSize:'contain'}} className='singlePicture'>
@@ -1953,8 +1963,7 @@ class Bank extends Component {
                             </View>)
                 })}
                 </View>
-            </View> :
-            <View className='save_success_tip'>「 图片已自动保存到手机相册 」</View>
+            </View>
           }
           <Image className='bottomTip' src='https://static01.versa-ai.com/upload/ac05476db5da/e0f294b1-ae32-4e96-b4ed-637fed563de3.png'/>
 

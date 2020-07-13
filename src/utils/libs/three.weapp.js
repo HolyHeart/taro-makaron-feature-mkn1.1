@@ -1,4 +1,5 @@
 import { atob, btoa } from '../base64'
+let THREE = null
 
 ;(function (l, fa) {
   'object' === typeof exports && 'undefined' !== typeof module
@@ -27220,5 +27221,7 @@ import { atob, btoa } from '../base64'
   l.ZeroStencilOp = 0
   l.global = am
   l.sRGBEncoding = 3001
+  THREE = l
   Object.defineProperty(l, '__esModule', { value: !0 })
 })
+export default THREE

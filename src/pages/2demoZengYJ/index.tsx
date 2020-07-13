@@ -337,8 +337,8 @@ class Bank extends Component {
         query.select('#addPhoto').boundingClientRect()
         query.selectViewport().scrollOffset()//获取滚动区域，
         query.exec((res) => {
+          res[0] &&
           this.setState({
-            hasGuide: true,
             guiderTop: res[0].top - 77 - 15
           })
         })
@@ -1521,12 +1521,7 @@ class Bank extends Component {
 
       if(this.state.showType===2){
         // this.tempForground.fixed=false;
-<<<<<<< HEAD
-        console.log(this.state.foreground===this.tempForground,'tempForground second')
-        this.setState({foreground:{...this.tempForground}})
-=======
         this.setState({foreground:{...this.tempForground}, coverList:[]})
->>>>>>> 444f9e87e6a7e7cbecfdc5c23a27306f99608803
       }
     this.setState({
         showType: 1,
@@ -1785,7 +1780,7 @@ class Bank extends Component {
       coverList: []
     })
     this.initSceneData(()=>{
-        if(this.state.show3d){
+        if(this.state.show3d && this.state.showType === 1){
             this.previewBack = true
             this.showLoading();
             this.setState({

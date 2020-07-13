@@ -1,7 +1,7 @@
 import { ComponentClass } from 'react'
 import Taro, { Component } from '@tarojs/taro'
 import { View, Canvas } from '@tarojs/components'
-import * as THREE from '../../utils/libs/three.weapp'
+import THREE from '../../utils/libs/three.weapp'
 import {
   renderExample1 as renderExample,
   change,

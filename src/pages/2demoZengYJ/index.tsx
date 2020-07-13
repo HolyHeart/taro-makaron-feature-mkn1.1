@@ -920,8 +920,8 @@ class Bank extends Component {
         }, 500);
         context.draw()
     })
-    
-    
+
+
 
 
 
@@ -1808,7 +1808,7 @@ class Bank extends Component {
                 })
         }
     });
-    
+
   }
   jumpToUndertake(){
       Taro.navigateTo({
@@ -1899,9 +1899,9 @@ class Bank extends Component {
                 {bankLogo}
 
                 <View className="logo">
+                  <Image className="subLogo" src={this.state.logo.myLogo} />
                   {this.state.showBankLogo?
                     <View>
-                      <Image className="subLogo" src={this.state.logo.myLogo} />
                       <Image className="subLogo" src={this.state.logo.bankLogo} />
                     </View>:''}
                 </View>

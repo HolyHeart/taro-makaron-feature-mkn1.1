@@ -24,6 +24,7 @@ import addTips from "@/assets/images/tips_addpic@2x.png";
 import BankCard from '@/components/BankCard'
 import * as THREE from '../../utils/libs/three.weapp'
 import { renderExample1 as renderExample, change } from '@/utils/example.js'
+import {white} from "color-name";
 
 type PageStateProps = {
   global: {
@@ -177,8 +178,11 @@ class Bank extends Component {
     logo:{
       myLogo:"https://static01.versa-ai.com/upload/ce29be05e80a/947c8a95-62b1-4eef-8db4-9b22d3561620.png",
       bankLogo:"https://static01.versa-ai.com/upload/4a72479c5a83/298bd350-21ff-4e39-9189-25967ad4cb94.png"
-    }
+    },
+
+    margin:0
   }
+
 
   tempForground
 
@@ -754,6 +758,7 @@ class Bank extends Component {
           duration: 2000
         })
         this.tempForground=this.state.foreground;
+        console.log(this.tempForground===this.state.foreground,'this is first to check tempForground')
         let temp={...this.tempForground}
         temp.fixed=true;
         temp.isActive=false;
@@ -824,6 +829,9 @@ class Bank extends Component {
     return new Promise(async (resolve, reject) => {
       const {currentScene, canvas} = this.state
       const context = Taro.createCanvasContext(canvas.id, this) //组件绘图的上下文
+
+      console.log(currentScene.type,'___checkinginging___');
+
       if (currentScene.type === 'custom') {
         await this.canvasDrawCustom(context)
       } else if (currentScene.type === 'recommend') {
@@ -975,7 +983,15 @@ class Bank extends Component {
     }
     console.log(localBgImagePath,666666)
     //防止锯齿，绘的图片是所需图片的3倍
-    context.drawImage(localBgImagePath, 0, 0, frame.width * ratio, frame.height * ratio)
+    // let dx= customBg.x * ratio;
+    // let dy= customBg.y * ratio;
+    // if(dx<20||dy<20){
+    //   dx=20;
+    //   dy=20
+    // }
+    //
+    //??? canvas尺寸
+    context.drawImage(localBgImagePath, this.state.margin*ratio, this.state.margin*ratio, (frame.width) * ratio, (frame.height) * ratio)
     // 绘制元素
     await this.canvasDrawElement(context, ratio, hasLogo)
     // 绘制二维码
@@ -1015,13 +1031,16 @@ class Bank extends Component {
     //   this.canvasDrawLogo(context, ratio)
     // }
   }
+
   canvasDrawCustom = async (context) => {
     const {customBg, canvas} = this.state
     const {ratio = 3} = canvas
     // 自定义背景为本地图片，不需要下载
     const localBgImagePath = customBg.localUrl
     //防止锯齿，绘的图片是所需图片的3倍
-    context.drawImage(localBgImagePath, customBg.x * ratio, customBg.y * ratio, customBg.width * ratio, customBg.height * ratio)
+
+    context.drawImage(localBgImagePath,customBg.x * ratio, customBg.y * ratio, customBg.width * ratio, customBg.height * ratio) //customBg.x * ratio+, customBg.y * ratio+
+
     // 绘制元素
     await this.canvasDrawElement(context, ratio)
     // 绘制二维码
@@ -1047,6 +1066,7 @@ class Bank extends Component {
     // 收集人物
     elements.push(element_foreground)
     console.log(elements,'eeeeee')
+
     // 收集贴纸
     coverList.filter(v => (hasLogo ? true : !v.deleted)).forEach(v => {
       const element_cover = {
@@ -1062,6 +1082,22 @@ class Bank extends Component {
       }
       elements.push(element_cover)
     })
+
+    //添加白版背景
+    // const whiteCover:{
+    //   type: 'cover',
+    //   zIndex: v.zIndex,
+    //   id: 000000,
+    //   remoteUrl: ,
+    //   width:  * ratio,
+    //   height:,
+    //   x: v.x * ratio,
+    //   y: v.y * ratio,
+    //   rotate: v.rotate,
+    // }
+    // elements.push(whiteCover)
+
+
     // 对元素进行排序
     elements.sort((a, b) => {
       return a.zIndex - b.zIndex
@@ -1217,6 +1253,7 @@ class Bank extends Component {
     //   })
     //   return
     // }
+
 
     const size = this.calcForegroundSize()
     const position = this.calcForegroundPosition(size)
@@ -1484,7 +1521,12 @@ class Bank extends Component {
 
       if(this.state.showType===2){
         // this.tempForground.fixed=false;
+<<<<<<< HEAD
+        console.log(this.state.foreground===this.tempForground,'tempForground second')
+        this.setState({foreground:{...this.tempForground}})
+=======
         this.setState({foreground:{...this.tempForground}, coverList:[]})
+>>>>>>> 444f9e87e6a7e7cbecfdc5c23a27306f99608803
       }
     this.setState({
         showType: 1,
@@ -1920,10 +1962,11 @@ class Bank extends Component {
             <View className='save_success_tip'>「 图片已自动保存到手机相册 」</View>
           }
           <Image className='bottomTip' src='https://static01.versa-ai.com/upload/ac05476db5da/e0f294b1-ae32-4e96-b4ed-637fed563de3.png'/>
+
           <View class="canvas-wrap">
             <Canvas
               disable-scroll={true}
-              style={`width: ${frame.width * canvas.ratio}px; height: ${frame.height * canvas.ratio}px;`}
+              style={`width: ${(frame.width +this.state.margin*2)* canvas.ratio}px; height: ${(frame.height+this.state.margin*2) * canvas.ratio}px;`}
               canvasId={canvas.id}/>
           </View>
           <View class="canvas-wrap">

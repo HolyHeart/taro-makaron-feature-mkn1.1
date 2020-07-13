@@ -43,9 +43,7 @@ class BankCard extends Component {
     if (this._imageUrl !== this.props.imageURL) {
       change(this.props.imageURL)
       stop();
-      setTimeout(() => {
-        begin();
-      }, 1000);
+      begin();
     }
     this._imageUrl = this.props.imageURL
   }

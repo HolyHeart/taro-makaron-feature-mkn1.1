@@ -24,7 +24,6 @@ import addTips from "@/assets/images/tips_addpic@2x.png";
 import BankCard from '@/components/BankCard'
 import * as THREE from '../../utils/libs/three.weapp'
 import { renderExample1 as renderExample, change } from '@/utils/example.js'
-import {white} from "color-name";
 
 type PageStateProps = {
   global: {
@@ -642,9 +641,21 @@ class Bank extends Component {
       showType: 0,
       show3d: true,
       coverList: []
-  })
+    })
     //Taro.navigateBack({ delta: 1 })
+  }
 
+  backHandler(){
+    if(this.state.showType === 1){
+      this.pageToHome();
+    }else{
+      let temp = {...this.tempForground}
+      temp.fixed = false;
+      this.setState({
+        showType: 1,
+        foreground: temp
+      })
+    }
   }
 
   handleDeleteCover = (sticker) => {
@@ -832,8 +843,6 @@ class Bank extends Component {
       const {currentScene, canvas} = this.state
       const context = Taro.createCanvasContext(canvas.id, this) //组件绘图的上下文
 
-      console.log(currentScene.type,'___checkinginging___');
-
       if (currentScene.type === 'custom') {
         await this.canvasDrawCustom(context)
       } else if (currentScene.type === 'recommend') {
@@ -870,14 +879,13 @@ class Bank extends Component {
       let show3d = !this.state.show3d
       this.previewBack = show3d ? false : true
       let coverList = show3d ? this.state.coverList : []
-    //   let { url } = await service.base.upload(imageURL)
-    //   url = 'https://static01.versa-ai.com/upload/4c6f9c91eb3d/e9d71aa5-c88d-4eb7-9e65-c74ebcfb7181.card_04'
-    // url = 'https://static01.versa-ai.com/upload/c02c1a4ffdb8/dab6ddcc4f3e4df7.jpg'
-
+      let temp = {...this.tempForground}
+      temp.fixed = this.state.showType === 1 ? false : true;
       this.setState({
         show3d,
         imageURL,
-        coverList
+        coverList,
+        foreground: temp
     });
     this.hideLoading();
   }
@@ -1525,10 +1533,14 @@ class Bank extends Component {
         // this.tempForground.fixed=false;
         this.setState({foreground:{...this.tempForground}, coverList:[]})
       }
-    this.setState({
+      let newState = {
         showType: 1,
         show3d: false
-    },()=>{
+      }
+      if(this.state.show3d){
+        newState.coverList = []
+      }
+    this.setState(newState, ()=>{
         work.chooseImageSimple({
             onSuccess: async (path) => {//获得加载图片的路径,这里的success就是用来把加载进来的图片进行处理
               // console.log('choosedImage', path, globalData)
@@ -1539,6 +1551,7 @@ class Bank extends Component {
                 success: async (data:any) => { //这的data是文件内容，所以这个函数的意义是啥？？？
                     const separateResult = globalData.separateResult = await this.initSegment()
                               await this.initSeparateData(separateResult)
+                              
                     // Taro.cloud.callFunction(
                     //     {
                     //         name: 'checkImage',
@@ -1857,8 +1870,8 @@ class Bank extends Component {
             <Title
                 color="#333"
                 leftStyleObj={{left: Taro.pxTransform(8)}}
-                showBack={showType === 1 ? 1 : 0}
-                backHandler={this.pageToHome}
+                showBack={showType !== 0 ? 1 : 0}
+                backHandler={()=>this.backHandler()}
               >中行跨次元卡</Title>
           <View className="main">
 
@@ -1937,11 +1950,19 @@ class Bank extends Component {
                     完成定制
                 </Button>
               </View> :
-                <View className="buttonPart">
+                <View>
+                  <View className="buttonPart">
                     <Button id='addPhotoFit1' openType="getUserInfo" className="custom-button pink" hoverClass="btn-hover" onGetUserInfo={this.jumpToUndertake}>
-                            提交至银行
+                      提交至银行
                     </Button>
-                </View>):
+                  </View>
+                  <View className="buttonPart">
+                    <Button openType="getUserInfo" className="custom-button white border play_agin" hoverClass="btn-hover" onGetUserInfo={this.pageToHome}>
+                      再做一张
+                    </Button>
+                </View>
+                </View>
+                ):
                 <View className="buttonPart">
                     <Button id='addPhotoFit2' openType="getUserInfo" className="custom-button pink"
                         hoverClass="btn-hover" onGetUserInfo={this.todo}>{this.state.chooseText}</Button>

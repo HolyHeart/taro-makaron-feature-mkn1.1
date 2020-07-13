@@ -27222,8 +27222,6 @@ let THREE = null
   l.global = am
   l.sRGBEncoding = 3001
   THREE = l
-  console.log(THREE,333333)
   Object.defineProperty(l, '__esModule', { value: !0 })
 })
-console.log(THREE,333333333333333333333)
 export default THREE

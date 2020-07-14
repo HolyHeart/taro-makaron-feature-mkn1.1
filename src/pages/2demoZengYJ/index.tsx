@@ -430,6 +430,16 @@ class Bank extends Component {
   // 初始化分割
   initSegment = async () => {
     let separateRes
+
+    let timer=setTimeout(()=>{
+      Taro.showToast({
+      title: '图片中没有人物，请重新上传。',
+      icon: 'none',
+      duration: 2000})
+      this.hideLoading()
+    },10000);
+
+
     try {
       // console.log('trying trying trying')
       separateRes = await service.core.separateLocalImg(globalData.choosedImage, {
@@ -445,22 +455,52 @@ class Bank extends Component {
         }
       })// 得到已经分割好的图片
 
+
+
       // console.log(separateRes, 'this is first separateRes'); //部分url
 
       const {cateImageDict = {}} = separateRes.result || {}
 
+
+      // if(Object.keys(cateImageDict).length!==0){
+      //   clearTimeout(timer)
+      // }else{
+      //   clearTimeout(timer)
+      //   Taro.showToast({
+      //     title: '图片中没有人物，请重新上传。',
+      //     icon: 'none',
+      //     duration: 2000})
+      //   this.hideLoading()
+      // }
+      clearTimeout(timer)
+
       if (!cateImageDict['16'] && !cateImageDict['16-1']) {
-        // console.log('技术犯规了')
-        work.pageToError()
+        //console.log('技术犯规了',separateRes.result);
+        //work.pageToError()
+        this.hideLoading()
+        Taro.showToast({
+          title: '图片中没有人物，请重新上传',
+          icon: 'none',
+          duration: 2000})
         return
       }
+
+
     } catch (err) {
       // console.log('catch', err)
+      clearTimeout(timer)
       this.hideLoading()
+      Taro.showToast({
+        title: '图片出错2',
+        icon: 'none',
+        duration: 2000})
       return {}
     }
+
     return (separateRes && separateRes.result) || {}
   }
+
+
 
   initSeparateData = async (separateResult) => {
     const {currentScene, foreground} = this.state
@@ -1548,11 +1588,11 @@ class Bank extends Component {
               globalData.choosedImage = path//存入图片，为之后的处理准备
               Taro.getFileSystemManager().readFile({
                 filePath: path,
-                success: async (data:any) => { //这的data是文件内容，所以这个函数的意义是啥？？？
+                success: async (data:any) => {  //async
                     const separateResult = globalData.separateResult = await this.initSegment()
                               await this.initSeparateData(separateResult)
-                              
-                    // Taro.cloud.callFunction(
+
+                    // wx.cloud.callFunction(
                     //     {
                     //         name: 'checkImage',
                     //         data: {
@@ -1564,6 +1604,7 @@ class Bank extends Component {
                     //           // const separateResult = globalData.separateResult = await this.initSegment()
                     //           // await this.initSeparateData(separateResult)
                     //           if (res.result !== null && res.result.errCode === 0) {
+                    //             setTimeout(function(){},10000);
                     //             const separateResult = globalData.separateResult = await this.initSegment()//一个对象、得到分割结果，还不是图像，只是部分路径
                     //             // console.log(separateResult, 'separeteResulting~~~~~~~~~~~~~~~~')
                     //             await this.initSeparateData(separateResult)
@@ -1930,7 +1971,7 @@ class Bank extends Component {
 
             <View className='subSection'>
               <View className={'show_buttons' + (show3d ? ' show3d' : '')}>
-                {showType === 0 ? null : 
+                {showType === 0 ? null :
                 <View className="addSub" onClick={this.preview}>
                   <Image className='eye_icon' src={show3d ?'https://static01.versa-ai.com/upload/914001ed696e/b6d792dd-8f22-4c7e-a771-a318717a3090.png':'https://static01.versa-ai.com/upload/d795c515acbe/58ad6490-e0c4-4f59-b898-b816df4c65d6.png'}/>
                 <Text>{show3d?'切换到普通浏览':'切换到3D浏览'}</Text>
@@ -1974,7 +2015,7 @@ class Bank extends Component {
           {showType !== 2 &&
             <View className="subMain" style="width:100%;height:100%">
             <View className="addSub">&middot;&middot;其他可定制卡片&middot;&middot;</View>
-            
+
             <View className="pictureList">
                 {this.state.sceneList.map((item) => {
                     return (<View style={{background:`url(${item.boxUrl}) no-repeat center`,backgroundSize:'contain'}} className='singlePicture'>

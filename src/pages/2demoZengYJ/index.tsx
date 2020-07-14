@@ -640,17 +640,21 @@ class Bank extends Component {
     this.setState({
       showType: 0,
       show3d: true,
-      coverList: []
+      coverList: [],
+      foreground:{
+        ...this.state.foreground,
+        fixed: false
+      }
     })
     //Taro.navigateBack({ delta: 1 })
   }
 
   backHandler(){
+    let temp = {...this.tempForground}
+    temp.fixed = false;
     if(this.state.showType === 1){
-      this.pageToHome();
+      this.pageToHome(temp);
     }else{
-      let temp = {...this.tempForground}
-      temp.fixed = false;
       this.setState({
         showType: 1,
         foreground: temp

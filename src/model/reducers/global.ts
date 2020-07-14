@@ -35,7 +35,7 @@ const INITIAL_STATE = {
         },
         "watermark": false,
         "position": {
-          "place": "6",
+          "place": "9",
           "xAxis": {
             "derection": "left",
             "offset": 0.5

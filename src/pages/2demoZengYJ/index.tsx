@@ -877,6 +877,13 @@ class Bank extends Component {
   }
 
   async preview(){
+      if (!this.state.foreground.remoteUrl) {
+        return Taro.showToast({
+          title: '图片中没有人物，请重新上传。',
+          icon: 'none',
+          duration: 2000
+        })
+      }
       this.showLoading();
       this.tempForground = this.state.foreground;
       let imageURL = await this.createCanvas3d();

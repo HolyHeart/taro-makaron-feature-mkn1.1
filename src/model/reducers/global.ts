@@ -38,11 +38,11 @@ const INITIAL_STATE = {
           "place": "9",
           "xAxis": {
             "derection": "left",
-            "offset": 0.5
+            "offset": 0.46
           },
           "yAxis": {
-            "derection": "top",
-            "offset": 0.5
+            "derection": "bottom",
+            "offset": 0
           }
         },
         "size": {
@@ -159,7 +159,7 @@ const INITIAL_STATE = {
       card1: 'https://static01.versa-ai.com/upload/506854e1f208/93ada06e-3c17-4d94-b390-0b58358c7a5e.png',
       boxUrl: 'https://static01.versa-ai.com/upload/efc91c9f0499/588410ee-9e18-46da-a39d-b69fba5cd6bc.png',
       exampleUrl: 'https://static01.versa-ai.com/upload/50bcea0f761a/226d1817-979a-4fac-8588-f7e2fa751ec4.png',
-      bgUrl: 'https://static01.versa-ai.com/upload/a03cc97faf7a/56bc3ee2-c188-4c2d-95f8-9fde0380fc08.png',
+      bgUrl: 'https://static01.versa-ai.com/upload/f47d1d840152/3083eeeb-36e6-4236-8640-9cd05f586c5c.png',
       thumbnailUrl: 'https://static01.versa-ai.com/upload/e1145a1eddca/048e6d3a-ac6a-48d5-bbbf-dc59933125fd.jpg',
       filterUrl: '',
       sceneConfig: {
@@ -178,14 +178,14 @@ const INITIAL_STATE = {
         },
         "watermark": false,
         "position": {
-          "place": "6",
+          "place": "9",
           "xAxis": {
             "derection": "left",
-            "offset": 0.5
+            "offset": 0.48
           },
           "yAxis": {
-            "derection": "top",
-            "offset": 0.5
+            "derection": "bottom",
+            "offset": 0
           }
         },
         "size": {
@@ -341,14 +341,14 @@ const INITIAL_STATE = {
         },
         "watermark": false,
         "position": {
-          "place": "6",
+          "place": "9",
           "xAxis": {
             "derection": "left",
             "offset": 0.5
           },
           "yAxis": {
-            "derection": "top",
-            "offset": 0.5
+            "derection": "bottom",
+            "offset": 0
           }
         },
         "size": {
@@ -484,14 +484,14 @@ const INITIAL_STATE = {
         },
         "watermark": false,
         "position": {
-          "place": "6",
+          "place": "9",
           "xAxis": {
             "derection": "left",
-            "offset": 0.5
+            "offset": 0.48
           },
           "yAxis": {
-            "derection": "top",
-            "offset": 0.5
+            "derection": "bottom",
+            "offset": 0
           }
         },
         "size": {

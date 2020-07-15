@@ -38,6 +38,9 @@ class BankCard extends Component {
   lastMoveY: number
   offsetY: number
 
+  componentWillUnmount(){
+      console.log('uuuuuu')
+  }
 
   componentDidUpdate() {
     if (this._imageUrl !== this.props.imageURL) {
@@ -55,13 +58,13 @@ class BankCard extends Component {
     query
       .select('#c')
       .node((res) => {
+        // THREE.global.unregisterCanvas(res.node);
         const canvas = THREE.global.registerCanvas(res.node)
         this._imageUrl = imageURL
         renderExample(canvas, THREE, gltfURL, imageURL,true,this.props.screenWidth)
         this.THREE = THREE
       })
       .exec()
-    console.log(0)
   }
 
   stopPropagation(e){

@@ -463,7 +463,7 @@ class Sticker extends Component {
           onTouchmove={this.throttledArrowOntouchmove}
           onTouchend={this.arrowOntouchend}
         >
-          <Image src={scale} mode="widthFix" style="width:50%;height:50%"/>
+          <Image src={scale} mode="widthFix" style="width:100%;height:100%"/>
         </View>
         {stylePrams.deleteable &&
           <View className={`control close ${stylePrams.isActive ? 'active' : ''}`}

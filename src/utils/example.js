@@ -34,7 +34,7 @@ export function renderExample1(
     // gl.clearColor(0, 0, 0, 0)
     // gl.clear(gl.COLOR_BUFFER_BIT)
     camera = new THREE.PerspectiveCamera(
-      45,
+      60,
       canvas.width / canvas.height,
       1,
       1000,
@@ -105,7 +105,6 @@ export function renderExample1(
               child.material.emissive = child.material.color
               child.material.emissiveMap = texture
               child.material.map = texture
-              console.log(texture, 666666)
             }
           })
           scene.add(objCache)
@@ -145,12 +144,12 @@ export function renderExample1(
     // shadowCache = shadowMesh
 
     screenWidthCache = screenWidth
-    camera.position.z = 50
+    camera.position.z = 36
   }
   function animate() {
     if (!stopAnimation) {
       if (objCache) {
-        objCache.rotation.y = Math.cos(angle) * 1.2
+        objCache.rotation.y = Math.cos(angle) * 0.6
         angle += 0.02
       }
     }
@@ -163,7 +162,7 @@ export function change(url) {
   canvasCache && canvasCache.cancelAnimationFrame(timer)
   renderExample1(canvasCache, THREECache, objCache, url)
   angle = initAngle
-  objCache && (objCache.rotation.y = Math.cos(angle) * 1.2)
+  objCache && (objCache.rotation.y = Math.cos(angle) * 0.6)
 }
 
 export function stop() {
@@ -176,8 +175,8 @@ export function begin() {
 }
 
 export function update(offsetX, offsetY) {
-  objCache.rotation.y += offsetX * 0.01
-  objCache.rotation.x += offsetY * 0.01
+  objCache.rotation.y += offsetX * 0.006
+  objCache.rotation.x += offsetY * 0.006
   objCache.rotation.x < -0.5 && (objCache.rotation.x = -0.5)
   objCache.rotation.x > 0.5 && (objCache.rotation.x = 0.5)
 }

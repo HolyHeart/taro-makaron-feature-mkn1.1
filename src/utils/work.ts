@@ -323,12 +323,14 @@ const chooseImage = async ({ onTap, onSuccess }: chooseImageOptions) => {
     },
   }).catch((err) => console.log(err))
 }
-const chooseImageSimple = async ({ onSuccess }: chooseImageOptions) => {
+const chooseImageSimple = async ({ onSuccess, onFail }: chooseImageOptions) => {
   wx.chooseImage({
     count: 1,
     sourceType: ['album'],
   }).then(({ tempFilePaths: [path] }) => {
     typeof onSuccess === 'function' && onSuccess(path)
+  }).catch(()=>{
+    typeof onFail === 'function' && onFail()
   })
 }
 const chooseImageBg = async ({ onTap, onSuccess }: chooseImageOptions) => {

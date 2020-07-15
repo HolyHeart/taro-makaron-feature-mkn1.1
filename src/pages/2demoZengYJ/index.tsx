@@ -85,6 +85,7 @@ class Bank extends Component {
   }
   bgImg3dUrl = 'https://static01.versa-ai.com/upload/506854e1f208/93ada06e-3c17-4d94-b390-0b58358c7a5e.png'
   previewBack = false
+  saveLock = false
   state = {
     lockScene: false,
     show3d: true,
@@ -161,7 +162,7 @@ class Bank extends Component {
       localUrl: '',
     },
     drawBoard: {
-      width: '600rpx',
+      width: '650rpx',
       height: '380rpx'
     },
     ableToShareToQZone: false,
@@ -279,6 +280,8 @@ class Bank extends Component {
   }
 
   componentDidShow() {
+    this.app.aldstat.sendEvent('bank_pageView')
+    console.log('show')
   }
 
   componentDidHide() {
@@ -288,37 +291,13 @@ class Bank extends Component {
     // if (res.from === 'button') {
     //   // console.log('页面按钮分享', res.target)
     // }
-    this.app.aldstat.sendEvent('生成页分享', {
-      '场景名': this.state.currentScene.sceneName,
-      '场景Id': this.state.currentScene.sceneId
-    })
+    this.app.aldstat.sendEvent('bank_share')
     const {currentScene, result = {}} = this.state
     const {shareImage = {}} = result
-    const shareContent = currentScene.shareContent || ''
-    const shareImageUrl = `${shareImage.remoteUrl}?x-oss-process=image/resize,m_pad,h_420,w_525`
-    const data = {
-      shareSource: shareImage.remoteUrl,
-      themeId: globalData.themeId || '',
-      sceneId: currentScene.sceneId || '',
-    }
-
-    const {userInfo = {}} = globalData
-    const path = `/pages/index?shareSource=${shareImageUrl}`
-    // // console.log('url',path)
-    // const title = `@${userInfo.nickName}：${shareContent}`
-    if (!shareImage.remoteUrl) {
-      // console.log('shareImage.remoteUrl', shareImage.remoteUrl)
-      return {
-        // title: title,
-        path: '/pages/home/index',
-        imageUrl: currentScene.thumbnailUrl,
-      }
-    }
-    // // console.log('789',title, path, shareImageUrl)
-    // Taro.navigateTo({ url: `/pages/index?shareSource=${shareImageUrl}` })
+    const shareImageUrl = 'https://static01.versa-ai.com/upload/516763646a80/d60a0a22-f789-45e4-9282-db4886bf8b10.jpeg'
     return {
-      // title: title,
-      path: path,
+      title: '中国银行跨次元卡，限时体验中',
+      path: '/pages/2demoZengYJ/index',
       imageUrl: shareImageUrl,
       success: () => {
         // console.log('分享成功')
@@ -433,7 +412,7 @@ class Bank extends Component {
 
     let timer=setTimeout(()=>{
       Taro.showToast({
-      title: '图片中没有人物，请重新上传。',
+      title: '卡面中没有人物，请上传图片后预览。',
       icon: 'none',
       duration: 2000})
       this.hideLoading()
@@ -507,7 +486,7 @@ class Bank extends Component {
     this.changeSceneChooseSegment(currentScene, separateResult, (res = {}) => {
       Taro.setStorageSync('lastSeparateImage', res.separateUrl)
       this.setState({
-        chooseText: '重新上传人像',
+        chooseText: '替换人像照片',
         foreground: {
           ...foreground,
           remoteUrl: res.separateUrl
@@ -559,8 +538,8 @@ class Bank extends Component {
       let k = detail.width / detail.height;
       this.setState({
         drawBoard: {
-          width: `600rpx`,
-          height: `${600 / k}rpx`//`${detail.height * 345 / detail.width * 2}rpx` //690 920
+          width: `650rpx`,
+          height: `${650 / k}rpx`//`${detail.height * 345 / detail.width * 2}rpx` //690 920
         }
       }, () => {
         setTimeout(() => {
@@ -747,6 +726,10 @@ class Bank extends Component {
 
   // 保存
   handleOpenResult = async () => {
+    if(this.saveLock){
+      return false;
+    }
+    this.app.aldstat.sendEvent('bank_done')
     if (!this.state.foreground.remoteUrl) {
       return Taro.showToast({
         title: '图片中没有人物，请重新上传。',
@@ -844,7 +827,7 @@ class Bank extends Component {
   }
   // 再玩一次
   handlePlayAgain = () => {
-    this.app.aldstat.sendEvent('生成页再玩一次', '再玩一次')
+    this.app.aldstat.sendEvent('bank_makeAgain')
     this.setState({
       result: {
         show: false,
@@ -1178,12 +1161,21 @@ class Bank extends Component {
 
     // // console.log('elements', elements)
     function drawElement({localUrl, width, height, x, y, rotate,isMirror}) {
-      context.save()
-      context.translate(x + 0.5 * width, y + 0.5 * height)
-      context.rotate(rotate * Math.PI / 180)
-      isMirror && context.scale(-1,1);
-      context.drawImage(localUrl, -0.5 * width, -0.5 * height, width, height)
-      context.restore()
+      console.log(isMirror,'acacacacac')
+      if(isMirror){
+        context.save()
+        let cosR = Math.cos(rotate * Math.PI / 180);
+        let sinR = Math.sin(rotate * Math.PI / 180);
+        context.setTransform(-1 * cosR,-1 * sinR,-1 * sinR, cosR,x + 0.5 * width, y + 0.5 * height);
+        context.drawImage(localUrl, -0.5 * width, -0.5 * height, width, height)
+        context.restore()
+      }else{
+        context.save()
+        context.translate(x + 0.5 * width, y + 0.5 * height)
+        context.rotate(rotate * Math.PI / 180)
+        context.drawImage(localUrl, -0.5 * width, -0.5 * height, width, height)
+        context.restore()
+      }
       context.stroke()
     }
   }
@@ -1575,6 +1567,7 @@ class Bank extends Component {
   //上传图片的操作
   todo = (data) => {
     // console.log(data, 'datadatadataOftodo')//授权获得用户信息
+    this.app.aldstat.sendEvent('bank_replace', {})
     const {detail: {userInfo}} = data
     if (userInfo) {
       service.base.loginAuth(data.detail)//【上传用户信息】
@@ -1631,9 +1624,11 @@ class Bank extends Component {
                     //       }
                     // )
                 },
-                fail: () => {
-                }
+                fail: () => {}
               })
+            },
+            onFail: ()=>{
+              this.pageToHome();
             }
           })
     })
@@ -1846,6 +1841,10 @@ class Bank extends Component {
       lockScene,
       coverList: []
     })
+    this.saveLock = true;
+    setTimeout(() => {
+      this.saveLock = false;
+    }, 1500);
     this.initSceneData(()=>{
         if(this.state.show3d && this.state.showType === 1){
             this.previewBack = true
@@ -1873,9 +1872,10 @@ class Bank extends Component {
 
   }
   jumpToUndertake(){
-      Taro.navigateTo({
-          url: '/pages/undertakeBank/index'
-      });
+    this.app.aldstat.sendEvent('bank_jumpToH5')
+    Taro.navigateTo({
+        url: '/pages/undertakeBank/index'
+    });
   }
 
   render() {
@@ -1994,11 +1994,26 @@ class Bank extends Component {
                   </View>}
               </View>
               {showType === 2 && <View className='save_success_tip'>「 图片已自动保存到手机相册 」</View>}
+              {showType !== 2 &&
+                <View className="subMain">
+                {showType === 0 && <View className="addSub">&middot;&middot;其它可定制卡片&middot;&middot;</View>}
+
+                <View className="pictureList">
+                    {this.state.sceneList.map((item) => {
+                        return (<View style={{background:`url(${item.boxUrl}) no-repeat center`,backgroundSize:'contain'}} className='singlePicture'>
+                                    <Image src={item.exampleUrl} onClick={this.substituteBgUrl.bind(this,item)}/>
+                                    {currentScene.index === item.index ? <View className='currentIcon'></View> : null}
+
+                                </View>)
+                    })}
+                    </View>
+                </View>
+              }
               {showType ?
               (showType === 1 ? <View className="buttonPart">
-                <Button style='flex:1;z-index:2' id='addPhoto' openType="getUserInfo" className="custom-button white border"
+                <Button style=';z-index:2' id='addPhoto' openType="getUserInfo" className="custom-button short white border"
                         hoverClass="btn-hover" onGetUserInfo={this.todo}>{this.state.chooseText}</Button>
-                <Button style='flex:1;margin-left:10px' className="custom-button pink" hoverClass="btn-hover" onClick={this.handleOpenResult}>
+                <Button style=';margin-left:10px' className="custom-button short done pink" hoverClass="btn-hover" onClick={this.handleOpenResult}>
                     完成定制
                 </Button>
               </View> :
@@ -2017,27 +2032,13 @@ class Bank extends Component {
                 ):
                 <View className="buttonPart">
                     <Button id='addPhotoFit2' openType="getUserInfo" className="custom-button pink"
-                        hoverClass="btn-hover" onGetUserInfo={this.todo}>{this.state.chooseText}</Button>
+                        hoverClass="btn-hover" onGetUserInfo={this.todo}>制作属于你的银行卡</Button>
                 </View>
               }
             </View>
           </View>
           {/* <Image src={this.state.imageURL}/> */}
-          {showType !== 2 &&
-            <View className="subMain" style="width:100%;height:100%">
-            <View className="addSub">&middot;&middot;其他可定制卡片&middot;&middot;</View>
-
-            <View className="pictureList">
-                {this.state.sceneList.map((item) => {
-                    return (<View style={{background:`url(${item.boxUrl}) no-repeat center`,backgroundSize:'contain'}} className='singlePicture'>
-                                <Image src={item.exampleUrl} onClick={this.substituteBgUrl.bind(this,item)}/>
-                                {currentScene.index === item.index ? <View className='currentIcon'></View> : null}
-
-                            </View>)
-                })}
-                </View>
-            </View>
-          }
+          
           <Image className='bottomTip' src='https://static01.versa-ai.com/upload/ac05476db5da/e0f294b1-ae32-4e96-b4ed-637fed563de3.png'/>
 
           <View class="canvas-wrap">

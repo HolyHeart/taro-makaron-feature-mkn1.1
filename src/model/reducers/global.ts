@@ -92,7 +92,7 @@ const INITIAL_STATE = {
             {
               "id": 1584540623143,
               type: 'bankLogo',
-              "imageUrl": "https://static01.versa-ai.com/upload/4a72479c5a83/298bd350-21ff-4e39-9189-25967ad4cb94.png",
+              "imageUrl": "https://static01.versa-ai.com/upload/e69f99eb9523/7f641fb8-22d2-4044-93e0-e7eecf108549.png",
               "zIndex": 3,
               "fixed": true,
               "isActive": false,
@@ -120,7 +120,7 @@ const INITIAL_STATE = {
             {
               "id": 15845406231464,
               type: 'myLogo',
-              "imageUrl": "https://static01.versa-ai.com/upload/ce29be05e80a/947c8a95-62b1-4eef-8db4-9b22d3561620.png",
+              "imageUrl": "https://static01.versa-ai.com/upload/b32de171a9fb/d964c5cb-109e-4631-9200-745634da9552.png",
               "zIndex": 3,
               "fixed": true,
               "isActive": false,
@@ -208,7 +208,7 @@ const INITIAL_STATE = {
           "list": [{
               "id": 1584540623143,
               type: 'bankLogo',
-              "imageUrl": "https://static01.versa-ai.com/upload/4a72479c5a83/298bd350-21ff-4e39-9189-25967ad4cb94.png",
+              "imageUrl": "https://static01.versa-ai.com/upload/e69f99eb9523/7f641fb8-22d2-4044-93e0-e7eecf108549.png",
               "zIndex": 3,
               "fixed": true,
               "isActive": false,
@@ -236,7 +236,7 @@ const INITIAL_STATE = {
             {
               "id": 1584540623146,
               type: 'myLogo',
-              "imageUrl": "https://static01.versa-ai.com/upload/ce29be05e80a/947c8a95-62b1-4eef-8db4-9b22d3561620.png",
+              "imageUrl": "https://static01.versa-ai.com/upload/b32de171a9fb/d964c5cb-109e-4631-9200-745634da9552.png",
               "zIndex": 3,
               "fixed": true,
               "isActive": false,
@@ -398,7 +398,7 @@ const INITIAL_STATE = {
             {
               "id": 1584540623143,
               type: 'bankLogo',
-              "imageUrl": "https://static01.versa-ai.com/upload/4a72479c5a83/298bd350-21ff-4e39-9189-25967ad4cb94.png",
+              "imageUrl": "https://static01.versa-ai.com/upload/e69f99eb9523/7f641fb8-22d2-4044-93e0-e7eecf108549.png",
               "zIndex": 3,
               "fixed": true,
               "isActive": false,
@@ -426,7 +426,7 @@ const INITIAL_STATE = {
             {
               "id": 1584540623146,
               type: 'myLogo',
-              "imageUrl": "https://static01.versa-ai.com/upload/ce29be05e80a/947c8a95-62b1-4eef-8db4-9b22d3561620.png",
+              "imageUrl": "https://static01.versa-ai.com/upload/b32de171a9fb/d964c5cb-109e-4631-9200-745634da9552.png",
               "zIndex": 3,
               "fixed": true,
               "isActive": false,
@@ -541,7 +541,7 @@ const INITIAL_STATE = {
             {
               "id": 1584540623143,
               type: 'bankLogo'
-              "imageUrl": "https://static01.versa-ai.com/upload/4a72479c5a83/298bd350-21ff-4e39-9189-25967ad4cb94.png",
+              "imageUrl": "https://static01.versa-ai.com/upload/e69f99eb9523/7f641fb8-22d2-4044-93e0-e7eecf108549.png",
               "zIndex": 3,
               "fixed": true,
               "isActive": false,
@@ -568,7 +568,7 @@ const INITIAL_STATE = {
             {
               "id": 1584540623146,
               type: 'myLogo',
-              "imageUrl": "https://static01.versa-ai.com/upload/ce29be05e80a/947c8a95-62b1-4eef-8db4-9b22d3561620.png",
+              "imageUrl": "https://static01.versa-ai.com/upload/b32de171a9fb/d964c5cb-109e-4631-9200-745634da9552.png",
               "zIndex": 3,
               "fixed": true,
               "isActive": false,

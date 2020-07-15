@@ -87,6 +87,11 @@ class Bank extends Component {
   previewBack = false
   saveLock = false
   state = {
+    preloadImgList:[
+      'https://static01.versa-ai.com/upload/5730291ec092/0aa7ae3d-f243-4639-9f2e-dbcfeceda513.png',
+      'https://static01.versa-ai.com/upload/81071df5c472/db039152-5702-4617-9e4e-c57294e48321.png',
+      'https://static01.versa-ai.com/upload/daddf36ee807/5b1e9222-bf6a-409f-a812-911cca61f9c7.png'
+    ],
     lockScene: false,
     show3d: true,
     load3d: false,
@@ -163,7 +168,7 @@ class Bank extends Component {
     },
     drawBoard: {
       width: '650rpx',
-      height: '380rpx'
+      height: '416rpx'
     },
     ableToShareToQZone: false,
 
@@ -176,7 +181,7 @@ class Bank extends Component {
     staticBgUrl:'',
 
     logo:{
-      myLogo:"https://static01.versa-ai.com/upload/ce29be05e80a/947c8a95-62b1-4eef-8db4-9b22d3561620.png",
+      myLogo:"https://static01.versa-ai.com/upload/b32de171a9fb/d964c5cb-109e-4631-9200-745634da9552.png",
       bankLogo:"https://static01.versa-ai.com/upload/4a72479c5a83/298bd350-21ff-4e39-9189-25967ad4cb94.png"
     },
 
@@ -235,7 +240,6 @@ class Bank extends Component {
     } else if (systemInfo.model.indexOf('iPhone') !== -1) {
       totalTopHeight = 62
     }
-    console.log(totalTopHeight,'tttttttttttttttttttttt')
     this.setState({
       titleHeight: totalTopHeight
     })
@@ -250,7 +254,6 @@ class Bank extends Component {
       currentScene:scene
     })
     globalData.sceneConfig = sceneList[0];
-    // console.log(sceneList,'sceneList')
 
   }
 
@@ -272,25 +275,19 @@ class Bank extends Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
-    // // console.log(this.props, nextProps)
-  }
+  componentWillReceiveProps(nextProps) {}
 
   componentWillUnmount() {
   }
 
   componentDidShow() {
     this.app.aldstat.sendEvent('bank_pageView')
-    console.log('show')
   }
 
   componentDidHide() {
   }
 
   onShareAppMessage(res) {
-    // if (res.from === 'button') {
-    //   // console.log('页面按钮分享', res.target)
-    // }
     this.app.aldstat.sendEvent('bank_share')
     const {currentScene, result = {}} = this.state
     const {shareImage = {}} = result
@@ -380,7 +377,6 @@ class Bank extends Component {
   // 初始化场景信息
   initSceneData = async (callback) => {
     const currentScene = globalData.sceneConfig//来自于主页给每一项设置的，
-    // console.log(currentScene, 'initiating the first scene&&adding')
     this.setState({
       currentScene: {
         ...this.state.currentScene,
@@ -394,7 +390,6 @@ class Bank extends Component {
   // 初始化贴纸
   initCoverData = () => {
     const {currentScene} = this.state
-    // const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
     const sceneConfig = tool.JSON_parse(currentScene.sceneConfig)
     const {cover = {}} = sceneConfig
     // console.log(cover, 'covering this is cover ,this is 边框') //是边框的信息
@@ -403,7 +398,6 @@ class Bank extends Component {
     this.setState({
       coverList: coverList
     })
-    // console.log('initCoverData cover', cover, coverList)
   }
 
   // 初始化分割
@@ -412,7 +406,7 @@ class Bank extends Component {
 
     let timer=setTimeout(()=>{
       Taro.showToast({
-      title: '卡面中没有人物，请上传图片后预览。',
+      title: '网络异常，请重新上传。',
       icon: 'none',
       duration: 2000})
       this.hideLoading()
@@ -420,7 +414,6 @@ class Bank extends Component {
 
 
     try {
-      // console.log('trying trying trying')
       separateRes = await service.core.separateLocalImg(globalData.choosedImage, {
         type: -1,
         loading: true,
@@ -440,17 +433,6 @@ class Bank extends Component {
 
       const {cateImageDict = {}} = separateRes.result || {}
 
-
-      // if(Object.keys(cateImageDict).length!==0){
-      //   clearTimeout(timer)
-      // }else{
-      //   clearTimeout(timer)
-      //   Taro.showToast({
-      //     title: '图片中没有人物，请重新上传。',
-      //     icon: 'none',
-      //     duration: 2000})
-      //   this.hideLoading()
-      // }
       clearTimeout(timer)
 
       if (!cateImageDict['16'] && !cateImageDict['16-1']) {
@@ -470,7 +452,7 @@ class Bank extends Component {
       clearTimeout(timer)
       this.hideLoading()
       Taro.showToast({
-        title: '图片出错2',
+        title: '网络异常，请重新上传',
         icon: 'none',
         duration: 2000})
       return {}
@@ -505,7 +487,6 @@ class Bank extends Component {
     // 判断分离的是全身还是头像    //adding by YUjinZENG-explanation segmentType是导入数据的时候就定义好了的
     let separateUrl = ''
     let separateMaskUrl = ''
-    // console.log(currentScene, 'currentScenceing---ing')
     if (currentScene.segmentType === 1) { //目前的数据都是0；所以下面的选项也不影响
       separateUrl = imageHost + separateResult.cateImageDict['16-1']//['16-1']没有这个key啊
       separateMaskUrl = imageHost + separateResult.maskImageDict['16-1']
@@ -584,7 +565,6 @@ class Bank extends Component {
     //// console.log('handleForegroundLoaded', detail, item) // item 就是foreground存的信息
     if(this.previewBack){
         this.previewBack = false;
-        console.log('stop auto ')
         return false;
     }
     this.hideLoading()
@@ -595,7 +575,6 @@ class Bank extends Component {
       loaded: true,
       isMirror: false
     }, () => {
-        console.log('aaaaaa')
       this.foregroundAuto()
     })
   }
@@ -632,7 +611,6 @@ class Bank extends Component {
     })
   }
   handleChangeCoverStyle = (data) => {
-    // console.log(data, '---------this is to check data to check id -------')
     const {id} = data
     const {coverList} = this.state
     coverList.forEach((v, i) => {
@@ -645,12 +623,10 @@ class Bank extends Component {
     })
   }
   handleCoverTouchstart = (sticker) => {
-    // // console.log('handleCoverTouchstart', sticker)
     this.setCoverListActiveStatus({type: 'some', ids: [sticker.id]}, true)
     this.setForegroundActiveStatus(false)
   }
   handleCoverTouchend = (sticker) => {
-    // // console.log('handleCoverTouchend', sticker)
     this.storeCoverInfo(sticker)
     this.app.aldstat.sendEvent('贴纸使用', {'贴纸Id': sticker.id})
   }
@@ -682,7 +658,6 @@ class Bank extends Component {
   }
 
   handleDeleteCover = (sticker) => {
-    // // console.log('handleDeleteCover', sticker)
     const {id} = sticker
     const {coverList} = this.state
     coverList.forEach((v, i) => {
@@ -713,7 +688,6 @@ class Bank extends Component {
         type: 'recommend'
       }
     }, () => {
-      // // console.log('handleChooseScene', this.state.currentScene)
       this.foregroundAuto()
       this.initCoverData()
       this.app.aldstat.sendEvent('选择场景', {
@@ -879,7 +853,6 @@ class Bank extends Component {
       context.draw() //【有点像将之前的设置保存到context中】
       //将生成好的图片保存到本地，需要延迟一会，绘制期间耗时
       setTimeout( () => {
-          // console.log(canvas.id,666666)
         Taro.canvasToTempFilePath({ //存储照片
           canvasId: canvas.id,
           fileType: 'jpg',
@@ -939,7 +912,6 @@ class Bank extends Component {
                     await this.canvasDraw3d(context,res.tempFilePath)
                     context.draw();
                     setTimeout( () => {
-                        console.log(canvas.id,666666)
                     Taro.canvasToTempFilePath({ //存储照片
                         canvasId: 'canvas3d',
                         fileType: 'png',
@@ -949,7 +921,6 @@ class Bank extends Component {
                         quality: 1,
                         success: function (res) {
                         let tempFilePath = res.tempFilePath
-                        console.log(tempFilePath,'3d3d3d')
                         resolve(tempFilePath)
                         },
                         fail: function (res) {
@@ -1005,7 +976,6 @@ class Bank extends Component {
   canvasDrawRecommend = async (context, hasLogo=false) => {
     const {currentScene, frame, canvas} = this.state
 
-    // console.log(frame, 'frame ===width===height===frame')
 
     const postfix = '?x-oss-process=image/resize,w_748,h_560'
     const {ratio = 3} = canvas
@@ -1025,7 +995,6 @@ class Bank extends Component {
       // console.log('下载背景图片失败', err)
       return
     }
-    console.log(localBgImagePath,666666)
     //防止锯齿，绘的图片是所需图片的3倍
     // let dx= customBg.x * ratio;
     // let dy= customBg.y * ratio;
@@ -1109,7 +1078,6 @@ class Bank extends Component {
     }
     // 收集人物
     elements.push(element_foreground)
-    console.log(elements,'eeeeee')
 
     // 收集贴纸
     coverList.filter(v => (hasLogo ? true : !v.deleted)).forEach(v => {
@@ -1161,7 +1129,6 @@ class Bank extends Component {
 
     // // console.log('elements', elements)
     function drawElement({localUrl, width, height, x, y, rotate,isMirror}) {
-      console.log(isMirror,'acacacacac')
       if(isMirror){
         context.save()
         let cosR = Math.cos(rotate * Math.PI / 180);
@@ -1587,7 +1554,6 @@ class Bank extends Component {
     this.setState(newState, ()=>{
         work.chooseImageSimple({
             onSuccess: async (path) => {//获得加载图片的路径,这里的success就是用来把加载进来的图片进行处理
-              // console.log('choosedImage', path, globalData)
               this.app.aldstat.sendEvent('编辑页面人像成功', '上传成功')
               globalData.choosedImage = path//存入图片，为之后的处理准备
               Taro.getFileSystemManager().readFile({
@@ -1628,7 +1594,9 @@ class Bank extends Component {
               })
             },
             onFail: ()=>{
-              this.pageToHome();
+              if(!this.state.foreground.remoteUrl){
+                this.pageToHome();
+              }
             }
           })
     })
@@ -1764,7 +1732,6 @@ class Bank extends Component {
     this.cache['cover'].set(cacheKey, clone_cover)
   }
   handleGetUserInfo = (data) => {
-    // // console.log('handleGetUserInfo', data)
     const {detail: {userInfo}} = data
     if (userInfo) {
       service.base.loginAuth(data.detail)
@@ -1879,7 +1846,6 @@ class Bank extends Component {
   }
 
   render() {
-      // console.log(this.state.coverList,333333)
     const {loading, rawImage, frame, customBg, foreground, coverList, sceneList, currentScene, result, canvas, showType, screenWidth, showBankLogo, show3d, load3d} = this.state
 
     let cover = coverList.filter(item => {
@@ -1916,8 +1882,12 @@ class Bank extends Component {
             />
         }
       })
+      const preloadImgs = this.state.preloadImgList.map(url=>{
+        return <Image src={url} className='preload_img' />
+      })
     return (
       <ScrollView scrollY className="scrollPage" style={{ height: this.state.screenHeight + 'px' }}>
+        {preloadImgs}
         <View className='page-editor'>
             <Title
                 color="#333"
@@ -1976,7 +1946,7 @@ class Bank extends Component {
                     mode="scaleToFill"
                     // onLoad={this.handleBgLoaded}
                   /> */}
-                <BankCard gltfURL={this.state.gltfURL} imageURL={this.state.imageURL} screenWidth={screenWidth}></BankCard>
+                <BankCard gltfURL={this.state.gltfURL} imageURL={this.state.imageURL} screenWidth={screenWidth} show3d={show3d}></BankCard>
               </View>
             </View>
 

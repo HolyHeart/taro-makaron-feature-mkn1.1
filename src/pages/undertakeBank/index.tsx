@@ -50,7 +50,7 @@ interface Bank {
 class Bank extends Component {
  
   render() {
-      return <WebView src='https://mp.weixin.qq.com/s/PVnlh8EnEwF-26s0V7isWw' />
+      return <WebView src='https://mp.weixin.qq.com/s/xWrmckZ_moZ5GO-gnJsZTA' />
   }
 }
 

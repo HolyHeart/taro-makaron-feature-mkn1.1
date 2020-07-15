@@ -7,7 +7,9 @@ import {
   change,
   stop,
   update,
-  begin
+  begin,
+  beginRender,
+  stopRender
 } from '../../utils/example.js'
 import './index.less'
 
@@ -37,10 +39,9 @@ class BankCard extends Component {
   moveY:number
   lastMoveY: number
   offsetY: number
+  canvasId: number
 
-  componentWillUnmount(){
-      console.log('uuuuuu')
-  }
+  componentWillUnmount(){}
 
   componentDidUpdate() {
     if (this._imageUrl !== this.props.imageURL) {
@@ -51,6 +52,28 @@ class BankCard extends Component {
     this._imageUrl = this.props.imageURL
   }
   componentDidMount() {
+    this.init();
+    beginRender();
+  }
+
+  componentWillUpdate(newProps){
+      if(newProps.show3d === false && this.props.show3d === true){
+          console.log('解除')
+        // return THREE.global.unregisterCanvas(this.canvasId)
+        return stopRender();
+      }
+
+      if(newProps.show3d === true && this.props.show3d === false){
+          console.log('启动')
+        return beginRender();
+      }
+  }
+
+  stopPropagation(e){
+    e.stopPropagation();
+  }
+
+  init(){
     console.log('hello from bank card component')
     const { gltfURL, imageURL } = this.props
 
@@ -58,17 +81,13 @@ class BankCard extends Component {
     query
       .select('#c')
       .node((res) => {
-        // THREE.global.unregisterCanvas(res.node);
         const canvas = THREE.global.registerCanvas(res.node)
+        this.canvasId = canvas._canvasId;
         this._imageUrl = imageURL
         renderExample(canvas, THREE, gltfURL, imageURL,true,this.props.screenWidth)
         this.THREE = THREE
       })
       .exec()
-  }
-
-  stopPropagation(e){
-    e.stopPropagation()
   }
 
   touchStart(e) {
@@ -86,7 +105,7 @@ class BankCard extends Component {
     update(this.offsetX,this.offsetY);
   }
   touchEnd(e) {
-    this.startX = this.moveX = this.offsetX = 0;
+    this.moveX = this.offsetX = 0;
   }
   touchCancel(e) {}
 

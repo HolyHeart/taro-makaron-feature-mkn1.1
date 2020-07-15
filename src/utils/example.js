@@ -11,6 +11,7 @@ let angle
 let shadowCache
 let stopAnimation
 let screenWidthCache
+let needRender = true
 
 const initAngle = 1.3
 
@@ -154,7 +155,7 @@ export function renderExample1(
       }
     }
     timer = canvas.requestAnimationFrame(animate)
-    renderer.render(scene, camera)
+    needRender && renderer.render(scene, camera)
   }
 }
 
@@ -167,6 +168,7 @@ export function change(url) {
 
 export function stop() {
   stopAnimation = true
+  //   THREE.global.unregisterCanvas(canvasCache._canvasId)
 }
 
 export function begin() {
@@ -179,4 +181,12 @@ export function update(offsetX, offsetY) {
   objCache.rotation.x += offsetY * 0.006
   objCache.rotation.x < -0.5 && (objCache.rotation.x = -0.5)
   objCache.rotation.x > 0.5 && (objCache.rotation.x = 0.5)
+}
+
+export function beginRender() {
+  needRender = true
+}
+
+export function stopRender() {
+  needRender = false
 }

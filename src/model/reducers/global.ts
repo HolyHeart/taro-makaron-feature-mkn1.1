@@ -46,7 +46,7 @@ const INITIAL_STATE = {
           }
         },
         "size": {
-          "default": "0.7",
+          "default": "0.75",
           "zoomInMax": 1,
           "zoomOutMin": 1
         },
@@ -189,7 +189,7 @@ const INITIAL_STATE = {
           }
         },
         "size": {
-          "default": "0.7",
+          "default": "0.75",
           "zoomInMax": 1,
           "zoomOutMin": 1
         },
@@ -352,7 +352,7 @@ const INITIAL_STATE = {
           }
         },
         "size": {
-          "default": "0.7",
+          "default": "0.75",
           "zoomInMax": 1,
           "zoomOutMin": 1
         },
@@ -495,7 +495,7 @@ const INITIAL_STATE = {
           }
         },
         "size": {
-          "default": "0.7",
+          "default": "0.75",
           "zoomInMax": 1,
           "zoomOutMin": 1
         },

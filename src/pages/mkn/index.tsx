@@ -358,7 +358,96 @@ class Editor extends Component {
   // 初始化场景信息
   initSceneData = async (callback) => {
     ///获取globalData.sceneConfig数据
+    service.home.getCateGoryAndScenes() //test
     const res = await  service.mkn.getScene('370180454781603840')
+
+    res.result.result.sceneConfig = tool.JSON_parse(res.result.result.sceneConfig);
+    res.result.result.sceneConfig.cover = {
+        "support": true,
+        "list": [{
+            "id": 1584540917922,
+            type: 'normal',
+            "imageUrl": "https://static01.versa-ai.com/upload/5730291ec092/0aa7ae3d-f243-4639-9f2e-dbcfeceda513.png",
+            "zIndex": 6,
+            "fixed": true,
+            "isActive": false,
+            "size": {
+              "default": 1,
+              "zoomInMax": 1,
+              "zoomOutMin": 1
+            },
+            "rotate": 0,
+            "position": {
+              "place": "10",
+              "xAxis": {
+                "derection": "left",
+                "offset": 0.5
+              },
+              "yAxis": {
+                "derection": "top",
+                "offset": 0.5
+              }
+            },
+            visible: true,
+            show: true,
+          },
+          {
+            "id": 1584540623143,
+            type: 'bankLogo',
+            "imageUrl": "https://static01.versa-ai.com/upload/e69f99eb9523/7f641fb8-22d2-4044-93e0-e7eecf108549.png",
+            "zIndex": 3,
+            "fixed": true,
+            "isActive": false,
+            "size": {
+              "default": 1,
+              "zoomInMax": 1,
+              "zoomOutMin": 1
+            },
+            "rotate": 0,
+            "position": {
+              "place": "10",
+              "xAxis": {
+                "derection": "left",
+                "offset": 0.5
+              },
+              "yAxis": {
+                "derection": "top",
+                "offset": 0.5
+              }
+            },
+            visible: false,
+            deleted: true,
+            width: 300
+          },
+          {
+            "id": 15845406231464,
+            type: 'myLogo',
+            "imageUrl": "https://static01.versa-ai.com/upload/b32de171a9fb/d964c5cb-109e-4631-9200-745634da9552.png",
+            "zIndex": 3,
+            "fixed": true,
+            "isActive": false,
+            "size": {
+              "default": 1,
+              "zoomInMax": 1,
+              "zoomOutMin": 1
+            },
+            "rotate": 0,
+            "position": {
+              "place": "10",
+              "xAxis": {
+                "derection": "left",
+                "offset": 0.5
+              },
+              "yAxis": {
+                "derection": "top",
+                "offset": 0.5
+              }
+            },
+            visible: false,
+            deleted: false
+          }
+        ]
+      }
     globalData.sceneConfig=res.result.result
     /////
     const currentScene = globalData.sceneConfig//来自于主页给每一项设置的，

@@ -626,5 +626,6 @@ export default {
   styleTransfer,
   browser,
   teleport,
-  share
+  share,
+  home
 }

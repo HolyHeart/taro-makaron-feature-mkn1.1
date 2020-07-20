@@ -227,16 +227,19 @@ class Home extends Component {
 
   getCateGoryAndScenes = async () => {//请求数据
     try {
-      const res = await await home.getCateGoryAndScenes(1)
-      console.log(res,'showoshow')//对主页数据的请求
+      const res = await home.getCateGoryAndScenes(1)
+      console.log(res,'showoshow')//对主页数据的请求 【得到的是所有的数据】
       const categories = res.result && res.result.result.map((item) => {
         return item.categoryName
       })
       const categoryIds = res.result && res.result.result.map((item) => {
         return item.categoryId
       })
+
+      console.log(res.result.result[0].sceneInfoList[0],'this is res.result.result.....')
+
       this.setState({
-        totalScenes: res.result && res.result.result,
+        totalScenes: res.result && res.result.result, //所有的scenes
         categories: categories,
         categoryIds: categoryIds,
         currentCategoryId: categoryIds[0],

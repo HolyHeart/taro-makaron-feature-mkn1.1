@@ -358,8 +358,8 @@ class Editor extends Component {
   // 初始化场景信息
   initSceneData = async (callback) => {
     ///获取globalData.sceneConfig数据
-    const res = await  service.home.getCateGoryAndScenes(1)
-    globalData.sceneConfig=res.result.result[0].sceneInfoList[0]
+    const res = await  service.mkn.getScene('370180454781603840')
+    globalData.sceneConfig=res.result.result
     /////
     const currentScene = globalData.sceneConfig//来自于主页给每一项设置的，
     console.log(currentScene,'initiating the first scene&&adding')

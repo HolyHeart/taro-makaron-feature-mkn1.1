@@ -69,6 +69,7 @@ export const api = {
     addLikeWork:`${getHost('miniapi', ENV)}/community/work/like`,
     deleteLike:`${getHost('miniapi', ENV)}/community/work/like`,
     singleWorkList:`${getHost('miniapi', ENV)}/community/works`,
+    getScene: `${getHost('miniapi', ENV)}/miniProgram/category/scene`
   }
 }
 export default {

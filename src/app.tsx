@@ -30,13 +30,13 @@ class _App extends Component {
   config: Config = {
     pages: [
     //   'pages/bank/index2',
-      //'pages/home/index',
+      'pages/home/index',
       //'pages/demoZengYJ/index',
-      'pages/2demoZengYJ/index',
-      'pages/undertakeBank/index',
+    //   'pages/2demoZengYJ/index',
+    //   'pages/undertakeBank/index',
       // 'pages/browser/index',
       // 'pages/filter/index',
-      //'pages/editor/index',
+      'pages/editor/index',
       // 'pages/segment/index',
       // 'pages/dynamic/index',
       // 'pages/error/index',

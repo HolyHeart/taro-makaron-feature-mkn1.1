@@ -33,7 +33,7 @@
 	},
 	"compileType": "miniprogram",
 	"libVersion": "2.11.3",
-	"appid": "wx5ff7d835898d1933",
+	"appid": "wxcfe56965f4d986f0",
 	"projectname": "taro-makaron",
 	"miniprogramRoot": "dist/",
 	"cloudfunctionRoot": "cloudfunctions/",

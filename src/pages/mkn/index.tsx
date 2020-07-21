@@ -395,7 +395,7 @@ class Editor extends Component {
   initSceneData = async (callback) => {
     ///获取globalData.sceneConfig数据
     service.home.getCateGoryAndScenes() //test
-    const res = await  service.mkn.getScene('370180454781603840')
+    const res = await service.mkn.getTemplate('JKXHFK03590')
 
     res.result.result.sceneConfig = tool.JSON_parse(res.result.result.sceneConfig);
     res.result.result.sceneConfig.cover = {

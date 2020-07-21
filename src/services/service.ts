@@ -654,14 +654,12 @@ export const share = {
 }
 
 export const mkn = {
-  getScene: function (sceneId) {
+  getTemplate: function (templateCode) {
     const reqData = {
       method: 'GET',
-      url: api.share.getScene,
+      url: api.mkn.getTemplate + templateCode,
       header: { Accept: '*/*' },
-      data: {
-        sceneId,
-      },
+      data: {},
     }
     return request(reqData)
   },

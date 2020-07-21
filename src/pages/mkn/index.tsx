@@ -360,95 +360,9 @@ class Editor extends Component {
     ///获取globalData.sceneConfig数据
     service.home.getCateGoryAndScenes() //test
     const res = await service.mkn.getTemplate('JKXHFK03590')
+    let result = this.transformTemplateRes(res.result.result)
 
-    res.result.result.sceneConfig = tool.JSON_parse(res.result.result.sceneConfig);
-    res.result.result.sceneConfig.cover = {
-        "support": true,
-        "list": [{
-            "id": 1584540917922,
-            type: 'normal',
-            "imageUrl": "https://static01.versa-ai.com/upload/5730291ec092/0aa7ae3d-f243-4639-9f2e-dbcfeceda513.png",
-            "zIndex": 6,
-            "fixed": true,
-            "isActive": false,
-            "size": {
-              "default": 1,
-              "zoomInMax": 1,
-              "zoomOutMin": 1
-            },
-            "rotate": 0,
-            "position": {
-              "place": "10",
-              "xAxis": {
-                "derection": "left",
-                "offset": 0.5
-              },
-              "yAxis": {
-                "derection": "top",
-                "offset": 0.5
-              }
-            },
-            visible: true,
-            show: true,
-          },
-          {
-            "id": 1584540623143,
-            type: 'bankLogo',
-            "imageUrl": "https://static01.versa-ai.com/upload/e69f99eb9523/7f641fb8-22d2-4044-93e0-e7eecf108549.png",
-            "zIndex": 3,
-            "fixed": true,
-            "isActive": false,
-            "size": {
-              "default": 1,
-              "zoomInMax": 1,
-              "zoomOutMin": 1
-            },
-            "rotate": 0,
-            "position": {
-              "place": "10",
-              "xAxis": {
-                "derection": "left",
-                "offset": 0.5
-              },
-              "yAxis": {
-                "derection": "top",
-                "offset": 0.5
-              }
-            },
-            visible: false,
-            deleted: true,
-            width: 300
-          },
-          {
-            "id": 15845406231464,
-            type: 'myLogo',
-            "imageUrl": "https://static01.versa-ai.com/upload/b32de171a9fb/d964c5cb-109e-4631-9200-745634da9552.png",
-            "zIndex": 3,
-            "fixed": true,
-            "isActive": false,
-            "size": {
-              "default": 1,
-              "zoomInMax": 1,
-              "zoomOutMin": 1
-            },
-            "rotate": 0,
-            "position": {
-              "place": "10",
-              "xAxis": {
-                "derection": "left",
-                "offset": 0.5
-              },
-              "yAxis": {
-                "derection": "top",
-                "offset": 0.5
-              }
-            },
-            visible: false,
-            deleted: false
-          }
-        ]
-      }
-    globalData.sceneConfig=res.result.result
+    globalData.sceneConfig=result.currentScene
     /////
     const currentScene = globalData.sceneConfig//来自于主页给每一项设置的，
     console.log(currentScene,'initiating the first scene&&adding')
@@ -1638,6 +1552,87 @@ class Editor extends Component {
   changeNav() {
     this.app.aldstat.sendEvent('保存后返回首页', '回到首页')
     Taro.navigateTo({ url: '/pages/home/index' })
+  }
+
+  transformTemplateRes(result:any){
+      let foreground = result.config.layerConfig.filter(item=>{
+          return item.type === undefined && item.actionType === undefined
+      })[0];
+      let newForeground = {  //存储切图信息
+        id: 'foreground',
+        remoteUrl: foreground.url,
+        zIndex: foreground.order,
+        width: 0,
+        height: 0,
+        x: 0,
+        y: 0,
+        rotate: foreground.position.rotation,
+        originWidth: 0, // 原始宽度
+        originHeight: 0, // 原始高度
+        autoWidth: 0, // 自适应后的宽度
+        autoHeight: 0, // 自适应后的高度
+        autoScale: 0, // 相对画框缩放比例
+        fixed: false, // 是否固定
+        isActive: true, // 是否激活
+        loaded: false, // 是否加载完毕
+        visible: true, // 是否显示
+      }
+      let currentScene = result.config.layerConfig.filter(item=>{
+          return item.actionType = 'CHANGEBG';
+      })[0]
+      let coverList = result.config.layerConfig.filter(item=>{
+        return item.type && item.type.indexOf('Sticker') !== -1;
+    }) 
+    coverList = coverList.map(item => {
+        return {
+            "id": Math.random(),
+            "imageUrl": item.url,
+            "zIndex": 6,
+            "fixed": true,
+            "isActive": false,
+            "size": {
+              "default": item.position.defaultScale,
+              "zoomInMax": 1,
+              "zoomOutMin": 1
+            },
+            "rotate": item.position.rotation,
+            "position": {
+              "place": item.position.relativePosition,
+              "xAxis": {
+                "derection": "left",
+                "offset": item.position.left
+              },
+              "yAxis": {
+                "derection": "top",
+                "offset": item.position.top
+              }
+            }
+          }
+    })
+    let newCoverList = {
+        "support": true,
+        "list": coverList
+      }
+      let newCurrentScene = {
+        bgUrl: currentScene.url,
+        bgZIndex: currentScene.order,
+        filterUrl: "",
+        sceneConfig: {
+            cover: newCoverList
+        },
+        sceneId: "370960045183913984",
+        sceneName: "白色飞马",
+        sceneType: 2,
+        segmentType: 0,
+        segmentZIndex: 2,
+        thumbnailUrl: ''
+      }
+      
+      return {
+        foreground: newForeground,
+        currentScene: newCurrentScene
+      }
+      
   }
   render() {
     const { loading, rawImage, frame, customBg, foreground, coverList, sceneList, currentScene, result, canvas } = this.state

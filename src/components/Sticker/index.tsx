@@ -137,6 +137,7 @@ class Sticker extends Component {
 
     //console.log(stylePrams,'this is stylePrams from Editor!!!') 图片的属性；原大小-自动大小-实时大小
 
+    console.log(stylePrams.fixed,'this is stylePrams')
     return stylePrams.fixed || false
   }
 

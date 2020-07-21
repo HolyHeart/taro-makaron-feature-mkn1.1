@@ -1,6 +1,6 @@
 import { ComponentClass } from 'react'
 import Taro, { Component, Config } from '@tarojs/taro'
-import { View, Button, Image, Canvas } from '@tarojs/components'
+import { View, Button, Image, Canvas,ScrollView } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 
 import { getSystemInfo } from '@/model/actions/global'
@@ -170,10 +170,14 @@ class Editor extends Component {
       },
     },
     drawBoard: {
-      width: '690rpx',
-      height: '920rpx'
+      width: '650rpx',
+      height: '416rpx'
     },
-    ableToShareToQZone: false
+    ableToShareToQZone: false,
+    screenHeight: 0,//计算滚动用
+    screenWidth: 0,
+    titleHeight: 0,
+    tooltipHeight: 0,
   }
 
   app = Taro.getApp()
@@ -195,7 +199,39 @@ class Editor extends Component {
     number: 0,
     date: 0,
   }
-  componentWillMount() { }
+  componentWillMount() {
+    const { getSystemInfo } = this.props
+    const systemInfo:any = Taro.getSystemInfoSync()
+    if (/iphone x/i.test(systemInfo.model) || (/iphone/i.test(systemInfo.model) && /unknown/.test(systemInfo.model)) || /iphone\s11/i.test(systemInfo.model)) {
+      // iPhone XS Max China-exclusive<iPhone11,6>
+      // 'iPhone X'
+      systemInfo.isIphoneX = true
+    } else {
+      systemInfo.isIphoneX = false
+    }
+    getSystemInfo(systemInfo)
+    const setTop = Taro.getStorageSync('setTop')
+    let tooltipHeight = 0
+    if (!setTop) {
+      tooltipHeight = systemInfo.screenWidth / 750 * 92
+    }
+    console.log('🔥初始化高度🔥', '屏幕高度：', systemInfo.screenHeight, '屏幕宽度：', systemInfo.screenWidth, '系统参数：', systemInfo)
+    this.setState({
+      screenHeight: systemInfo.screenHeight,
+      screenWidth: systemInfo.screenWidth,
+      tooltipHeight: tooltipHeight,
+      picHeight: systemInfo.screenWidth * 0.8 * 0.94 * 0.5 * 0.9 + 1
+    })
+    let totalTopHeight = 72
+    if (/iphone x/i.test(systemInfo.model) || (/iphone/i.test(systemInfo.model) && /unknown/.test(systemInfo.model)) || /iphone\s11/i.test(systemInfo.model)) {
+      totalTopHeight = 85
+    } else if (systemInfo.model.indexOf('iPhone') !== -1) {
+      totalTopHeight = 62
+    }
+    this.setState({
+      titleHeight: totalTopHeight
+    })
+  }
 
   componentDidMount() {
     wx.cloud.init()
@@ -578,8 +614,8 @@ class Editor extends Component {
     if ((detail.width / detail.height) >= (3 / 4)) {
       this.setState({
         drawBoard: {
-          width: '690rpx',
-          height: `${detail.height * 345 / detail.width * 2}rpx` //690 920
+          width: '650rpx',
+          height: `416rpx` //先写固定
         }
       }, () => {
         setTimeout(() => {
@@ -589,8 +625,8 @@ class Editor extends Component {
     } else {
       this.setState({
         drawBoard: {
-          height: '920rpx',
-          width: `${detail.width * 460 / detail.height * 2}rpx`
+          height: '650rpx',
+          width: `416rpx`
         }
       }, () => {
         setTimeout(() => {
@@ -665,7 +701,7 @@ class Editor extends Component {
   }
   // 贴纸
   onCoverLoaded = (detail: object, item?: any) => {
-    // console.log('onCoverLoaded', detail, item)
+    //console.log('onCoverLoaded', detail, item)
     const { width, height } = detail
     const originInfo = {
       originWidth: width,
@@ -1639,121 +1675,160 @@ class Editor extends Component {
     this.app.aldstat.sendEvent('保存后返回首页', '回到首页')
     Taro.navigateTo({ url: '/pages/home/index' })
   }
+
+  activatePicture(targetIndex){
+    let tempCover=[...this.state.coverList];
+    tempCover.forEach((item,index)=>{
+      if(index===targetIndex){
+        item.isActive=true
+        item.fixed=true
+      }else{
+        item.isActive=false
+        item.fixed=true
+      }
+    })
+
+    let temp={...this.state.foreground}
+    temp.isActive=false
+    temp.fixed=true
+
+    //console.log(JSON.stringify(tempCover,null,2),'this1 is to check tempCover')
+
+    this.setState({
+      foreground:{...temp},
+      coverList:[...tempCover]
+    },()=>{console.log(this.state.coverList,'coverList')})
+  }
+
+  activateForeground(item){
+    let temp={...item}
+    temp.isActive=true
+    temp.fixed=false
+    let tempCover=[...this.state.coverList];
+    tempCover.forEach((item)=>{
+      item.isActive=false
+      item.fixed=true
+    })
+    console.log(tempCover,'this is to check')
+    this.setState({
+      foreground:{...temp},
+      coverList:[...tempCover]
+    })
+  }
+
+
   render() {
     const { loading, rawImage, frame, customBg, foreground, coverList, sceneList, currentScene, result, canvas } = this.state
+
     return (
-      <View className='page-editor'>
-        <Title
-          color="#333"
-          leftStyleObj={{ left: Taro.pxTransform(8) }}
-          showBack={true}
-        >懒人抠图</Title>
-        <View className="main">
-          <View className="pic-section">
-            <View className={`raw ${(foreground.remoteUrl && foreground.loaded) ? 'hidden' : ''}`} style={{ width: this.state.drawBoard.width, height: this.state.drawBoard.height }}>
-              <Image src={rawImage.localUrl} style="width:100%;height:100%" mode="aspectFit" />
-            </View>
-            <View style={{ width: this.state.drawBoard.width, height: this.state.drawBoard.height }} className={`crop`} id="crop">
-              {currentScene.type === 'recommend' &&
-              <View className="background-image">
-                <Image
-                  src={currentScene.bgUrl}
-                  style="width:100%;height:100%"
-                  mode="scaleToFill"
-                  onLoad={this.handleBgLoaded}
-                  onClick={this.handleBackgroundClick}
-                />
-              </View>
-              }
-              <Sticker
-                ref="foreground"
-                url={foreground.remoteUrl}
-                stylePrams={foreground}
-                framePrams={frame}
-                onChangeStyle={this.handleChangeStyle}
-                onImageLoaded={this.onForegroundLoaded}
-                onTouchstart={this.handleForegroundTouchstart}
-                onTouchend={this.handleForegroundTouchend}
-              />
-              {coverList.map(item => {
-                return <Sticker
-                  key={item.id}
-                  url={item.remoteUrl}
-                  stylePrams={item}
+      <ScrollView scrollY className="scrollPage" style={{ height: this.state.screenHeight + 'px' }}>
+        <View className='page-editor'>
+          <Title
+            color="#333"
+            leftStyleObj={{ left: Taro.pxTransform(8) }}
+            showBack={true}
+          >懒人抠图</Title>
+          <View className="main">
+            <View className="pic-section">
+              <View style={{ width: this.state.drawBoard.width, height: this.state.drawBoard.height }} className={`crop`} id="crop">
+                {currentScene.type === 'recommend' &&
+                <View className="background-image">
+                  <Image
+                    src={currentScene.bgUrl}
+                    style="width:100%;height:100%"
+                    mode="scaleToFill"
+                    onLoad={this.handleBgLoaded}
+                    onClick={this.handleBackgroundClick}
+                  />
+                </View>
+                }
+                <Sticker
+                  ref="foreground"
+                  url={foreground.remoteUrl}
+                  stylePrams={foreground}
                   framePrams={frame}
-                  onChangeStyle={this.handleChangeCoverStyle}
-                  onImageLoaded={this.onCoverLoaded}
-                  onTouchstart={this.handleCoverTouchstart}
-                  onTouchend={this.handleCoverTouchend}
-                  onDeleteSticker={this.handleDeleteCover.bind(this, item)}
+                  onChangeStyle={this.handleChangeStyle}
+                  onImageLoaded={this.onForegroundLoaded}
+                  onTouchstart={this.handleForegroundTouchstart}
+                  onTouchend={this.handleForegroundTouchend}
                 />
-              })}
+                {coverList.map(item => {
+                  return <Sticker
+                    key={item.id}
+                    url={item.remoteUrl}
+                    stylePrams={item}
+                    framePrams={frame}
+                    onChangeStyle={this.handleChangeCoverStyle}
+                    onImageLoaded={this.onCoverLoaded}
+                    onTouchstart={this.handleCoverTouchstart}
+                    onTouchend={this.handleCoverTouchend}
+                    onDeleteSticker={this.handleDeleteCover.bind(this, item)}
+                  />
+                })}
+              </View>
             </View>
+
+            <View className="scrollBox">
+              <ScrollView scrollX className="scrollList" style="width:100%;height:250px;white-space: nowrap;overflow:hidden;">
+                  {/*<View className="pictureList">*/}
+                    <Image  id="sticker" src={foreground.remoteUrl} onClick={this.activateForeground.bind(this,foreground)} className='singlePicture'/>
+                    <Image  id="sticker" src={foreground.remoteUrl} onClick={this.activateForeground.bind(this,foreground)} className='singlePicture'/>
+                    {this.state.coverList.map((item,index) => {
+                      return (
+                        <Image src={item.remoteUrl} onClick={this.activatePicture.bind(this,index)} className='singlePicture' />)
+                    })}
+                  {/*</View>*/}
+              </ScrollView>
+            </View>
+
+            <View className="buttonPart" >
+                <Button style='flex:1;z-index:2' id='addPhoto1' openType="getUserInfo" className="custom-button pink" hoverClass="btn-hover" onGetUserInfo={this.todo}>{this.state.chooseText}</Button>
+                {Taro.getStorageSync('saveNumber').number === 0 ?
+                  <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.handleOpenResult} openType="share">分享并保存</Button>
+                  : <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.saveImg}>保存</Button>}
+            </View>
+
           </View>
 
-          <MarginTopWrap config={{ large: 60, small: 40, default: 20 }} >
-            <View style="display:flex;margin-top:120rpx">
-              <Button style='flex:1;z-index:2' id='addPhoto' openType="getUserInfo" className="custom-button pink" hoverClass="btn-hover" onGetUserInfo={this.todo}>{this.state.chooseText}</Button>
-              {Taro.getStorageSync('saveNumber').number === 0 ?
-                <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.handleOpenResult} openType="share">分享并保存</Button>
-                : <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.saveImg}>保存</Button>}
-            </View>
-          </MarginTopWrap>
-          {this.state.isshow === true ? <Dialog
-            content={this.state.content}
-            cancelText={this.state.cancelText}
-            confirmText={this.state.confirmText}
-            isshow={this.state.isshow}
+          <View class="canvas-wrap">
+            <Canvas
+              disable-scroll={true}
+              style={`width: ${frame.width * canvas.ratio}px; height: ${frame.height * canvas.ratio}px;`}
+              canvasId={canvas.id} />
+          </View>
+
+          <Loading visible={loading} />
+
+          {/*<View className='newGuide' style={{ display: this.state.hasGuide === false ? 'none' : 'block' }}>*/}
+            {/*<Image src={addTips} alt="" className='tips' style={{ top: this.state.guiderTop + 'px' }} />*/}
+          {/*</View>*/}
+
+          {/*<AuthModal />*/}
+
+          {result.show &&
+          <ResultModal
+            type='image'
+            image={{
+              url: result.shareImage.localUrl,
+            }}
+            cropHeight={this.state.drawBoard.height}
+            cropWidth={this.state.drawBoard.width}
             renderButton={
-              <View className="wx-dialog-footer" style="display:flex;margin-bottom:30rpx">
-                <Button className="wx-dialog-btn" onClick={this.handelCancel} style="flex:1">
-                  {this.state.cancelText}
-                </Button>
-                <Button className="wx-dialog-btn" onClick={this.handelVideoAd} style="flex:1">
-                  {this.state.confirmText}
-                </Button>
+              <View className="btn-wrap">
+                <Button className="custom-button pink btn-1" hoverClass="btn-hover" id="btnNav" openType="share">继续分享</Button>
+                {this.state.ableToShareToQZone ?
+                  <View>
+                    <Button className="custom-button dark btn-2" hoverClass="btn-hover" onClick={this.publishToQzone}>同步到说说</Button>
+                    <Button className="custom-button dark btn-3" hoverClass="btn-hover" onClick={this.handlePlayAgain}>再玩一次</Button>
+                  </View> : <View>
+                    <Button className="custom-button dark btn-4" hoverClass="btn-hover" onClick={this.changeNav}>回到首页</Button>
+                  </View>}
               </View>
             }
-          /> : ''}
-        </View>
-
-        <View class="canvas-wrap">
-          <Canvas
-            disable-scroll={true}
-            style={`width: ${frame.width * canvas.ratio}px; height: ${frame.height * canvas.ratio}px;`}
-            canvasId={canvas.id} />
-        </View>
-
-        <Loading visible={loading} />
-
-        <View className='newGuide' style={{ display: this.state.hasGuide === false ? 'none' : 'block' }}>
-          <Image src={addTips} alt="" className='tips' style={{ top: this.state.guiderTop + 'px' }} />
-        </View>
-
-        <AuthModal />
-        {result.show &&
-        <ResultModal
-          type='image'
-          image={{
-            url: result.shareImage.localUrl,
-          }}
-          cropHeight={this.state.drawBoard.height}
-          cropWidth={this.state.drawBoard.width}
-          renderButton={
-            <View className="btn-wrap">
-              <Button className="custom-button pink btn-1" hoverClass="btn-hover" id="btnNav" openType="share">继续分享</Button>
-              {this.state.ableToShareToQZone ?
-                <View>
-                  <Button className="custom-button dark btn-2" hoverClass="btn-hover" onClick={this.publishToQzone}>同步到说说</Button>
-                  <Button className="custom-button dark btn-3" hoverClass="btn-hover" onClick={this.handlePlayAgain}>再玩一次</Button>
-                </View> : <View>
-                  <Button className="custom-button dark btn-4" hoverClass="btn-hover" onClick={this.changeNav}>回到首页</Button>
-                </View>}
-            </View>
+          />
           }
-        />
-        }
-      </View>
+        </View>
+      </ScrollView>
     )
   }
 }

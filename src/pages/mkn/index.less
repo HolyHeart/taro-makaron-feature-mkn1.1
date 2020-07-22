@@ -42,6 +42,21 @@
     }
   }
 
+  .scrollList{
+    height:200px;
+  }
+
+  .text{
+    width: 110px;
+    height: 28px;
+    line-height: 28px;
+    margin-top: 4px;
+    text-align: center;
+  }
+
+  .block{
+    display: inline-block;
+  }
 
   .scrollBox{
   //  width: 100%;
@@ -50,17 +65,26 @@
   //  white-space: nowrap;
   //  margin-top: 100px;
     margin: 30px;
+    &.listCenter{
+      text-align: center;
+    }
     //.pictureList{
-    //  height: auto;
-    //  display: inline-block;
-    //  margin-right: 23px;
-    //  width: 200px;
-        .singlePicture,#sticker{
-          border: 1px solid red;
-          height: 160px;
-          width: 200px;
-          margin: 5px 10px;
-          display: inline-block;
+    //  margin: auto;
+        .singleForeground{
+          width:110px;
+          height:112px;
+          background:rgba(255,51,102,0.6);
+          border-radius:4px;
+          margin-right: 10px;
+          //display: inline-block;
+        }
+        .singlePicture{
+          width:110px;
+          height:110px;
+          background:rgba(0,0,0,0.4);
+          border-radius:4px;
+          margin-right: 10px;
+          //display: inline-block;
         }
     //}
   }
@@ -70,7 +94,7 @@
 
   .buttonPart {
     margin:auto;
-    margin-top: 500px;
+    margin-top: 80px;
     display: flex;
     width: 700px;
     height: 90px;

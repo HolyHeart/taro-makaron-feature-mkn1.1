@@ -1124,7 +1124,6 @@ class Editor extends Component {
 
     const imageRatio = originWidth / originHeight
     const params = tool.JSON_parse(currentScene.sceneConfig)
-    console.log(params,333333)
     const autoScale = parseFloat(params.size.default)
 
     const result = {
@@ -1625,7 +1624,7 @@ class Editor extends Component {
       })[0]
       let coverList = result.config.layerConfig.filter(item=>{
         return item.type && item.type.indexOf('Sticker') !== -1;
-    }) 
+      })
     coverList = coverList.map(item => {
         return {
             "id": Math.random(),
@@ -1710,13 +1709,14 @@ class Editor extends Component {
         segmentType: 0,
         thumbnailUrl: result.thumbnailUrl
       }
-      
+
       return {
         foreground: newForeground,
-        currentScene: newCurrentScene
+        currentScene: newCurrentScene,
       }
-      
+
   }
+
   activatePicture(targetIndex){
     let tempCover=[...this.state.coverList];
     tempCover.forEach((item,index)=>{
@@ -1809,12 +1809,37 @@ class Editor extends Component {
               </View>
             </View>
 
-            <View className="scrollBox">
-              <ScrollView scrollX className="scrollList" style="width:100%;height:250px;white-space: nowrap;overflow:hidden;">
-                  {/*<View className="pictureList">*/}
+            <View className={`scrollBox ${coverList.length<=2? 'listCenter':''}`}>
+              <ScrollView scrollX className="scrollList" style="width:100%;white-space: nowrap;overflow:hidden;">
+                  <View className="block">
+                    <Image src={foreground.remoteUrl} onClick={this.activateForeground.bind(this,foreground)} className="singleForeground" mode="aspectFit"/>
+                    <View className="text">人物</View>
+                  </View>
+                <View className="block">
+                  <Image src={foreground.remoteUrl} onClick={this.activateForeground.bind(this,foreground)} className="singleForeground" mode="aspectFit"/>
+                  <View className="text">人物</View>
+                </View>
+                <View className="block">
+                  <Image src={foreground.remoteUrl} onClick={this.activateForeground.bind(this,foreground)} className="singleForeground" mode="aspectFit"/>
+                  <View className="text">人物</View>
+                </View>
+                <View className="block">
+                  <Image src={foreground.remoteUrl} onClick={this.activateForeground.bind(this,foreground)} className="singleForeground" mode="aspectFit"/>
+                  <View className="text">人物</View>
+                </View>
+                <View className="block">
+                  <Image src={foreground.remoteUrl} onClick={this.activateForeground.bind(this,foreground)} className="singleForeground" mode="aspectFit"/>
+                  <View className="text">人物</View>
+                </View>
+
+                    {/*<View className="text">人物</View>*/}
                     {this.state.coverList.map((item,index) => {
                       return (
-                        <Image src={item.remoteUrl} onClick={this.activatePicture.bind(this,index)} className='singlePicture' />)
+                      <View className="block">
+                        <Image src={item.remoteUrl} onClick={this.activatePicture.bind(this,index)} className="singlePicture" mode="aspectFit"  />
+                        <View className="text">{`文字${index+1}`}</View>
+                      </View>
+                        )
                     })}
                   {/*</View>*/}
               </ScrollView>

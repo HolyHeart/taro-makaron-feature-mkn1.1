@@ -540,7 +540,7 @@ const INITIAL_STATE = {
             },
             {
               "id": 1584540623143,
-              type: 'bankLogo'
+              type: 'bankLogo',
               "imageUrl": "https://static01.versa-ai.com/upload/e69f99eb9523/7f641fb8-22d2-4044-93e0-e7eecf108549.png",
               "zIndex": 3,
               "fixed": true,

@@ -178,6 +178,7 @@ class Editor extends Component {
     screenWidth: 0,
     titleHeight: 0,
     tooltipHeight: 0,
+    saved:false
   }
 
   app = Taro.getApp()
@@ -760,12 +761,12 @@ class Editor extends Component {
           remoteUrl: '',
         },
         show: true
-      }
+      },
     }, async () => {
       const { url } = await service.base.upload(canvasImageUrl)
       this.setState({
         result: {
-          show: this.state.result.show,
+          // show: this.state.result.show,
           shareImage: {
             localUrl: canvasImageUrl,
             remoteUrl: url, //获得远端的url
@@ -1583,6 +1584,7 @@ class Editor extends Component {
     this.setState({
       isshow: true,
       content: '观看完整的视频广告后，才可以保存这张图片哦~',
+      saved:true
     })
   }
   handelCancel() {
@@ -1815,23 +1817,6 @@ class Editor extends Component {
                     <Image src={foreground.remoteUrl} onClick={this.activateForeground.bind(this,foreground)} className="singleForeground" mode="aspectFit"/>
                     <View className="text">人物</View>
                   </View>
-                <View className="block">
-                  <Image src={foreground.remoteUrl} onClick={this.activateForeground.bind(this,foreground)} className="singleForeground" mode="aspectFit"/>
-                  <View className="text">人物</View>
-                </View>
-                <View className="block">
-                  <Image src={foreground.remoteUrl} onClick={this.activateForeground.bind(this,foreground)} className="singleForeground" mode="aspectFit"/>
-                  <View className="text">人物</View>
-                </View>
-                <View className="block">
-                  <Image src={foreground.remoteUrl} onClick={this.activateForeground.bind(this,foreground)} className="singleForeground" mode="aspectFit"/>
-                  <View className="text">人物</View>
-                </View>
-                <View className="block">
-                  <Image src={foreground.remoteUrl} onClick={this.activateForeground.bind(this,foreground)} className="singleForeground" mode="aspectFit"/>
-                  <View className="text">人物</View>
-                </View>
-
                     {/*<View className="text">人物</View>*/}
                     {this.state.coverList.map((item,index) => {
                       return (
@@ -1845,13 +1830,41 @@ class Editor extends Component {
               </ScrollView>
             </View>
 
-            <View className="buttonPart" >
+            {!this.state.result.shareImage.remoteUrl&&<View className="buttonPart" >
                 <Button style='flex:1;z-index:2' id='addPhoto1' openType="getUserInfo" className="custom-button pink" hoverClass="btn-hover" onGetUserInfo={this.todo}>{this.state.chooseText}</Button>
                 {Taro.getStorageSync('saveNumber').number === 0 ?
                   <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.handleOpenResult} openType="share">分享并保存</Button>
                   : <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.saveImg}>保存</Button>}
-            </View>
+            </View>}
 
+
+            {this.state.result.shareImage.remoteUrl&&<View className="btn-wrap">
+              <Button className="custom-button pink btn-1" hoverClass="btn-hover" id="btnNav" openType="share">继续分享</Button>
+              {this.state.ableToShareToQZone ?
+              <View>
+                <Button className="custom-button dark btn-2" hoverClass="btn-hover" onClick={this.publishToQzone}>同步到说说</Button>
+                <Button className="custom-button dark btn-3" hoverClass="btn-hover" onClick={this.handlePlayAgain}>再玩一次</Button>
+                </View> : <View>
+                <Button className="custom-button dark btn-4" hoverClass="btn-hover" onClick={this.changeNav}>回到首页</Button>
+              </View>}
+            </View>}
+
+            {this.state.isshow === true ? <Dialog
+              content={this.state.content}
+              cancelText={this.state.cancelText}
+              confirmText={this.state.confirmText}
+              isshow={this.state.isshow}
+              renderButton={
+                <View className="wx-dialog-footer" style="display:flex;margin-bottom:30rpx">
+                  <Button className="wx-dialog-btn" onClick={this.handelCancel} style="flex:1">
+                    {this.state.cancelText}
+                  </Button>
+                  <Button className="wx-dialog-btn" onClick={this.handelVideoAd} style="flex:1">
+                    {this.state.confirmText}
+                  </Button>
+                </View>
+              }
+            /> : ''}
           </View>
 
           <View class="canvas-wrap">
@@ -1869,28 +1882,28 @@ class Editor extends Component {
 
           {/*<AuthModal />*/}
 
-          {result.show &&
-          <ResultModal
-            type='image'
-            image={{
-              url: result.shareImage.localUrl,
-            }}
-            cropHeight={this.state.drawBoard.height}
-            cropWidth={this.state.drawBoard.width}
-            renderButton={
-              <View className="btn-wrap">
-                <Button className="custom-button pink btn-1" hoverClass="btn-hover" id="btnNav" openType="share">继续分享</Button>
-                {this.state.ableToShareToQZone ?
-                  <View>
-                    <Button className="custom-button dark btn-2" hoverClass="btn-hover" onClick={this.publishToQzone}>同步到说说</Button>
-                    <Button className="custom-button dark btn-3" hoverClass="btn-hover" onClick={this.handlePlayAgain}>再玩一次</Button>
-                  </View> : <View>
-                    <Button className="custom-button dark btn-4" hoverClass="btn-hover" onClick={this.changeNav}>回到首页</Button>
-                  </View>}
-              </View>
-            }
-          />
-          }
+          {/*{result.show &&*/}
+          {/*<ResultModal*/}
+            {/*type='image'*/}
+            {/*image={{*/}
+              {/*url: result.shareImage.localUrl,*/}
+            {/*}}*/}
+            {/*cropHeight={this.state.drawBoard.height}*/}
+            {/*cropWidth={this.state.drawBoard.width}*/}
+            {/*renderButton={*/}
+              {/*<View className="btn-wrap">*/}
+                {/*<Button className="custom-button pink btn-1" hoverClass="btn-hover" id="btnNav" openType="share">继续分享</Button>*/}
+                {/*{this.state.ableToShareToQZone ?*/}
+                  {/*<View>*/}
+                    {/*<Button className="custom-button dark btn-2" hoverClass="btn-hover" onClick={this.publishToQzone}>同步到说说</Button>*/}
+                    {/*<Button className="custom-button dark btn-3" hoverClass="btn-hover" onClick={this.handlePlayAgain}>再玩一次</Button>*/}
+                  {/*</View> : <View>*/}
+                    {/*<Button className="custom-button dark btn-4" hoverClass="btn-hover" onClick={this.changeNav}>回到首页</Button>*/}
+                  {/*</View>}*/}
+              {/*</View>*/}
+            {/*}*/}
+          {/*/>*/}
+          {/*}*/}
         </View>
       </ScrollView>
     )

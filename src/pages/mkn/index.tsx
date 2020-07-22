@@ -299,19 +299,19 @@ class Editor extends Component {
     // this.initRawImage()
     await Session.set()
     this.initSceneData(() => {
-      const firstViewEditor = Taro.getStorageSync('firstViewEditor')
-      if (!firstViewEditor) {
-        const query = wx.createSelectorQuery()
-        query.select('#addPhoto').boundingClientRect()
-        query.selectViewport().scrollOffset()//获取滚动区域，
-        query.exec((res) => {
-          this.setState({
-            hasGuide: true,
-            guiderTop: res[0].top - 77 - 15
-          })
-        })
-        Taro.setStorageSync('firstViewEditor', true)
-      }
+      // const firstViewEditor = Taro.getStorageSync('firstViewEditor')
+      // if (!firstViewEditor) {
+      //   const query = wx.createSelectorQuery()
+      //   query.select('#addPhoto').boundingClientRect()
+      //   query.selectViewport().scrollOffset()//获取滚动区域，
+      //   query.exec((res) => {
+      //     this.setState({
+      //       hasGuide: true,
+      //       guiderTop: res[0].top - 77 - 15
+      //     })
+      //   })
+      //   Taro.setStorageSync('firstViewEditor', true)
+      // }
     })
 
 
@@ -882,7 +882,7 @@ class Editor extends Component {
 
     const postfix = '?x-oss-process=image/resize,h_748,w_560'
     const { ratio = 3 } = canvas
-    const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
+    const sceneInfo = this.state.currentScene;
     let sceneConfig = {}
     try {
       sceneConfig = tool.JSON_parse(sceneInfo.sceneConfig)
@@ -1119,12 +1119,12 @@ class Editor extends Component {
   // 计算人物尺寸   //映射到背景的尺寸【add by YuJIN Zeng
   calcForegroundSize = () => {
     const { currentScene, sceneList, foreground, frame } = this.state
-    const { originWidth, originHeight } = foreground
+    const { originWidth, originHeight, defaultScale } = foreground
     // const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
 
     const imageRatio = originWidth / originHeight
-    const params = tool.JSON_parse(currentScene.sceneConfig)
-    const autoScale = parseFloat(params.size.default)
+    // const params = tool.JSON_parse(currentScene.sceneConfig)
+    const autoScale = parseFloat(defaultScale)
 
     const result = {
       autoScale,
@@ -1143,6 +1143,7 @@ class Editor extends Component {
     }
     result.width = result.autoWidth
     result.height = result.autoHeight
+    console.log(frame,result,666666)
 
     return result
   }
@@ -1152,12 +1153,13 @@ class Editor extends Component {
     const { originWidth, originHeight } = foreground
     width = width || foreground.width
     height = height || foreground.height
+    console.log(width,height,123123123)
     // const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
 
     const boxWidth = frame.width
     const boxHeight = frame.height
-    const sceneConfig = tool.JSON_parse(currentScene.sceneConfig)
-    const { position } = sceneConfig
+    // const sceneConfig = tool.JSON_parse(currentScene.sceneConfig)
+    const { position } = foreground
     const type = position.place || '0'
     const result = {
       x: 0,
@@ -1220,7 +1222,7 @@ class Editor extends Component {
         result.x = (boxWidth - width) * 0.5
         result.y = (boxHeight - height) * 0.5
     }
-    result.rotate = parseInt(sceneConfig.rotate)
+    result.rotate = parseInt(position.rotate)
     return result
 
     function location(position, boxWidth, boxHeight, width, height) {
@@ -1614,10 +1616,23 @@ class Editor extends Component {
         autoWidth: 0, // 自适应后的宽度
         autoHeight: 0, // 自适应后的高度
         autoScale: 0, // 相对画框缩放比例
+        defaultScale: foreground.position.defaultScale,
         fixed: false, // 是否固定
         isActive: true, // 是否激活
         loaded: false, // 是否加载完毕
         visible: true, // 是否显示
+        position: {
+          "place": foreground.position.relativePosition,
+          "xAxis": {
+            "derection": foreground.position.hasOwnProperty("left") ? "left" : "right",
+            "offset": foreground.position.left
+          },
+          "yAxis": {
+            "derection": foreground.position.hasOwnProperty("top") ? "top" : "bottom",
+            "offset": foreground.position.top
+          },
+          rotate: foreground.position.rotation
+        }
       }
       let currentScene = result.config.layerConfig.filter(item=>{
           return item.actionType = 'CHANGEBG';
@@ -1815,22 +1830,6 @@ class Editor extends Component {
                     <Image src={foreground.remoteUrl} onClick={this.activateForeground.bind(this,foreground)} className="singleForeground" mode="aspectFit"/>
                     <View className="text">人物</View>
                   </View>
-                <View className="block">
-                  <Image src={foreground.remoteUrl} onClick={this.activateForeground.bind(this,foreground)} className="singleForeground" mode="aspectFit"/>
-                  <View className="text">人物</View>
-                </View>
-                <View className="block">
-                  <Image src={foreground.remoteUrl} onClick={this.activateForeground.bind(this,foreground)} className="singleForeground" mode="aspectFit"/>
-                  <View className="text">人物</View>
-                </View>
-                <View className="block">
-                  <Image src={foreground.remoteUrl} onClick={this.activateForeground.bind(this,foreground)} className="singleForeground" mode="aspectFit"/>
-                  <View className="text">人物</View>
-                </View>
-                <View className="block">
-                  <Image src={foreground.remoteUrl} onClick={this.activateForeground.bind(this,foreground)} className="singleForeground" mode="aspectFit"/>
-                  <View className="text">人物</View>
-                </View>
 
                     {/*<View className="text">人物</View>*/}
                     {this.state.coverList.map((item,index) => {
@@ -1848,7 +1847,7 @@ class Editor extends Component {
             <View className="buttonPart" >
                 <Button style='flex:1;z-index:2' id='addPhoto1' openType="getUserInfo" className="custom-button pink" hoverClass="btn-hover" onGetUserInfo={this.todo}>{this.state.chooseText}</Button>
                 {Taro.getStorageSync('saveNumber').number === 0 ?
-                  <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.handleOpenResult} openType="share">分享并保存</Button>
+                  <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.handleOpenResult}>分享并保存</Button>
                   : <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.saveImg}>保存</Button>}
             </View>
 

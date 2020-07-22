@@ -376,6 +376,14 @@ class Editor extends Component {
               remoteUrl: Taro.getStorageSync('lastSeparateImage')
             }
           })
+        }else{
+          setTimeout(() => {
+            this.setState({
+              foreground: {
+                ...globalData.foreground,
+              }
+            })
+          }, 0);
         }
       })
     })
@@ -398,7 +406,10 @@ class Editor extends Component {
     const res = await service.mkn.getTemplate('JKXHFK03590')
     let result = this.transformTemplateRes(res.result.result)
 
-    globalData.sceneConfig=result.currentScene
+    globalData.sceneConfig=result.currentScene;
+    globalData.foreground = result.foreground;
+    globalData.choosedImage = result.foreground.remoteUrl;
+    let foreground = result.foreground;
     /////
     const currentScene = globalData.sceneConfig//来自于主页给每一项设置的，
     console.log(currentScene,'initiating the first scene&&adding')
@@ -408,7 +419,14 @@ class Editor extends Component {
         ...currentScene,
         type: 'recommend'
       }
-    }, () => {
+    }, async () => {
+        // setTimeout(() => {
+        //     this.setState({
+        //         foreground: {
+        //             ...foreground,
+        //         }
+        //     })
+        // }, 900);
       typeof callback === 'function' && callback()
     })
   }
@@ -1106,6 +1124,7 @@ class Editor extends Component {
 
     const imageRatio = originWidth / originHeight
     const params = tool.JSON_parse(currentScene.sceneConfig)
+    console.log(params,333333)
     const autoScale = parseFloat(params.size.default)
 
     const result = {
@@ -1642,14 +1661,54 @@ class Editor extends Component {
         bgZIndex: currentScene.order,
         filterUrl: "",
         sceneConfig: {
+            "filter": {
+                "imageUrls": [],
+                "position": {
+                "axis": "x",
+                "size": 1
+                }
+            },
+            "music": {
+                "fileUrl": ""
+            },
+            "fuse": {
+                "support": false
+            },
+            "watermark": false,
+            "position": {
+                "place": "9",
+                "xAxis": {
+                    "derection": "left",
+                    "offset": 0.46
+                },
+                "yAxis": {
+                    "derection": "bottom",
+                    "offset": 0
+                }
+            },
+            "size": {
+                "default": "0.75",
+                "zoomInMax": 1,
+                "zoomOutMin": 1
+            },
+            "rotate": 0,
+            "text": {
+                "support": false,
+                "defaultText": "",
+                "zIndex": 1,
+                "bgColor": "",
+                "textColor": "",
+                "fontSize": 15,
+                "bottom": 10
+            },
             cover: newCoverList
         },
-        sceneId: "370960045183913984",
-        sceneName: "白色飞马",
-        sceneType: 2,
+        // sceneId: "370960045183913984",
+        // sceneName: "白色飞马",
+        templateCode: result.templateCode,
+        templateName: result.templateName,
         segmentType: 0,
-        segmentZIndex: 2,
-        thumbnailUrl: ''
+        thumbnailUrl: result.thumbnailUrl
       }
       
       return {

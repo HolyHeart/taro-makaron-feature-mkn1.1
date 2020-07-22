@@ -12,7 +12,8 @@ interface GlobalProps {
   separateResult: object,
   styleInfoList:Array<object>,
   originalImageList:Array<object>,
-  sceneConfig:object
+  sceneConfig:object,
+  foreground: object
 }
 
 class GlobalObj implements GlobalProps {
@@ -28,6 +29,7 @@ class GlobalObj implements GlobalProps {
   originalImageList =[]
   styleInfoList:[]
   sceneConfig ={}
+  foreground = {}
   constructor (name) {
     this.name = name
   }

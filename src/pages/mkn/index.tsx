@@ -404,7 +404,7 @@ class Editor extends Component {
   initSceneData = async (callback) => {
     ///获取globalData.sceneConfig数据
     service.home.getCateGoryAndScenes() //test
-    const res = await service.mkn.getTemplate('JKXHFK03590')
+    const res = await service.mkn.getTemplate('QFCFUE1733')
     let result = this.transformTemplateRes(res.result.result)
 
     globalData.sceneConfig=result.currentScene;

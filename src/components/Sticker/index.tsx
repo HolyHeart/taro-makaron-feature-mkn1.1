@@ -444,7 +444,7 @@ class Sticker extends Component {
         className={`sticker-wrap ${stylePrams.fixed ? 'event-through' : ''} ${(stylePrams.visible && stylePrams.width > 0) ? '' : 'hidden' } ${stylePrams.isActive ? 'canChange':''}`}
         style={styleObj}
       >
-        <View className="buttonShow">
+        
         {/* <View style="position: absolute;left:0;top:0">{framePrams.width}</View> */}
         {/* <View style="position: absolute;left:0;top:20px">{stylePrams.autoWidth}</View> */}
         {/* <View style="position: absolute;left:0;top:20px">{stylePrams.width}</View>  */}
@@ -482,7 +482,6 @@ class Sticker extends Component {
         >
           <Image src={mirror} mode="widthFix" style="width:100%;height:100%"/>
         </View>
-      </View>
       </View>
     )
   }

@@ -1775,15 +1775,14 @@ class Editor extends Component {
       foreground:{...temp},
       coverList:[...tempCover]
     },()=>{
-      setTimeout(()=>{
         const query = Taro.createSelectorQuery().in(this.$scope)
-        query.select('.buttonShow').node()
-      // query.selectViewport().scrollOffset()//获取滚动区域，
+        query.select('.crop >>> .canChange').boundingClientRect()
+        query.selectViewport().scrollOffset()//获取滚动区域，
         query.exec((res) => {
-        console.log(res,'1234556677')
-      })
-      this.changeButtonPosition(20,20)},3000)})
-
+            console.log(res,'1234556677')
+            this.changeButtonPosition(20,20)
+        })
+    })
   }
 
   showPicList(){

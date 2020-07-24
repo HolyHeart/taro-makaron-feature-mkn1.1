@@ -178,7 +178,11 @@ class Editor extends Component {
     screenWidth: 0,
     titleHeight: 0,
     tooltipHeight: 0,
-    saved:false
+    showType:0,
+    changeButton:{
+      top:0,
+      left:0
+    }
   }
 
   app = Taro.getApp()
@@ -1586,7 +1590,6 @@ class Editor extends Component {
     this.setState({
       isshow: true,
       content: '观看完整的视频广告后，才可以保存这张图片哦~',
-      saved:true
     })
   }
   handelCancel() {
@@ -1619,8 +1622,8 @@ class Editor extends Component {
         autoHeight: 0, // 自适应后的高度
         autoScale: 0, // 相对画框缩放比例
         defaultScale: foreground.position.defaultScale,
-        fixed: false, // 是否固定
-        isActive: true, // 是否激活
+        fixed: true, // 是否固定
+        isActive: false, // 是否激活
         loaded: false, // 是否加载完毕
         visible: true, // 是否显示
         position: {
@@ -1771,6 +1774,34 @@ class Editor extends Component {
     this.setState({
       foreground:{...temp},
       coverList:[...tempCover]
+    },()=>{
+      setTimeout(()=>{
+        const query = Taro.createSelectorQuery().in(this.$scope)
+        query.select('.buttonShow').node()
+      // query.selectViewport().scrollOffset()//获取滚动区域，
+        query.exec((res) => {
+        console.log(res,'1234556677')
+      })
+      this.changeButtonPosition(20,20)},3000)})
+
+  }
+
+  showPicList(){
+    let temp={...this.state.foreground}
+    temp.fixed=false
+    temp.isActive=true
+    this.setState({
+      showType:1,
+      foreground:{...temp}
+    })
+  }
+
+  changeButtonPosition(left,top){
+    this.setState({
+        changeButton:{
+          left,
+          top
+        }
     })
   }
 
@@ -1789,6 +1820,7 @@ class Editor extends Component {
           <View className="main">
             <View className="pic-section">
               <View style={{ width: this.state.drawBoard.width, height: this.state.drawBoard.height }} className={`crop`} id="crop">
+                <Button openType="getUserInfo" style={{left:this.state.changeButton.left+'px',top:this.state.changeButton.top+'px',zIndex:99}}  className="addPicture" hoverClass="btn-hover" onGetUserInfo={this.todo}>点击替换</Button>
                 {currentScene.type === 'recommend' &&
                 <View className="background-image">
                   <Image
@@ -1800,16 +1832,17 @@ class Editor extends Component {
                   />
                 </View>
                 }
-                <Sticker
-                  ref="foreground"
-                  url={foreground.remoteUrl}
-                  stylePrams={foreground}
-                  framePrams={frame}
-                  onChangeStyle={this.handleChangeStyle}
-                  onImageLoaded={this.onForegroundLoaded}
-                  onTouchstart={this.handleForegroundTouchstart}
-                  onTouchend={this.handleForegroundTouchend}
-                />
+                  <Sticker
+                    ref="foreground"
+                    url={foreground.remoteUrl}
+                    stylePrams={foreground}
+                    framePrams={frame}
+                    onChangeStyle={this.handleChangeStyle}
+                    onImageLoaded={this.onForegroundLoaded}
+                    onTouchstart={this.handleForegroundTouchstart}
+                    onTouchend={this.handleForegroundTouchend}
+                    onTodo={this.todo}
+                  />
                 {coverList.map(item => {
                   return <Sticker
                     key={item.id}
@@ -1826,7 +1859,7 @@ class Editor extends Component {
               </View>
             </View>
 
-            <View className={`scrollBox ${coverList.length<=2? 'listCenter':''}`}>
+            {this.state.showType&&<View className={`scrollBox ${coverList.length<=2? 'listCenter':''}`}>
               <ScrollView scrollX className="scrollList" style="width:100%;white-space: nowrap;overflow:hidden;">
                   <View className="block">
                     <Image src={foreground.remoteUrl} onClick={this.activateForeground.bind(this,foreground)} className="singleForeground" mode="aspectFit"/>
@@ -1843,14 +1876,20 @@ class Editor extends Component {
                     })}
                   {/*</View>*/}
               </ScrollView>
-            </View>
-
-            {!this.state.result.shareImage.remoteUrl&&<View className="buttonPart" >
-                <Button style='flex:1;z-index:2' id='addPhoto1' openType="getUserInfo" className="custom-button pink" hoverClass="btn-hover" onGetUserInfo={this.todo}>{this.state.chooseText}</Button>
-                {Taro.getStorageSync('saveNumber').number === 0 ?
-                  <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.handleOpenResult}>分享并保存</Button>
-                  : <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.saveImg}>保存</Button>}
             </View>}
+
+            {this.state.showType===0?
+              <View className="buttonPart" >
+                <Button style='flex:1;z-index:2' id='addPhoto1' openType="getUserInfo" className="custom-button pink" hoverClass="btn-hover" onClick={this.showPicList}>开始做同款</Button>
+              </View>:''}
+
+            {!this.state.result.shareImage.remoteUrl&&this.state.showType&&
+            <View className="buttonPart" >
+              {Taro.getStorageSync('saveNumber').number === 0 ?
+                <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.handleOpenResult}>分享并保存</Button>
+                : <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.saveImg}>保存</Button>}
+            </View>
+            }
 
 
             {this.state.result.shareImage.remoteUrl&&<View className="btn-wrap">
@@ -1890,6 +1929,7 @@ class Editor extends Component {
           </View>
 
           <Loading visible={loading} />
+
 
           {/*<View className='newGuide' style={{ display: this.state.hasGuide === false ? 'none' : 'block' }}>*/}
             {/*<Image src={addTips} alt="" className='tips' style={{ top: this.state.guiderTop + 'px' }} />*/}

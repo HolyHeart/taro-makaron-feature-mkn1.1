@@ -1,6 +1,6 @@
 import { ComponentClass } from 'react'
 import Taro, { Component } from '@tarojs/taro'
-import { View, Image } from '@tarojs/components'
+import { View, Image,Button } from '@tarojs/components'
 import tool from '../../utils/tool'
 import './index.less'
 import loading from '../../assets/images/pic_loading.png'
@@ -440,9 +440,11 @@ class Sticker extends Component {
     // console.log('sticker render', this.state.url)
     return (
       <View
-        className={`sticker-wrap ${stylePrams.fixed ? 'event-through' : ''} ${(stylePrams.visible && stylePrams.width > 0) ? '' : 'hidden' }`}
+        id={`${stylePrams.isActive ? 'canChange':''}Aim`}
+        className={`sticker-wrap ${stylePrams.fixed ? 'event-through' : ''} ${(stylePrams.visible && stylePrams.width > 0) ? '' : 'hidden' } ${stylePrams.isActive ? 'canChange':''}`}
         style={styleObj}
       >
+        <View className="buttonShow">
         {/* <View style="position: absolute;left:0;top:0">{framePrams.width}</View> */}
         {/* <View style="position: absolute;left:0;top:20px">{stylePrams.autoWidth}</View> */}
         {/* <View style="position: absolute;left:0;top:20px">{stylePrams.width}</View>  */}
@@ -480,6 +482,7 @@ class Sticker extends Component {
         >
           <Image src={mirror} mode="widthFix" style="width:100%;height:100%"/>
         </View>
+      </View>
       </View>
     )
   }

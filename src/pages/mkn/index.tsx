@@ -1780,7 +1780,10 @@ class Editor extends Component {
         query.selectViewport().scrollOffset()//获取滚动区域，
         query.exec((res) => {
             console.log(res,'1234556677')
-            this.changeButtonPosition(20,20)
+            const {left,top,width,height} = res[0];
+            let x = left + width/2;
+            let y = top + height/2;
+            this.changeButtonPosition(x,y)
         })
     })
   }
@@ -1819,7 +1822,6 @@ class Editor extends Component {
           <View className="main">
             <View className="pic-section">
               <View style={{ width: this.state.drawBoard.width, height: this.state.drawBoard.height }} className={`crop`} id="crop">
-                <Button openType="getUserInfo" style={{left:this.state.changeButton.left+'px',top:this.state.changeButton.top+'px',zIndex:99}}  className="addPicture" hoverClass="btn-hover" onGetUserInfo={this.todo}>点击替换</Button>
                 {currentScene.type === 'recommend' &&
                 <View className="background-image">
                   <Image
@@ -1901,6 +1903,8 @@ class Editor extends Component {
                 <Button className="custom-button dark btn-4" hoverClass="btn-hover" onClick={this.changeNav}>回到首页</Button>
               </View>}
             </View>}
+
+            <Button openType="getUserInfo" style={{left:this.state.changeButton.left+'px',top:this.state.changeButton.top+'px',zIndex:99}}  className="addPicture" hoverClass="btn-hover" onGetUserInfo={this.todo}>点击替换</Button>
 
             {this.state.isshow === true ? <Dialog
               content={this.state.content}

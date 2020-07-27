@@ -1625,7 +1625,7 @@ class Editor extends Component {
   transformTemplateRes(result:any){
       let foreground = result.config.layerConfig.filter(item=>{
           return item.type === undefined && item.actionType === undefined && item.wordStickerCode === undefined;
-      })[0];
+      })[0] || {position: {}};
       let newForeground = {  //存储切图信息
         id: 'foreground',
         remoteUrl: foreground.url,
@@ -1688,7 +1688,7 @@ class Editor extends Component {
             "offset": item.position.top
           }
         },
-        inList: !item.blendMode
+        inList: !item.blendMode && !(item.type && item.type.indexOf('Sticker') !== -1)
       }
       if(item.wordStickerCode){
         cover.data = item;
@@ -1877,6 +1877,7 @@ class Editor extends Component {
                     onTouchstart={this.handleForegroundTouchstart}
                     onTouchend={this.handleForegroundTouchend}
                     onTodo={this.todo}
+                    showBtn={true}
                   />
                 {coverList.map(item => {
                   return <Sticker
@@ -1898,7 +1899,7 @@ class Editor extends Component {
               <ScrollView scrollX className="scrollList" style="width:100%;white-space: nowrap;overflow:hidden;">
                   <View className="block">
                     {/* <View className={foreground.isActive? 'acitivated':''} >  */}
-                      <Image src={foreground.remoteUrl} onClick={this.activateForeground.bind(this,foreground)} className="singleForeground" mode="aspectFit"/> 
+                      <Image src={foreground.remoteUrl} onClick={this.activateForeground.bind(this,foreground)} className="singleForeground" mode="aspectFit"/>
                       <View className={foreground.isActive? 'acitivated':''} >{foreground.isActive? '点击替换':''}</View>
                     {/* </View>  */}
                     <View className="text">人物</View>

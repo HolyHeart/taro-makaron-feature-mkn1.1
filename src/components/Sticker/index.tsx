@@ -67,6 +67,7 @@ class Sticker extends Component {
       left: 0,
       top: 0,
     },
+    showBtn: false
   }
 
   state = {
@@ -440,7 +441,7 @@ class Sticker extends Component {
     // console.log('sticker render', this.state.url)
     return (
       <View
-        className={`sticker-wrap ${stylePrams.fixed ? 'event-through' : ''} ${(stylePrams.visible && stylePrams.width > 0) ? '' : 'hidden' } ${stylePrams.isActive ? 'canChange':''}`}
+        className={`sticker-wrap ${stylePrams.fixed ? 'event-through' : ''} ${(stylePrams.visible && stylePrams.width > 0) ? '' : 'hidden' } ${stylePrams.isActive && this.props.showBtn ? 'canChange':''}`}
         style={styleObj}
       >
         

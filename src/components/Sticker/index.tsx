@@ -1,6 +1,6 @@
 import { ComponentClass } from 'react'
 import Taro, { Component } from '@tarojs/taro'
-import { View, Image,Button } from '@tarojs/components'
+import { View, Image, Text } from '@tarojs/components'
 import tool from '../../utils/tool'
 import './index.less'
 import loading from '../../assets/images/pic_loading.png'
@@ -459,6 +459,8 @@ class Sticker extends Component {
             className={this.props.stylePrams.isMirror ? 'isMirror' : ''}
           />
         }
+        {/* {this.state.} */}
+
         <View className={`border ${stylePrams.isActive ? 'active' : ''}`}></View>
         <View className={`control move ${stylePrams.isActive ? 'active' : ''}`}
           onTouchstart={this.arrowOntouchstart}

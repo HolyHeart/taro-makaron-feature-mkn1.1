@@ -373,25 +373,19 @@ class Editor extends Component {
         }
       }, () => {
         this.initCoverData()
+        let data = {
+            foreground: {
+              ...globalData.foreground,
+            }
+          }
         if (Taro.getStorageSync('lastSeparateImage')) {
           // const { foreground } = this.state
-          setTimeout(() => {
-            this.setState({
-              foreground: {
-                ...globalData.foreground,
-                remoteUrl: Taro.getStorageSync('lastSeparateImage')
-              }
-            })
-          }, 0);
-        }else{
-          setTimeout(() => {
-            this.setState({
-              foreground: {
-                ...globalData.foreground,
-              }
-            })
-          }, 0);
+          data.foreground.remoteUrl = Taro.getStorageSync('lastSeparateImage');
         }
+        setTimeout(() => {
+            console.log(data,111222333)
+            this.setState(data);
+        }, 0);
       })
     })
   }
@@ -417,8 +411,6 @@ class Editor extends Component {
     globalData.foreground = result.foreground;
     globalData.choosedImage = result.foreground.remoteUrl;
     let foreground = result.foreground;
-    console.log(foreground,111222333)
-    /////
     const currentScene = globalData.sceneConfig//来自于主页给每一项设置的，
     console.log(currentScene,'initiating the first scene&&adding')
     this.setState({
@@ -448,6 +440,7 @@ class Editor extends Component {
     console.log(cover,'covering this is cover ,this is 边框') //是边框的信息
     this.themeData.rawCoverList = cover.list || []
     const coverList = work.formatRawCoverList(this.themeData.rawCoverList)
+    console.log(coverList,'ccccccccc')
 
     this.setState({
       coverList: coverList
@@ -618,6 +611,7 @@ class Editor extends Component {
         ...data
       }
     }, () => {
+      this.resetButton();
     })
   }
   handleForegroundTouchstart = (sticker) => {
@@ -649,7 +643,9 @@ class Editor extends Component {
     })
     this.setState({
       coverList: coverList
-    })
+    },()=>{
+      this.resetButton();
+    });
   }
   handleCoverTouchstart = (sticker) => {
     // console.log('handleCoverTouchstart', sticker)
@@ -1609,7 +1605,7 @@ class Editor extends Component {
 
   transformTemplateRes(result:any){
       let foreground = result.config.layerConfig.filter(item=>{
-          return item.type === undefined && item.actionType === undefined
+          return item.type === undefined && item.actionType === undefined && item.wordStickerCode === undefined;
       })[0];
       let newForeground = {  //存储切图信息
         id: 'foreground',
@@ -1647,14 +1643,14 @@ class Editor extends Component {
           return item.actionType = 'CHANGEBG';
       })[0]
       let coverList = result.config.layerConfig.filter(item=>{
-        return item.type && item.type.indexOf('Sticker') !== -1;
+        return (item.type && item.type.indexOf('Sticker') !== -1) || item.wordStickerCode;
       })
     coverList = coverList.map(item => {
         return {
             "id": Math.random(),
             "imageUrl": item.url,
             "zIndex": 6,
-            "fixed": true,
+            "fixed": item.isLock === '1' || item.clickThrough === '0',
             "isActive": false,
             "size": {
               "default": item.position.defaultScale,
@@ -1672,7 +1668,8 @@ class Editor extends Component {
                 "derection": "top",
                 "offset": item.position.top
               }
-            }
+            },
+            inList: !item.blendMode
           }
     })
     let newCoverList = {
@@ -1745,11 +1742,12 @@ class Editor extends Component {
     let tempCover=[...this.state.coverList];
     tempCover.forEach((item,index)=>{
       if(index===targetIndex){
-        item.isActive=true
-        item.fixed=true
+        item.isActive = true
+        console.log(item,666666)
+        // item.fixed = item.isLock === '1' || item.clickThrough === '1';
       }else{
-        item.isActive=false
-        item.fixed=true
+        item.isActive = false;
+        item.fixed = true;
       }
     })
 
@@ -1762,7 +1760,9 @@ class Editor extends Component {
     this.setState({
       foreground:{...temp},
       coverList:[...tempCover]
-    },()=>{console.log(this.state.coverList,'coverList')})
+    },()=>{
+      this.resetButton();
+    })
   }
 
   activateForeground(item){
@@ -1800,9 +1800,12 @@ class Editor extends Component {
     let temp={...this.state.foreground}
     temp.fixed=false
     temp.isActive=true
+    globalData.foreground = temp;
     this.setState({
       showType:1,
       foreground:{...temp}
+    },()=>{
+        this.resetButton();
     })
   }
 
@@ -1876,12 +1879,14 @@ class Editor extends Component {
                   </View>
                     {/*<View className="text">人物</View>*/}
                     {this.state.coverList.map((item,index) => {
-                      return (
-                      <View className="block">
-                        <Image src={item.remoteUrl} onClick={this.activatePicture.bind(this,index)} className="singlePicture" mode="aspectFit"  />
-                        <View className="text">{`文字${index+1}`}</View>
-                      </View>
-                        )
+                      return item.inList ? 
+                      (
+                        <View className="block">
+                            <Image src={item.remoteUrl} onClick={this.activatePicture.bind(this,index)} className="singlePicture" mode="aspectFit"  />
+                            <View className="text">{`文字${index+1}`}</View>
+                        </View>
+                      ):
+                      null
                     })}
                   {/*</View>*/}
               </ScrollView>

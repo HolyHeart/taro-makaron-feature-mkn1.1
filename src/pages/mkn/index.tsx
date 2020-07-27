@@ -56,7 +56,8 @@ type PageState = {
     autoHeight: number,
     autoScale: number,
     fixed: boolean,
-    visible: boolean
+    visible: boolean,
+    isMirror: boolean
   },
   coverList: Array<object>
 }
@@ -81,6 +82,8 @@ class Editor extends Component {
     disableScroll: true,
     enablePullDownRefresh: false
   }
+
+  selectedItem = null;
 
   state = {
     rawImage: {
@@ -383,7 +386,6 @@ class Editor extends Component {
           data.foreground.remoteUrl = Taro.getStorageSync('lastSeparateImage');
         }
         setTimeout(() => {
-            console.log(data,111222333)
             this.setState(data);
         }, 0);
       })
@@ -597,7 +599,8 @@ class Editor extends Component {
     this.setStateTarget('foreground', {
       originWidth: width,
       originHeight: height,
-      loaded: true
+      loaded: true,
+      isMirror: false
     }, () => {
       this.foregroundAuto()
     })
@@ -939,6 +942,7 @@ class Editor extends Component {
       x: foreground.x * ratio,
       y: foreground.y * ratio,
       rotate: foreground.rotate,
+      isMirror: foreground.isMirror
     }
     // 收集人物
     elements.push(element_foreground)
@@ -974,12 +978,21 @@ class Editor extends Component {
       }
     }
     // console.log('elements', elements)
-    function drawElement({ localUrl, width, height, x, y, rotate }) {
-      context.save()
-      context.translate(x + 0.5 * width, y + 0.5 * height)
-      context.rotate(rotate * Math.PI / 180)
-      context.drawImage(localUrl, -0.5 * width, -0.5 * height, width, height)
-      context.restore()
+    function drawElement({localUrl, width, height, x, y, rotate,isMirror}) {
+      if(isMirror){
+        context.save()
+        let cosR = Math.cos(rotate * Math.PI / 180);
+        let sinR = Math.sin(rotate * Math.PI / 180);
+        context.setTransform(-1 * cosR,-1 * sinR,-1 * sinR, cosR,x + 0.5 * width, y + 0.5 * height);
+        context.drawImage(localUrl, -0.5 * width, -0.5 * height, width, height)
+        context.restore()
+      }else{
+        context.save()
+        context.translate(x + 0.5 * width, y + 0.5 * height)
+        context.rotate(rotate * Math.PI / 180)
+        context.drawImage(localUrl, -0.5 * width, -0.5 * height, width, height)
+        context.restore()
+      }
       context.stroke()
     }
   }
@@ -1362,19 +1375,25 @@ class Editor extends Component {
     return result
   }
 
+  changeWord(){
+    Taro.showToast({
+      title: '暂不支持文字',
+      icon: 'success',
+      duration: 2000
+    })
+  }
+
   //上传图片的操作
   todo = (data) => {
     console.log(data,'datadatadataOftodo')//授权获得用户信息
     const { detail: { userInfo } } = data
     if (userInfo) {
       console.log(service,'this is service')
-
       service.base.loginAuth(data.detail)//【上传用户信息】
       globalData.userInfo = userInfo
-      if (this.state.hasGuide === true) {
-        this.setState({
-          hasGuide: false
-        })
+      console.log(this.selectedItem,111)
+      if(this.selectedItem.data && this.selectedItem.data.wordStickerCode){
+        return this.changeWord();
       }
       work.chooseImage({
         onTap: (index) => {
@@ -1646,31 +1665,35 @@ class Editor extends Component {
         return (item.type && item.type.indexOf('Sticker') !== -1) || item.wordStickerCode;
       })
     coverList = coverList.map(item => {
-        return {
-            "id": Math.random(),
-            "imageUrl": item.url,
-            "zIndex": 6,
-            "fixed": item.isLock === '1' || item.clickThrough === '0',
-            "isActive": false,
-            "size": {
-              "default": item.position.defaultScale,
-              "zoomInMax": 1,
-              "zoomOutMin": 1
-            },
-            "rotate": item.position.rotation,
-            "position": {
-              "place": item.position.relativePosition,
-              "xAxis": {
-                "derection": "left",
-                "offset": item.position.left
-              },
-              "yAxis": {
-                "derection": "top",
-                "offset": item.position.top
-              }
-            },
-            inList: !item.blendMode
+      let cover = {
+        "id": Math.random(),
+        "imageUrl": item.url,
+        "zIndex": 6,
+        "fixed": item.isLock === '1' || item.clickThrough === '0',
+        "isActive": false,
+        "size": {
+          "default": item.position.defaultScale,
+          "zoomInMax": 1,
+          "zoomOutMin": 1
+        },
+        "rotate": item.position.rotation,
+        "position": {
+          "place": item.position.relativePosition,
+          "xAxis": {
+            "derection": "left",
+            "offset": item.position.left
+          },
+          "yAxis": {
+            "derection": "top",
+            "offset": item.position.top
           }
+        },
+        inList: !item.blendMode
+      }
+      if(item.wordStickerCode){
+        cover.data = item;
+      }
+      return cover
     })
     let newCoverList = {
         "support": true,
@@ -1743,7 +1766,7 @@ class Editor extends Component {
     tempCover.forEach((item,index)=>{
       if(index===targetIndex){
         item.isActive = true
-        console.log(item,666666)
+        this.selectedItem = item;
         // item.fixed = item.isLock === '1' || item.clickThrough === '1';
       }else{
         item.isActive = false;
@@ -1901,13 +1924,13 @@ class Editor extends Component {
             <View className={`buttonPart ${this.state.showType===1? 'lessWidth':''}`}  >
               {Taro.getStorageSync('saveNumber').number === 0 ?
                 <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.handleOpenResult}>分享并保存</Button>
-                : <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.saveImg}>保存</Button>}
+                : <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.handleOpenResult}>保存</Button>}
             </View>
             }
 
 
             {this.state.result.shareImage.remoteUrl&&<View className="btn-wrap">
-              <Button className="custom-button pink btn-1" hoverClass="btn-hover" id="btnNav" openType="share">继续分享</Button>
+              <Button className="custom-button pink btn-1" hoverClass="btn-hover" id="btnNav" onClick={this.handleOpenResult}>继续分享</Button>
               {this.state.ableToShareToQZone ?
               <View>
                 <Button className="custom-button dark btn-2" hoverClass="btn-hover" onClick={this.publishToQzone}>同步到说说</Button>

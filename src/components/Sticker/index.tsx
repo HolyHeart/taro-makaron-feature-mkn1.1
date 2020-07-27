@@ -462,7 +462,7 @@ class Sticker extends Component {
         {/* {this.state.} */}
 
         <View className={`border ${stylePrams.isActive ? 'active' : ''}`}></View>
-        <View className={`control move ${stylePrams.isActive ? 'active' : ''}`}
+        <View className={`control move ${stylePrams.isActive && !stylePrams.fixed ? 'active' : ''}`}
           onTouchstart={this.arrowOntouchstart}
           onTouchmove={this.throttledArrowOntouchmove}
           onTouchend={this.arrowOntouchend}
@@ -470,13 +470,13 @@ class Sticker extends Component {
           <Image src={scale} mode="widthFix" style="width:100%;height:100%"/>
         </View>
         {stylePrams.deleteable &&
-          <View className={`control close ${stylePrams.isActive ? 'active' : ''}`}
+          <View className={`control close ${stylePrams.isActive && !stylePrams.fixed ? 'active' : ''}`}
             onClick={this.handleDeleteSticker}
           >
             <Image src={close} mode="widthFix" style="width:80%;height:80%" />
           </View>
         }
-        <View className={`control mirror ${stylePrams.isActive ? 'active' : ''}`}
+        <View className={`control mirror ${stylePrams.isActive && !stylePrams.fixed ? 'active' : ''}`}
           onTouchstart={this.mirrorOntouchstart}
         //   onTouchmove={this.throttledArrowOntouchmove}
         //   onTouchend={this.arrowOntouchend}

@@ -158,6 +158,7 @@ const formatRawCoverList = (list: Array<any> = []) => {
     cover_model.show = v.show;
     cover_model.type = v.type;
     cover_model.inList = v.inList;
+    cover_model.data = v.data;
     return cover_model
   })
 }

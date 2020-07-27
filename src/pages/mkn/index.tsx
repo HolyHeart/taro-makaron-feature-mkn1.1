@@ -374,13 +374,15 @@ class Editor extends Component {
       }, () => {
         this.initCoverData()
         if (Taro.getStorageSync('lastSeparateImage')) {
-          const { foreground } = this.state
-          this.setState({
-            foreground: {
-              ...foreground,
-              remoteUrl: Taro.getStorageSync('lastSeparateImage')
-            }
-          })
+          // const { foreground } = this.state
+          setTimeout(() => {
+            this.setState({
+              foreground: {
+                ...globalData.foreground,
+                remoteUrl: Taro.getStorageSync('lastSeparateImage')
+              }
+            })
+          }, 0);
         }else{
           setTimeout(() => {
             this.setState({
@@ -415,10 +417,12 @@ class Editor extends Component {
     globalData.foreground = result.foreground;
     globalData.choosedImage = result.foreground.remoteUrl;
     let foreground = result.foreground;
+    console.log(foreground,111222333)
     /////
     const currentScene = globalData.sceneConfig//来自于主页给每一项设置的，
     console.log(currentScene,'initiating the first scene&&adding')
     this.setState({
+      // foreground,
       currentScene: {
         ...this.state.currentScene,
         ...currentScene,
@@ -1148,7 +1152,7 @@ class Editor extends Component {
     }
     result.width = result.autoWidth
     result.height = result.autoHeight
-    console.log(frame,result,666666)
+    console.log(frame,result,foreground,autoScale,imageRatio,666666)
 
     return result
   }
@@ -1775,16 +1779,20 @@ class Editor extends Component {
       foreground:{...temp},
       coverList:[...tempCover]
     },()=>{
-        const query = Taro.createSelectorQuery().in(this.$scope)
-        query.select('.crop >>> .canChange').boundingClientRect()
-        query.selectViewport().scrollOffset()//获取滚动区域，
-        query.exec((res) => {
-            console.log(res,'1234556677')
-            const {left,top,width,height} = res[0];
-            let x = left + width/2;
-            let y = top + height/2;
-            this.changeButtonPosition(x,y)
-        })
+        this.resetButton()
+    })
+  }
+
+  resetButton(){
+    const query = Taro.createSelectorQuery().in(this.$scope)
+    query.select('.crop >>> .canChange').boundingClientRect()
+    query.selectViewport().scrollOffset()//获取滚动区域，
+    query.exec((res) => {
+        console.log(res,'1234556677')
+        const {left,top,width,height} = res[0];
+        let x = left + width/2;
+        let y = top + height/2;
+        this.changeButtonPosition(x,y)
     })
   }
 

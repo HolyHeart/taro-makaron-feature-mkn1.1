@@ -76,19 +76,19 @@ class _App extends Component {
         wx.dsp.setOpenid(openId)
       }
     } catch (error) {}
-    Taro.loadFontFace({
-        family: 'versa',
-        source: 'url("https://static01.versa-ai.com/upload/ca8c57618511/b64ffc10-d79b-4530-a5ce-9717834fc3a1.ttf")',
-        success: res => {
-            console.log(res,'字体载入成功')
-        },
-        fail: res => {
-            console.log(res,'字体载入失败')
-        },
-        complete: res => {
-            console.log(res,'字体')
-        }
-    })
+    // Taro.loadFontFace({
+    //     family: 'versa',
+    //     source: 'url("https://static01.versa-ai.com/upload/ca8c57618511/b64ffc10-d79b-4530-a5ce-9717834fc3a1.ttf")',
+    //     success: res => {
+    //         console.log(res,'字体载入成功')
+    //     },
+    //     fail: res => {
+    //         console.log(res,'字体载入失败')
+    //     },
+    //     complete: res => {
+    //         console.log(res,'字体')
+    //     }
+    // })
   }
 
   componentDidShow() {}

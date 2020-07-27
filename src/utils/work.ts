@@ -157,6 +157,7 @@ const formatRawCoverList = (list: Array<any> = []) => {
     cover_model.name = v.name || '贴纸'
     cover_model.show = v.show;
     cover_model.type = v.type;
+    cover_model.inList = v.inList;
     return cover_model
   })
 }

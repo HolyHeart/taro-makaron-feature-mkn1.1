@@ -1888,12 +1888,12 @@ class Editor extends Component {
             </View>}
 
             {this.state.showType===0?
-              <View className="buttonPart" >
-                <Button style='flex:1;z-index:2' id='addPhoto1' openType="getUserInfo" className="custom-button pink" hoverClass="btn-hover" onClick={this.showPicList}>开始做同款</Button>
+              <View className={`buttonPart ${this.state.showType===0? 'moreMargin':''}`} >
+                <Button style='flex:1;z-index:2;' id='addPhoto1' openType="getUserInfo" className="custom-button pink" hoverClass="btn-hover" onClick={this.showPicList}>开始做同款</Button>
               </View>:''}
 
             {!this.state.result.shareImage.remoteUrl&&this.state.showType&&
-            <View className="buttonPart" >
+            <View className={`buttonPart ${this.state.showType===1? 'lessWidth':''}`}  >
               {Taro.getStorageSync('saveNumber').number === 0 ?
                 <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.handleOpenResult}>分享并保存</Button>
                 : <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.saveImg}>保存</Button>}

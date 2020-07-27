@@ -1897,7 +1897,10 @@ class Editor extends Component {
             {this.state.showType&&<View className={`scrollBox ${coverList.length<=2? 'listCenter':''}`}>
               <ScrollView scrollX className="scrollList" style="width:100%;white-space: nowrap;overflow:hidden;">
                   <View className="block">
-                    <Image src={foreground.remoteUrl} onClick={this.activateForeground.bind(this,foreground)} className="singleForeground" mode="aspectFit"/>
+                    {/* <View className={foreground.isActive? 'acitivated':''} >  */}
+                      <Image src={foreground.remoteUrl} onClick={this.activateForeground.bind(this,foreground)} className="singleForeground" mode="aspectFit"/> 
+                      <View className={foreground.isActive? 'acitivated':''} >{foreground.isActive? '点击替换':''}</View>
+                    {/* </View>  */}
                     <View className="text">人物</View>
                   </View>
                     {/*<View className="text">人物</View>*/}
@@ -1905,8 +1908,11 @@ class Editor extends Component {
                       return item.inList ? 
                       (
                         <View className="block">
-                            <Image src={item.remoteUrl} onClick={this.activatePicture.bind(this,index)} className="singlePicture" mode="aspectFit"  />
-                            <View className="text">{`文字${index+1}`}</View>
+                          {/* <View className={item.isActive? 'acitivated':''}> */}
+                              <Image src={item.remoteUrl} onClick={this.activatePicture.bind(this,index)} className="singlePicture" mode="aspectFit"  />
+                              <View className={item.isActive? 'acitivated':''} >{item.isActive? '点击替换':''}</View>
+                          {/* </View>     */}
+                          <View className="text">{`文字${index+1}`}</View>
                         </View>
                       ):
                       null

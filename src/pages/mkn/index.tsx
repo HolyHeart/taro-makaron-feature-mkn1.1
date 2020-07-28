@@ -307,6 +307,7 @@ class Editor extends Component {
     // this.initRawImage()
     await Session.set()
     this.initSceneData(() => {
+      this.selectedItem = this.state.foreground;
       // const firstViewEditor = Taro.getStorageSync('firstViewEditor')
       // if (!firstViewEditor) {
       //   const query = wx.createSelectorQuery()
@@ -379,6 +380,7 @@ class Editor extends Component {
         let data = {
             foreground: {
               ...globalData.foreground,
+              isActive: false
             }
           }
         if (Taro.getStorageSync('lastSeparateImage')) {
@@ -386,7 +388,8 @@ class Editor extends Component {
           data.foreground.remoteUrl = Taro.getStorageSync('lastSeparateImage');
         }
         setTimeout(() => {
-            this.setState(data);
+          console.log(data,11111111111,JSON.parse(JSON.stringify(data)))
+          this.setState(data);
         }, 0);
       })
     })
@@ -423,7 +426,7 @@ class Editor extends Component {
         type: 'recommend'
       }
     }, async () => {
-        this.selectedItem = this.state.foreground;
+        // this.selectedItem = this.state.foreground;
         // setTimeout(() => {
         //     this.setState({
         //         foreground: {
@@ -602,7 +605,7 @@ class Editor extends Component {
       originHeight: height,
       loaded: true,
       visible: true, // 是否显示
-      isActive: true,
+      isActive: false,
       isMirror: false
     }, () => {
       this.foregroundAuto()
@@ -655,6 +658,7 @@ class Editor extends Component {
   }
   handleCoverTouchstart = (sticker) => {
     // console.log('handleCoverTouchstart', sticker)
+    if(this.state.showType === 0) return false;
     this.setCoverListActiveStatus({ type: 'some', ids: [sticker.id] }, true)
     this.setForegroundActiveStatus(false)
   }
@@ -1675,8 +1679,8 @@ class Editor extends Component {
         "id": Math.random(),
         "imageUrl": item.url,
         "zIndex": 6,
-        // "fixed": item.isLock === '1',
-        fixed: false,
+        "fixed": item.isLock === '1',
+        // fixed: false,
         "isActive": false,
         "size": {
           "default": item.position.defaultScale,
@@ -1696,8 +1700,8 @@ class Editor extends Component {
           }
         },
         deleteable: item.isLock !== '1',
-        // inList: item.isLock !== '1'
-        inList: true
+        inList: item.isLock !== '1'
+        // inList: true
       }
       if(item.wordStickerCode){
         cover.data = item;
@@ -1832,12 +1836,13 @@ class Editor extends Component {
 
   showPicList(){
     let temp={...this.state.foreground}
-    temp.fixed=false
-    temp.isActive=true
+    // temp.fixed=false
+    // temp.isActive=true
     globalData.foreground = temp;
+    this.activateForeground(temp);
     this.setState({
       showType:1,
-      foreground:{...temp}
+      // foreground:{...temp}
     },()=>{
         this.resetButton();
     })

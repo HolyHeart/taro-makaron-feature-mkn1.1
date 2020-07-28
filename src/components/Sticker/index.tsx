@@ -437,11 +437,12 @@ class Sticker extends Component {
     //console.log(stylePrams,'this is actual foreground from sticker')
 
     const styleObj = this.formatStyle(this.props.stylePrams)
+    console.log(this.props.stylePrams,33333333333)
     //console.log(styleObj,'this is styleObj this is styleObj');
     // console.log('sticker render', this.state.url)
     return (
       <View
-        className={`sticker-wrap ${stylePrams.fixed ? 'event-through' : ''} ${(stylePrams.visible && stylePrams.width > 0) ? '' : 'hidden' } ${stylePrams.isActive ? 'canChange':''}`}
+        className={`sticker-wrap ${(stylePrams.fixed || !stylePrams.isActive) ? 'event-through' : ''} ${(stylePrams.visible && stylePrams.width > 0) ? '' : 'hidden' } ${stylePrams.isActive ? 'canChange':''}`}
         style={styleObj}
       >
         
@@ -460,7 +461,7 @@ class Sticker extends Component {
             className={this.props.stylePrams.isMirror ? 'isMirror' : ''}
           />
         }
-        {/* {this.state.} */}
+        <View>{stylePrams.isActive}</View>
 
         <View className={`border ${stylePrams.isActive ? 'active' : ''}`}></View>
         <View className={`control move ${stylePrams.isActive && !stylePrams.fixed ? 'active' : ''}`}

@@ -1789,6 +1789,7 @@ class Editor extends Component {
   }
 
   activateForeground(item){
+    this.selectedItem = item;
     let temp={...item}
     temp.isActive=true
     temp.fixed=false
@@ -1890,6 +1891,7 @@ class Editor extends Component {
                     onTouchstart={this.handleCoverTouchstart}
                     onTouchend={this.handleCoverTouchend}
                     onDeleteSticker={this.handleDeleteCover.bind(this, item)}
+                    showBtn={item.data && item.data.wordStickerCode}
                   />
                 })}
               </View>

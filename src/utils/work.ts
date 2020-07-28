@@ -153,7 +153,7 @@ const formatRawCoverList = (list: Array<any> = []) => {
     cover_model.isActive = v.isActive || false
     cover_model.visible = true
     cover_model.deleted = false
-    cover_model.deleteable = true
+    cover_model.deleteable = v.deleteable
     cover_model.name = v.name || '贴纸'
     cover_model.show = v.show;
     cover_model.type = v.type;

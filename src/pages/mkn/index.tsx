@@ -406,7 +406,7 @@ class Editor extends Component {
   initSceneData = async (callback) => {
     ///获取globalData.sceneConfig数据
     service.home.getCateGoryAndScenes() //test
-    const res = await service.mkn.getTemplate('QFCFUE1733')
+    const res = await service.mkn.getTemplate('JKXHFK03590')
     let result = this.transformTemplateRes(res.result.result)
 
     globalData.sceneConfig=result.currentScene;
@@ -423,6 +423,7 @@ class Editor extends Component {
         type: 'recommend'
       }
     }, async () => {
+        this.selectedItem = this.state.foreground;
         // setTimeout(() => {
         //     this.setState({
         //         foreground: {
@@ -600,6 +601,8 @@ class Editor extends Component {
       originWidth: width,
       originHeight: height,
       loaded: true,
+      visible: true, // 是否显示
+      isActive: true,
       isMirror: false
     }, () => {
       this.foregroundAuto()
@@ -1408,37 +1411,39 @@ class Editor extends Component {
           console.log('choosedImage', path, globalData)
           this.app.aldstat.sendEvent('编辑页面人像成功', '上传成功')
           globalData.choosedImage = path//存入图片，为之后的处理准备
-          wx.getFileSystemManager().readFile({
-            filePath: path,
-            success: (data) => { //这的data是文件内容，所以这个函数的意义是啥？？？
-              wx.cloud.callFunction({
-                name: 'checkImage',
-                data: {
-                  contentType: 'image/png',
-                  value: data.data
-                },
-                success: async (res) => {//res 为处理信息，跟图片无关；
-                  console.log('checkImage success：', res)
-                  // const separateResult = globalData.separateResult = await this.initSegment()
-                  // await this.initSeparateData(separateResult)
-                  if (res.result !== null && res.result.errCode === 0) {
-                    const separateResult = globalData.separateResult = await this.initSegment()//一个对象、得到分割结果，还不是图像，只是部分路径
-                    console.log(separateResult,'separeteResulting')
-                    await this.initSeparateData(separateResult)
-                  } else {
-                    work.pageToError()
-                  }
-                },
-                fail: async (err) => {
-                  console.log('checkImage error', err)
-                  const separateResult = globalData.separateResult = await this.initSegment()
-                  await this.initSeparateData(separateResult)
-                }
-              })
-            },
-            fail:()=>{
-            }
-          })
+          // wx.getFileSystemManager().readFile({
+          //   filePath: path,
+          //   success: (data) => { //这的data是文件内容，所以这个函数的意义是啥？？？
+          //     wx.cloud.callFunction({
+          //       name: 'checkImage',
+          //       data: {
+          //         contentType: 'image/png',
+          //         value: data.data
+          //       },
+          //       success: async (res) => {//res 为处理信息，跟图片无关；
+          //         console.log('checkImage success：', res)
+          //         // const separateResult = globalData.separateResult = await this.initSegment()
+          //         // await this.initSeparateData(separateResult)
+          //         if (res.result !== null && res.result.errCode === 0) {
+          //           const separateResult = globalData.separateResult = await this.initSegment()//一个对象、得到分割结果，还不是图像，只是部分路径
+          //           console.log(separateResult,'separeteResulting')
+          //           await this.initSeparateData(separateResult)
+          //         } else {
+          //           work.pageToError()
+          //         }
+          //       },
+          //       fail: async (err) => {
+          //         console.log('checkImage error', err)
+          //         const separateResult = globalData.separateResult = await this.initSegment()
+          //         await this.initSeparateData(separateResult)
+          //       }
+          //     })
+          //   },
+          //   fail:()=>{
+          //   }
+          // })
+          const separateResult = globalData.separateResult = await this.initSegment()
+          await this.initSeparateData(separateResult)
 
         }
       })
@@ -1643,6 +1648,7 @@ class Editor extends Component {
         defaultScale: foreground.position.defaultScale,
         fixed: true, // 是否固定
         isActive: false, // 是否激活
+        deleteable: true,
         loaded: false, // 是否加载完毕
         visible: true, // 是否显示
         position: {
@@ -1669,7 +1675,8 @@ class Editor extends Component {
         "id": Math.random(),
         "imageUrl": item.url,
         "zIndex": 6,
-        "fixed": item.isLock === '1' || item.clickThrough === '0',
+        // "fixed": item.isLock === '1',
+        fixed: false,
         "isActive": false,
         "size": {
           "default": item.position.defaultScale,
@@ -1688,7 +1695,9 @@ class Editor extends Component {
             "offset": item.position.top
           }
         },
-        inList: !item.blendMode && !(item.type && item.type.indexOf('Sticker') !== -1)
+        deleteable: item.isLock !== '1',
+        // inList: item.isLock !== '1'
+        inList: true
       }
       if(item.wordStickerCode){
         cover.data = item;
@@ -1766,6 +1775,7 @@ class Editor extends Component {
     tempCover.forEach((item,index)=>{
       if(index===targetIndex){
         item.isActive = true
+        item.fixed = false
         this.selectedItem = item;
         // item.fixed = item.isLock === '1' || item.clickThrough === '1';
       }else{
@@ -1842,6 +1852,17 @@ class Editor extends Component {
     })
   }
 
+  handleDeleteLayer(layer){
+      this.setState({
+        foreground: {  //存储切图信息
+            ...this.state.foreground,
+            visible: false, // 是否显示
+            isActive: false
+          }
+      })
+      this.changeButtonPosition(-60,-60);
+  }
+
 
   render() {
     const { loading, rawImage, frame, customBg, foreground, coverList, sceneList, currentScene, result, canvas } = this.state
@@ -1878,7 +1899,8 @@ class Editor extends Component {
                     onTouchstart={this.handleForegroundTouchstart}
                     onTouchend={this.handleForegroundTouchend}
                     onTodo={this.todo}
-                    showBtn={true}
+                    onDeleteSticker={()=>{this.handleDeleteLayer(foreground)}}
+                    // showBtn={true}
                   />
                 {coverList.map(item => {
                   return <Sticker
@@ -1891,7 +1913,7 @@ class Editor extends Component {
                     onTouchstart={this.handleCoverTouchstart}
                     onTouchend={this.handleCoverTouchend}
                     onDeleteSticker={this.handleDeleteCover.bind(this, item)}
-                    showBtn={item.data && item.data.wordStickerCode}
+                    // showBtn={item.data && item.data.wordStickerCode}
                   />
                 })}
               </View>
@@ -1902,7 +1924,7 @@ class Editor extends Component {
                   <View className="block">
                     {/* <View className={foreground.isActive? 'acitivated':''} >  */}
                       <Image src={foreground.remoteUrl} onClick={this.activateForeground.bind(this,foreground)} className="singleForeground" mode="aspectFit"/>
-                      <View className={foreground.isActive? 'acitivated':''} >{foreground.isActive? '点击替换':''}</View>
+                      <Button className={foreground.isActive? 'acitivated':''} openType="getUserInfo" onGetUserInfo={this.todo}>{foreground.isActive? '点击修改':''}</Button>
                     {/* </View>  */}
                     <View className="text">人物</View>
                   </View>
@@ -1913,9 +1935,11 @@ class Editor extends Component {
                         <View className="block">
                           {/* <View className={item.isActive? 'acitivated':''}> */}
                               <Image src={item.remoteUrl} onClick={this.activatePicture.bind(this,index)} className="singlePicture" mode="aspectFit"  />
-                              <View className={item.isActive? 'acitivated':''} >{item.isActive? '点击替换':''}</View>
+                              <View className={item.isActive? 'acitivated':''} >{item.isActive? '点击修改':''}</View>
                           {/* </View>     */}
-                          <View className="text">{`文字${index+1}`}</View>
+                          {
+                            item.data && item.data.wordStickerCode ? <View className="text">{`文字`}</View> : <View className="text">{`贴图`}</View>
+                          }
                         </View>
                       ):
                       null

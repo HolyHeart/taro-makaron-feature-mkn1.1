@@ -1052,8 +1052,8 @@ class Editor extends Component {
     this.setStateTarget('foreground', { isActive: value })
     this.setState({
       changeButton:{
-        top:0,
-        left:0
+        top:-60,
+        left:-60
       }
     })
   }

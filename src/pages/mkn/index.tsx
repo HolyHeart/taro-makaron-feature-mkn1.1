@@ -1662,43 +1662,48 @@ class Editor extends Component {
   }
 
   transformTemplateRes(result:any){
-      let foreground = result.config.layerConfig.filter(item=>{
-          return item.type === undefined && item.actionType === undefined && item.wordStickerCode === undefined;
-      })[0] || {position: {}};
-      let newForeground = {  //存储切图信息
-        id: 'foreground',
-        name: '人物',
-        remoteUrl: foreground.url,
-        zIndex: foreground.order,
-        width: 0,
-        height: 0,
-        x: 0,
-        y: 0,
-        rotate: foreground.position.rotation,
-        originWidth: 0, // 原始宽度
-        originHeight: 0, // 原始高度
-        autoWidth: 0, // 自适应后的宽度
-        autoHeight: 0, // 自适应后的高度
-        autoScale: 0, // 相对画框缩放比例
-        defaultScale: foreground.position.defaultScale,
-        fixed: true, // 是否固定
-        isActive: false, // 是否激活
-        deleteable: true,
-        loaded: false, // 是否加载完毕
-        visible: true, // 是否显示
-        position: {
-          "place": foreground.position.relativePosition,
-          "xAxis": {
-            "derection": foreground.position.hasOwnProperty("left") ? "left" : "right",
-            "offset": foreground.position.left
-          },
-          "yAxis": {
-            "derection": foreground.position.hasOwnProperty("top") ? "top" : "bottom",
-            "offset": foreground.position.top
-          },
-          rotate: foreground.position.rotation
+      let foregroundList = result.config.layerConfig.filter(item=>{
+        return item.type === undefined && item.actionType === undefined && item.wordStickerCode === undefined;
+      });
+      let newForegroundList = [];
+      for(let i=0; i<foregroundList.length; i++){
+        let newForeground = {  //存储切图信息
+          id: 'foreground',
+          name: '人物',
+          remoteUrl: foregroundList[i].url,
+          zIndex: foregroundList[i].order,
+          width: 0,
+          height: 0,
+          x: 0,
+          y: 0,
+          rotate: foregroundList[i].position.rotation,
+          originWidth: 0, // 原始宽度
+          originHeight: 0, // 原始高度
+          autoWidth: 0, // 自适应后的宽度
+          autoHeight: 0, // 自适应后的高度
+          autoScale: 0, // 相对画框缩放比例
+          defaultScale: foregroundList[i].position.defaultScale,
+          fixed: true, // 是否固定
+          isActive: false, // 是否激活
+          deleteable: true,
+          loaded: false, // 是否加载完毕
+          visible: true, // 是否显示
+          position: {
+            "place": foregroundList[i].position.relativePosition,
+            "xAxis": {
+              "derection": foregroundList[i].position.hasOwnProperty("left") ? "left" : "right",
+              "offset": foregroundList[i].position.left
+            },
+            "yAxis": {
+              "derection": foregroundList[i].position.hasOwnProperty("top") ? "top" : "bottom",
+              "offset": foregroundList[i].position.top
+            },
+            rotate: foregroundList[i].position.rotation
+          }
         }
+        newForegroundList.push(newForeground)
       }
+      
       let currentScene = result.config.layerConfig.filter(item=>{
           return item.actionType = 'CHANGEBG';
       })[0]
@@ -1740,7 +1745,7 @@ class Editor extends Component {
       }
       return cover
     })
-    coverList.unshift(newForeground);
+    coverList.unshift(...newForegroundList);
     console.log(coverList,'ccc')
     coverList = work.formatRawCoverList(coverList);
     console.log(coverList,'ccc')
@@ -1805,7 +1810,7 @@ class Editor extends Component {
       }
 
       return {
-        foreground: newForeground,
+        foreground: newForegroundList,
         currentScene: newCurrentScene,
       }
 

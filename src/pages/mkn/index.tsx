@@ -307,7 +307,7 @@ class Editor extends Component {
     // this.initRawImage()
     await Session.set()
     this.initSceneData(() => {
-      this.selectedItem = this.state.foreground;
+      // this.selectedItem = this.state.foreground;
       // const firstViewEditor = Taro.getStorageSync('firstViewEditor')
       // if (!firstViewEditor) {
       //   const query = wx.createSelectorQuery()
@@ -425,7 +425,7 @@ class Editor extends Component {
         type: 'recommend'
       }
     }, async () => {
-        // this.selectedItem = this.state.foreground;
+        this.selectedItem = this.state.coverList[1];
         // setTimeout(() => {
         //     this.setState({
         //         foreground: {
@@ -746,12 +746,12 @@ class Editor extends Component {
 
   // 保存
   handleOpenResult = async () => {
-    // if (!this.state.foreground.remoteUrl) {
-    //   return
-    // }
-    // if (!this.state.currentScene.bgUrl) {
-    //   return
-    // }
+    if (!this.state.foreground.remoteUrl) {
+      return
+    }
+    if (!this.state.currentScene.bgUrl) {
+      return
+    }
     if (this.isSaving) {
       return
     }
@@ -1740,7 +1740,7 @@ class Editor extends Component {
       }
       return cover
     })
-    coverList.push(newForeground);
+    coverList.unshift(newForeground);
     console.log(coverList,'ccc')
     coverList = work.formatRawCoverList(coverList);
     console.log(coverList,'ccc')
@@ -1874,13 +1874,17 @@ class Editor extends Component {
   }
 
   showPicList(){
-    let temp={...this.state.foreground}
+    // let temp={...this.state.foreground}
     // temp.fixed=false
     // temp.isActive=true
     // globalData.foreground = temp;
     // this.activateForeground(temp);
+    let coverList=[...this.state.coverList]
+    coverList[0].isActive=true
+    coverList[0].fixed=false
     this.setState({
       showType:1,
+      coverList
       // foreground:{...temp}
     },()=>{
         this.resetButton();

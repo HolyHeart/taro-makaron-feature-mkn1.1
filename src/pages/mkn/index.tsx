@@ -1050,6 +1050,12 @@ class Editor extends Component {
   // 设置人物状态
   setForegroundActiveStatus = (value = false) => {
     this.setStateTarget('foreground', { isActive: value })
+    this.setState({
+      changeButton:{
+        top:0,
+        left:0
+      }
+    })
   }
   // 设置贴纸状态
   setCoverListActiveStatus = (options = {}, value = false) => {

@@ -120,6 +120,7 @@ const getSceneInfoById = (id: string, list: Array<any> = [], key: string) => {
 }
 const getCoverInfoById = (id: string, list: Array<any> = [], key: string) => {
   return list.filter((v) => {
+      console.log(v[key],id,123)
     return v[key] === id
   })[0]
 }
@@ -145,7 +146,8 @@ const formatRawCoverList = (list: Array<any> = []) => {
       deleted: false,
       deleteable: true,
       name: '贴纸',
-      isLock: true
+      isLock: true,
+      size:{}
     }
     cover_model.remoteUrl = v.imageUrl || v.remoteUrl;
     cover_model.id = v.id || tool.uuid()
@@ -162,6 +164,7 @@ const formatRawCoverList = (list: Array<any> = []) => {
     cover_model.data = v.data;
     cover_model.position = v.position;
     cover_model.isLock = v.isLock;
+    cover_model.size = v.size;
     return cover_model
   })
 }

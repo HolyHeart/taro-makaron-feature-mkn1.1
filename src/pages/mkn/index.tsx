@@ -472,9 +472,7 @@ class Editor extends Component {
         hideLoading: () => {
           // console.log('hideLoading')
           // Taro.hideLoading()
-          if (this.state.foreground.loaded) {
-            this.hideLoading()
-          }
+          this.hideLoading()
         }
       })// 得到已经分割好的图片
 
@@ -497,15 +495,16 @@ class Editor extends Component {
 
   initSeparateData = async (separateResult) => {
     const { currentScene, foreground } = this.state
-    this.changeSceneChooseSegment(currentScene, separateResult, (res = {}) => {
-      Taro.setStorageSync('lastSeparateImage', res.separateUrl)
-      this.setState({
-        chooseText: '重新上传人像',
-        foreground: {
-          ...foreground,
-          remoteUrl: res.separateUrl
-        }
-      })
+    return this.changeSceneChooseSegment(currentScene, separateResult, (res = {}) => {
+      // Taro.setStorageSync('lastSeparateImage', res.separateUrl)
+      // this.setState({
+      //   chooseText: '重新上传人像',
+      //   foreground: {
+      //     ...foreground,
+      //     remoteUrl: res.separateUrl
+      //   }
+      // })
+      console.log(res,'分割人物结果')
     })
 
   }
@@ -531,6 +530,10 @@ class Editor extends Component {
       separateUrl, //远程请求的链接
       separateMaskUrl
     })
+    return {
+      separateUrl, //远程请求的链接
+      separateMaskUrl
+    }
   }
 
   // 背景
@@ -1337,6 +1340,7 @@ class Editor extends Component {
   // 贴纸自适应
   coverAuto = (originInfo, cover, callback?: () => void) => {
     const size = this.calcCoverSize(originInfo, cover)
+    console.log(size,originInfo,cover,'size size size')
     const position = this.calcCoverPosition(size, cover)
     const { coverList = [], currentScene } = this.state
     coverList.forEach((v, i) => {
@@ -1399,14 +1403,12 @@ class Editor extends Component {
   }
 
   //上传图片的操作
-  todo = (data) => {
-    console.log(data,'datadatadataOftodo')//授权获得用户信息
+  todo = (data,id) => {
     const { detail: { userInfo } } = data
     if (userInfo) {
       console.log(service,'this is service')
       service.base.loginAuth(data.detail)//【上传用户信息】
       globalData.userInfo = userInfo
-      console.log(this.selectedItem,111)
       if(this.selectedItem.data && this.selectedItem.data.wordStickerCode){
         return this.changeWord();
       }
@@ -1454,9 +1456,13 @@ class Editor extends Component {
           //   fail:()=>{
           //   }
           // })
-          const separateResult = globalData.separateResult = await this.initSegment()
-          await this.initSeparateData(separateResult)
-
+          if(this.selectedItem.id === 'foreground'){
+            const separateResult = globalData.separateResult = await this.initSegment()
+            let res = await this.initSeparateData(separateResult)
+            this.uploadCoverImg(res.separateUrl);
+          }else{
+            this.uploadCoverImg(path);
+          }
         }
       })
     } else {
@@ -1468,11 +1474,27 @@ class Editor extends Component {
     }
 
   }
+  
+  uploadCoverImg(path){
+    let coverList = this.state.coverList.map(cover=>{
+      if(cover.id === this.selectedItem.id){
+        cover.remoteUrl = path;
+        console.log(path,'aaaaaaaaaaa')
+      }
+      return cover;
+    });
+    console.log(coverList,'uploadcoverimg')
+    this.setState({
+      chooseText: '重新上传人像',
+      coverList
+    })
+  }
 
   calcCoverPosition = (size = {}, cover = {}) => {
     const { width = 0, height = 0 } = size
     const { frame } = this.state
     const coverInfo = work.getCoverInfoById(cover.id, this.themeData.rawCoverList, 'id')
+    console.log(cover.id, this.themeData.rawCoverList, 'id')
     const { position, rotate = 0 } = coverInfo
     const boxWidth = frame.width
     const boxHeight = frame.height
@@ -1683,9 +1705,9 @@ class Editor extends Component {
       let coverList = result.config.layerConfig.filter(item=>{
         return (item.type && item.type.indexOf('Sticker') !== -1) || item.wordStickerCode;
       })
-    coverList = coverList.map(item => {
+    coverList = coverList.map((item, index) => {
       let cover = {
-        "id": Math.random(),
+        "id": '',
         "imageUrl": item.url,
         "zIndex": 6,
         "fixed": item.isLock === '1',
@@ -1708,6 +1730,7 @@ class Editor extends Component {
             "offset": item.position.top
           }
         },
+        name: '贴纸' + index,
         deleteable: item.isLock !== '1',
         isLock: item.isLock === '1'
         // inList: true
@@ -1718,6 +1741,10 @@ class Editor extends Component {
       return cover
     })
     coverList.push(newForeground);
+    console.log(coverList,'ccc')
+    coverList = work.formatRawCoverList(coverList);
+    console.log(coverList,'ccc')
+
     let newCoverList = {
         "support": true,
         "list": coverList
@@ -1953,7 +1980,7 @@ class Editor extends Component {
                         <View className="block">
                           {/* <View className={item.isActive? 'acitivated':''}> */}
                               <Image src={item.remoteUrl} onClick={this.activatePicture.bind(this,index)} className="singlePicture" mode="aspectFit"  />
-                              <View className={item.isActive? 'acitivated':''} >{item.isActive? '点击修改':''}</View>
+                              <Button className={item.isActive? 'acitivated':''} openType="getUserInfo" onGetUserInfo={this.todo}>{item.isActive? '点击修改':''}</Button>
                           {/* </View>     */}
                           <View className="text">{item.name}</View>
                         </View>

@@ -425,7 +425,9 @@ class Editor extends Component {
         type: 'recommend'
       }
     }, async () => {
-        this.selectedItem = this.state.coverList[1];
+        this.selectedItem = currentScene.sceneConfig.cover.list[0] //adding
+        console.log(this.selectedItem,'init selectedItem') //adding 
+        console.log(this.state.coverList,'init coverList')
         // setTimeout(() => {
         //     this.setState({
         //         foreground: {
@@ -449,7 +451,7 @@ class Editor extends Component {
 
     this.setState({
       coverList: coverList
-    })
+    },()=>{console.log('initCoverData',this.state.coverList)})
     // console.log('initCoverData cover', cover, coverList)
   }
 
@@ -1403,12 +1405,13 @@ class Editor extends Component {
   }
 
   //上传图片的操作
-  todo = (data,id) => {
+  todo = (data,item) => {
     const { detail: { userInfo } } = data
     if (userInfo) {
       console.log(service,'this is service')
       service.base.loginAuth(data.detail)//【上传用户信息】
       globalData.userInfo = userInfo
+      console.log('this.selectedItem',this.selectedItem)
       if(this.selectedItem.data && this.selectedItem.data.wordStickerCode){
         return this.changeWord();
       }
@@ -1806,7 +1809,7 @@ class Editor extends Component {
 
       return {
         foreground: newForeground,
-        currentScene: newCurrentScene,
+        currentScene: newCurrentScene
       }
 
   }

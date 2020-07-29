@@ -382,13 +382,12 @@ class Editor extends Component {
               ...globalData.foreground,
               isActive: false
             }
-          }
+        }
         if (Taro.getStorageSync('lastSeparateImage')) {
           // const { foreground } = this.state
           data.foreground.remoteUrl = Taro.getStorageSync('lastSeparateImage');
         }
         setTimeout(() => {
-          console.log(data,11111111111,JSON.parse(JSON.stringify(data)))
           this.setState(data);
         }, 0);
       })
@@ -1852,6 +1851,9 @@ class Editor extends Component {
     },()=>{
         this.resetButton();
     })
+
+    console.log(this.state.foreground,'globalData.foregroundglobalData.foreground')
+    console.log(this.state.coverList,'globalData.covetlist')  
   }
 
   changeButtonPosition(left,top){

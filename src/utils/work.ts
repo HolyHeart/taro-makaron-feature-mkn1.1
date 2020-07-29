@@ -145,8 +145,9 @@ const formatRawCoverList = (list: Array<any> = []) => {
       deleted: false,
       deleteable: true,
       name: '贴纸',
+      isLock: true
     }
-    cover_model.remoteUrl = v.imageUrl
+    cover_model.remoteUrl = v.imageUrl || v.remoteUrl;
     cover_model.id = v.id || tool.uuid()
     cover_model.zIndex = v.zIndex || 0
     cover_model.fixed = v.fixed || false
@@ -159,7 +160,8 @@ const formatRawCoverList = (list: Array<any> = []) => {
     cover_model.type = v.type;
     cover_model.inList = v.inList;
     cover_model.data = v.data;
-    cover_model.position=v.position;
+    cover_model.position = v.position;
+    cover_model.isLock = v.isLock;
     return cover_model
   })
 }

@@ -412,8 +412,8 @@ class Editor extends Component {
     let result = this.transformTemplateRes(res.result.result)
 
     globalData.sceneConfig=result.currentScene;
-    globalData.foreground = result.foreground;
-    globalData.choosedImage = result.foreground.remoteUrl;
+    // globalData.foreground = result.foreground;
+    // globalData.choosedImage = result.foreground.remoteUrl;
     let foreground = result.foreground;
     const currentScene = globalData.sceneConfig//来自于主页给每一项设置的，
     console.log(currentScene,'initiating the first scene&&adding')
@@ -1642,6 +1642,7 @@ class Editor extends Component {
       })[0] || {position: {}};
       let newForeground = {  //存储切图信息
         id: 'foreground',
+        name: '人物',
         remoteUrl: foreground.url,
         zIndex: foreground.order,
         width: 0,
@@ -1705,7 +1706,7 @@ class Editor extends Component {
           }
         },
         deleteable: item.isLock !== '1',
-        inList: item.isLock !== '1'
+        isLock: item.isLock === '1'
         // inList: true
       }
       if(item.wordStickerCode){
@@ -1713,6 +1714,7 @@ class Editor extends Component {
       }
       return cover
     })
+    coverList.push(newForeground);
     let newCoverList = {
         "support": true,
         "list": coverList
@@ -1832,10 +1834,12 @@ class Editor extends Component {
     query.selectViewport().scrollOffset()//获取滚动区域，
     query.exec((res) => {
         console.log(res,'1234556677')
-        const {left,top,width,height} = res[0];
-        let x = left + width/2;
-        let y = top + height/2;
-        this.changeButtonPosition(x,y)
+        if(res[0]){
+          const {left,top,width,height} = res[0];
+          let x = left + width/2;
+          let y = top + height/2;
+          this.changeButtonPosition(x,y)
+        }
     })
   }
 
@@ -1843,8 +1847,8 @@ class Editor extends Component {
     let temp={...this.state.foreground}
     // temp.fixed=false
     // temp.isActive=true
-    globalData.foreground = temp;
-    this.activateForeground(temp);
+    // globalData.foreground = temp;
+    // this.activateForeground(temp);
     this.setState({
       showType:1,
       // foreground:{...temp}
@@ -1902,7 +1906,7 @@ class Editor extends Component {
                   />
                 </View>
                 }
-                  <Sticker
+                  {/* <Sticker
                     ref="foreground"
                     url={foreground.remoteUrl}
                     stylePrams={foreground}
@@ -1914,7 +1918,7 @@ class Editor extends Component {
                     onTodo={this.todo}
                     onDeleteSticker={()=>{this.handleDeleteLayer(foreground)}}
                     // showBtn={true}
-                  />
+                  /> */}
                 {coverList.map(item => {
                   return <Sticker
                     key={item.id}
@@ -1934,25 +1938,21 @@ class Editor extends Component {
 
             {this.state.showType&&<View className={`scrollBox ${coverList.length<=2? 'listCenter':''}`}>
               <ScrollView scrollX className="scrollList" style="width:100%;white-space: nowrap;overflow:hidden;">
-                  <View className="block">
-                    {/* <View className={foreground.isActive? 'acitivated':''} >  */}
+                  {/* <View className="block">
                       <Image src={foreground.remoteUrl} onClick={this.activateForeground.bind(this,foreground)} className="singleForeground" mode="aspectFit"/>
                       <Button className={foreground.isActive? 'acitivated':''} openType="getUserInfo" onGetUserInfo={this.todo}>{foreground.isActive? '点击修改':''}</Button>
-                    {/* </View>  */}
                     <View className="text">人物</View>
-                  </View>
+                  </View> */}
                     {/*<View className="text">人物</View>*/}
                     {this.state.coverList.map((item,index) => {
-                      return item.inList ? 
+                      return !item.isLock ? 
                       (
                         <View className="block">
                           {/* <View className={item.isActive? 'acitivated':''}> */}
                               <Image src={item.remoteUrl} onClick={this.activatePicture.bind(this,index)} className="singlePicture" mode="aspectFit"  />
                               <View className={item.isActive? 'acitivated':''} >{item.isActive? '点击修改':''}</View>
                           {/* </View>     */}
-                          {
-                            item.data && item.data.wordStickerCode ? <View className="text">{`文字`}</View> : <View className="text">{`贴图`}</View>
-                          }
+                          <View className="text">{item.name}</View>
                         </View>
                       ):
                       null

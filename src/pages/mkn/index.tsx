@@ -743,12 +743,12 @@ class Editor extends Component {
 
   // 保存
   handleOpenResult = async () => {
-    if (!this.state.foreground.remoteUrl) {
-      return
-    }
-    if (!this.state.currentScene.bgUrl) {
-      return
-    }
+    // if (!this.state.foreground.remoteUrl) {
+    //   return
+    // }
+    // if (!this.state.currentScene.bgUrl) {
+    //   return
+    // }
     if (this.isSaving) {
       return
     }
@@ -891,6 +891,7 @@ class Editor extends Component {
 
   canvasDrawRecommend = async (context) => {
     const { currentScene, frame, canvas } = this.state
+    console.log(currentScene,'currentScene currentScene currentScene')
 
     console.log(frame,'frame ===width===height===frame')
 
@@ -951,7 +952,7 @@ class Editor extends Component {
       isMirror: foreground.isMirror
     }
     // 收集人物
-    elements.push(element_foreground)
+    // elements.push(element_foreground)
     // 收集贴纸
     coverList.filter(v => !v.deleted).forEach(v => {
       const element_cover = {
@@ -964,6 +965,7 @@ class Editor extends Component {
         x: v.x * ratio,
         y: v.y * ratio,
         rotate: v.rotate,
+        isMirror: v.isMirror
       }
       elements.push(element_cover)
     })
@@ -972,6 +974,7 @@ class Editor extends Component {
       return a.zIndex - b.zIndex
     })
     // 下载成本地图片并绘制
+    console.log(elements,'elements elements elements')
     for (let i = 0; i < elements.length; i++) {
       const element = elements[i]
       try {

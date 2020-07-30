@@ -1459,7 +1459,7 @@ class Editor extends Component {
           //   fail:()=>{
           //   }
           // })
-          if(this.selectedItem.id.indexOf('foreground') !== -1){
+          if(this.selectedItem.id.indexOf('foreground') !== -1||this.selectedItem.id.indexOf('bgPart') !== -1){
             const separateResult = globalData.separateResult = await this.initSegment()
             let res = await this.initSeparateData(separateResult)
             this.uploadCoverImg(res.separateUrl);
@@ -1479,17 +1479,21 @@ class Editor extends Component {
   }
   
   uploadCoverImg(path){
+    let currentScene={...this.state.currentScene}
     let coverList = this.state.coverList.map(cover=>{
       if(cover.id === this.selectedItem.id){
         cover.remoteUrl = path;
         console.log(path,'aaaaaaaaaaa')
       }
-      return cover;
+      if(cover.id === this.selectedItem.id&&cover.id==='bgPart'){
+        currentScene.bgUrl=path
+      }
     });
     console.log(coverList,'uploadcoverimg')
     this.setState({
       chooseText: '重新上传人像',
-      coverList
+      coverList,
+      currentScene
     })
   }
 
@@ -1665,6 +1669,33 @@ class Editor extends Component {
   }
 
   transformTemplateRes(result:any){
+      console.log(result,'result result result')
+
+       let bgPart={  //存储背景信息
+        id: 'bgPart',
+        name: '背景',
+        remoteUrl: result.config.layerConfig[0].url,
+        zIndex: result.config.layerConfig[0].order,
+        width: 0,
+        height: 0,
+        x: 0,
+        y: 0,
+        rotate: 0,
+        originWidth: 0, // 原始宽度
+        originHeight: 0, // 原始高度
+        autoWidth: 0, // 自适应后的宽度
+        autoHeight: 0, // 自适应后的高度
+        autoScale: 0, // 相对画框缩放比例
+        defaultScale: null,
+        fixed: true, // 是否固定
+        isActive: false, // 是否激活
+        deleteable: true,
+        loaded: false, // 是否加载完毕
+        visible: true, // 是否显示
+        position: {}
+      }
+
+
       let foregroundList = result.config.layerConfig.filter(item=>{
         return item.type === undefined && item.actionType === undefined && item.wordStickerCode === undefined;
       });
@@ -1706,6 +1737,7 @@ class Editor extends Component {
         }
         newForegroundList.push(newForeground)
       }
+     
       
       let currentScene = result.config.layerConfig.filter(item=>{
           return item.actionType = 'CHANGEBG';
@@ -1749,9 +1781,12 @@ class Editor extends Component {
       return cover
     })
     coverList.unshift(...newForegroundList);
+    coverList.push(bgPart) //背景部分塞入
     console.log(coverList,'ccc')
     coverList = work.formatRawCoverList(coverList);
     console.log(coverList,'ccc')
+
+    
 
     let newCoverList = {
         "support": true,
@@ -1995,8 +2030,16 @@ class Editor extends Component {
                           {/* </View>     */}
                           <View className="text">{item.name}</View>
                         </View>
-                      ):
-                      null
+                      ):(
+                        <View className="block">
+                          {/* <View className={item.isActive? 'acitivated':''}> */}
+                              <Image src={item.remoteUrl} className="singlePicture" mode="aspectFit"  />
+                              {/* <Button className={item.isActive? 'acitivated':''} openType="getUserInfo" onGetUserInfo={this.todo}>{item.isActive? '点击修改':''}</Button> */}
+                          {/* </View>     */}
+                          <View className="text">{item.name}</View>
+                        </View>
+                      )
+                      
                     })}
                   {/*</View>*/}
               </ScrollView>

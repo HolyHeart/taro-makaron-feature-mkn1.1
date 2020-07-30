@@ -624,7 +624,7 @@ class Editor extends Component {
         ...data
       }
     }, () => {
-      this.resetButton();
+      // this.resetButton();
     })
   }
   handleForegroundTouchstart = (sticker) => {
@@ -657,7 +657,7 @@ class Editor extends Component {
     this.setState({
       coverList: coverList
     },()=>{
-      this.resetButton();
+      // this.resetButton();
     });
   }
   handleCoverTouchstart = (sticker) => {
@@ -1459,7 +1459,7 @@ class Editor extends Component {
           //   fail:()=>{
           //   }
           // })
-          if(this.selectedItem.id === 'foreground'){
+          if(this.selectedItem.id.indexOf('foreground') !== -1){
             const separateResult = globalData.separateResult = await this.initSegment()
             let res = await this.initSeparateData(separateResult)
             this.uploadCoverImg(res.separateUrl);
@@ -1671,8 +1671,8 @@ class Editor extends Component {
       let newForegroundList = [];
       for(let i=0; i<foregroundList.length; i++){
         let newForeground = {  //存储切图信息
-          id: 'foreground',
-          name: '人物',
+          id: 'foreground'+i,
+          name: '人物'+i,
           remoteUrl: foregroundList[i].url,
           zIndex: foregroundList[i].order,
           width: 0,
@@ -1842,7 +1842,7 @@ class Editor extends Component {
       foreground:{...temp},
       coverList:[...tempCover]
     },()=>{
-      this.resetButton();
+      // this.resetButton();
     })
   }
 
@@ -1861,7 +1861,7 @@ class Editor extends Component {
       foreground:{...temp},
       coverList:[...tempCover]
     },()=>{
-        this.resetButton()
+        // this.resetButton()
     })
   }
 
@@ -1894,7 +1894,7 @@ class Editor extends Component {
       coverList
       // foreground:{...temp}
     },()=>{
-        this.resetButton();
+        // this.resetButton();
     })
 
     console.log(this.state.foreground,'globalData.foregroundglobalData.foreground')
@@ -1918,7 +1918,7 @@ class Editor extends Component {
             isActive: false
           }
       })
-      this.changeButtonPosition(-60,-60);
+      // this.changeButtonPosition(-60,-60);
   }
 
 
@@ -1977,7 +1977,7 @@ class Editor extends Component {
               </View>
             </View>
 
-            {this.state.showType&&<View className={`scrollBox ${coverList.length<=2? 'listCenter':''}`}>
+            {this.state.showType&&<View className={`scrollBox ${coverList.length < 6 ? 'listCenter':''}`}>
               <ScrollView scrollX className="scrollList" style="width:100%;white-space: nowrap;overflow:hidden;">
                   {/* <View className="block">
                       <Image src={foreground.remoteUrl} onClick={this.activateForeground.bind(this,foreground)} className="singleForeground" mode="aspectFit"/>
@@ -1986,7 +1986,7 @@ class Editor extends Component {
                   </View> */}
                     {/*<View className="text">人物</View>*/}
                     {this.state.coverList.map((item,index) => {
-                      return !item.isLock ? 
+                      return !item.isLock ?  
                       (
                         <View className="block">
                           {/* <View className={item.isActive? 'acitivated':''}> */}
@@ -2027,7 +2027,6 @@ class Editor extends Component {
               </View>}
             </View>}
 
-            <Button openType="getUserInfo" style={{left:this.state.changeButton.left+'px',top:this.state.changeButton.top+'px',zIndex:99}}  className="addPicture" hoverClass="btn-hover" onGetUserInfo={this.todo}>点击替换</Button>
 
             {this.state.isshow === true ? <Dialog
               content={this.state.content}

@@ -1,6 +1,6 @@
 import { ComponentClass } from 'react'
 import Taro, { Component } from '@tarojs/taro'
-import { View, Image, Text } from '@tarojs/components'
+import { View, Image, CoverView, CoverImage } from '@tarojs/components'
 import tool from '../../utils/tool'
 import './index.less'
 import loading from '../../assets/images/pic_loading.png'
@@ -278,6 +278,7 @@ class Sticker extends Component {
       // 若固定则不能移动
       return
     }
+    console.log(e,'eeeeeeeeeee')
     const {gesture} = this
     const {stylePrams} = this.props //是foreground传过来的
     const {framePrams} = this.state
@@ -462,27 +463,32 @@ class Sticker extends Component {
         }
 
         <View className={`border ${stylePrams.isActive ? 'active' : ''}`}></View>
-        <View className={`control move ${stylePrams.isActive && !stylePrams.fixed ? 'active' : ''}`}
+        <CoverView className={`control move ${stylePrams.isActive && !stylePrams.fixed ? 'active' : ''}`}
+          
+        >
+          <CoverImage src={scale} mode="widthFix" style="width:100%;height:100%"
           onTouchstart={this.arrowOntouchstart}
           onTouchmove={this.throttledArrowOntouchmove}
-          onTouchend={this.arrowOntouchend}
-        >
-          <Image src={scale} mode="widthFix" style="width:100%;height:100%"/>
-        </View>
+          onTouchend={this.arrowOntouchend}/>
+        </CoverView>
         {stylePrams.deleteable &&
-          <View className={`control close ${stylePrams.isActive && !stylePrams.fixed ? 'active' : ''}`}
+          <CoverView className={`control close ${stylePrams.isActive && !stylePrams.fixed ? 'active' : ''}`}
             onClick={this.handleDeleteSticker}
           >
-            <Image src={close} mode="widthFix" style="width:80%;height:80%" />
-          </View>
+            <CoverImage src={close} mode="widthFix" style="width:80%;height:80%" />
+          </CoverView>
         }
-        <View className={`control mirror ${stylePrams.isActive && !stylePrams.fixed ? 'active' : ''}`}
+        <CoverView className={`control mirror ${stylePrams.isActive && !stylePrams.fixed ? 'active' : ''}`}
           onTouchstart={this.mirrorOntouchstart}
         //   onTouchmove={this.throttledArrowOntouchmove}
         //   onTouchend={this.arrowOntouchend}
         >
-          <Image src={mirror} mode="widthFix" style="width:100%;height:100%"/>
-        </View>
+          <CoverImage src={mirror} mode="widthFix" style="width:100%;height:100%"/>
+        </CoverView>
+        {stylePrams.isActive && 
+          <Button openType="getUserInfo" className="addPicture" hoverClass="btn-hover" onGetUserInfo={()=>{}}>点击替换</Button>
+        }
+       
       </View>
     )
   }

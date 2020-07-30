@@ -408,7 +408,7 @@ class Editor extends Component {
   initSceneData = async (callback) => {
     ///获取globalData.sceneConfig数据
     service.home.getCateGoryAndScenes() //test
-    const res = await service.mkn.getTemplate('LJHPFL5739')
+    const res = await service.mkn.getTemplate('RGRFAG1145')
     let result = this.transformTemplateRes(res.result.result)
 
     globalData.sceneConfig=result.currentScene;
@@ -1701,6 +1701,8 @@ class Editor extends Component {
       });
       let newForegroundList = [];
       for(let i=0; i<foregroundList.length; i++){
+          let derectionX = foregroundList[i].position.hasOwnProperty("left") ? "left" : "right";
+          let derectionY = foregroundList[i].position.hasOwnProperty("top") ? "top" : "bottom"
         let newForeground = {  //存储切图信息
           id: 'foreground'+i,
           name: '人物'+i,
@@ -1725,14 +1727,19 @@ class Editor extends Component {
           position: {
             "place": foregroundList[i].position.relativePosition,
             "xAxis": {
-              "derection": foregroundList[i].position.hasOwnProperty("left") ? "left" : "right",
-              "offset": foregroundList[i].position.left
+              "derection": derectionX,
+              "offset": foregroundList[i].position[derectionX]
             },
             "yAxis": {
-              "derection": foregroundList[i].position.hasOwnProperty("top") ? "top" : "bottom",
-              "offset": foregroundList[i].position.top
+              "derection": derectionY,
+              "offset": foregroundList[i].position[derectionY]
             },
             rotate: foregroundList[i].position.rotation
+          },
+          "size": {
+            "default": foregroundList[i].position.defaultScale,
+            "zoomInMax": 1,
+            "zoomOutMin": 1
           }
         }
         newForegroundList.push(newForeground)
@@ -1749,7 +1756,7 @@ class Editor extends Component {
       let cover = {
         "id": '',
         "imageUrl": item.url,
-        "zIndex": 6,
+        "zIndex": item.order,
         "fixed": item.isLock === '1',
         // fixed: false,
         "isActive": false,

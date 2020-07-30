@@ -408,7 +408,7 @@ class Editor extends Component {
   initSceneData = async (callback) => {
     ///获取globalData.sceneConfig数据
     service.home.getCateGoryAndScenes() //test
-    const res = await service.mkn.getTemplate('RGRFAG1145')
+    const res = await service.mkn.getTemplate('LJHPFL5739')
     let result = this.transformTemplateRes(res.result.result)
 
     globalData.sceneConfig=result.currentScene;
@@ -1459,7 +1459,7 @@ class Editor extends Component {
           //   fail:()=>{
           //   }
           // })
-          if(this.selectedItem.id.indexOf('foreground') !== -1||this.selectedItem.id.indexOf('bgPart') !== -1){
+          if(this.selectedItem.id.indexOf('foreground') !== -1){
             const separateResult = globalData.separateResult = await this.initSegment()
             let res = await this.initSeparateData(separateResult)
             this.uploadCoverImg(res.separateUrl);
@@ -1477,23 +1477,64 @@ class Editor extends Component {
     }
 
   }
+
+  changeBg=(data)=>{
+    const { detail: { userInfo } } = data
+    if (userInfo) {
+      console.log(service,'this is service')
+      service.base.loginAuth(data.detail)//【上传用户信息】
+      globalData.userInfo = userInfo
+      console.log('this.selectedItem',this.selectedItem)
+      if(this.selectedItem.data && this.selectedItem.data.wordStickerCode){
+        return this.changeWord();
+      }
+      work.chooseImage({
+        onTap: (index) => {
+          // console.log('tap index', index)
+          if (index === 0) {
+            this.app.aldstat.sendEvent('编辑页面选择拍摄照片', '选择拍摄')
+          } else if (index === 1) {
+            this.app.aldstat.sendEvent('编辑页面选择相册照片', '选择相册')
+          }
+        },
+        onSuccess: async (path) => {//获得加载图片的路径,这里的success就是用来把加载进来的图片进行处理
+          console.log('choosedImage', path, globalData)
+          this.app.aldstat.sendEvent('编辑页面人像成功', '上传成功')
+          globalData.choosedImage = path//存入图片，为之后的处理准备
+          const separateResult = globalData.separateResult = await this.initSegment()
+          let res = await this.initSeparateData(separateResult)
+          let currentScene={...this.state.currentScene}
+          currentScene.bgUrl=res.separateUrl
+          this.setState({
+            currentScene
+          })
+        }
+      })
+    } else {
+      Taro.showToast({
+        title: '请授权',
+        icon: 'success',
+        duration: 2000
+      })
+    }
+  }
+
+
+
+
   
   uploadCoverImg(path){
-    let currentScene={...this.state.currentScene}
+  ]
     let coverList = this.state.coverList.map(cover=>{
       if(cover.id === this.selectedItem.id){
         cover.remoteUrl = path;
         console.log(path,'aaaaaaaaaaa')
       }
-      if(cover.id === this.selectedItem.id&&cover.id==='bgPart'){
-        currentScene.bgUrl=path
-      }
     });
     console.log(coverList,'uploadcoverimg')
     this.setState({
       chooseText: '重新上传人像',
-      coverList,
-      currentScene
+      coverList
     })
   }
 
@@ -1671,29 +1712,29 @@ class Editor extends Component {
   transformTemplateRes(result:any){
       console.log(result,'result result result')
 
-       let bgPart={  //存储背景信息
-        id: 'bgPart',
-        name: '背景',
-        remoteUrl: result.config.layerConfig[0].url,
-        zIndex: result.config.layerConfig[0].order,
-        width: 0,
-        height: 0,
-        x: 0,
-        y: 0,
-        rotate: 0,
-        originWidth: 0, // 原始宽度
-        originHeight: 0, // 原始高度
-        autoWidth: 0, // 自适应后的宽度
-        autoHeight: 0, // 自适应后的高度
-        autoScale: 0, // 相对画框缩放比例
-        defaultScale: null,
-        fixed: true, // 是否固定
-        isActive: false, // 是否激活
-        deleteable: true,
-        loaded: false, // 是否加载完毕
-        visible: true, // 是否显示
-        position: {}
-      }
+      //  let bgPart={  //存储背景信息
+      //   id: 'bgPart',
+      //   name: '背景',
+      //   remoteUrl: result.config.layerConfig[0].url,
+      //   zIndex: result.config.layerConfig[0].order,
+      //   width: 0,
+      //   height: 0,
+      //   x: 0,
+      //   y: 0,
+      //   rotate: 0,
+      //   originWidth: 0, // 原始宽度
+      //   originHeight: 0, // 原始高度
+      //   autoWidth: 0, // 自适应后的宽度
+      //   autoHeight: 0, // 自适应后的高度
+      //   autoScale: 0, // 相对画框缩放比例
+      //   defaultScale: null,
+      //   fixed: true, // 是否固定
+      //   isActive: false, // 是否激活
+      //   deleteable: true,
+      //   loaded: false, // 是否加载完毕
+      //   visible: true, // 是否显示
+      //   position: {}
+      // }
 
 
       let foregroundList = result.config.layerConfig.filter(item=>{
@@ -1788,7 +1829,7 @@ class Editor extends Component {
       return cover
     })
     coverList.unshift(...newForegroundList);
-    coverList.push(bgPart) //背景部分塞入
+    // coverList.push(bgPart) //背景部分塞入
     console.log(coverList,'ccc')
     coverList = work.formatRawCoverList(coverList);
     console.log(coverList,'ccc')
@@ -1851,7 +1892,9 @@ class Editor extends Component {
         templateCode: result.templateCode,
         templateName: result.templateName,
         segmentType: 0,
-        thumbnailUrl: result.thumbnailUrl
+        thumbnailUrl: result.thumbnailUrl,
+        isLock:false,//adding,
+        isActive:false
       }
       return {
         foreground: newForegroundList,
@@ -1879,12 +1922,30 @@ class Editor extends Component {
     temp.fixed=true
 
     //console.log(JSON.stringify(tempCover,null,2),'this1 is to check tempCover')
+    let currentScene={...this.state.currentScene}
+    currentScene.isActive=false
+
 
     this.setState({
       foreground:{...temp},
-      coverList:[...tempCover]
+      coverList:[...tempCover],
+      currentScene
     },()=>{
       // this.resetButton();
+    })
+  }
+
+  activateBg(){
+    let coverList=[...this.state.coverList]
+    let currentScene={...this.state.currentScene}
+    currentScene.isActive=true
+    coverList.forEach((item)=>{
+      item.isActive = false
+      item.fixed = true
+    })
+    this.setState({
+      coverList,
+      currentScene
     })
   }
 
@@ -1982,7 +2043,7 @@ class Editor extends Component {
                 <View className="background-image">
                   <Image
                     src={currentScene.bgUrl}
-                    style="width:100%;height:100%"
+                    style="width:100%;height:100%;"
                     mode="scaleToFill"
                     onLoad={this.handleBgLoaded}
                     onClick={this.handleBackgroundClick}
@@ -2046,8 +2107,14 @@ class Editor extends Component {
                           <View className="text">{item.name}</View>
                         </View>
                       )
-                      
                     })}
+                    <View className="block">
+                          {/* <View className={item.isActive? 'acitivated':''}> */}
+                              <Image src={currentScene.bgUrl} onClick={this.activateBg.bind(this) className="singlePicture" mode="aspectFit"  />
+                              <Button className={!currentScene.isLock&&currentScene.isActive? 'acitivated':''} openType="getUserInfo" onGetUserInfo={this.changeBg} >{!currentScene.isLock&&currentScene.isActive? '点击修改':''}</Button>
+                          {/* </View>     */}
+                          <View className="text">背景</View>
+                    </View>
                   {/*</View>*/}
               </ScrollView>
             </View>}

@@ -1353,7 +1353,7 @@ class Editor extends Component {
         if (cacheRes) {
           coverList[i] = cacheRes
         } else {
-          coverList[i] = { ...v, ...size, ...position }
+          coverList[i] = { ...v, ...size, ...position, visible: true }
         }
       }
     })

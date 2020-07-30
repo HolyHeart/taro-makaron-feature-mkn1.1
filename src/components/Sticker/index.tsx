@@ -274,11 +274,11 @@ class Sticker extends Component {
 
   arrowOntouchstart = (e) => {
     e.stopPropagation()
+    console.log(e.touches[0].clientX,e.touches[0].pageX,e,'eee')
     if (this.isFixed()) {
       // 若固定则不能移动
       return
     }
-    console.log(e,'eeeeeeeeeee')
     const {gesture} = this
     const {stylePrams} = this.props //是foreground传过来的
     const {framePrams} = this.state
@@ -441,55 +441,73 @@ class Sticker extends Component {
     //console.log(styleObj,'this is styleObj this is styleObj');
     // console.log('sticker render', this.state.url)
     return (
-      <View
-        className={`sticker-wrap ${(stylePrams.fixed || !stylePrams.isActive) ? 'event-through' : ''} ${(stylePrams.visible && stylePrams.width > 0) ? '' : 'hidden' } ${stylePrams.isActive ? 'canChange':''}`}
-        style={styleObj}
-      >
-        
-        {/* <View style="position: absolute;left:0;top:0">{framePrams.width}</View> */}
-        {/* <View style="position: absolute;left:0;top:20px">{stylePrams.autoWidth}</View> */}
-        {/* <View style="position: absolute;left:0;top:20px">{stylePrams.width}</View>  */}
-        {this.state.url &&
-          <Image
-            src={this.state.url}
-            mode="scaleToFill"
-            style="width:100%;height:100%"
-            onLoad={this.handleImageLoaded}
-            onTouchstart={this.stickerOntouchstart}
-            onTouchmove={this.throttledStickerOntouchmove}
-            onTouchend={this.stickerOntouchend}
-            className={this.props.stylePrams.isMirror ? 'isMirror' : ''}
-          />
-        }
-
-        <View className={`border ${stylePrams.isActive ? 'active' : ''}`}></View>
-        <CoverView className={`control move ${stylePrams.isActive && !stylePrams.fixed ? 'active' : ''}`}
+      <View>
+        <View
+          className={`sticker-wrap ${(stylePrams.fixed || !stylePrams.isActive) ? 'event-through' : ''} ${(stylePrams.visible && stylePrams.width > 0) ? '' : 'hidden' } ${stylePrams.isActive ? 'canChange':''}`}
+          style={styleObj}
+        >
           
-        >
-          <CoverImage src={scale} mode="widthFix" style="width:100%;height:100%"
-          onTouchstart={this.arrowOntouchstart}
-          onTouchmove={this.throttledArrowOntouchmove}
-          onTouchend={this.arrowOntouchend}/>
-        </CoverView>
-        {stylePrams.deleteable &&
-          <CoverView className={`control close ${stylePrams.isActive && !stylePrams.fixed ? 'active' : ''}`}
-            onClick={this.handleDeleteSticker}
+          {/* <View style="position: absolute;left:0;top:0">{framePrams.width}</View> */}
+          {/* <View style="position: absolute;left:0;top:20px">{stylePrams.autoWidth}</View> */}
+          {/* <View style="position: absolute;left:0;top:20px">{stylePrams.width}</View>  */}
+          {this.state.url &&
+            <Image
+              src={this.state.url}
+              mode="scaleToFill"
+              style="width:100%;height:100%"
+              onLoad={this.handleImageLoaded}
+              onTouchstart={this.stickerOntouchstart}
+              onTouchmove={this.throttledStickerOntouchmove}
+              onTouchend={this.stickerOntouchend}
+              className={this.props.stylePrams.isMirror ? 'isMirror' : ''}
+            />
+          }
+
+          <View className={`border ${stylePrams.isActive ? 'active' : ''}`}></View>
+          <View className={`control move ${stylePrams.isActive && !stylePrams.fixed ? 'active' : ''}`}
+            onTouchstart={this.arrowOntouchstart}
+            onTouchmove={this.throttledArrowOntouchmove}
+            onTouchend={this.arrowOntouchend}
           >
-            <CoverImage src={close} mode="widthFix" style="width:80%;height:80%" />
-          </CoverView>
-        }
-        <CoverView className={`control mirror ${stylePrams.isActive && !stylePrams.fixed ? 'active' : ''}`}
-          onTouchstart={this.mirrorOntouchstart}
-        //   onTouchmove={this.throttledArrowOntouchmove}
-        //   onTouchend={this.arrowOntouchend}
-        >
-          <CoverImage src={mirror} mode="widthFix" style="width:100%;height:100%"/>
-        </CoverView>
-        {stylePrams.isActive && 
-          <Button openType="getUserInfo" className="addPicture" hoverClass="btn-hover" onGetUserInfo={()=>{}}>点击替换</Button>
-        }
+            <Image src={scale} mode="widthFix" style="width:100%;height:100%"/>
+          </View>
+          {/* <CoverView className={`control move event-through ${stylePrams.isActive && !stylePrams.fixed ? 'active' : ''}`}>
+            <CoverImage className='event-through' src={scale} mode="widthFix" style="width:100%;height:100%"/>
+          </CoverView> */}
+          {stylePrams.deleteable &&
+            <View className={`control close ${stylePrams.isActive && !stylePrams.fixed ? 'active' : ''}`}
+              onClick={this.handleDeleteSticker}
+            >
+              <Image src={close} mode="widthFix" style="width:80%;height:80%" />
+            </View>
+          }
+          <View className={`control mirror ${stylePrams.isActive && !stylePrams.fixed ? 'active' : ''}`}
+            onTouchstart={this.mirrorOntouchstart}
+          //   onTouchmove={this.throttledArrowOntouchmove}
+          //   onTouchend={this.arrowOntouchend}
+          >
+            <Image src={mirror} mode="widthFix" style="width:100%;height:100%"/>
+          </View>
+        
+        </View>
+        <View className={`sticker-wrap copy event-through ${(stylePrams.visible && stylePrams.width > 0) ? '' : 'hidden' } ${stylePrams.isActive ? 'canChange':''}`}
+          style={styleObj}>
+          <View className={`border ${stylePrams.isActive ? 'active' : ''}`}></View>
+          <View className={`control move ${stylePrams.isActive && !stylePrams.fixed ? 'active' : ''}`}>
+            <Image src={scale} mode="widthFix" style="width:100%;height:100%"/>
+          </View>
        
+          {stylePrams.deleteable &&
+            <View className={`control close ${stylePrams.isActive && !stylePrams.fixed ? 'active' : ''}`}>
+              <Image src={close} mode="widthFix" style="width:80%;height:80%" />
+            </View>
+          }
+          <View className={`control mirror ${stylePrams.isActive && !stylePrams.fixed ? 'active' : ''}`}>
+            <Image src={mirror} mode="widthFix" style="width:100%;height:100%"/>
+          </View>
+        </View>
       </View>
+      
     )
   }
 }

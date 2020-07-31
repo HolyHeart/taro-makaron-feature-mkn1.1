@@ -25,6 +25,7 @@ import image_code from '@/assets/images/code.png'
 import image_versa from '@/assets/images/versa.png'
 // import addTips from "@/assets/images/tips_addpic@2x.png";
 import Dialog from '@/components/Dialog'
+import WordBox from '@/components/WordBox';
 
 type PageStateProps = {
   global: {
@@ -83,6 +84,7 @@ class Editor extends Component {
   selectedItem = null;
 
   state = {
+    showTextarea: false,
     rawImage: {
       localUrl: '',
       remoteUrl: ''
@@ -1266,11 +1268,14 @@ class Editor extends Component {
   }
 
   changeWord(){
-    Taro.showToast({
-      title: '暂不支持文字',
-      icon: 'success',
-      duration: 2000
-    })
+    this.setState({
+        showTextarea: true
+    });
+    // Taro.showToast({
+    //   title: '暂不支持文字',
+    //   icon: 'success',
+    //   duration: 2000
+    // })
   }
 
   //上传图片的操作
@@ -1848,19 +1853,23 @@ class Editor extends Component {
       // this.changeButtonPosition(-60,-60);
   }
 
+  uploadText(data){
+    console.log(data.detail.value,'wordbox')
+  }
+
 
   render() {
-    const { loading, rawImage, frame, customBg, foreground, coverList, sceneList, currentScene, result, canvas } = this.state
+    const { loading, rawImage, frame, customBg, foreground, coverList, sceneList, currentScene, result, canvas, showTextarea } = this.state
 
     return (
       <ScrollView scrollY className="scrollPage" style={{ height: this.state.screenHeight + 'px' }}>
-        <View className='page-editor'>
+        <View className={`page-editor`}>
           <Title
             color="#333"
             leftStyleObj={{ left: Taro.pxTransform(8) }}
             showBack={true}
           >懒人抠图</Title>
-          <View className="main">
+          <View className={`main ${ showTextarea ? 'blur' : ''}`}>
             <View className="pic-section">
               <View style={{ width: this.state.drawBoard.width, height: this.state.drawBoard.height }} className={`crop`} id="crop">
                 {currentScene.type === 'recommend' &&
@@ -1974,8 +1983,10 @@ class Editor extends Component {
           </View>
 
           <Loading visible={loading} />
-
         </View>
+        {showTextarea && <WordBox uploadText={this.uploadText}/>}
+        
+
       </ScrollView>
     )
   }

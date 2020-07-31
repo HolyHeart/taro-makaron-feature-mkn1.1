@@ -1594,7 +1594,7 @@ class Editor extends Component {
           let derectionY = foregroundList[i].position.hasOwnProperty("top") ? "top" : "bottom"
           let newForeground = {  //存储切图信息
           id: 'foreground'+i,
-          name: '人物'+i,
+          name: '人物' + (i+1),
           remoteUrl: foregroundList[i].url,
           zIndex: foregroundList[i].order,
           width: 0,
@@ -1642,7 +1642,7 @@ class Editor extends Component {
           let derectionY = imageList[i].position.hasOwnProperty("top") ? "top" : "bottom"
           let newImage = {  //存储切图信息
           id: 'image'+i,
-          name: '图片'+i,
+          name: '图片'+(i+1),
           remoteUrl: imageList[i].url,
           zIndex: imageList[i].order,
           width: 0,
@@ -1714,7 +1714,7 @@ class Editor extends Component {
             "offset": item.position.top
           }
         },
-        name: '贴纸' + index,
+        name: '贴纸' + (index + 1),
         deleteable: item.isLock !== '1',
         isLock: item.isLock === '1'
         // inList: true

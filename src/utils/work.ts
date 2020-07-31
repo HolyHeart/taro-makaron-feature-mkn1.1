@@ -16,6 +16,7 @@ interface saveSourceOptions {
 interface chooseImageOptions {
   onSuccess?: (path?: any) => void
   onTap?: (index?: any) => void
+  btnTxt?: []
 }
 const pageToHome = () => {
   Taro.redirectTo({
@@ -282,9 +283,9 @@ const calcVideoSize = (maxWidth = 306, maxHeight = 408, width, height) => {
     height,
   }
 }
-const chooseImage = async ({ onTap, onSuccess }: chooseImageOptions) => {
+const chooseImage = async ({ onTap, onSuccess, btnTxt }: chooseImageOptions) => {
   Taro.showActionSheet({
-    itemList: ['拍摄人像照', '从相册选择带有人像的照片'], //【显示操作菜单】
+    itemList: btnTxt || ['拍摄人像照', '从相册选择带有人像的照片'], //【显示操作菜单】
     success: function ({ tapIndex }) {
       typeof onTap === 'function' && onTap(tapIndex)
       if (tapIndex === 0) {

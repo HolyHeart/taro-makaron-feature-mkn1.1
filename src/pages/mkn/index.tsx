@@ -371,7 +371,7 @@ class Editor extends Component {
   initSceneData = async (callback) => {
     ///获取globalData.sceneConfig数据
     service.home.getCateGoryAndScenes() //test
-    const res = await service.mkn.getTemplate('RGRFAG1145')
+    const res = await service.mkn.getTemplate('RGRFAG1145') // RGRFAG1145
     let result = this.transformTemplateRes(res.result.result)
 
     globalData.sceneConfig=result.currentScene;
@@ -1341,7 +1341,8 @@ class Editor extends Component {
           }else{
             this.uploadCoverImg(path);
           }
-        }
+        },
+        btnTxt: ['1','11']
       })
     } else {
       Taro.showToast({

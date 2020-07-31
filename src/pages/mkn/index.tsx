@@ -26,6 +26,7 @@ import image_versa from '@/assets/images/versa.png'
 // import addTips from "@/assets/images/tips_addpic@2x.png";
 import Dialog from '@/components/Dialog'
 import WordBox from '@/components/WordBox';
+import iconLock from '@/assets/images/icon_lock.png'
 
 type PageStateProps = {
   global: {
@@ -1916,6 +1917,7 @@ class Editor extends Component {
                         <View className="block">
                           {/* <View className={item.isActive? 'acitivated':''}> */}
                               <Image src={item.remoteUrl} className="singlePicture" mode="aspectFit"  />
+                              <Image src={iconLock} className="locked" mode="aspectFit"  />
                               {/* <Button className={item.isActive? 'acitivated':''} openType="getUserInfo" onGetUserInfo={this.todo}>{item.isActive? '点击修改':''}</Button> */}
                           {/* </View>     */}
                           <View className="text">{item.name}</View>

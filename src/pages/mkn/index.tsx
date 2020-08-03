@@ -371,7 +371,7 @@ class Editor extends Component {
   initSceneData = async (callback) => {
     ///获取globalData.sceneConfig数据
     service.home.getCateGoryAndScenes() //test
-    const res = await service.mkn.getTemplate('RGRFAG1145')
+    const res = await service.mkn.getTemplate('RGRFAG1145') // RGRFAG1145
     let result = this.transformTemplateRes(res.result.result)
 
     globalData.sceneConfig=result.currentScene;
@@ -1341,7 +1341,8 @@ class Editor extends Component {
           }else{
             this.uploadCoverImg(path);
           }
-        }
+        },
+        btnTxt: ['1','11']
       })
     } else {
       Taro.showToast({
@@ -1586,7 +1587,7 @@ class Editor extends Component {
 
   transformTemplateRes(result:any){
       let foregroundList = result.config.layerConfig.filter(item=>{
-        return item.type === undefined && item.actionType === undefined && item.wordStickerCode === undefined;
+        return item.category === 16;
       });
       let newForegroundList = [];
       for(let i=0; i<foregroundList.length; i++){
@@ -1594,7 +1595,7 @@ class Editor extends Component {
           let derectionY = foregroundList[i].position.hasOwnProperty("top") ? "top" : "bottom"
           let newForeground = {  //存储切图信息
           id: 'foreground'+i,
-          name: '人物'+i,
+          name: '人物' + (i+1),
           remoteUrl: foregroundList[i].url,
           zIndex: foregroundList[i].order,
           width: 0,
@@ -1633,10 +1634,58 @@ class Editor extends Component {
         }
         newForegroundList.push(newForeground)
       }
+      let imageList = result.config.layerConfig.filter(item=>{
+        return item.category === 10001;
+      });
+      let newImageList = [];
+      for(let i=0; i<imageList.length; i++){
+          let derectionX = imageList[i].position.hasOwnProperty("left") ? "left" : "right";
+          let derectionY = imageList[i].position.hasOwnProperty("top") ? "top" : "bottom"
+          let newImage = {  //存储切图信息
+          id: 'image'+i,
+          name: '图片'+(i+1),
+          remoteUrl: imageList[i].url,
+          zIndex: imageList[i].order,
+          width: 0,
+          height: 0,
+          x: 0,
+          y: 0,
+          rotate: imageList[i].position.rotation,
+          originWidth: 0, // 原始宽度
+          originHeight: 0, // 原始高度
+          autoWidth: 0, // 自适应后的宽度
+          autoHeight: 0, // 自适应后的高度
+          autoScale: 0, // 相对画框缩放比例
+          defaultScale: imageList[i].position.defaultScale,
+          fixed: true, // 是否固定
+          isActive: false, // 是否激活
+          deleteable: true,
+          loaded: false, // 是否加载完毕
+          visible: true, // 是否显示
+          position: {
+            "place": imageList[i].position.relativePosition,
+            "xAxis": {
+              "derection": derectionX,
+              "offset": imageList[i].position[derectionX]
+            },
+            "yAxis": {
+              "derection": derectionY,
+              "offset": imageList[i].position[derectionY]
+            },
+            rotate: imageList[i].position.rotation
+          },
+          "size": {
+            "default": imageList[i].position.defaultScale,
+            "zoomInMax": 1,
+            "zoomOutMin": 1
+          }
+        }
+        newImageList.push(newImage)
+      }
      
       
       let currentScene = result.config.layerConfig.filter(item=>{
-          return item.actionType = 'CHANGEBG';
+          return item.category === 1;
       })[0]
       let coverList = result.config.layerConfig.filter(item=>{
         return (item.type && item.type.indexOf('Sticker') !== -1) || item.wordStickerCode;
@@ -1666,7 +1715,7 @@ class Editor extends Component {
             "offset": item.position.top
           }
         },
-        name: '贴纸' + index,
+        name: '贴纸' + (index + 1),
         deleteable: item.isLock !== '1',
         isLock: item.isLock === '1'
         // inList: true
@@ -1676,12 +1725,10 @@ class Editor extends Component {
       }
       return cover
     })
-    coverList.unshift(...newForegroundList);
+    coverList.unshift(...newForegroundList,...newImageList);
     console.log(coverList,'ccc')
     coverList = work.formatRawCoverList(coverList);
     console.log(coverList,'ccc')
-
-    
 
     let newCoverList = {
         "support": true,
@@ -1918,35 +1965,27 @@ class Editor extends Component {
 
             {this.state.showType&&<View className={`scrollBox ${coverList.length < 6 ? 'listCenter':''}`}>
               <ScrollView scrollX className="scrollList" style="width:100%;white-space: nowrap;overflow:hidden;">
+                    <View className="block">
+                      <Image src={currentScene.bgUrl} onClick={this.activateBg.bind(this)} className="singlePicture" mode="aspectFit" />
+                      <Button className={!currentScene.isLock&&currentScene.isActive? 'acitivated':''} openType="getUserInfo" onGetUserInfo={this.changeBg} >{!currentScene.isLock&&currentScene.isActive? '点击修改':''}</Button>
+                      <View className="text">背景</View>
+                    </View>
                     {this.state.coverList.map((item,index) => {
                       return !item.isLock ?  
                       (
                         <View className="block">
-                          {/* <View className={item.isActive? 'acitivated':''}> */}
                               <Image src={item.remoteUrl} onClick={this.activatePicture.bind(this,index)} className="singlePicture" mode="aspectFit"  />
                               <Button className={item.isActive? 'acitivated':''} openType="getUserInfo" onGetUserInfo={this.todo}>{item.isActive? '点击修改':''}</Button>
-                          {/* </View>     */}
                           <View className="text">{item.name}</View>
                         </View>
                       ):(
                         <View className="block">
-                          {/* <View className={item.isActive? 'acitivated':''}> */}
                               <Image src={item.remoteUrl} className="singlePicture" mode="aspectFit"  />
                               <Image src={iconLock} className="locked" mode="aspectFit"  />
-                              {/* <Button className={item.isActive? 'acitivated':''} openType="getUserInfo" onGetUserInfo={this.todo}>{item.isActive? '点击修改':''}</Button> */}
-                          {/* </View>     */}
                           <View className="text">{item.name}</View>
                         </View>
                       )
                     })}
-                    <View className="block">
-                          {/* <View className={item.isActive? 'acitivated':''}> */}
-                              <Image src={currentScene.bgUrl} onClick={this.activateBg.bind(this) className="singlePicture" mode="aspectFit"  />
-                              <Button className={!currentScene.isLock&&currentScene.isActive? 'acitivated':''} openType="getUserInfo" onGetUserInfo={this.changeBg} >{!currentScene.isLock&&currentScene.isActive? '点击修改':''}</Button>
-                          {/* </View>     */}
-                          <View className="text">背景</View>
-                    </View>
-                  {/*</View>*/}
               </ScrollView>
             </View>}
 

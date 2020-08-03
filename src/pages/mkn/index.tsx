@@ -1287,9 +1287,9 @@ class Editor extends Component {
       service.base.loginAuth(data.detail)//【上传用户信息】
       globalData.userInfo = userInfo
       console.log('this.selectedItem',this.selectedItem)
-      if(this.selectedItem.data && this.selectedItem.data.wordStickerCode){
+      // if(this.selectedItem.data && this.selectedItem.data.wordStickerCode){
         return this.changeWord();
-      }
+      // }
       work.chooseImage({
         onTap: (index) => {
           // console.log('tap index', index)
@@ -1856,6 +1856,21 @@ class Editor extends Component {
 
   uploadText(data){
     console.log(data.detail.value,'wordbox')
+    this.setState({
+      showTextarea:false
+    },()=>{
+      this.showLoading()
+      let wordUrl=iconLock;
+      let coverList=[...this.state.coverList]
+      coverList.forEach((item)=>{
+        if(this.selectedItem.id===item.id){
+          item.remoteUrl=wordUrl
+        }
+      })
+      this.setState({
+       coverList
+      },()=>{this.hideLoading()})
+    })
   }
 
 
@@ -1986,7 +2001,7 @@ class Editor extends Component {
 
           <Loading visible={loading} />
         </View>
-        {showTextarea && <WordBox uploadText={this.uploadText}/>}
+        {showTextarea && <WordBox uploadText={(data)=>{this.uploadText(data)}}/>}
         
 
       </ScrollView>

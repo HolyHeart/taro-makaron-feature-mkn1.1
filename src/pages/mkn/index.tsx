@@ -261,14 +261,14 @@ class Editor extends Component {
     }
 
     const { userInfo = {} } = globalData
-    const path = `/pages/index?shareSource=${shareImageUrl}`
+    const path = `/pages/mkn/index`
     // console.log('url',path)
     // const title = `@${userInfo.nickName}：${shareContent}`
     if (!shareImage.remoteUrl) {
       console.log('shareImage.remoteUrl', shareImage.remoteUrl)
       return {
         // title: title,
-        path: '/pages/home/index',
+        path: '/pages/mkn/index',
         imageUrl: currentScene.thumbnailUrl,
       }
     }
@@ -646,6 +646,50 @@ class Editor extends Component {
           coverList: []
         });
       }
+    })
+  }
+
+ async save(){
+    if (!this.state.currentScene.bgUrl) {
+      return
+    }
+    if (this.isSaving) {
+      return
+    }
+    this.app.aldstat.sendEvent('保存图片或视频', { '场景名': this.state.currentScene.sceneName, '场景Id': this.state.currentScene.sceneId })
+    Taro.showLoading({
+      title: '照片生成中...',
+      mask: true,
+    })
+    const mySaveNumber = {
+      number: Taro.getStorageSync('saveNumber').number + 1,
+      date: Taro.getStorageSync('saveNumber').date
+    }
+    Taro.setStorageSync('saveNumber', mySaveNumber)
+    this.isSaving = true
+    const canvasImageUrl = await this.createCanvas()
+    console.log(canvasImageUrl,'这是canvasImageUrl')//图片的本地地址
+    Taro.hideLoading()
+    this.isSaving = false
+    this.setState({
+      result: {
+        shareImage: {
+          localUrl: canvasImageUrl,
+          remoteUrl: '',
+        },
+        show: true
+      },
+    }, async () => {
+      const { url } = await service.base.upload(canvasImageUrl)
+      this.setState({
+        result: {
+          // show: this.state.result.show,
+          shareImage: {
+            localUrl: canvasImageUrl,
+            remoteUrl: url, //获得远端的url
+          }
+        }
+      })
     })
   }
 
@@ -1981,15 +2025,16 @@ class Editor extends Component {
 
             {!this.state.result.shareImage.remoteUrl&&this.state.showType&&
             <View className={`buttonPart ${this.state.showType===1? 'lessWidth':''}`}  >
-              {Taro.getStorageSync('saveNumber').number === 0 ?
-                <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.handleOpenResult}>分享并保存</Button>
-                : <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.handleOpenResult}>保存</Button>}
+              <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.handleOpenResult}>分享并保存</Button>
+              {/* {Taro.getStorageSync('saveNumber').number === 0 ?
+                <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.handleOpenResult} openType="share">分享并保存</Button>
+                : <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.handleOpenResult}>保存</Button>} */}
             </View>
             }
 
 
             {this.state.result.shareImage.remoteUrl&&<View className="btn-wrap">
-              <Button className="custom-button pink btn-1" hoverClass="btn-hover" id="btnNav" onClick={this.handleOpenResult}>继续分享</Button>
+              <Button className="custom-button pink btn-1" hoverClass="btn-hover" id="btnNav" openType="share">继续分享</Button>
               {this.state.ableToShareToQZone ?
               <View>
                 <Button className="custom-button dark btn-2" hoverClass="btn-hover" onClick={this.publishToQzone}>同步到说说</Button>

@@ -676,46 +676,6 @@ class Editor extends Component {
       }
     );
   };
-  // 自定义场景
-  handleChooseCustom = () => {
-    work.chooseImage({
-      onTap: (index) => {
-        if (index === 0) {
-          this.app.aldstat.sendEvent(
-            "自定义背景上传人像选择拍摄照片",
-            "选择拍摄"
-          );
-        } else if (index === 1) {
-          this.app.aldstat.sendEvent(
-            "自定义背景上传人像选择相册照片",
-            "选择相册"
-          );
-        }
-      },
-      onSuccess: (path) => {
-        const { currentScene } = this.state;
-        const customScene = {
-          type: "custom",
-          bgUrl: path,
-          sceneId: "",
-          sceneName: "",
-          shareContent: "",
-          thumbnailUrl: path,
-        };
-        this.setState({
-          currentScene: {
-            ...currentScene,
-            ...customScene,
-          },
-          customBg: {
-            ...this.state.customBg,
-            localUrl: path,
-          },
-          coverList: [],
-        });
-      },
-    });
-  };
 
   async save() {
     if (!this.state.currentScene.bgUrl) {
@@ -1571,6 +1531,7 @@ class Editor extends Component {
               currentScene.sceneConfig.cover.list = this.state.coverList;
               this.setState({
                 currentScene,
+                coverList: [],
               });
 
               // wx.cloud.callFunction(

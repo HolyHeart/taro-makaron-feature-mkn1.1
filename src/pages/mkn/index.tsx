@@ -1184,7 +1184,6 @@ class Editor extends Component {
     const { originWidth, originHeight } = foreground;
     width = width || foreground.width;
     height = height || foreground.height;
-    console.log(width, height, 123123123);
     // const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
 
     const boxWidth = frame.width;
@@ -2074,7 +2073,6 @@ class Editor extends Component {
     query.select(".crop >>> .canChange").boundingClientRect();
     query.selectViewport().scrollOffset(); //获取滚动区域，
     query.exec((res) => {
-      console.log(res, "1234556677");
       if (res[0]) {
         const { left, top, width, height } = res[0];
         let x = left + width / 2;

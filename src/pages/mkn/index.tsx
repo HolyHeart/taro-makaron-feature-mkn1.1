@@ -1474,72 +1474,67 @@ class Editor extends Component {
   }
 
   //上传图片的操作
-  todo = (data, item) => {
+  todo = (data) => {
+    // console.log(data, 'datadatadataOftodo')//授权获得用户信息
+    this.app.aldstat.sendEvent("bank_replace", {});
     const {
       detail: { userInfo },
     } = data;
     if (userInfo) {
-      console.log(service, "this is service");
       service.base.loginAuth(data.detail); //【上传用户信息】
       globalData.userInfo = userInfo;
-      console.log("this.selectedItem", this.selectedItem);
-      // if(this.selectedItem.data && this.selectedItem.data.wordStickerCode){
-      return this.changeWord();
-      // }
-      work.chooseImage({
-        onTap: (index) => {
-          // console.log('tap index', index)
-          if (index === 0) {
-            this.app.aldstat.sendEvent("编辑页面选择拍摄照片", "选择拍摄");
-          } else if (index === 1) {
-            this.app.aldstat.sendEvent("编辑页面选择相册照片", "选择相册");
-          }
-        },
+      work.chooseImageSimple({
         onSuccess: async (path) => {
           //获得加载图片的路径,这里的success就是用来把加载进来的图片进行处理
-          console.log("choosedImage", path, globalData);
           this.app.aldstat.sendEvent("编辑页面人像成功", "上传成功");
           globalData.choosedImage = path; //存入图片，为之后的处理准备
-          // wx.getFileSystemManager().readFile({
-          //   filePath: path,
-          //   success: (data) => { //这的data是文件内容，所以这个函数的意义是啥？？？
-          //     wx.cloud.callFunction({
-          //       name: 'checkImage',
-          //       data: {
-          //         contentType: 'image/png',
-          //         value: data.data
-          //       },
-          //       success: async (res) => {//res 为处理信息，跟图片无关；
-          //         console.log('checkImage success：', res)
-          //         // const separateResult = globalData.separateResult = await this.initSegment()
-          //         // await this.initSeparateData(separateResult)
-          //         if (res.result !== null && res.result.errCode === 0) {
-          //           const separateResult = globalData.separateResult = await this.initSegment()//一个对象、得到分割结果，还不是图像，只是部分路径
-          //           console.log(separateResult,'separeteResulting')
-          //           await this.initSeparateData(separateResult)
-          //         } else {
-          //           work.pageToError()
-          //         }
-          //       },
-          //       fail: async (err) => {
-          //         console.log('checkImage error', err)
-          //         const separateResult = globalData.separateResult = await this.initSegment()
-          //         await this.initSeparateData(separateResult)
-          //       }
-          //     })
-          //   },
-          //   fail:()=>{
-          //   }
-          // })
-          if (this.selectedItem.id.indexOf("foreground") !== -1) {
-            const separateResult = (globalData.separateResult = await this.initSegment());
-            let res = await this.initSeparateData(separateResult);
-            this.uploadCoverImg(res.separateUrl);
-          } else {
-            this.uploadCoverImg(path);
+          Taro.getFileSystemManager().readFile({
+            filePath: path,
+            success: async (data: any) => {
+              //async
+              if (this.selectedItem.id.indexOf("foreground") !== -1) {
+                const separateResult = (globalData.separateResult = await this.initSegment());
+                let res = await this.initSeparateData(separateResult);
+                this.uploadCoverImg(res.separateUrl);
+              } else {
+                this.uploadCoverImg(path);
+              }
+              // wx.cloud.callFunction(
+              //     {
+              //         name: 'checkImage',
+              //         data: {
+              //           contentType: 'image/png',
+              //           value: data.data
+              //         },
+              //         success: async (res:any) => {//res 为处理信息，跟图片无关；
+              //           // console.log('checkImage success：', res)
+              //           // const separateResult = globalData.separateResult = await this.initSegment()
+              //           // await this.initSeparateData(separateResult)
+              //           if (res.result !== null && res.result.errCode === 0) {
+              //             setTimeout(function(){},10000);
+              //             const separateResult = globalData.separateResult = await this.initSegment()//一个对象、得到分割结果，还不是图像，只是部分路径
+              //             // console.log(separateResult, 'separeteResulting~~~~~~~~~~~~~~~~')
+              //             await this.initSeparateData(separateResult)
+              //           } else {
+              //             work.pageToError()
+              //           }
+              //         },
+              //         fail: async (err) => {
+              //           // console.log('checkImage error', err)
+              //           const separateResult = globalData.separateResult = await this.initSegment()
+              //           await this.initSeparateData(separateResult)
+              //         }
+              //       }
+              // )
+            },
+            fail: () => {},
+          });
+        },
+        onFail: () => {
+          if (!this.state.foreground.remoteUrl) {
+            this.pageToHome();
           }
         },
-        btnTxt: ["1", "11"],
       });
     } else {
       Taro.showToast({
@@ -1551,39 +1546,69 @@ class Editor extends Component {
   };
 
   changeBg = (data) => {
+    // console.log(data, 'datadatadataOftodo')//授权获得用户信息
+    this.app.aldstat.sendEvent("bank_replace", {});
     const {
       detail: { userInfo },
     } = data;
     if (userInfo) {
-      console.log(service, "this is service");
       service.base.loginAuth(data.detail); //【上传用户信息】
       globalData.userInfo = userInfo;
-      console.log("this.selectedItem", this.selectedItem);
-      if (this.selectedItem.data && this.selectedItem.data.wordStickerCode) {
-        return this.changeWord();
-      }
-      work.chooseImage({
-        onTap: (index) => {
-          // console.log('tap index', index)
-          if (index === 0) {
-            this.app.aldstat.sendEvent("编辑页面选择拍摄照片", "选择拍摄");
-          } else if (index === 1) {
-            this.app.aldstat.sendEvent("编辑页面选择相册照片", "选择相册");
-          }
-        },
+      work.chooseImageSimple({
         onSuccess: async (path) => {
           //获得加载图片的路径,这里的success就是用来把加载进来的图片进行处理
-          console.log("choosedImage", path, globalData);
           this.app.aldstat.sendEvent("编辑页面人像成功", "上传成功");
           globalData.choosedImage = path; //存入图片，为之后的处理准备
-          const separateResult = (globalData.separateResult = await this.initSegment());
-          let res = await this.initSeparateData(separateResult);
-          let currentScene = { ...this.state.currentScene };
-          currentScene.bgUrl = res.separateUrl;
-          this.setState({
-            currentScene,
-            coverList: [],
+          Taro.getFileSystemManager().readFile({
+            filePath: path,
+            success: async (data: any) => {
+              //async
+              const separateResult = (globalData.separateResult = await this.initSegment());
+              let res = await this.initSeparateData(separateResult);
+              let currentScene = { ...this.state.currentScene };
+              currentScene.bgUrl = res.separateUrl;
+              currentScene.bgUrl = res.separateUrl;
+              currentScene.sceneConfig.cover.list = this.state.coverList;
+              this.setState({
+                currentScene,
+                coverList: [],
+              });
+
+              // wx.cloud.callFunction(
+              //     {
+              //         name: 'checkImage',
+              //         data: {
+              //           contentType: 'image/png',
+              //           value: data.data
+              //         },
+              //         success: async (res:any) => {//res 为处理信息，跟图片无关；
+              //           // console.log('checkImage success：', res)
+              //           // const separateResult = globalData.separateResult = await this.initSegment()
+              //           // await this.initSeparateData(separateResult)
+              //           if (res.result !== null && res.result.errCode === 0) {
+              //             setTimeout(function(){},10000);
+              //             const separateResult = globalData.separateResult = await this.initSegment()//一个对象、得到分割结果，还不是图像，只是部分路径
+              //             // console.log(separateResult, 'separeteResulting~~~~~~~~~~~~~~~~')
+              //             await this.initSeparateData(separateResult)
+              //           } else {
+              //             work.pageToError()
+              //           }
+              //         },
+              //         fail: async (err) => {
+              //           // console.log('checkImage error', err)
+              //           const separateResult = globalData.separateResult = await this.initSegment()
+              //           await this.initSeparateData(separateResult)
+              //         }
+              //       }
+              // )
+            },
+            fail: () => {},
           });
+        },
+        onFail: () => {
+          if (!this.state.foreground.remoteUrl) {
+            this.pageToHome();
+          }
         },
       });
     } else {

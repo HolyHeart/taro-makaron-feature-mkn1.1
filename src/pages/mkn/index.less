@@ -1,32 +1,32 @@
 .page-editor {
-  position:relative;
-  width:100%;
+  position: relative;
+  width: 100%;
   height: 100%;
-  padding-top:172px;
-  box-sizing:border-box;
+  padding-top: 172px;
+  box-sizing: border-box;
   //display:flex;
   //flex-direction:column;
   //align-items:center;
   //justify-content: flex-start;
-  .main{
-    &.blur{
-        filter: blur(9px);
+  .main {
+    &.blur {
+      filter: blur(9px);
     }
   }
-  
+
   .pic-section {
     position: relative;
     width: 100%;
     display: flex;
-    flex-direction:column;
-    align-items:center;
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
     .crop {
-      position:relative;
-      width:650px;
-      height:416px;
+      position: relative;
+      width: 650px;
+      height: 416px;
       // background: #ccc;
-      transition:all 0.2s;
+      transition: all 0.2s;
       overflow: hidden;
       &.hidden {
         opacity: 0;
@@ -48,11 +48,11 @@
     }
   }
 
-  .scrollList{
-    height:150px;
+  .scrollList {
+    height: 150px;
   }
 
-  .text{
+  .text {
     width: 110px;
     height: 28px;
     line-height: 28px;
@@ -61,93 +61,88 @@
     text-align: center;
   }
 
-
-  .block{
+  .block {
     display: inline-block;
     position: relative;
   }
 
-  .scrollBox{
-  //  width: 100%;
-  //  height: 180px;
-  //  overflow: hidden;
-  //  white-space: nowrap;
-  //  margin-top: 100px;
+  .scrollBox {
+    //  width: 100%;
+    //  height: 180px;
+    //  overflow: hidden;
+    //  white-space: nowrap;
+    //  margin-top: 100px;
     margin: 30px;
-    &.listCenter{
+    &.listCenter {
       text-align: center;
     }
     //.pictureList{
     //  margin: auto;
-        .singleForeground{
-          position: relative;
-          width:110px;
-          height:110px;
-          
-          border-radius:4px;
-          margin-right: 10px;
-          //display: inline-block
-        }
-        .singlePicture{
-          position: relative;
-          width:110px;
-          height:110px;
-          background:rgba(0,0,0,0.4);
-          border-radius:4px;
-          margin-right: 10px;
-          //display: inline-block;
-        }
-        .acitivated{
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 110px;
-          height: 110px;
-          padding: 0;
-          box-sizing: content-box;
-          background:rgba(255,51,102,0.6);
-          opacity: 0.9;
-          z-index: 10;
-          color: #FFFFFF;
-          text-align: center;
-          font-size: 28px;
-          line-height: 110px;
-          border:1px solid red;
-        }
-        .locked{
-          position: absolute;
-          top: 34px;
-          left: 30px;
-          width: 44px;
-          height: 44px;
-          padding: 0;
-          box-sizing: content-box;
-          opacity: 0.9;
-          z-index: 10;
-          border-radius:4px;;
-        }
+    .singleForeground {
+      position: relative;
+      width: 110px;
+      height: 110px;
+
+      border-radius: 4px;
+      margin-right: 10px;
+      //display: inline-block
+    }
+    .singlePicture {
+      position: relative;
+      width: 110px;
+      height: 110px;
+      background-image: url("../../assets/images/Bg.png");
+      background-size: cover;
+      border-radius: 4px;
+      margin-right: 10px;
+      //display: inline-block;
+    }
+    .acitivated {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 110px;
+      height: 110px;
+      padding: 0;
+      box-sizing: content-box;
+      background: rgba(255, 51, 102, 0.6);
+      opacity: 0.9;
+      z-index: 10;
+      color: #ffffff;
+      text-align: center;
+      font-size: 28px;
+      line-height: 110px;
+      border: 1px solid red;
+    }
+    .locked {
+      position: absolute;
+      top: 34px;
+      left: 30px;
+      width: 44px;
+      height: 44px;
+      padding: 0;
+      box-sizing: content-box;
+      opacity: 0.9;
+      z-index: 10;
+      border-radius: 4px;
+    }
 
     //}
   }
 
-
-
-
-
-
   .buttonPart {
-    margin:auto;
+    margin: auto;
     margin-top: 30px;
     display: flex;
     height: 80px;
     width: 672px;
-    &.saved{
+    &.saved {
       visibility: hidden;
     }
-    &.moreMargin{
+    &.moreMargin {
       margin-top: 64px;
     }
-    &.lessWidth{
+    &.lessWidth {
       width: 400px;
       margin-bottom: 100px;
     }
@@ -156,16 +151,16 @@
   .button-section {
     margin-top: 20px;
     &.high {
-      margin-top: 60px
+      margin-top: 60px;
     }
   }
   .canvas-wrap {
-    position:fixed;
-    left:0;
-    bottom:-3050px;
-    z-index:-2;
-    opacity:0;
-    visibility:none;
+    position: fixed;
+    left: 0;
+    bottom: -3050px;
+    z-index: -2;
+    opacity: 0;
+    visibility: none;
   }
   .btn-wrap {
     //width:690rpx;
@@ -190,44 +185,44 @@
     }
   }
 }
-.newGuide{
+.newGuide {
   position: absolute;
   width: 100%;
   height: 100%;
   top: 0;
   left: 0;
   right: 0;
-  background:rgba(0,0,0,0.6);
+  background: rgba(0, 0, 0, 0.6);
   z-index: 1;
 }
-.newGuide .tips{
+.newGuide .tips {
   position: absolute;
-  width:392rpx;
-  height:154rpx;
+  width: 392rpx;
+  height: 154rpx;
   bottom: 4444444rpx;
-  left: 20px
+  left: 20px;
 }
-.wx-dialog-footer{
+.wx-dialog-footer {
   display: flex;
   align-items: center;
   position: relative;
   line-height: 45px;
   font-size: 17px;
 }
-.wx-dialog-footer::before{
-  content: '';
+.wx-dialog-footer::before {
+  content: "";
   position: absolute;
   left: 0;
   top: 0;
   right: 0;
   height: 1px;
-  color: #D5D5D6;
+  color: #d5d5d6;
   -webkit-transform-origin: 0 0;
   transform-origin: 0 0;
   -webkit-transform: scaleY(0.5);
   transform: scaleY(0.5);
 }
-.wx-dialog-btn{
+.wx-dialog-btn {
   display: block;
   -webkit-flex: 1;
   flex: 1;
@@ -246,13 +241,11 @@
   border: 1px solid #ff005b;
   margin: 0 30rpx;
 }
-.wx-dialog-footer .wx-dialog-btn:nth-of-type(2){
+.wx-dialog-footer .wx-dialog-btn:nth-of-type(2) {
   margin-left: -10rpx;
   color: #fff;
   background-color: #ff005b;
 }
-.custom-button{
-    // font-family: 'versa';
+.custom-button {
+  // font-family: 'versa';
 }
-
-

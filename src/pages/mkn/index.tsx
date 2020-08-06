@@ -1571,7 +1571,6 @@ class Editor extends Component {
               currentScene.sceneConfig.cover.list = this.state.coverList;
               this.setState({
                 currentScene,
-                coverList: [],
               });
 
               // wx.cloud.callFunction(

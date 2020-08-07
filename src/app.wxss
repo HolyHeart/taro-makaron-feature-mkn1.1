@@ -1,0 +1,59 @@
+button::after {
+  border: none;
+}
+.custom-button {
+  border-radius: 80rpx;
+  width: 100%;
+  height: 80rpx;
+  line-height: 80rpx;
+  color: white;
+  font-size: 36rpx;
+  text-align: center;
+  transition: all 0.2s;
+}
+.custom-button.btn-hover {
+  transform: scale(0.85);
+}
+.custom-button.pink {
+  background: #FF3366;
+}
+.custom-button.dark {
+  background: #333;
+}
+.custom-button.white {
+  background: #fff;
+  color: #FF3366;
+  border: 1px solid #FF3366;
+}
+.custom-button.white.border{
+    background: initial;
+    color:#fff;
+    border: 1px solid #fff;
+}
+.tooltip-item {
+  width: 150px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.tooltip-item.border {
+  border-bottom: 1rpx solid #3f3f3f;
+}
+.tooltip-item .tooltip-icon {
+  width: 33rpx;
+  height: 33rpx;
+}
+.tooltip-item .tooltip-button {
+  margin: 0;
+  padding: 0;
+  font-size: 25rpx;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #fff;
+  border: none;
+  border-radius: 0;
+  background-color: transparent;
+}
+.tooltip-item .tooltip-button::after {
+  border: none;
+}

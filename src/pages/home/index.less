@@ -1,0 +1,197 @@
+.page-home {
+  box-sizing:border-box;
+  position:relative;
+  background: #fff;
+  -webkit-overflow-scrolling: touch;
+  // height: 100%;
+
+  .title-filler {
+    width: 100%;
+    //background-color: red;
+  }
+  .tooltip {
+    width: 100%;
+  }
+  .nav-bar {
+    width: 20%;
+    //background-color: yellow;
+    float: left;
+    .nav-filler {
+      width: 100%;
+      height: 30px;
+    }
+    .nav-label {
+      height: 70px;
+      line-height: 70px;
+      width: 100%;
+      margin-top: 20px;
+      margin-bottom: 20px;
+      background-color: #FF3366;
+      border-top-right-radius: 140px;
+      border-bottom-right-radius: 140px;
+      //text-align: center;
+      //box-shadow:4rpx 4rpx 8rpx rgba(0,0,0,0.5);
+      .nav-label-text {
+        color: white;
+        font-size: 30px;
+        margin-left: 16px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+    .nav-label-2 {
+      height: 70px;
+      line-height: 70px;
+      width: 100%;
+      margin-top: 20px;
+      margin-bottom: 20px;
+      //text-align: center;
+      .nav-label-2-text {
+        color: #333333;
+        font-size: 30px;
+        margin-left: 16px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+    ::-webkit-scrollbar{
+      width: 0;
+      height: 0;
+      color: transparent;
+    }
+  }
+  .items-window {
+    width: 80%;
+    //background-color: green;
+    float: right;
+    .window-divider {
+      width: 100%;
+      height: 80px;
+      line-height: 80px;
+      //background-color: blue;
+      display:flex;
+      justify-content:center;
+
+      text-align: center;
+      .window-divider-text {
+        font-size: 24px;
+        color: #999999;
+        vertical-align:middle;
+      }
+      .window-divider-icon {
+        height: 26px;
+        width: 26px;
+        margin: 0 10rpx;
+        align-self: center;
+      }
+    }
+    .window-container {
+      height: auto;
+      width: 94%;
+      margin-left: 3%;
+      margin-right: 3%;
+      // margin-left: 20px;
+      // margin-right: 20px;
+      margin-top: 10px;
+      margin-bottom: 10px;
+      display: flex;
+      flex-direction:row;
+      flex-wrap:wrap;
+      .item-block {
+        width: 50%;
+        // height: 240rpx;
+        padding-bottom: 50%;
+        height: 0;
+        .item {
+          // background-color: #FF3366;
+          width: 90%;
+          //height: 240rpx;
+          padding-bottom: 90%;
+          height: 0;
+          //box-shadow:4rpx 4rpx 8rpx rgba(0,0,0,0.5);
+          margin-left: 5%;
+          margin-top: 5%;
+          border-radius: 5px;
+          position: relative;
+          &.item-hover {
+            transform: scale(0.95)
+          }
+        }
+      }
+      .item-block-single {
+        width: 100%;
+        height: 240rpx;
+        padding-bottom:40rpx;
+        .item-single {
+          // background-color: #FF3366;
+          width: 95%;
+          height: 240rpx;
+          //box-shadow:4rpx 4rpx 8rpx rgba(0,0,0,0.5);
+          margin-left: 2.5%;
+          //margin-top: 5%;
+          border-radius: 5px;
+          &.item-single-hover {
+            transform: scale(0.95)
+          }
+        }
+      }
+    }
+  }
+
+  .sceneButton {
+    width:100%;
+    padding:0;
+    margin:0;
+    border-radius: 5px;
+    background:transparent;
+    transition:all 0.2s;
+  }
+  .banner {
+    width:94% ;
+    height: 100%;
+    margin-bottom: 30rpx;
+    margin-top: 30rpx;
+    margin-left: 3%;
+    margin-right: 3%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  // .main {
+  //   position:relative;
+  //   .main-bg {
+  //     width:100%;
+  //     height:98%;
+  //     position:absolute;
+  //     top:0;
+  //     left:0;
+  //     z-index:0;
+  //   }
+  //   .main-container {
+  //     position:relative;
+  //     width:100%;
+  //     box-sizing:border-box;
+  //     padding:130rpx 40rpx 40rpx;
+  //     &.iphoneX {
+  //       padding: 145rpx 40rpx 40rpx;
+  //     }
+  //     .category-wrap {
+  //       width:100%;
+  //       margin-top:0rpx;
+  //       display:flex;
+  //       flex-direction:row;
+  //       flex-wrap:wrap;
+  //       justify-content:space-between;
+  //     }
+  //     .bottomInfo{
+  //       font-size: 20rpx;
+  //       color: #cccccc;
+  //       text-align: center;
+  //       margin-top: 50rpx
+  //     }
+  //   }
+  // }
+}

@@ -10,6 +10,7 @@ type ComponentStateProps = {}
 
 type ComponentOwnProps = {
     uploadText: any
+    value: string
 }
 
 type ComponentState = {}
@@ -23,7 +24,7 @@ interface WordBox {
 class WordBox extends Component {
   static defaultProps = {
     color: '#000',
-
+    value: ''
   }
   state = {
     statusBarHeight: 20, // 状态栏高度
@@ -62,7 +63,7 @@ class WordBox extends Component {
   render() {
     return (
       <View className='textarea-wrap'>
-          <Textarea disableDefaultPadding={true} onBlur={this.submit} focus={true}/>
+          <Textarea disableDefaultPadding={true} onBlur={this.submit} focus={true} value={this.props.value}/>
       </View>
     )
   }

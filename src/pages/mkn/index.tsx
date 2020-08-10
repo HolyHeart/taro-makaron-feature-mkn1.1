@@ -87,6 +87,7 @@ class Editor extends Component {
   selectedItem = null;
 
   state = {
+    textareaText:'',
     showTextarea: false,
     rawImage: {
       localUrl: "",
@@ -1422,6 +1423,7 @@ class Editor extends Component {
 
   changeWord() {
     this.setState({
+      textareaText: this.selectedItem.data.wordContent,
       showTextarea: true,
     });
     // Taro.showToast({
@@ -2462,6 +2464,7 @@ class Editor extends Component {
             uploadText={(data) => {
               this.uploadText(data);
             }}
+            value={this.state.textareaText}
           />
         )}
       </ScrollView>

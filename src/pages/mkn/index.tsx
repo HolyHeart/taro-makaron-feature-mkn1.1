@@ -2140,6 +2140,12 @@ class Editor extends Component {
     );
   }
 
+  backHandler() {
+    this.setState({
+      showType: 0,
+    });
+  }
+
   render() {
     const {
       loading,
@@ -2166,6 +2172,9 @@ class Editor extends Component {
             color="#333"
             leftStyleObj={{ left: Taro.pxTransform(8) }}
             showBack={true}
+            backHandler={() => {
+              this.backHandler();
+            }}
           >
             懒人抠图
           </Title>
@@ -2179,17 +2188,16 @@ class Editor extends Component {
                 className={`crop`}
                 id="crop"
               >
-                {currentScene.type === "recommend" && (
-                  <View className="background-image">
-                    <Image
-                      src={currentScene.bgUrl}
-                      style="width:100%;height:100%;"
-                      mode="scaleToFill"
-                      onLoad={this.handleBgLoaded}
-                      onClick={this.handleBackgroundClick}
-                    />
-                  </View>
-                )}
+                <Image />
+                <View className="background-image">
+                  <Image
+                    src={currentScene.bgUrl}
+                    style="width:100%;height:100%;"
+                    mode="scaleToFill"
+                    onLoad={this.handleBgLoaded}
+                    onClick={this.handleBackgroundClick}
+                  />
+                </View>
                 {coverList.map((item) => {
                   return (
                     <Sticker

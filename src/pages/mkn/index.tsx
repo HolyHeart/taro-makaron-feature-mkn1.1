@@ -469,7 +469,12 @@ class Editor extends Component {
 
       if (!cateImageDict["16"] && !cateImageDict["16-1"]) {
         console.log("技术犯规了");
-        work.pageToError();
+        // work.pageToError();
+        Taro.showToast({
+          title: '没有找到人物',
+          icon: 'none',
+          duration: 2000
+        })
         return;
       }
     } catch (err) {
@@ -1050,7 +1055,7 @@ class Editor extends Component {
     } else {
       try {
         const result = await service.base.downloadFile(remoteUrl);
-        localImagePath = result.tempFilePath;
+        localImagePath = result.tempFilePath || remoteUrl ;
       } catch (err) {
         console.log("下载图片失败", err);
       }
@@ -1457,7 +1462,10 @@ class Editor extends Component {
               if (this.selectedItem.id.indexOf("foreground") !== -1) {
                 const separateResult = (globalData.separateResult = await this.initSegment());
                 let res = await this.initSeparateData(separateResult);
-                this.uploadCoverImg(res.separateUrl);
+                if(res && res.separateUrl){
+                  path = res.separateUrl;
+                }
+                this.uploadCoverImg(path);
               } else {
                 this.uploadCoverImg(path);
               }
@@ -1493,9 +1501,9 @@ class Editor extends Component {
           });
         },
         onFail: () => {
-          if (!this.state.foreground.remoteUrl) {
-            this.pageToHome();
-          }
+          // if (!this.state.foreground.remoteUrl) {
+          //   this.pageToHome();
+          // }
         },
       });
     } else {
@@ -1521,51 +1529,55 @@ class Editor extends Component {
           //获得加载图片的路径,这里的success就是用来把加载进来的图片进行处理
           this.app.aldstat.sendEvent("编辑页面人像成功", "上传成功");
           globalData.choosedImage = path; //存入图片，为之后的处理准备
-          Taro.getFileSystemManager().readFile({
-            filePath: path,
-            success: async (data: any) => {
-              //async
-              const separateResult = (globalData.separateResult = await this.initSegment());
-              let res = await this.initSeparateData(separateResult);
-              let currentScene = { ...this.state.currentScene };
-              currentScene.bgUrl = res.separateUrl;
-              currentScene.bgUrl = res.separateUrl;
-              currentScene.sceneConfig.cover.list = this.state.coverList;
-              this.setState({
-                currentScene,
-                coverList: [],
-              });
-
-              // wx.cloud.callFunction(
-              //     {
-              //         name: 'checkImage',
-              //         data: {
-              //           contentType: 'image/png',
-              //           value: data.data
-              //         },
-              //         success: async (res:any) => {//res 为处理信息，跟图片无关；
-              //           // console.log('checkImage success：', res)
-              //           // const separateResult = globalData.separateResult = await this.initSegment()
-              //           // await this.initSeparateData(separateResult)
-              //           if (res.result !== null && res.result.errCode === 0) {
-              //             setTimeout(function(){},10000);
-              //             const separateResult = globalData.separateResult = await this.initSegment()//一个对象、得到分割结果，还不是图像，只是部分路径
-              //             // console.log(separateResult, 'separeteResulting~~~~~~~~~~~~~~~~')
-              //             await this.initSeparateData(separateResult)
-              //           } else {
-              //             work.pageToError()
-              //           }
-              //         },
-              //         fail: async (err) => {
-              //           // console.log('checkImage error', err)
-              //           const separateResult = globalData.separateResult = await this.initSegment()
-              //           await this.initSeparateData(separateResult)
-              //         }
-              //       }
-              // )
-            },
-            fail: () => {},
+          let currentScene = { ...this.state.currentScene };
+          currentScene.bgUrl = path;
+          currentScene.sceneConfig.cover.list = this.state.coverList;
+          this.setState({
+            currentScene,
+            coverList: [],
           });
+          // Taro.getFileSystemManager().readFile({
+          //   filePath: path,
+          //   success: async (data: any) => {
+          //     //async
+          //     let currentScene = { ...this.state.currentScene };
+          //     currentScene.bgUrl = path;
+          //     currentScene.sceneConfig.cover.list = this.state.coverList;
+          //     this.setState({
+          //       currentScene,
+          //       coverList: [],
+          //     });
+
+          //     // wx.cloud.callFunction(
+          //     //     {
+          //     //         name: 'checkImage',
+          //     //         data: {
+          //     //           contentType: 'image/png',
+          //     //           value: data.data
+          //     //         },
+          //     //         success: async (res:any) => {//res 为处理信息，跟图片无关；
+          //     //           // console.log('checkImage success：', res)
+          //     //           // const separateResult = globalData.separateResult = await this.initSegment()
+          //     //           // await this.initSeparateData(separateResult)
+          //     //           if (res.result !== null && res.result.errCode === 0) {
+          //     //             setTimeout(function(){},10000);
+          //     //             const separateResult = globalData.separateResult = await this.initSegment()//一个对象、得到分割结果，还不是图像，只是部分路径
+          //     //             // console.log(separateResult, 'separeteResulting~~~~~~~~~~~~~~~~')
+          //     //             await this.initSeparateData(separateResult)
+          //     //           } else {
+          //     //             work.pageToError()
+          //     //           }
+          //     //         },
+          //     //         fail: async (err) => {
+          //     //           // console.log('checkImage error', err)
+          //     //           const separateResult = globalData.separateResult = await this.initSegment()
+          //     //           await this.initSeparateData(separateResult)
+          //     //         }
+          //     //       }
+          //     // )
+          //   },
+          //   fail: () => {},
+          // });
         },
         onFail: () => {
           if (!this.state.foreground.remoteUrl) {
@@ -2089,8 +2101,17 @@ class Editor extends Component {
 
   showPicList() {
     let coverList = [...this.state.coverList];
-    coverList[0].isActive = true;
-    coverList[0].fixed = false;
+    let needAutoActive = true;
+    for(let i = 0; i < coverList.length; i++){
+      if(coverList[i].isActive){
+        needAutoActive = false;
+        break;
+      }
+    }
+    if(needAutoActive){
+      coverList[0].isActive = true;
+      coverList[0].fixed = false;
+    }
     this.setState({
       showType: 1,
       coverList,
@@ -2206,7 +2227,7 @@ class Editor extends Component {
                 className={`crop`}
                 id="crop"
               >
-                <Image />
+                {showType === 0 && <Image className='thumbnail_image' src={currentScene.thumbnailUrl}/>}
                 <View className="background-image">
                   <Image
                     src={currentScene.bgUrl}

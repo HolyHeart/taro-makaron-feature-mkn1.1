@@ -2,7 +2,6 @@ import { ComponentClass } from "react";
 import Taro, { Component, Config } from "@tarojs/taro";
 import { View, Button, Image, Canvas, ScrollView } from "@tarojs/components";
 import { connect } from "@tarojs/redux";
-
 import { getSystemInfo } from "@/model/actions/global";
 import tool from "@/utils/tool";
 import work from "@/utils/work";
@@ -18,7 +17,7 @@ import Loading from "@/components/Loading";
 import globalData from "@/services/global_data";
 import Session from "@/services/session";
 import service from "@/services/service";
-import { appConfig } from "@/services/config";
+import { appConfig, ENV } from "@/services/config";
 import { createCache } from "@/services/cache";
 import "./index.less";
 import image_code from "@/assets/images/code.png";
@@ -27,6 +26,7 @@ import image_versa from "@/assets/images/versa.png";
 import Dialog from "@/components/Dialog";
 import WordBox from "@/components/WordBox";
 import iconLock from "@/assets/images/icon_lock.png";
+import { getHost } from "@/services/api.config";
 
 type PageStateProps = {
   global: {
@@ -402,7 +402,7 @@ class Editor extends Component {
   initSceneData = async (callback) => {
     ///获取globalData.sceneConfig数据
     service.home.getCateGoryAndScenes(); //test
-    const res = await service.mkn.getTemplate("RGRFAG1145"); // RGRFAG1145
+    const res = await service.mkn.getTemplate("GQVRVV85590"); // RGRFAG1145
     let result = this.transformTemplateRes(res.result.result);
 
     globalData.sceneConfig = result.currentScene;
@@ -1442,6 +1442,9 @@ class Editor extends Component {
     if (userInfo) {
       service.base.loginAuth(data.detail); //【上传用户信息】
       globalData.userInfo = userInfo;
+      if (this.selectedItem.data) {
+        return this.changeWord();
+      }
       work.chooseImageSimple({
         onSuccess: async (path) => {
           //获得加载图片的路径,这里的success就是用来把加载进来的图片进行处理
@@ -1901,9 +1904,10 @@ class Editor extends Component {
     let coverList = result.config.layerConfig.filter((item) => {
       return (
         (item.type && item.type.indexOf("Sticker") !== -1) ||
-        item.wordStickerCode
+        item.category === 10003
       );
     });
+    let j = 1;
     coverList = coverList.map((item, index) => {
       let cover = {
         id: "",
@@ -1929,13 +1933,14 @@ class Editor extends Component {
             offset: item.position.top,
           },
         },
-        name: "贴纸" + (index + 1),
+        name: item.category === 10003 ? `文字${j}` : "贴纸" + (index + 1),
         deleteable: item.isLock !== "1",
         isLock: item.isLock === "1",
         // inList: true
       };
-      if (item.wordStickerCode) {
+      if (item.category === 10003) {
         cover.data = item;
+        j++;
       }
       return cover;
     });
@@ -2113,6 +2118,19 @@ class Editor extends Component {
     // this.changeButtonPosition(-60,-60);
   }
 
+  produceWordUrl(data) {
+    data = data.toString().replace(/[\n\r]/gi, "\n");
+    let fontPackageUrl = this.selectedItem.data.config.fontPackageUrl;
+    let fontColor = this.selectedItem.data.wordColor;
+    let fontSize = this.selectedItem.data.wordFontSize;
+    let deviceId = tool.getDeviceId();
+    let sessionId = Session.get();
+    let str = `${getHost("miniapi", ENV)}/word/sticker/picture?text=${encodeURI(
+      data
+    )}&fontPackageUrl=${fontPackageUrl}&fontSize=${fontSize}&sessionId=${sessionId}&deviceId=${deviceId}`;
+    return str;
+  }
+
   uploadText(data) {
     console.log(data.detail.value, "wordbox");
     this.setState(
@@ -2121,7 +2139,7 @@ class Editor extends Component {
       },
       () => {
         this.showLoading();
-        let wordUrl = iconLock;
+        let wordUrl = this.produceWordUrl(data.detail.value);
         let coverList = [...this.state.coverList];
         coverList.forEach((item) => {
           if (this.selectedItem.id === item.id) {

@@ -1,129 +1,129 @@
 // http服务
-import Taro from '@tarojs/taro'
-import { commonRequest, request } from './http'
-import { api } from './api.config'
-import { appId } from './config'
-import tool from '@/utils/tool'
-import { cacheSegment, cacheImg } from './cache'
+import Taro from "@tarojs/taro";
+import { commonRequest, request } from "./http";
+import { api } from "./api.config";
+import { appId } from "./config";
+import tool from "@/utils/tool";
+import { cacheSegment, cacheImg } from "./cache";
 
 interface segmentData {
-  clientType: string
-  timestamp: string
-  imageUrl: string
-  segmentType?: number
+  clientType: string;
+  timestamp: string;
+  imageUrl: string;
+  segmentType?: number;
 }
 
 interface separateOptionsData {
-  type?: number
-  loading?: boolean
-  showLoading?(): void
-  hideLoading?(): void
-  beforeSeparate?(url?): void
+  type?: number;
+  loading?: boolean;
+  showLoading?(): void;
+  hideLoading?(): void;
+  beforeSeparate?(url?): void;
 }
 
 export const base = {
   subScribe: function (data) {
     return request({
       url: `${api.base.subScribe}`,
-      header: { 'content-type': 'application/x-www-form-urlencoded' },
-      method: 'POST',
+      header: { "content-type": "application/x-www-form-urlencoded" },
+      method: "POST",
       data: data,
-    })
+    });
   },
   uploadToken: function () {
     return request({
       url: api.base.uploadToken,
-      method: 'GET',
-      dataType: 'json',
+      method: "GET",
+      dataType: "json",
       data: {
-        clientType: 'mini-program',
-        fileType: 'image',
-        filename: 'image.jpeg',
+        clientType: "mini-program",
+        fileType: "image",
+        filename: "image.jpeg",
       },
-    })
+    });
   },
   async getUploadToken() {
-    let token = Taro.getStorageSync('token')
+    let token = Taro.getStorageSync("token");
     if (token && token.expire > Date.now()) {
-      return token
+      return token;
     }
     try {
-      const data = await base.uploadToken()
-      token = data && data.result && data.result.result
-      Taro.setStorageSync('token', token)
-      return token
+      const data = await base.uploadToken();
+      token = data && data.result && data.result.result;
+      Taro.setStorageSync("token", token);
+      return token;
     } catch (err) {
-      console.log('get uploadToken fail', err)
+      console.log("get uploadToken fail", err);
     }
   },
   async upload(localFilePath, type?: string) {
     // 上传图片
-    let imageType = type || 'png'
-    const token = await base.getUploadToken()
-    console.log(token, 'this is  token this is token') // 但是缓存中已经有了-上传图片后就有token
-    const imgName = tool.createImgName(16)
-    const prefix = token.prefix // 'upload/prod/image/'
-    token.params.key = `${prefix}${imgName}.${imageType}`
+    let imageType = type || "png";
+    const token = await base.getUploadToken();
+    console.log(token, "this is  token this is token"); // 但是缓存中已经有了-上传图片后就有token
+    const imgName = tool.createImgName(16);
+    const prefix = token.prefix; // 'upload/prod/image/'
+    token.params.key = `${prefix}${imgName}.${imageType}`;
     let { data } = await Taro.uploadFile({
       //【获得token将图片上传】//data是服务器返回的数据
       filePath: localFilePath,
-      name: 'file',
+      name: "file",
       url: token.host,
       formData: token.params,
-    })
-    console.log(data, 'this is serveice.ts/upload after tokens data')
+    });
+    console.log(data, "this is serveice.ts/upload after tokens data");
 
-    if (typeof data === 'string') {
+    if (typeof data === "string") {
       try {
-        let result = JSON.parse(data)
-        console.log(result, 'this is result just parsing from data')
-        result.host = 'https://static01.versa-ai.com/'
-        result.url = result.host + result.picurl
-        console.log(result.url, 'checking to see complete result.url')
-        return result
+        let result = JSON.parse(data);
+        console.log(result, "this is result just parsing from data");
+        result.host = "https://static01.versa-ai.com/";
+        result.url = result.host + result.picurl;
+        console.log(result.url, "checking to see complete result.url");
+        return result;
       } catch (err) {
-        console.log('upload image string parse to json fail !!!')
+        console.log("upload image string parse to json fail !!!");
       }
     }
     return {
-      host: '',
-      picurl: '',
-      url: '',
-    }
+      host: "",
+      picurl: "",
+      url: "",
+    };
   },
   auth(data) {
     return commonRequest({
       url: api.base.auth,
-      method: 'POST',
+      method: "POST",
       data: data,
-    })
+    });
   },
   getOpId(data) {
     return commonRequest({
       url: api.base.getOpid,
-      method: 'GET',
+      method: "GET",
       data: data,
-    })
+    });
   },
   // 用户授权后向后端请求auth, 上传用户信息
   loginAuth: function (detail) {
-    const data = {}
-    data.appId = appId || ''
-    data.encryptedData = detail.encryptedData || ''
-    data.iv = detail.iv || ''
+    const data = {};
+    data.appId = appId || "";
+    data.encryptedData = detail.encryptedData || "";
+    data.iv = detail.iv || "";
     const reqData = {
       url: api.base.loginAuth,
       data: data,
-      method: 'POST',
-      dataType: 'json',
+      method: "POST",
+      dataType: "json",
       header: {
-        'content-type': 'application/x-www-form-urlencoded',
+        "content-type": "application/x-www-form-urlencoded",
       },
-    }
-    return request(reqData)
+    };
+    return request(reqData);
   },
   downloadFile(url) {
-    return Taro.downloadFile({ url: url })
+    return Taro.downloadFile({ url: url });
   },
   // Immigrated from StyleTransfer MiniApp
   timeout: function (interval, toReject) {
@@ -132,245 +132,245 @@ export const base = {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         if (toReject) {
-          reject('timeout fail !')
+          reject("timeout fail !");
         } else {
-          resolve('timeout success !')
+          resolve("timeout success !");
         }
-      }, interval)
-    })
+      }, interval);
+    });
   },
-}
+};
 export const core = {
   segment: function (remoteImgUrl, segmentType?: number) {
     let postData: segmentData = {
-      clientType: 'mini-program',
+      clientType: "mini-program",
       timestamp: Date.now().toString(),
       imageUrl: remoteImgUrl,
-    }
+    };
     if (segmentType !== undefined) {
-      postData.segmentType = segmentType
+      postData.segmentType = segmentType;
     }
     return request({
       url: api.core.segment,
-      method: 'POST',
-      header: { 'content-type': 'application/x-www-form-urlencoded' },
+      method: "POST",
+      header: { "content-type": "application/x-www-form-urlencoded" },
       data: postData,
-    })
+    });
   },
   column(data?: object) {
     return request({
       url: api.core.column,
-      method: 'GET',
+      method: "GET",
       data: data,
-    })
+    });
   },
   theme: function (themeId) {
     return request({
       url: api.core.theme,
-      method: 'GET',
+      method: "GET",
       data: {},
       params: {
         themeId,
       },
-    })
+    });
   },
   checkImage: function (imageUrl) {
     return request({
       url: api.core.checkImage,
-      method: 'GET',
+      method: "GET",
       data: {
         imageUrl: imageUrl,
       },
-    })
+    });
   },
   recommend: function () {
     // 获取推荐主题信息
     return request({
       url: api.core.recommend,
-      method: 'GET',
+      method: "GET",
       data: {
-        clientType: 'mini-program',
+        clientType: "mini-program",
       },
-    })
+    });
   },
   reportFormId: function (formId) {
     const postData = {
-      clientType: 'mini-program',
+      clientType: "mini-program",
       timestamp: Date.now().toString(),
       formId: formId,
-    }
+    };
     return request({
       url: api.core.reportFormId,
-      method: 'POST',
-      header: { 'content-type': 'application/x-www-form-urlencoded' },
+      method: "POST",
+      header: { "content-type": "application/x-www-form-urlencoded" },
       data: postData,
-    })
+    });
   },
   segmentDemo: function (rawImgUrl, resImgUrl, time = 100) {
-    console.log('分割图片：', rawImgUrl)
+    console.log("分割图片：", rawImgUrl);
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve({
           result: resImgUrl,
-        })
-      }, time)
-    })
+        });
+      }, time);
+    });
   },
   separateLocalImg: async function (
-    localImgPath: string = '',
-    options: separateOptionsData = {},
+    localImgPath: string = "",
+    options: separateOptionsData = {}
   ) {
     // 上传本地图片并分割图片
     // options = { type, loading, showLoading, hideLoading, }
     // 判断是否在缓存里
-    let keyType = '' // all表示人 head表示头 -1表示全部
+    let keyType = ""; // all表示人 head表示头 -1表示全部
     switch (options.type) {
       case -1:
-        keyType = 'all'
-        break
+        keyType = "all";
+        break;
       case 0:
-        keyType = 'body'
-        break
+        keyType = "body";
+        break;
       case 1:
-        keyType = 'head'
-        break
+        keyType = "head";
+        break;
       default:
-        keyType = 'all'
+        keyType = "all";
     }
-    const cacheKey = `local_${localImgPath}_separate_type_${keyType}`
+    const cacheKey = `local_${localImgPath}_separate_type_${keyType}`;
     if (cacheSegment.get(cacheKey)) {
-      console.log('cacheSegment', cacheKey, cacheSegment.get(cacheKey))
-      return cacheSegment.get(cacheKey)
+      console.log("cacheSegment", cacheKey, cacheSegment.get(cacheKey));
+      return cacheSegment.get(cacheKey);
     }
     // 先上传到静态服务器
-    let remoteImageUrl = ''
+    let remoteImageUrl = "";
     // 判断是否有远程图片地址
-    const cacheRemoteUrlKey = `${localImgPath}_remoteUrl`
+    const cacheRemoteUrlKey = `${localImgPath}_remoteUrl`;
     if (cacheImg.get(cacheRemoteUrlKey)) {
-      remoteImageUrl = cacheImg.get(cacheRemoteUrlKey)
+      remoteImageUrl = cacheImg.get(cacheRemoteUrlKey);
     } else {
       try {
         if (options.loading) {
-          typeof options.showLoading === 'function' && options.showLoading()
+          typeof options.showLoading === "function" && options.showLoading();
         }
-        const { picurl } = await base.upload(localImgPath, 'png')
-        remoteImageUrl = cacheImg.set(cacheRemoteUrlKey, picurl)
+        const { picurl } = await base.upload(localImgPath, "png");
+        remoteImageUrl = cacheImg.set(cacheRemoteUrlKey, picurl);
       } catch (err) {
-        console.log('上传图片失败', err)
+        console.log("上传图片失败", err);
       }
     }
-    if (typeof options.beforeSeparate === 'function') {
-      options.beforeSeparate(remoteImageUrl)
+    if (typeof options.beforeSeparate === "function") {
+      options.beforeSeparate(remoteImageUrl);
     }
 
     console.log(
       remoteImageUrl,
-      'this is part of remoteImgaeUrl initSeperate ==================',
-    ) //部分url
-    const checkResult = await core.checkImage(remoteImageUrl)
+      "this is part of remoteImgaeUrl initSeperate =================="
+    ); //部分url
+    const checkResult = await core.checkImage(remoteImageUrl);
 
-    if (checkResult.status === 'success') {
-      if (checkResult.result.result.suggestion === 'block') {
+    if (checkResult.status === "success") {
+      if (checkResult.result.result.suggestion === "block") {
         return {
           result: {},
-        }
+        };
       }
     }
     console.log(
       checkResult,
-      'this is checkResult checkResult checkResult=================',
-    )
+      "this is checkResult checkResult checkResult================="
+    );
 
     // 最后进行人景分离
-    let separateData //得到的分割结果
+    let separateData; //得到的分割结果
     try {
       if (options.loading) {
-        typeof options.showLoading === 'function' && options.showLoading()
+        typeof options.showLoading === "function" && options.showLoading();
       }
       if (options.type === 0 || options.type === 1) {
-        separateData = await core.segment(remoteImageUrl, options.type)
+        separateData = await core.segment(remoteImageUrl, options.type);
       } else {
         //这里是-1
-        separateData = await core.segment(remoteImageUrl)
+        separateData = await core.segment(remoteImageUrl);
       }
       if (options.loading) {
-        typeof options.hideLoading === 'function' && options.hideLoading()
+        typeof options.hideLoading === "function" && options.hideLoading();
       }
     } catch (err) {
-      console.log('人景分离失败', err)
+      console.log("人景分离失败", err);
       if (options.loading) {
-        typeof options.hideLoading === 'function' && options.hideLoading()
+        typeof options.hideLoading === "function" && options.hideLoading();
       }
       Taro.showToast({
-        title: '分离照片失败',
-        icon: 'fail',
+        title: "分离照片失败",
+        icon: "fail",
         duration: 3000,
-      })
-      return
+      });
+      return;
     }
     // 存储分割缓存
     console.log(
       separateData.result,
-      'this is separateData.result==============',
-    )
+      "this is separateData.result=============="
+    );
 
     return cacheSegment.set(cacheKey, {
       ...separateData.result,
-    })
+    });
   },
-  filterConvertVideo: function (videoParams: string = '') {
+  filterConvertVideo: function (videoParams: string = "") {
     let postData = {
-      clientType: 'mini-program',
+      clientType: "mini-program",
       timestamp: Date.now().toString(),
       videoConfig: videoParams,
-    }
+    };
     return request({
       url: api.core.filterConvertVideo,
-      method: 'POST',
-      header: { 'content-type': 'application/x-www-form-urlencoded' },
+      method: "POST",
+      header: { "content-type": "application/x-www-form-urlencoded" },
       data: postData,
-    })
+    });
   },
-}
+};
 
 //  风格迁移
 export const styleTransfer = {
   demo: function (option) {
-    const { query = {}, data = {} } = option || {}
+    const { query = {}, data = {} } = option || {};
     // url = getUrl(url,params)
     // return http.httpGet(url)
     const map = [
-      'MA==',
-      'MQo=',
-      'Mg==',
-      'Mw==',
-      'NA==',
-      'NQ==',
-      'Ng==',
-      'Nw==',
-      'OA==',
-      'OQ==',
-    ]
+      "MA==",
+      "MQo=",
+      "Mg==",
+      "Mw==",
+      "NA==",
+      "NQ==",
+      "Ng==",
+      "Nw==",
+      "OA==",
+      "OQ==",
+    ];
     const queryData = Object.assign(
       {
         time: 1,
-        t: 'css',
+        t: "css",
         c: map[3],
         i: 3,
       },
-      query,
-    )
+      query
+    );
     const url = tool.formatQueryUrl(
-      'https://www.madcoder.cn/tests/sleep.php',
-      queryData,
-    )
+      "https://www.madcoder.cn/tests/sleep.php",
+      queryData
+    );
     const reqData = {
       url,
-      method: 'POST',
+      method: "POST",
       data: data,
-      responseType: 'text',
-    }
-    return request(reqData)
+      responseType: "text",
+    };
+    return request(reqData);
   },
 
   segment: function (remoteImgUrl, styleId, originalColors) {
@@ -378,85 +378,85 @@ export const styleTransfer = {
     // styleId 渲染风格Id
     // originalColors 原色 ,不传默认为风格色
     const reqData = {
-      method: 'POST',
+      method: "POST",
       // url: `${getHost()}/image/render/segment`,
       url: api.style.segment,
-      header: { 'content-type': 'application/x-www-form-urlencoded' },
+      header: { "content-type": "application/x-www-form-urlencoded" },
       data: {
-        clientType: 'mini-program',
+        clientType: "mini-program",
         timestamp: Date.parse(new Date().toString()),
         imageUrl: remoteImgUrl,
         styleId,
         originalColors,
       },
-    }
+    };
     if (originalColors) {
-      reqData.data.originalColors = 'N'
+      reqData.data.originalColors = "N";
     }
-    return request(reqData)
+    return request(reqData);
   },
   allSegment: function (remoteImgUrl, styleId) {
     // 风格和原色两种渲染
-    let colorSegment = this.segment(remoteImgUrl, styleId)
-    let rawSegment = this.segment(remoteImgUrl, styleId, true)
-    return Promise.all([colorSegment, rawSegment])
+    let colorSegment = this.segment(remoteImgUrl, styleId);
+    let rawSegment = this.segment(remoteImgUrl, styleId, true);
+    return Promise.all([colorSegment, rawSegment]);
   },
   allSegmentTimeout: function (remoteImgUrl, styleId, interval) {
-    let allSegment = this.allSegment(remoteImgUrl, styleId)
-    let timeout = base.timeout(interval, true)
-    return Promise.race([allSegment, timeout])
+    let allSegment = this.allSegment(remoteImgUrl, styleId);
+    let timeout = base.timeout(interval, true);
+    return Promise.race([allSegment, timeout]);
   },
 
   tagList: function () {
     // 获取风格标签列表
     const reqData = {
-      method: 'GET',
+      method: "GET",
       url: api.style.featureTagOrder,
-      dataType: 'json',
+      dataType: "json",
       data: {
-        clientType: 'mini-program',
+        clientType: "mini-program",
       },
-    }
-    return request(reqData)
+    };
+    return request(reqData);
   },
   styleList: function () {
     const reqData = {
-      method: 'GET',
+      method: "GET",
       url: api.style.featureDetail,
-      dataType: 'json',
+      dataType: "json",
       data: {
-        renderType: 'transfer-image',
-        clientType: 'mini-program',
+        renderType: "transfer-image",
+        clientType: "mini-program",
       },
-    }
-    return request(reqData)
+    };
+    return request(reqData);
   },
-}
+};
 
 export const browser = {
   psWorkList: function (activityID, page) {
     const reqData = {
-      method: 'GET',
+      method: "GET",
       url: api.browser.psWorkList,
-      header: { Accept: '*/*' },
+      header: { Accept: "*/*" },
       data: {
         activityId: activityID,
         page: page,
       },
-    }
-    return request(reqData)
+    };
+    return request(reqData);
   },
   getWorkList: function (activityID, page) {
     const reqData = {
-      method: 'GET',
+      method: "GET",
       url: api.browser.getWorkList,
-      header: { Accept: '*/*' },
+      header: { Accept: "*/*" },
       data: {
         activityId: activityID,
         from: page,
       },
-    }
-    return request(reqData)
+    };
+    return request(reqData);
   },
   /**
    *
@@ -472,19 +472,19 @@ export const browser = {
   postNewWork: function (
     originPicture,
     renderPicture,
-    worksType = 'pic',
-    worksDesc = '这图我能p',
+    worksType = "pic",
+    worksDesc = "这图我能p",
     status = 20,
     activityIds,
     renderSessionId,
     userToken,
-    uid,
+    uid
   ) {
     const reqData = {
-      method: 'POST',
+      method: "POST",
       // url: `${getHost()}/image/render/segment`,
       url: api.browser.postNewWork,
-      header: { 'content-type': 'application/x-www-form-urlencoded' },
+      header: { "content-type": "application/x-www-form-urlencoded" },
       data: {
         originPicture: originPicture,
         renderPicture: renderPicture,
@@ -496,10 +496,10 @@ export const browser = {
         userToken,
         uid,
       },
-    }
-    return request(reqData)
+    };
+    return request(reqData);
   },
-}
+};
 
 export const home = {
   /**
@@ -508,26 +508,26 @@ export const home = {
    */
   getCateGoryAndScenes: function (miniProgramType: Number = 0) {
     const reqData = {
-      method: 'GET',
+      method: "GET",
       url: api.home.getCateGoryAndScenes,
-      header: { Accept: '*/*' },
+      header: { Accept: "*/*" },
       data: {
         miniProgramType: miniProgramType,
       },
-    }
-    return request(reqData)
+    };
+    return request(reqData);
   },
   getWorkList: function (activityID, page) {
     const reqData = {
-      method: 'GET',
+      method: "GET",
       url: api.browser.getWorkList,
-      header: { Accept: '*/*' },
+      header: { Accept: "*/*" },
       data: {
         activityId: activityID,
         from: page,
       },
-    }
-    return request(reqData)
+    };
+    return request(reqData);
   },
   /**
    *
@@ -543,19 +543,19 @@ export const home = {
   postNewWork: function (
     originPicture,
     renderPicture,
-    worksType = 'pic',
-    worksDesc = '这图我能p',
+    worksType = "pic",
+    worksDesc = "这图我能p",
     status = 20,
     activityIds,
     renderSessionId,
     userToken,
-    uid,
+    uid
   ) {
     const reqData = {
-      method: 'POST',
+      method: "POST",
       // url: `${getHost()}/image/render/segment`,
       url: api.browser.postNewWork,
-      header: { 'content-type': 'application/x-www-form-urlencoded' },
+      header: { "content-type": "application/x-www-form-urlencoded" },
       data: {
         originPicture: originPicture,
         renderPicture: renderPicture,
@@ -567,103 +567,116 @@ export const home = {
         userToken,
         uid,
       },
-    }
-    return request(reqData)
+    };
+    return request(reqData);
   },
-}
+};
 
 // 传送门接口
 export const teleport = {
   getResultImage: function (sessionId, sceneId) {
     const reqData = {
-      method: 'GET',
+      method: "GET",
       url: api.teleport.getResultImage,
-      header: { Accept: '*/*' },
+      header: { Accept: "*/*" },
       data: {
         sessionId: sessionId,
         sceneId: sceneId,
       },
-    }
-    return request(reqData)
+    };
+    return request(reqData);
   },
-}
+};
 
 //分享页热门作品
 export const share = {
   singleWorkList: function (worksId) {
     const reqData = {
-      method: 'GET',
+      method: "GET",
       url: api.share.singleWorkList + `/${worksId}`,
-      header: { Accept: '*/*' },
-    }
-    return request(reqData)
+      header: { Accept: "*/*" },
+    };
+    return request(reqData);
   },
 
   getrecommendList: function (size) {
     const reqData = {
-      method: 'GET',
+      method: "GET",
       url: api.share.getrecommendList,
-      header: { Accept: '*/*' },
+      header: { Accept: "*/*" },
       data: {
         size: size,
       },
-    }
-    return request(reqData)
+    };
+    return request(reqData);
   },
 
   getHotList: function (templateCode) {
     const reqData = {
-      method: 'GET',
+      method: "GET",
       url: api.share.getHotList,
-      header: { Accept: '*/*' },
+      header: { Accept: "*/*" },
       data: {
         templateCode: templateCode,
       },
-    }
-    return request(reqData)
+    };
+    return request(reqData);
   },
 
   getQrCode: function (page, width, worksId, sessionId, deviceId) {
     return (
       api.share.getQrCode +
       `?page=${page}&width=${width}&worksId=${worksId}&sessionId=${sessionId}&deviceId=${deviceId}`
-    )
+    );
   },
 
   addLikeWork: function (worksId, uid, token) {
     const reqData = {
-      method: 'POST',
+      method: "POST",
       url:
         api.share.addLikeWork +
         `?worksId=${worksId}&uid=${uid}&userToken=${token}`,
-      header: { 'content-type': 'application/x-www-form-urlencoded' },
-    }
-    return request(reqData)
+      header: { "content-type": "application/x-www-form-urlencoded" },
+    };
+    return request(reqData);
   },
 
   deleteLike: function (worksId, uid, token, sessionId) {
     const reqData = {
-      method: 'DELETE',
+      method: "DELETE",
       url:
         api.share.deleteLike +
         `?worksId=${worksId}&uid=${uid}&userToken=${token}&sessionId=${sessionId}`,
-      header: { 'content-type': 'application/x-www-form-urlencoded' },
-    }
-    return request(reqData)
+      header: { "content-type": "application/x-www-form-urlencoded" },
+    };
+    return request(reqData);
   },
-}
+};
 
 export const mkn = {
   getTemplate: function (templateCode) {
     const reqData = {
-      method: 'GET',
+      method: "GET",
       url: api.mkn.getTemplate + templateCode,
-      header: { Accept: '*/*' },
+      header: { Accept: "*/*" },
       data: {},
-    }
-    return request(reqData)
+    };
+    return request(reqData);
   },
-}
+  getWord: function (text, wordPackage, fontsize) {
+    const reqData = {
+      method: "GET",
+      url: api.mkn.getWord,
+      header: { Accept: "*/*" },
+      data: {
+        text: text,
+        fontPackageUrl: wordPackage,
+        fontSize: fontsize,
+      },
+    };
+    return request(reqData);
+  },
+};
 
 export default {
   base,
@@ -674,4 +687,4 @@ export default {
   share,
   home,
   mkn,
-}
+};

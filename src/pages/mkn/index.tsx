@@ -905,7 +905,7 @@ class Editor extends Component {
     // 下载远程背景图片
     let localBgImagePath = "";
     try {
-      const bgUrl = currentScene.bgUrl + postfix;
+      const bgUrl = currentScene.bgUrl + (currentScene.bgUrl.indexOf('https://') !== -1 ? postfix : '');
       localBgImagePath = await this.downloadRemoteImage(bgUrl);
     } catch (err) {
       console.log("下载背景图片失败", err);
@@ -1044,23 +1044,14 @@ class Editor extends Component {
 
   // 下载照片并存储到本地
   downloadRemoteImage = async (remoteUrl = "") => {
-    // 判断是否在缓存里
-    const cacheKey = `${remoteUrl}_localPath`;
-    const cache_source = this.cache["source"];
-
-    let localImagePath = "";
-    if (cache_source.get(cacheKey)) {
-      // console.log('get-cache', cacheKey, cache_source.get(cacheKey))
-      return cache_source.get(cacheKey);
-    } else {
-      try {
-        const result = await service.base.downloadFile(remoteUrl);
-        localImagePath = result.tempFilePath || remoteUrl ;
-      } catch (err) {
-        console.log("下载图片失败", err);
-      }
+    let localImagePath = remoteUrl;
+    try {
+      const result = await service.base.downloadFile(remoteUrl);
+      localImagePath = result.tempFilePath || remoteUrl ;
+    } catch (err) {
+      console.log("下载图片失败", err);
     }
-    return this.cache["source"].set(cacheKey, localImagePath);
+    return localImagePath;
   };
 
   // 设置人物状态

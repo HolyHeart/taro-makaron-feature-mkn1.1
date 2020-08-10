@@ -471,10 +471,10 @@ class Editor extends Component {
         console.log("技术犯规了");
         // work.pageToError();
         Taro.showToast({
-          title: '没有找到人物',
-          icon: 'none',
-          duration: 2000
-        })
+          title: "没有找到人物",
+          icon: "none",
+          duration: 2000,
+        });
         return;
       }
     } catch (err) {
@@ -905,12 +905,15 @@ class Editor extends Component {
     // 下载远程背景图片
     let localBgImagePath = "";
     try {
-      const bgUrl = currentScene.bgUrl + (currentScene.bgUrl.indexOf('https://') !== -1 ? postfix : '');
+      const bgUrl =
+        currentScene.bgUrl +
+        (currentScene.bgUrl.indexOf("https://") !== -1 ? postfix : "");
       localBgImagePath = await this.downloadRemoteImage(bgUrl);
     } catch (err) {
       console.log("下载背景图片失败", err);
       return;
     }
+    //localBgImagePath = currentScene.bgUrl;
     //防止锯齿，绘的图片是所需图片的3倍
     context.drawImage(
       localBgImagePath,
@@ -1047,7 +1050,7 @@ class Editor extends Component {
     let localImagePath = remoteUrl;
     try {
       const result = await service.base.downloadFile(remoteUrl);
-      localImagePath = result.tempFilePath || remoteUrl ;
+      localImagePath = result.tempFilePath || remoteUrl;
     } catch (err) {
       console.log("下载图片失败", err);
     }
@@ -1453,7 +1456,7 @@ class Editor extends Component {
               if (this.selectedItem.id.indexOf("foreground") !== -1) {
                 const separateResult = (globalData.separateResult = await this.initSegment());
                 let res = await this.initSeparateData(separateResult);
-                if(res && res.separateUrl){
+                if (res && res.separateUrl) {
                   path = res.separateUrl;
                 }
                 this.uploadCoverImg(path);
@@ -2093,13 +2096,13 @@ class Editor extends Component {
   showPicList() {
     let coverList = [...this.state.coverList];
     let needAutoActive = true;
-    for(let i = 0; i < coverList.length; i++){
-      if(coverList[i].isActive){
+    for (let i = 0; i < coverList.length; i++) {
+      if (coverList[i].isActive) {
         needAutoActive = false;
         break;
       }
     }
-    if(needAutoActive){
+    if (needAutoActive) {
       coverList[0].isActive = true;
       coverList[0].fixed = false;
     }
@@ -2134,12 +2137,17 @@ class Editor extends Component {
     data = data.toString().replace(/[\n\r]/gi, "\n");
     let fontPackageUrl = this.selectedItem.data.config.fontPackageUrl;
     let fontColor = this.selectedItem.data.wordColor;
+    //
+    console.log(encodeURI(fontColor), "this is font");
+
     let fontSize = this.selectedItem.data.wordFontSize;
     let deviceId = tool.getDeviceId();
     let sessionId = Session.get();
     let str = `${getHost("miniapi", ENV)}/word/sticker/picture?text=${encodeURI(
       data
-    )}&fontPackageUrl=${fontPackageUrl}&fontSize=${fontSize}&sessionId=${sessionId}&deviceId=${deviceId}`;
+    )}&fontPackageUrl=${fontPackageUrl}&fontSize=${fontSize}&sessionId=${sessionId}&deviceId=${deviceId}&fontColor=${encodeURIComponent(
+      fontColor
+    )}`;
     return str;
   }
 
@@ -2218,7 +2226,12 @@ class Editor extends Component {
                 className={`crop`}
                 id="crop"
               >
-                {showType === 0 && <Image className='thumbnail_image' src={currentScene.thumbnailUrl}/>}
+                {showType === 0 && (
+                  <Image
+                    className="thumbnail_image"
+                    src={currentScene.thumbnailUrl}
+                  />
+                )}
                 <View className="background-image">
                   <Image
                     src={currentScene.bgUrl}

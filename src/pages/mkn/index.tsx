@@ -2243,7 +2243,7 @@ class Editor extends Component {
                       src={currentScene.bgUrl}
                       onClick={this.activateBg.bind(this)}
                       className="singlePicture"
-                      mode="aspectFit"
+                      mode="aspectFill"
                     />
                     <Button
                       className={
@@ -2267,7 +2267,7 @@ class Editor extends Component {
                           src={item.remoteUrl}
                           onClick={this.activatePicture.bind(this, index)}
                           className="singlePicture"
-                          mode="aspectFit"
+                          mode="aspectFill"
                         />
                         <Button
                           className={item.isActive ? "acitivated" : ""}
@@ -2283,7 +2283,7 @@ class Editor extends Component {
                         <Image
                           src={item.remoteUrl}
                           className="singlePicture"
-                          mode="aspectFit"
+                          mode="aspectFill"
                         />
                         <Image
                           src={iconLock}

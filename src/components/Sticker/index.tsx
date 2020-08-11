@@ -518,7 +518,9 @@ class Sticker extends Component {
           )}
           <View
             className={`control mirror ${
-              stylePrams.isActive && !stylePrams.fixed ? "active" : ""
+              stylePrams.isActive && !stylePrams.fixed && !stylePrams.noMirror
+                ? "active"
+                : ""
             }`}
             onTouchstart={this.mirrorOntouchstart}
             //   onTouchmove={this.throttledArrowOntouchmove}
@@ -563,7 +565,9 @@ class Sticker extends Component {
           )}
           <View
             className={`control mirror ${
-              stylePrams.isActive && !stylePrams.fixed ? "active" : ""
+              stylePrams.isActive && !stylePrams.fixed && !stylePrams.noMirror
+                ? "active"
+                : ""
             }`}
           >
             <Image

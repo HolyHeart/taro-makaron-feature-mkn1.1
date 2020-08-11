@@ -165,6 +165,7 @@ const formatRawCoverList = (list: Array<any> = []) => {
     cover_model.position = v.position;
     cover_model.isLock = v.isLock;
     cover_model.size = v.size;
+    cover_model.noMirror = v.noMirror;
     return cover_model;
   });
 };

@@ -287,7 +287,8 @@ class Editor extends Component {
   _initPage = async () => {
     // this.initRawImage()
     await Session.set();
-    const res = this.templateData || await service.mkn.getTemplate("GQVRVV85590"); // RGRFAG1145
+    const res =
+      this.templateData || (await service.mkn.getTemplate("GQVRVV85590")); // RGRFAG1145
     this.templateData = res;
     this.initSceneData(res);
   };
@@ -367,7 +368,7 @@ class Editor extends Component {
   initSceneData = async (res) => {
     ///获取globalData.sceneConfig数据
     // service.home.getCateGoryAndScenes(); //test
-    
+
     let result = this.transformTemplateRes(res.result.result);
 
     globalData.sceneConfig = result.currentScene;
@@ -551,7 +552,7 @@ class Editor extends Component {
       () => {}
     );
   };
-  
+
   // 贴纸
   onCoverLoaded = (detail: object, item?: any) => {
     const { width, height } = detail;
@@ -600,7 +601,6 @@ class Editor extends Component {
     });
     this.app.aldstat.sendEvent("贴纸删除", { 贴纸Id: sticker.id });
   };
-
 
   async save() {
     if (!this.state.currentScene.bgUrl) {
@@ -1028,7 +1028,6 @@ class Editor extends Component {
       }
     );
   };
-  
 
   // 贴纸自适应
   coverAuto = (originInfo, cover, callback?: () => void) => {
@@ -1554,6 +1553,8 @@ class Editor extends Component {
       };
       if (item.category === 10003) {
         cover.data = item;
+        //cover.data.noMirror = true;
+        cover.noMirror = true;
         j++;
       }
       return cover;
@@ -1566,17 +1567,14 @@ class Editor extends Component {
         return item;
       }
     });
-    console.log(isLockList, "this is isLock");
 
     let unLockList = coverList.filter((item) => {
       if (!item.isLock) {
         return item;
       }
     });
-    console.log(unLockList, "this is unlock");
 
     coverList = unLockList.concat(isLockList);
-    console.log(coverList, "sorting result");
 
     coverList.unshift(...newForegroundList, ...newImageList);
     console.log(coverList, "ccc");
@@ -1706,7 +1704,7 @@ class Editor extends Component {
 
   showPicList() {
     let coverList = [...this.state.coverList];
-    console.log(coverList,'showPicListshowPicListshowPicList')
+    console.log(coverList, "showPicListshowPicListshowPicList");
     let needAutoActive = true;
     for (let i = 0; i < coverList.length; i++) {
       if (coverList[i].isActive) {
@@ -1732,7 +1730,6 @@ class Editor extends Component {
       },
     });
   }
-
 
   produceWordUrl(data) {
     data = data.toString().replace(/[\n\r]/gi, "\n");
@@ -1781,15 +1778,18 @@ class Editor extends Component {
   }
 
   backHandler() {
-    this.setState({
-      showType: 0,
-      coverList: [],
-      currentScene: {
-        type: "recommend", // 'custom' 'recommend'
+    this.setState(
+      {
+        showType: 0,
+        coverList: [],
+        currentScene: {
+          type: "recommend", // 'custom' 'recommend'
+        },
+      },
+      () => {
+        this._initPage();
       }
-    },() => {
-      this._initPage();
-    });
+    );
   }
 
   render() {
@@ -1976,7 +1976,6 @@ class Editor extends Component {
                 </Button>
               </View>
             )}
-
           </View>
 
           <View className="canvas-wrap">

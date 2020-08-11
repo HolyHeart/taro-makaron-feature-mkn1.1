@@ -311,7 +311,8 @@ class Editor extends Component {
   _initPage = async () => {
     // this.initRawImage()
     await Session.set();
-    this.initSceneData();
+    const res = await service.mkn.getTemplate("GQVRVV85590"); // RGRFAG1145
+    this.initSceneData(res);
   };
 
   // qq空间分享兼容性检测
@@ -400,14 +401,14 @@ class Editor extends Component {
     });
   };
   // 初始化场景信息
-  initSceneData = async (callback) => {
+  initSceneData = async (res) => {
     ///获取globalData.sceneConfig数据
-    service.home.getCateGoryAndScenes(); //test
-    const res = await service.mkn.getTemplate("GQVRVV85590"); // RGRFAG1145
+    // service.home.getCateGoryAndScenes(); //test
+    
     let result = this.transformTemplateRes(res.result.result);
 
     globalData.sceneConfig = result.currentScene;
-    let foreground = result.foreground;
+    // let foreground = result.foreground;
     const currentScene = globalData.sceneConfig; //来自于主页给每一项设置的，
     console.log(currentScene, "initiating the first scene&&adding");
     this.setState(
@@ -2097,6 +2098,7 @@ class Editor extends Component {
 
   showPicList() {
     let coverList = [...this.state.coverList];
+    console.log(coverList,'showPicListshowPicListshowPicList')
     let needAutoActive = true;
     for (let i = 0; i < coverList.length; i++) {
       if (coverList[i].isActive) {
@@ -2183,6 +2185,12 @@ class Editor extends Component {
   backHandler() {
     this.setState({
       showType: 0,
+      coverList: [],
+      currentScene: {
+        type: "recommend", // 'custom' 'recommend'
+      }
+    },() => {
+      this._initPage();
     });
   }
 

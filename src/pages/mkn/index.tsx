@@ -67,6 +67,7 @@ class Editor extends Component {
     enablePullDownRefresh: false,
   };
 
+  templateData = undefined;
   selectedItem = null;
 
   state = {
@@ -294,7 +295,8 @@ class Editor extends Component {
   _initPage = async () => {
     // this.initRawImage()
     await Session.set();
-    const res = await service.mkn.getTemplate("GQVRVV85590"); // RGRFAG1145
+    const res = this.templateData || await service.mkn.getTemplate("GQVRVV85590"); // RGRFAG1145
+    this.templateData = res;
     this.initSceneData(res);
   };
 
@@ -557,14 +559,7 @@ class Editor extends Component {
       () => {}
     );
   };
-  handleCustomBgTouchstart = () => {
-    this.setForegroundActiveStatus(false);
-    this.setCoverListActiveStatus({ type: "all" }, false);
-  };
-  handleForegroundTouchstart = (sticker) => {
-    this.setForegroundActiveStatus(true);
-    this.setCoverListActiveStatus({ type: "all" }, false);
-  };
+  
   // 贴纸
   onCoverLoaded = (detail: object, item?: any) => {
     const { width, height } = detail;

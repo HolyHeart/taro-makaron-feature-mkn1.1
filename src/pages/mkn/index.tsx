@@ -1810,6 +1810,7 @@ class Editor extends Component {
     )}&fontPackageUrl=${fontPackageUrl}&fontSize=${fontSize}&sessionId=${sessionId}&deviceId=${deviceId}&fontColor=${encodeURIComponent(
       fontColor
     )}`;
+    this.selectedItem.data.wordContent = data;
     return str;
   }
 

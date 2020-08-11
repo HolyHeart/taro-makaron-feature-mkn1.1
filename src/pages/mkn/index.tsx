@@ -1763,7 +1763,7 @@ class Editor extends Component {
   render() {
     const {
       loading,
-      rawImage,
+      showType,
       frame,
       customBg,
       foreground,
@@ -1785,7 +1785,7 @@ class Editor extends Component {
           <Title
             color="#333"
             leftStyleObj={{ left: Taro.pxTransform(8) }}
-            showBack={true}
+            showBack={showType}
             backHandler={() => {
               this.backHandler();
             }}

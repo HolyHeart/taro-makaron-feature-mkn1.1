@@ -6,14 +6,8 @@ import { getSystemInfo } from "@/model/actions/global";
 import tool from "@/utils/tool";
 import work from "@/utils/work";
 import Title from "@/components/Title";
-// import CustomIcon from '@/components/Icon'
-// import CustomBg from '@/components/CustomBg'
 import Sticker from "@/components/Sticker";
-// import SceneList from '@/components/SceneList'
 import Loading from "@/components/Loading";
-// import MarginTopWrap from '@/components/MarginTopWrap'
-// import AuthModal from '@/components/AuthModal'
-// import ResultModal from '@/components/ResultModal'
 import globalData from "@/services/global_data";
 import Session from "@/services/session";
 import service from "@/services/service";
@@ -22,8 +16,6 @@ import { createCache } from "@/services/cache";
 import "./index.less";
 import image_code from "@/assets/images/code.png";
 import image_versa from "@/assets/images/versa.png";
-// import addTips from "@/assets/images/tips_addpic@2x.png";
-import Dialog from "@/components/Dialog";
 import WordBox from "@/components/WordBox";
 import iconLock from "@/assets/images/icon_lock.png";
 import { getHost } from "@/services/api.config";
@@ -782,13 +774,9 @@ class Editor extends Component {
 
   createCanvas = async () => {
     return new Promise(async (resolve, reject) => {
-      const { currentScene, canvas } = this.state;
+      const { canvas } = this.state;
       const context = Taro.createCanvasContext(canvas.id, this); //组件绘图的上下文
-      if (currentScene.type === "custom") {
-        await this.canvasDrawCustom(context);
-      } else if (currentScene.type === "recommend") {
-        await this.canvasDrawRecommend(context); //【将背景图片&&边框，放到画布】
-      }
+      await this.canvasDrawRecommend(context);
       //绘制图片
       context.draw(); //【有点像将之前的设置保存到context中】
       //将生成好的图片保存到本地，需要延迟一会，绘制期间耗时
@@ -832,7 +820,7 @@ class Editor extends Component {
     try {
       const bgUrl =
         currentScene.bgUrl +
-        (currentScene.bgUrl.indexOf("https://") !== -1 ? postfix : "");
+        (/^(http|https):\/\//gi.test(currentScene.bgUrl) ? postfix : "");
       localBgImagePath = await this.downloadRemoteImage(bgUrl);
     } catch (err) {
       console.log("下载背景图片失败", err);
@@ -853,24 +841,6 @@ class Editor extends Component {
     if (sceneConfig.watermark) {
       this.canvasDrawLogo(context, ratio);
     }
-  };
-  canvasDrawCustom = async (context) => {
-    const { customBg, canvas } = this.state;
-    const { ratio = 3 } = canvas;
-    // 自定义背景为本地图片，不需要下载
-    const localBgImagePath = customBg.localUrl;
-    //防止锯齿，绘的图片是所需图片的3倍
-    context.drawImage(
-      localBgImagePath,
-      customBg.x * ratio,
-      customBg.y * ratio,
-      customBg.width * ratio,
-      customBg.height * ratio
-    );
-    // 绘制元素
-    await this.canvasDrawElement(context, ratio);
-    // 绘制二维码
-    this.canvasDrawLogo(context, ratio);
   };
   // 绘制贴纸，文字，覆盖层所有元素
   canvasDrawElement = async (context, ratio) => {
@@ -1174,42 +1144,11 @@ class Editor extends Component {
               } else {
                 this.uploadCoverImg(path);
               }
-              // wx.cloud.callFunction(
-              //     {
-              //         name: 'checkImage',
-              //         data: {
-              //           contentType: 'image/png',
-              //           value: data.data
-              //         },
-              //         success: async (res:any) => {//res 为处理信息，跟图片无关；
-              //           // console.log('checkImage success：', res)
-              //           // const separateResult = globalData.separateResult = await this.initSegment()
-              //           // await this.initSeparateData(separateResult)
-              //           if (res.result !== null && res.result.errCode === 0) {
-              //             setTimeout(function(){},10000);
-              //             const separateResult = globalData.separateResult = await this.initSegment()//一个对象、得到分割结果，还不是图像，只是部分路径
-              //             // console.log(separateResult, 'separeteResulting~~~~~~~~~~~~~~~~')
-              //             await this.initSeparateData(separateResult)
-              //           } else {
-              //             work.pageToError()
-              //           }
-              //         },
-              //         fail: async (err) => {
-              //           // console.log('checkImage error', err)
-              //           const separateResult = globalData.separateResult = await this.initSegment()
-              //           await this.initSeparateData(separateResult)
-              //         }
-              //       }
-              // )
             },
             fail: () => {},
           });
         },
-        onFail: () => {
-          // if (!this.state.foreground.remoteUrl) {
-          //   this.pageToHome();
-          // }
-        },
+        onFail: () => {},
       });
     } else {
       Taro.showToast({
@@ -2021,7 +1960,7 @@ class Editor extends Component {
               ""
             )}
 
-            {!this.state.result.shareImage.remoteUrl && this.state.showType && (
+            {this.state.showType && (
               <View
                 className={`buttonPart ${
                   this.state.showType === 1 ? "lessWidth" : ""
@@ -2035,86 +1974,12 @@ class Editor extends Component {
                 >
                   分享并保存
                 </Button>
-                {/* {Taro.getStorageSync('saveNumber').number === 0 ?
-                <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.handleOpenResult} openType="share">分享并保存</Button>
-                : <Button style='flex:1;margin-left:10px' className="custom-button white" hoverClass="btn-hover" onClick={this.handleOpenResult}>保存</Button>} */}
               </View>
             )}
 
-            {this.state.result.shareImage.remoteUrl && (
-              <View className="btn-wrap">
-                <Button
-                  className="custom-button pink btn-1"
-                  hoverClass="btn-hover"
-                  id="btnNav"
-                  openType="share"
-                >
-                  继续分享
-                </Button>
-                {this.state.ableToShareToQZone ? (
-                  <View>
-                    <Button
-                      className="custom-button dark btn-2"
-                      hoverClass="btn-hover"
-                      onClick={this.publishToQzone}
-                    >
-                      同步到说说
-                    </Button>
-                    <Button
-                      className="custom-button dark btn-3"
-                      hoverClass="btn-hover"
-                      onClick={this.handlePlayAgain}
-                    >
-                      再玩一次
-                    </Button>
-                  </View>
-                ) : (
-                  <View>
-                    <Button
-                      className="custom-button dark btn-4"
-                      hoverClass="btn-hover"
-                      onClick={this.changeNav}
-                    >
-                      回到首页
-                    </Button>
-                  </View>
-                )}
-              </View>
-            )}
-            {this.state.isshow === true ? (
-              <Dialog
-                content={this.state.content}
-                cancelText={this.state.cancelText}
-                confirmText={this.state.confirmText}
-                isshow={this.state.isshow}
-                renderButton={
-                  <View
-                    className="wx-dialog-footer"
-                    style="display:flex;margin-bottom:30rpx"
-                  >
-                    <Button
-                      className="wx-dialog-btn"
-                      onClick={this.handelCancel}
-                      style="flex:1"
-                    >
-                      {this.state.cancelText}
-                    </Button>
-                    <Button
-                      className="wx-dialog-btn"
-                      onClick={this.handelVideoAd}
-                      style="flex:1"
-                    >
-                      {this.state.confirmText}
-                    </Button>
-                  </View>
-                }
-              />
-            ) : (
-              ""
-            )}
           </View>
 
-          <View class="canvas-wrap">
+          <View className="canvas-wrap">
             <Canvas
               disable-scroll={true}
               style={`width: ${frame.width * canvas.ratio}px; height: ${

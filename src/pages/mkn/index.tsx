@@ -41,23 +41,6 @@ type PageDispatchProps = {
 type PageOwnProps = {};
 
 type PageState = {
-  foreground: {
-    remoteUrl: string;
-    zIndex: number;
-    width: number;
-    height: number;
-    x: number;
-    y: number;
-    rotate: number;
-    originWidth: number;
-    originHeight: number;
-    autoWidth: number;
-    autoHeight: number;
-    autoScale: number;
-    fixed: boolean;
-    visible: boolean;
-    isMirror: boolean;
-  };
   coverList: Array<object>;
 };
 
@@ -118,26 +101,26 @@ class Editor extends Component {
       rotate: 0,
     },
     chooseText: "添加人像照片",
-    foreground: {
-      //存储切图信息
-      id: "foreground",
-      remoteUrl: "",
-      zIndex: 2,
-      width: 0,
-      height: 0,
-      x: 0,
-      y: 0,
-      rotate: 0,
-      originWidth: 0, // 原始宽度
-      originHeight: 0, // 原始高度
-      autoWidth: 0, // 自适应后的宽度
-      autoHeight: 0, // 自适应后的高度
-      autoScale: 0, // 相对画框缩放比例
-      fixed: false, // 是否固定
-      isActive: true, // 是否激活
-      loaded: false, // 是否加载完毕
-      visible: true, // 是否显示
-    },
+    // foreground: {
+    //   //存储切图信息
+    //   id: "foreground",
+    //   remoteUrl: "",
+    //   zIndex: 2,
+    //   width: 0,
+    //   height: 0,
+    //   x: 0,
+    //   y: 0,
+    //   rotate: 0,
+    //   originWidth: 0, // 原始宽度
+    //   originHeight: 0, // 原始高度
+    //   autoWidth: 0, // 自适应后的宽度
+    //   autoHeight: 0, // 自适应后的高度
+    //   autoScale: 0, // 相对画框缩放比例
+    //   fixed: false, // 是否固定
+    //   isActive: true, // 是否激活
+    //   loaded: false, // 是否加载完毕
+    //   visible: true, // 是否显示
+    // },
     coverList: [],
     sceneList: [],
     guiderTop: "",
@@ -182,7 +165,7 @@ class Editor extends Component {
   };
 
   cache = {
-    foreground: createCache("foreground"),
+    // foreground: createCache("foreground"),
     cover: createCache("cover"),
     source: createCache("source"),
   };
@@ -369,20 +352,6 @@ class Editor extends Component {
         },
         () => {
           this.initCoverData();
-          let data = {
-            foreground: {
-              ...globalData.foreground,
-              isActive: false,
-            },
-          };
-          if (Taro.getStorageSync("lastSeparateImage")) {
-            data.foreground.remoteUrl = Taro.getStorageSync(
-              "lastSeparateImage"
-            );
-          }
-          setTimeout(() => {
-            this.setState(data);
-          }, 0);
         }
       );
     });
@@ -592,23 +561,9 @@ class Editor extends Component {
     this.setForegroundActiveStatus(false);
     this.setCoverListActiveStatus({ type: "all" }, false);
   };
-
-  handleChangeStyle = (data) => {
-    const { foreground } = this.state;
-    console.log(data, "====== this is to check data =====");
-    this.setState({
-      foreground: {
-        ...foreground,
-        ...data,
-      },
-    });
-  };
   handleForegroundTouchstart = (sticker) => {
     this.setForegroundActiveStatus(true);
     this.setCoverListActiveStatus({ type: "all" }, false);
-  };
-  handleForegroundTouchend = () => {
-    this.storeForegroundInfo();
   };
   // 贴纸
   onCoverLoaded = (detail: object, item?: any) => {
@@ -659,30 +614,6 @@ class Editor extends Component {
     this.app.aldstat.sendEvent("贴纸删除", { 贴纸Id: sticker.id });
   };
 
-  // 更换场景
-  handleChooseScene = (scene) => {
-    const { currentScene } = this.state;
-    if (currentScene.sceneId === scene.sceneId) {
-      return;
-    }
-    this.setState(
-      {
-        currentScene: {
-          ...currentScene,
-          ...scene,
-          type: "recommend",
-        },
-      },
-      () => {
-        this.foregroundAuto();
-        this.initCoverData();
-        this.app.aldstat.sendEvent("选择场景", {
-          场景名: this.state.currentScene.sceneName,
-          场景Id: this.state.currentScene.sceneId,
-        });
-      }
-    );
-  };
 
   async save() {
     if (!this.state.currentScene.bgUrl) {
@@ -736,9 +667,6 @@ class Editor extends Component {
 
   // 保存
   handleOpenResult = async () => {
-    // if (!this.state.foreground.remoteUrl) {
-    //   return
-    // }
     if (!this.state.currentScene.bgUrl) {
       return;
     }
@@ -1135,222 +1063,7 @@ class Editor extends Component {
       }
     );
   };
-  // 人物自适应
-  foregroundAuto = (callback?: () => void) => {
-    const size = this.calcForegroundSize();
-    const position = this.calcForegroundPosition(size);
-    console.log(position, "-------see this is position-----");
-    this.setStateTarget(
-      "foreground",
-      {
-        ...size,
-        ...position,
-      },
-      () => {
-        typeof callback === "function" && callback();
-      }
-    );
-  };
-  // 计算人物尺寸   //映射到背景的尺寸【add by YuJIN Zeng
-  calcForegroundSize = () => {
-    const { currentScene, sceneList, foreground, frame } = this.state;
-    const { originWidth, originHeight, defaultScale } = foreground;
-    const imageRatio = originWidth / originHeight;
-    const autoScale = parseFloat(defaultScale);
-
-    const result = {
-      autoScale,
-      autoWidth: 0,
-      autoHeight: 0,
-      width: 0,
-      height: 0,
-    };
-    if (originWidth > originHeight) {
-      // 以最短边计算
-      result.autoWidth = frame.width * autoScale;
-      result.autoHeight = result.autoWidth / imageRatio;
-    } else {
-      result.autoHeight = frame.height * autoScale;
-      result.autoWidth = result.autoHeight * imageRatio;
-    }
-    result.width = result.autoWidth;
-    result.height = result.autoHeight;
-    console.log(frame, result, foreground, autoScale, imageRatio, 666666);
-
-    return result;
-  };
-  // 计算人物位置
-  calcForegroundPosition = ({ width, height } = {}) => {
-    const { currentScene, sceneList, foreground, frame } = this.state;
-    const { originWidth, originHeight } = foreground;
-    width = width || foreground.width;
-    height = height || foreground.height;
-    // const sceneInfo = work.getSceneInfoById(currentScene.sceneId, this.themeData.sceneList, 'sceneId')
-
-    const boxWidth = frame.width;
-    const boxHeight = frame.height;
-    // const sceneConfig = tool.JSON_parse(currentScene.sceneConfig)
-    const { position } = foreground;
-    const type = position.place || "0";
-    const result = {
-      x: 0,
-      y: 0,
-      rotate: 0,
-    };
-    switch (type) {
-      case "0":
-        result.x = (boxWidth - width) * 0.5;
-        result.y = (boxHeight - height) * 0.5;
-        break;
-      case "1":
-        result.x = 0;
-        result.y = 0;
-        break;
-      case "2":
-        result.x = (boxWidth - width) * 0.5;
-        result.y = 0;
-        break;
-      case "3":
-        result.x = boxWidth - width;
-        result.y = 0;
-        break;
-      case "4":
-        result.x = boxWidth - width;
-        result.y = (boxHeight - height) * 0.5;
-        break;
-      case "5":
-        result.x = boxWidth - width;
-        result.y = boxHeight - height;
-        break;
-      case "6":
-        result.x = (boxWidth - width) * 0.5;
-        result.y = boxHeight - height;
-        break;
-      case "7":
-        result.x = 0;
-        result.y = boxHeight - height;
-        break;
-      case "8":
-        result.x = 0;
-        result.y = (boxHeight - height) * 0.5;
-        break;
-      case "9":
-        const result_location = location(
-          position,
-          boxWidth,
-          boxHeight,
-          width,
-          height
-        );
-        result.x = result_location.x;
-        result.y = result_location.y;
-        break;
-      case "10":
-        const result_center = centerLocation(
-          position,
-          boxWidth,
-          boxHeight,
-          width,
-          height
-        );
-        result.x = result_center.x;
-        result.y = result_center.y;
-        break;
-      case "11":
-        const result_faceCenter = faceCenterLocation(
-          position,
-          boxWidth,
-          boxHeight,
-          width,
-          height
-        );
-        result.x = result_faceCenter.x;
-        result.y = result_faceCenter.y;
-        break;
-      default:
-        result.x = (boxWidth - width) * 0.5;
-        result.y = (boxHeight - height) * 0.5;
-    }
-    result.rotate = parseInt(position.rotate);
-    return result;
-
-    function location(position, boxWidth, boxHeight, width, height) {
-      const result = {
-        x: 0,
-        y: 0,
-      };
-      if (position.xAxis.derection === "left") {
-        result.x = position.xAxis.offset * boxWidth;
-      }
-      if (position.xAxis.derection === "right") {
-        result.x = boxWidth * (1 - position.xAxis.offset) - width;
-      }
-      if (position.yAxis.derection === "top") {
-        result.y = position.yAxis.offset * boxHeight;
-      }
-      if (position.yAxis.derection === "bottom") {
-        result.y = boxHeight * (1 - position.yAxis.offset) - height;
-      }
-      return result;
-    }
-    // 中心点设置位置
-    function centerLocation(position, boxWidth, boxHeight, width, height) {
-      const result = {
-        x: 0,
-        y: 0,
-      };
-      if (position.xAxis.derection === "left") {
-        result.x = position.xAxis.offset * boxWidth - width * 0.5;
-      }
-      if (position.xAxis.derection === "right") {
-        result.x = boxWidth * (1 - position.xAxis.offset) - width * 0.5;
-      }
-      if (position.yAxis.derection === "top") {
-        result.y = position.yAxis.offset * boxHeight - height * 0.5;
-      }
-      if (position.yAxis.derection === "bottom") {
-        result.y = boxHeight * (1 - position.yAxis.offset) - height * 0.5;
-      }
-      return result;
-    }
-    // 脸部中心点设置位置
-    function faceCenterLocation(position, boxWidth, boxHeight, width, height) {
-      const result = {
-        x: 0,
-        y: 0,
-      };
-      const faceCenterPosition = (globalData.separateResult &&
-        globalData.separateResult.faceCenterDict &&
-        globalData.separateResult.faceCenterDict["16-1"]) || [0, 0];
-      const imageSize = (globalData.separateResult &&
-        globalData.separateResult.imageSizeDict &&
-        globalData.separateResult.imageSizeDict["16-1"]) || [1, 1];
-      const faceLeft = faceCenterPosition[0] / imageSize[0] || 0.5; // 脸部中心点距离左边比例
-      const faceTop = faceCenterPosition[1] / imageSize[1] || 0.5; // 脸部中心点距离顶边比例
-      if (position.xAxis.derection === "left") {
-        result.x = position.xAxis.offset * boxWidth - width * faceLeft;
-      }
-      if (position.xAxis.derection === "right") {
-        result.x = boxWidth * (1 - position.xAxis.offset) - width * faceLeft;
-      }
-      if (position.yAxis.derection === "top") {
-        result.y = position.yAxis.offset * boxHeight - height * faceTop;
-      }
-      if (position.yAxis.derection === "bottom") {
-        result.y = boxHeight * (1 - position.yAxis.offset) - height * faceTop;
-      }
-      return result;
-    }
-  };
-  // 缓存人物尺寸位置
-  storeForegroundInfo = () => {
-    const { foreground, currentScene } = this.state;
-    const clone_foreground = tool.deepClone(foreground);
-    clone_foreground.isActive = false;
-    const sceneId = currentScene.sceneId || "demo_scene";
-    this.cache["foreground"].set(sceneId, clone_foreground);
-    // console.log('this.cache.foreground', this.cache['foreground'].get(sceneId))
-  };
+  
 
   // 贴纸自适应
   coverAuto = (originInfo, cover, callback?: () => void) => {
@@ -1533,53 +1246,11 @@ class Editor extends Component {
             currentScene,
             coverList: [],
           });
-          // Taro.getFileSystemManager().readFile({
-          //   filePath: path,
-          //   success: async (data: any) => {
-          //     //async
-          //     let currentScene = { ...this.state.currentScene };
-          //     currentScene.bgUrl = path;
-          //     currentScene.sceneConfig.cover.list = this.state.coverList;
-          //     this.setState({
-          //       currentScene,
-          //       coverList: [],
-          //     });
-
-          //     // wx.cloud.callFunction(
-          //     //     {
-          //     //         name: 'checkImage',
-          //     //         data: {
-          //     //           contentType: 'image/png',
-          //     //           value: data.data
-          //     //         },
-          //     //         success: async (res:any) => {//res 为处理信息，跟图片无关；
-          //     //           // console.log('checkImage success：', res)
-          //     //           // const separateResult = globalData.separateResult = await this.initSegment()
-          //     //           // await this.initSeparateData(separateResult)
-          //     //           if (res.result !== null && res.result.errCode === 0) {
-          //     //             setTimeout(function(){},10000);
-          //     //             const separateResult = globalData.separateResult = await this.initSegment()//一个对象、得到分割结果，还不是图像，只是部分路径
-          //     //             // console.log(separateResult, 'separeteResulting~~~~~~~~~~~~~~~~')
-          //     //             await this.initSeparateData(separateResult)
-          //     //           } else {
-          //     //             work.pageToError()
-          //     //           }
-          //     //         },
-          //     //         fail: async (err) => {
-          //     //           // console.log('checkImage error', err)
-          //     //           const separateResult = globalData.separateResult = await this.initSegment()
-          //     //           await this.initSeparateData(separateResult)
-          //     //         }
-          //     //       }
-          //     // )
-          //   },
-          //   fail: () => {},
-          // });
         },
         onFail: () => {
-          if (!this.state.foreground.remoteUrl) {
-            this.pageToHome();
-          }
+          // if (!this.state.foreground.remoteUrl) {
+          //   this.pageToHome();
+          // }
         },
       });
     } else {
@@ -2039,7 +1710,7 @@ class Editor extends Component {
       isActive: false,
     };
     return {
-      foreground: newForegroundList,
+      // foreground: newForegroundList,
       currentScene: newCurrentScene,
     };
   }
@@ -2057,15 +1728,15 @@ class Editor extends Component {
       }
     });
 
-    let temp = { ...this.state.foreground };
-    temp.isActive = false;
-    temp.fixed = true;
+    // let temp = { ...this.state.foreground };
+    // temp.isActive = false;
+    // temp.fixed = true;
 
     let currentScene = { ...this.state.currentScene };
     currentScene.isActive = false;
 
     this.setState({
-      foreground: { ...temp },
+      // foreground: { ...temp },
       coverList: [...tempCover],
       currentScene,
     });
@@ -2082,23 +1753,6 @@ class Editor extends Component {
     this.setState({
       coverList,
       currentScene,
-    });
-  }
-
-  activateForeground(item) {
-    this.selectedItem = item;
-    let temp = { ...item };
-    temp.isActive = true;
-    temp.fixed = false;
-    let tempCover = [...this.state.coverList];
-    tempCover.forEach((item) => {
-      item.isActive = false;
-      item.fixed = true;
-    });
-    console.log(tempCover, "this is to check");
-    this.setState({
-      foreground: { ...temp },
-      coverList: [...tempCover],
     });
   }
 
@@ -2145,17 +1799,6 @@ class Editor extends Component {
     });
   }
 
-  handleDeleteLayer(layer) {
-    this.setState({
-      foreground: {
-        //存储切图信息
-        ...this.state.foreground,
-        visible: false, // 是否显示
-        isActive: false,
-      },
-    });
-    // this.changeButtonPosition(-60,-60);
-  }
 
   produceWordUrl(data) {
     data = data.toString().replace(/[\n\r]/gi, "\n");

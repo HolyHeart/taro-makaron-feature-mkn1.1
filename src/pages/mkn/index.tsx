@@ -87,7 +87,7 @@ class Editor extends Component {
   selectedItem = null;
 
   state = {
-    textareaText:'',
+    textareaText: "",
     showTextarea: false,
     rawImage: {
       localUrl: "",
@@ -1953,6 +1953,26 @@ class Editor extends Component {
       }
       return cover;
     });
+    //sorting cover for islock
+    console.log(coverList, "before sorting");
+
+    let isLockList = coverList.filter((item) => {
+      if (item.isLock) {
+        return item;
+      }
+    });
+    console.log(isLockList, "this is isLock");
+
+    let unLockList = coverList.filter((item) => {
+      if (!item.isLock) {
+        return item;
+      }
+    });
+    console.log(unLockList, "this is unlock");
+
+    coverList = unLockList.concat(isLockList);
+    console.log(coverList, "sorting result");
+
     coverList.unshift(...newForegroundList, ...newImageList);
     console.log(coverList, "ccc");
     coverList = work.formatRawCoverList(coverList);

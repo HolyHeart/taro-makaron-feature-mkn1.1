@@ -94,26 +94,6 @@ class Editor extends Component {
       rotate: 0,
     },
     chooseText: "添加人像照片",
-    // foreground: {
-    //   //存储切图信息
-    //   id: "foreground",
-    //   remoteUrl: "",
-    //   zIndex: 2,
-    //   width: 0,
-    //   height: 0,
-    //   x: 0,
-    //   y: 0,
-    //   rotate: 0,
-    //   originWidth: 0, // 原始宽度
-    //   originHeight: 0, // 原始高度
-    //   autoWidth: 0, // 自适应后的宽度
-    //   autoHeight: 0, // 自适应后的高度
-    //   autoScale: 0, // 相对画框缩放比例
-    //   fixed: false, // 是否固定
-    //   isActive: true, // 是否激活
-    //   loaded: false, // 是否加载完毕
-    //   visible: true, // 是否显示
-    // },
     coverList: [],
     sceneList: [],
     guiderTop: "",
@@ -285,7 +265,6 @@ class Editor extends Component {
   }
 
   _initPage = async () => {
-    // this.initRawImage()
     await Session.set();
     const res = this.templateData || await service.mkn.getTemplate("GQVRVV85590"); // RGRFAG1145
     this.templateData = res;
@@ -351,18 +330,7 @@ class Editor extends Component {
     });
   };
 
-  initRawImage = () => {
-    const { rawImage } = this.state;
-    globalData.choosedImage =
-      globalData.choosedImage ||
-      "http://tmp/wxcfe56965f4d986f0.o6zAJsztn2DIgXEGteELseHpiOtU.6gRGsIZIvyytf45cffd60a62912bada466d51e03f6fa.jpg";
-    this.setState({
-      rawImage: {
-        ...rawImage,
-        localUrl: globalData.choosedImage,
-      },
-    });
-  };
+  
   // 初始化场景信息
   initSceneData = async (res) => {
     ///获取globalData.sceneConfig数据

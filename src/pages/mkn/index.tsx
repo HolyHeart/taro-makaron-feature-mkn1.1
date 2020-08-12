@@ -268,7 +268,8 @@ class Editor extends Component {
     await Session.set();
     const res =
       this.templateData || (await service.mkn.getTemplate("GQVRVV85590")); // RGRFAG1145
-    this.templateData = res;
+
+    this.templateData = JSON.parse(JSON.stringify(res));
     this.initSceneData(res);
   };
 
@@ -331,7 +332,6 @@ class Editor extends Component {
     });
   };
 
-  
   // 初始化场景信息
   initSceneData = async (res) => {
     ///获取globalData.sceneConfig数据

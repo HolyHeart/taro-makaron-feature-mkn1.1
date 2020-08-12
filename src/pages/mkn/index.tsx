@@ -808,7 +808,7 @@ class Editor extends Component {
     // 绘制元素
     await this.canvasDrawElement(context, ratio);
     // 绘制二维码
-    if (!sceneConfig.watermark) {
+    if (sceneConfig.watermark) {
       this.canvasDrawLogo(context, ratio);
     }
   };

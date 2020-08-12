@@ -224,10 +224,19 @@ class Editor extends Component {
   componentWillUnmount() {}
   componentDidShow() {}
   componentDidHide() {}
-  onShareAppMessage(res) {
+  delay(time){
+    return new Promise((resolve,reject) => {
+      setTimeout(() => {
+        resolve();
+      }, time);
+    })
+  }
+  async onShareAppMessage(res) {
     // if (res.from === 'button') {
     //   console.log('页面按钮分享', res.target)
     // }
+    await this.handleOpenResult();
+    await this.delay(200)
     this.app.aldstat.sendEvent("生成页分享", {
       场景名: this.state.currentScene.sceneName,
       场景Id: this.state.currentScene.sceneId,
@@ -622,79 +631,82 @@ class Editor extends Component {
 
   // 保存
   handleOpenResult = async () => {
-    if (!this.state.currentScene.bgUrl) {
-      return;
-    }
-    if (this.isSaving) {
-      return;
-    }
-    this.app.aldstat.sendEvent("保存图片或视频", {
-      场景名: this.state.currentScene.sceneName,
-      场景Id: this.state.currentScene.sceneId,
-    });
-    Taro.showLoading({
-      title: "照片生成中...",
-      mask: true,
-    });
-    const mySaveNumber = {
-      number: Taro.getStorageSync("saveNumber").number + 1,
-      date: Taro.getStorageSync("saveNumber").date,
-    };
-    Taro.setStorageSync("saveNumber", mySaveNumber);
-    this.isSaving = true;
-    const canvasImageUrl = await this.createCanvas();
-    console.log(canvasImageUrl, "这是canvasImageUrl"); //图片的本地地址
-    Taro.hideLoading();
-    this.isSaving = false;
-    this.setState(
-      {
-        result: {
-          shareImage: {
-            localUrl: canvasImageUrl,
-            remoteUrl: "",
-          },
-          show: true,
-        },
-      },
-      async () => {
-        const { url } = await service.base.upload(canvasImageUrl);
-        this.setState({
+    return new Promise(async (resolve,reject)=>{
+      if (!this.state.currentScene.bgUrl) {
+        return;
+      }
+      if (this.isSaving) {
+        return;
+      }
+      this.app.aldstat.sendEvent("保存图片或视频", {
+        场景名: this.state.currentScene.sceneName,
+        场景Id: this.state.currentScene.sceneId,
+      });
+      Taro.showLoading({
+        title: "照片生成中...",
+        mask: true,
+      });
+      const mySaveNumber = {
+        number: Taro.getStorageSync("saveNumber").number + 1,
+        date: Taro.getStorageSync("saveNumber").date,
+      };
+      Taro.setStorageSync("saveNumber", mySaveNumber);
+      this.isSaving = true;
+      const canvasImageUrl = await this.createCanvas();
+      console.log(canvasImageUrl, "这是canvasImageUrl"); //图片的本地地址
+      Taro.hideLoading();
+      this.isSaving = false;
+      this.setState(
+        {
           result: {
-            // show: this.state.result.show,
             shareImage: {
               localUrl: canvasImageUrl,
-              remoteUrl: url, //获得远端的url
+              remoteUrl: "",
             },
+            show: true,
           },
-        });
-      }
-    );
-
-    // 保存图片到相册
-    work.saveSourceToPhotosAlbum({
-      location: "local",
-      sourceUrl: canvasImageUrl,
-      sourceType: "image",
-      onSuccess: () => {
-        Taro.showToast({
-          title: "保存成功!",
-          icon: "success",
-          duration: 2000,
-        });
-      },
-      onAuthFail: () => {
-        Taro.authModal({
-          open: true,
-        });
-        this.setResultModalStatus(false);
-      },
-      onFail: () => {
-        Taro.showToast({
-          title: "保存失败!",
-          icon: "success",
-          duration: 2000,
-        });
-      },
+        },
+        async () => {
+          const { url } = await service.base.upload(canvasImageUrl);
+          this.setState({
+            result: {
+              // show: this.state.result.show,
+              shareImage: {
+                localUrl: canvasImageUrl,
+                remoteUrl: url, //获得远端的url
+              },
+            },
+          });
+        }
+      );
+  
+      // 保存图片到相册
+      work.saveSourceToPhotosAlbum({
+        location: "local",
+        sourceUrl: canvasImageUrl,
+        sourceType: "image",
+        onSuccess: () => {
+          Taro.showToast({
+            title: "保存成功!",
+            icon: "success",
+            duration: 2000,
+          });
+          resolve();
+        },
+        onAuthFail: () => {
+          Taro.authModal({
+            open: true,
+          });
+          this.setResultModalStatus(false);
+        },
+        onFail: () => {
+          Taro.showToast({
+            title: "保存失败!",
+            icon: "success",
+            duration: 2000,
+          });
+        },
+      });
     });
   };
   // 再玩一次
@@ -1938,7 +1950,7 @@ class Editor extends Component {
                   style="flex:1;margin-left:10px"
                   className="custom-button white"
                   hoverClass="btn-hover"
-                  onClick={this.handleOpenResult}
+                  open-type='share'
                 >
                   分享并保存
                 </Button>

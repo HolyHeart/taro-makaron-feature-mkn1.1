@@ -4,7 +4,7 @@
   height: 100%;
   // padding-top: 228px;
   box-sizing: border-box;
-  display:flex;
+  display: flex;
   align-items: center;
   justify-content: center;
   .main {
@@ -49,6 +49,7 @@
 
   .scrollList {
     height: 150px;
+    width: 750px;
   }
 
   .text {
@@ -62,10 +63,13 @@
 
   .block {
     position: relative;
-    margin: 0 9px 0 9px;
+    margin: 0 10px 0 10px;
     width: 110px;
     height: 110px;
     display: inline-block;
+    &.bg0 {
+      margin: 0 0 0 50px;
+    }
   }
 
   .scrollBox {
@@ -87,7 +91,7 @@
       height: 110px;
 
       border-radius: 4px;
-      margin-right: 20px;
+      margin-right: 0px;
       //display: inline-block
     }
     .singlePicture {
@@ -97,7 +101,7 @@
       background-image: url("../../assets/images/Bg.png");
       background-size: cover;
       border-radius: 4px;
-      margin-right: 20px;
+      margin: 0 0px 0 0;
       //display: inline-block;
     }
     .acitivated {
@@ -252,13 +256,13 @@
   // font-family: 'versa';
 }
 
-.thumbnail_image{
+.thumbnail_image {
   position: absolute;
   z-index: 999;
   width: 100%;
   height: 100%;
 }
-::-webkit-scrollbar{
+::-webkit-scrollbar {
   width: 0;
   height: 0;
   color: transparent;

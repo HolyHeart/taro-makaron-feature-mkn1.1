@@ -199,6 +199,8 @@ class Editor extends Component {
   }
 
   componentDidMount() {
+    console.log(this.$router.params, "this is from router");
+
     wx.cloud.init();
     this._initPage();
     this.canIShareToQQZone();
@@ -252,14 +254,14 @@ class Editor extends Component {
     };
 
     const { userInfo = {} } = globalData;
-    const path = `/pages/mkn/index`;
+    const path = `/pages/mkn/index?ispro=true`;
     // console.log('url',path)
     // const title = `@${userInfo.nickName}：${shareContent}`
     if (!shareImage.remoteUrl) {
       console.log("shareImage.remoteUrl", shareImage.remoteUrl);
       return {
         // title: title,
-        path: "/pages/mkn/index",
+        path: "/pages/mkn/index?ispro=true",
         imageUrl: currentScene.thumbnailUrl,
       };
     }
@@ -1857,9 +1859,9 @@ class Editor extends Component {
                 <ScrollView
                   scrollX
                   className="scrollList"
-                  style="width:100%;white-space: nowrap;overflow:hidden;"
+                  style="white-space: nowrap;overflow:hidden;"
                 >
-                  <View className="block">
+                  <View className="block bg0">
                     <Image
                       src={currentScene.bgUrl}
                       onClick={this.activateBg.bind(this)}
@@ -1881,6 +1883,7 @@ class Editor extends Component {
                     </Button>
                     <View className="text">背景</View>
                   </View>
+
                   {this.state.coverList.map((item, index) => {
                     return !item.isLock ? (
                       <View className="block">
@@ -1888,7 +1891,11 @@ class Editor extends Component {
                           src={item.remoteUrl}
                           onClick={this.activatePicture.bind(this, index)}
                           className="singlePicture"
-                          mode="aspectFill"
+                          mode={
+                            item.data.category === 10003
+                              ? "aspectFit"
+                              : "aspectFill"
+                          }
                         />
                         <Button
                           className={item.isActive ? "acitivated" : ""}

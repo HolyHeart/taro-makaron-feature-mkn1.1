@@ -228,19 +228,19 @@ class Editor extends Component {
   componentWillUnmount() {}
   componentDidShow() {}
   componentDidHide() {}
-  delay(time){
-    return new Promise((resolve,reject) => {
+  delay(time) {
+    return new Promise((resolve, reject) => {
       setTimeout(() => {
         resolve();
       }, time);
-    })
+    });
   }
   async onShareAppMessage(res) {
     // if (res.from === 'button') {
     //   console.log('页面按钮分享', res.target)
     // }
     await this.handleOpenResult();
-    await this.delay(200)
+    await this.delay(200);
     this.app.aldstat.sendEvent("生成页分享", {
       场景名: this.state.currentScene.sceneName,
       场景Id: this.state.currentScene.sceneId,
@@ -496,12 +496,29 @@ class Editor extends Component {
   };
   handleBgLoaded = ({ detail }) => {
     let k = detail.width / detail.height;
-    console.log(detail, k); //背景图片的尺寸-eg：背景图 900,1200---整个框包括白板也是这么大
+    console.log(detail, k, "detail");
+    let tempWidth = 650;
+    let tempHeight = 650 / k;
+    let systemInfo = Taro.getSystemInfoSync();
+    let factor = 750 / systemInfo.screenWidth;
+    let rpHeight = systemInfo.screenHeight * factor;
+    if (tempWidth > 650 || tempHeight > 650) {
+      if (k <= 1) {
+        // width<height
+        tempWidth = (rpHeight - 260 * factor) * k;
+        tempHeight = rpHeight - 260 * factor;
+      } else {
+        //height <width
+        tempWidth = 650;
+        tempHeight = 650 / k;
+      }
+    }
+
     this.setState(
       {
         drawBoard: {
-          width: "650rpx",
-          height: `${650 / k}rpx`, //先写固定
+          width: `${tempWidth}rpx`, //"650rpx",
+          height: `${tempHeight}rpx`, //`${650 / k}rpx`,
         },
       },
       () => {
@@ -638,7 +655,7 @@ class Editor extends Component {
 
   // 保存
   handleOpenResult = async () => {
-    return new Promise(async (resolve,reject)=>{
+    return new Promise(async (resolve, reject) => {
       if (!this.state.currentScene.bgUrl) {
         return;
       }
@@ -686,7 +703,7 @@ class Editor extends Component {
           });
         }
       );
-  
+
       // 保存图片到相册
       work.saveSourceToPhotosAlbum({
         location: "local",
@@ -1821,22 +1838,18 @@ class Editor extends Component {
     } = this.state;
 
     return (
-      <ScrollView
-        scrollY
-        className="scrollPage"
-        style={{ height: this.state.screenHeight + "px" }}
-      >
+      <View className="container">
+        <Title
+          color="#333"
+          leftStyleObj={{ left: Taro.pxTransform(8) }}
+          showBack={showType}
+          backHandler={() => {
+            this.backHandler();
+          }}
+        >
+          懒人抠图
+        </Title>
         <View className={`page-editor`}>
-          <Title
-            color="#333"
-            leftStyleObj={{ left: Taro.pxTransform(8) }}
-            showBack={showType}
-            backHandler={() => {
-              this.backHandler();
-            }}
-          >
-            懒人抠图
-          </Title>
           <View
             className={`main ${showTextarea ? "blur" : ""} ${
               this.state.showStatePic ? "static" : ""
@@ -1861,7 +1874,7 @@ class Editor extends Component {
                   <Image
                     src={currentScene.bgUrl}
                     style="width:100%;height:100%;"
-                    mode="scaleToFill"
+                    mode="aspectFit"
                     onLoad={this.handleBgLoaded}
                     onClick={this.handleBackgroundClick}
                   />
@@ -1996,7 +2009,7 @@ class Editor extends Component {
                   style="flex:1;margin-left:10px"
                   className="custom-button white"
                   hoverClass="btn-hover"
-                  open-type='share'
+                  open-type="share"
                 >
                   分享并保存
                 </Button>
@@ -2029,7 +2042,7 @@ class Editor extends Component {
             <Image src={this.staticPicUrl} mode="scaleToFill" />
           </View>
         )}
-      </ScrollView>
+      </View>
     );
   }
 }

@@ -104,6 +104,9 @@ class Sticker extends Component {
   componentWillMount() {}
 
   mirrorOntouchstart() {
+    if (this.props.stylePrams.noMirror) {
+      return;
+    }
     let isMirror = !this.props.stylePrams.isMirror;
     this.changeStyleParams({
       isMirror,

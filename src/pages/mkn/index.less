@@ -11,6 +11,9 @@
     &.blur {
       filter: blur(9px);
     }
+    &.static {
+      display: none;
+    }
   }
 
   .pic-section {
@@ -266,4 +269,17 @@
   width: 0;
   height: 0;
   color: transparent;
+}
+
+.static-Picture {
+  z-index: 999;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 100px;
 }

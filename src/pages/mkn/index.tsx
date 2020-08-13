@@ -61,6 +61,7 @@ class Editor extends Component {
 
   templateData = undefined;
   selectedItem = null;
+  staticPicUrl = undefined;
 
   state = {
     textareaText: "",
@@ -127,6 +128,7 @@ class Editor extends Component {
       top: 0,
       left: 0,
     },
+    showStatePic: false,
   };
 
   app = Taro.getApp();
@@ -340,6 +342,9 @@ class Editor extends Component {
     // service.home.getCateGoryAndScenes(); //test
 
     let result = this.transformTemplateRes(res.result.result);
+    if (this.staticPicUrl) {
+      return;
+    }
 
     globalData.sceneConfig = result.currentScene;
     // let foreground = result.foreground;
@@ -1082,7 +1087,11 @@ class Editor extends Component {
   }
 
   //上传图片的操作
-  todo = (data) => {
+  todo = (data, item) => {
+    if (item.name.indexOf("贴纸") !== -1) {
+      return;
+    }
+
     // console.log(data, 'datadatadataOftodo')//授权获得用户信息
     this.app.aldstat.sendEvent("bank_replace", {});
     const {
@@ -1373,7 +1382,29 @@ class Editor extends Component {
     Taro.navigateTo({ url: "/pages/home/index" });
   }
 
+  canNotProc() {
+    this.setState({
+      showStatePic: true,
+    });
+  }
+
   transformTemplateRes(result: any) {
+    console.log(result, "initial result");
+    let judge = result.config.layerConfig.some((item) => {
+      return (
+        item.category !== 16 &&
+        item.category !== 1600 &&
+        item.category !== 1 &&
+        item.category != 10002 &&
+        item.category != 10003
+      );
+    });
+    if (judge) {
+      this.staticPicUrl = result.thumbnailUrl;
+      return this.canNotProc();
+    }
+    console.log(result, "initial result");
+
     let foregroundList = result.config.layerConfig.filter((item) => {
       return item.category === 16;
     });
@@ -1794,7 +1825,11 @@ class Editor extends Component {
           >
             懒人抠图
           </Title>
-          <View className={`main ${showTextarea ? "blur" : ""}`}>
+          <View
+            className={`main ${showTextarea ? "blur" : ""} ${
+              this.state.showStatePic ? "static" : ""
+            }`}
+          >
             <View className="pic-section">
               <View
                 style={{
@@ -1888,9 +1923,13 @@ class Editor extends Component {
                         <Button
                           className={item.isActive ? "acitivated" : ""}
                           openType="getUserInfo"
-                          onGetUserInfo={this.todo}
+                          onGetUserInfo={(data) => {
+                            this.todo(data, item);
+                          }}
                         >
-                          {item.isActive ? "点击修改" : ""}
+                          {item.isActive && item.name.indexOf("贴纸") === -1
+                            ? "点击修改"
+                            : ""}
                         </Button>
                         <View className="text">{item.name}</View>
                       </View>
@@ -1972,6 +2011,11 @@ class Editor extends Component {
             }}
             value={this.state.textareaText}
           />
+        )}
+        {this.state.showStatePic && (
+          <View className="static-Picture">
+            <Image src={this.staticPicUrl} mode="scaleToFill" />
+          </View>
         )}
       </ScrollView>
     );

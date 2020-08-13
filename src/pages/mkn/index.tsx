@@ -226,19 +226,19 @@ class Editor extends Component {
   componentWillUnmount() {}
   componentDidShow() {}
   componentDidHide() {}
-  delay(time){
-    return new Promise((resolve,reject) => {
+  delay(time) {
+    return new Promise((resolve, reject) => {
       setTimeout(() => {
         resolve();
       }, time);
-    })
+    });
   }
   async onShareAppMessage(res) {
     // if (res.from === 'button') {
     //   console.log('页面按钮分享', res.target)
     // }
     await this.handleOpenResult();
-    await this.delay(200)
+    await this.delay(200);
     this.app.aldstat.sendEvent("生成页分享", {
       场景名: this.state.currentScene.sceneName,
       场景Id: this.state.currentScene.sceneId,
@@ -633,7 +633,7 @@ class Editor extends Component {
 
   // 保存
   handleOpenResult = async () => {
-    return new Promise(async (resolve,reject)=>{
+    return new Promise(async (resolve, reject) => {
       if (!this.state.currentScene.bgUrl) {
         return;
       }
@@ -681,7 +681,7 @@ class Editor extends Component {
           });
         }
       );
-  
+
       // 保存图片到相册
       work.saveSourceToPhotosAlbum({
         location: "local",
@@ -1786,6 +1786,7 @@ class Editor extends Component {
       currentScene,
       result,
       canvas,
+      textareaText,
       showTextarea,
     } = this.state;
 
@@ -1816,7 +1817,7 @@ class Editor extends Component {
                 className={`crop`}
                 id="crop"
               >
-                {showType === 0 && (
+                {!showType && (
                   <Image
                     className="thumbnail_image"
                     src={currentScene.thumbnailUrl}
@@ -1850,7 +1851,7 @@ class Editor extends Component {
               </View>
             </View>
 
-            {this.state.showType && (
+            {showType && (
               <View
                 className={`scrollBox ${
                   coverList.length < 6 ? "listCenter" : ""
@@ -1884,7 +1885,7 @@ class Editor extends Component {
                     <View className="text">背景</View>
                   </View>
 
-                  {this.state.coverList.map((item, index) => {
+                  {coverList.map((item, index) => {
                     return !item.isLock ? (
                       <View className="block">
                         <Image
@@ -1926,12 +1927,8 @@ class Editor extends Component {
               </View>
             )}
 
-            {this.state.showType === 0 ? (
-              <View
-                className={`buttonPart ${
-                  this.state.showType === 0 ? "moreMargin" : ""
-                }`}
-              >
+            {!showType && (
+              <View className={`buttonPart ${!showType ? "moreMargin" : ""}`}>
                 <Button
                   style="flex:1;z-index:2;"
                   id="addPhoto1"
@@ -1943,21 +1940,17 @@ class Editor extends Component {
                   开始做同款
                 </Button>
               </View>
-            ) : (
-              ""
             )}
 
-            {this.state.showType && (
+            {showType && (
               <View
-                className={`buttonPart ${
-                  this.state.showType === 1 ? "lessWidth" : ""
-                }`}
+                className={`buttonPart ${showType === 1 ? "lessWidth" : ""}`}
               >
                 <Button
                   style="flex:1;margin-left:10px"
                   className="custom-button white"
                   hoverClass="btn-hover"
-                  open-type='share'
+                  open-type="share"
                 >
                   分享并保存
                 </Button>
@@ -1982,7 +1975,7 @@ class Editor extends Component {
             uploadText={(data) => {
               this.uploadText(data);
             }}
-            value={this.state.textareaText}
+            value={textareaText}
           />
         )}
       </ScrollView>

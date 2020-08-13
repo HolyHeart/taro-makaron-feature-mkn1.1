@@ -501,12 +501,12 @@ class Editor extends Component {
     let tempHeight = 650 / k;
     let systemInfo = Taro.getSystemInfoSync();
     let factor = 750 / systemInfo.screenWidth;
-    let rpHeight = systemInfo.screenHeight * factor;
+    let rpHeight = systemInfo.screenHeight;
     if (tempWidth > 650 || tempHeight > 650) {
       if (k <= 1) {
         // width<height
-        tempWidth = (rpHeight - 260 * factor) * k;
-        tempHeight = rpHeight - 260 * factor;
+        tempWidth = 360 * (rpHeight / 568) * factor * k;
+        tempHeight = 360 * (rpHeight / 568) * factor;
       } else {
         //height <width
         tempWidth = 650;

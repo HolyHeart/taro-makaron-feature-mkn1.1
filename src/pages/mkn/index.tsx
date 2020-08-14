@@ -16,6 +16,7 @@ import { createCache } from "@/services/cache";
 import "./index.less";
 import image_code from "@/assets/images/code.png";
 import image_versa from "@/assets/images/versa.png";
+import image_makro from "@/assets/images/makaron_logo.png";
 import WordBox from "@/components/WordBox";
 import iconLock from "@/assets/images/icon_lock.png";
 import { getHost } from "@/services/api.config";
@@ -494,7 +495,8 @@ class Editor extends Component {
       }
     );
   };
-  handleBgLoaded = ({ detail }) => {
+
+  calFitBoard({ detail }) {
     let k = detail.width / detail.height;
     console.log(detail, k, "detail");
     let tempWidth = 650;
@@ -502,6 +504,7 @@ class Editor extends Component {
     let systemInfo = Taro.getSystemInfoSync();
     let factor = 750 / systemInfo.screenWidth;
     let rpHeight = systemInfo.screenHeight;
+    let WidthHeight = [];
     if (tempWidth > 650 || tempHeight > 650) {
       if (k <= 1) {
         // width<height
@@ -513,12 +516,16 @@ class Editor extends Component {
         tempHeight = 650 / k;
       }
     }
+    return [tempWidth, tempHeight];
+  }
 
+  handleBgLoaded = ({ detail }) => {
+    let WidthHeight = this.calFitBoard({ detail });
     this.setState(
       {
         drawBoard: {
-          width: `${tempWidth}rpx`, //"650rpx",
-          height: `${tempHeight}rpx`, //`${650 / k}rpx`,
+          width: `${WidthHeight[0]}rpx`, //"650rpx",
+          height: `${WidthHeight[1]}rpx`, //`${650 / k}rpx`,
         },
       },
       () => {
@@ -528,6 +535,32 @@ class Editor extends Component {
       }
     );
   };
+
+  handleBgLoadedStatic({ detail }) {
+    let WidthHeight = this.calFitBoard({ detail });
+    this.setState(
+      {
+        drawBoard: {
+          width: `${WidthHeight[0]}rpx`, //"650rpx",
+          height: `${WidthHeight[1]}rpx`, //`${650 / k}rpx`,
+        },
+      }
+      // () => {
+      //   setTimeout(() => {
+      //     work.getDomRect("static-Picture", (rect) => {
+      //       this.setState({
+      //         frame: {
+      //           width: rect.width,
+      //           height: rect.height,
+      //           left: rect.left,
+      //           top: rect.top,
+      //         },
+      //       });
+      //     });
+      //   }, 250);
+      // }
+    );
+  }
   handleChangeCustomBgStyle = (data) => {
     const { frame } = this.state;
     if (data.x > 0) {
@@ -1847,9 +1880,20 @@ class Editor extends Component {
             this.backHandler();
           }}
         >
-          懒人抠图
+          马卡龙
         </Title>
+
         <View className={`page-editor`}>
+          {this.state.showType === 0 && (
+            <View className="logoAndWord">
+              <Image
+                src={image_makro}
+                mode="aspectFit"
+                className="logoMakron"
+              />
+              <View className="logoWord">- 马卡龙玩图倾力出品 -</View>
+            </View>
+          )}
           <View
             className={`main ${showTextarea ? "blur" : ""} ${
               this.state.showStatePic ? "static" : ""
@@ -2028,6 +2072,31 @@ class Editor extends Component {
           </View>
 
           <Loading visible={loading} />
+          {this.state.showStatePic && (
+            <View
+              className="static-Picture"
+              style={{
+                width: this.state.drawBoard.width,
+                height: this.state.drawBoard.height,
+              }}
+            >
+              {/* <View className="logoAndWord">
+              <Image
+                src={image_makro}
+                mode="aspectFit"
+                className="logoMakron"
+                onLoad={this.handleBgLoaded}
+              />
+              <View className="logoWord">- 马卡龙玩图倾力出品 -</View>
+            </View> */}
+              <Image
+                src={this.staticPicUrl}
+                onload={this.handleBgLoadedStatic}
+                style="width:100%;height:100%;"
+                mode="aspectFit"
+              />
+            </View>
+          )}
         </View>
         {showTextarea && (
           <WordBox
@@ -2036,11 +2105,6 @@ class Editor extends Component {
             }}
             value={this.state.textareaText}
           />
-        )}
-        {this.state.showStatePic && (
-          <View className="static-Picture">
-            <Image src={this.staticPicUrl} mode="scaleToFill" />
-          </View>
         )}
       </View>
     );

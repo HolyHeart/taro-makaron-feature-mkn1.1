@@ -238,6 +238,7 @@ class Sticker extends Component {
       let distanceDiff = distance - gesture.distance;
       let newScale = gesture.scale + 0.005 * distanceDiff;
       // console.log('newScale', newScale)
+
       if (newScale < 0.3) {
         newScale = 0.3;
       }
@@ -264,7 +265,7 @@ class Sticker extends Component {
         newRotate = parseFloat(stylePrams.rotate) + angle;
       }
       // 更新数据
-      gesture.scale = newScale;
+      gesture.scale = newScale; //newScale;
       gesture.distance = distance;
       gesture.preV = v;
       this.changeStyleParams({
@@ -332,6 +333,9 @@ class Sticker extends Component {
       // 若固定则不能移动
       return;
     }
+    console.log(this.gesture, "this is gesture");
+    //console.log(this.state.framePrams, "this is state");
+    //console.log(this.props.stylePrams, "this is stylePrams");
     // console.log('arrowOntouchmove', e)
     const { gesture } = this;
     const { stylePrams } = this.props;
@@ -341,11 +345,29 @@ class Sticker extends Component {
     const frameOffsetY = framePrams.top;
     if (e.touches.length === 1) {
       let xMove = e.touches[0].clientX - frameOffsetX - center.x;
-      let yMove = e.touches[0].clientY - frameOffsetY - center.y;
+      let yMove = e.touches[0].clientY - frameOffsetY - center.y; //总是相对初始位置的
       let distance = Math.sqrt(xMove * xMove + yMove * yMove);
       // 计算缩放
-      let distanceDiff = distance - gesture.distance;
-      let newScale = gesture.scale + 0.005 * distanceDiff;
+      //adding //
+      let diagonal = Math.sqrt(
+        stylePrams.autoWidth * stylePrams.autoWidth,
+        stylePrams.autoHeight * stylePrams.autoHeight
+      );
+      let initial_diagonal = diagonal + gesture.distance;
+      let second_diagonal = diagonal + distance;
+      let freshScale = second_diagonal / initial_diagonal;
+      let newScale = freshScale * gesture.scale;
+      console.log(
+        "diagonal",
+        initial_diagonal,
+        "2",
+        second_diagonal,
+        freshScale
+      );
+      //let distanceDiff = distance - gesture.distance;
+      //let newScale = gesture.scale + 0.005 * distanceDiff;
+      //console.log(distanceDiff, "scale", newScale);
+
       if (newScale < 0.2) {
         newScale = 0.2;
       }
@@ -372,7 +394,7 @@ class Sticker extends Component {
         newRotate = parseFloat(stylePrams.rotate) + angle;
       }
       // 更新数据
-      gesture.scale = newScale;
+      gesture.scale = newScale; //newScale;
       gesture.distance = distance;
       gesture.preV = v;
 

@@ -1,5 +1,5 @@
 import { ComponentClass } from "react";
-import Taro, { Component, Config } from "@tarojs/taro";
+import Taro, { Component, Config, canvasToTempFilePath } from "@tarojs/taro";
 import { View, Button, Image, Canvas, ScrollView } from "@tarojs/components";
 import { connect } from "@tarojs/redux";
 import { getSystemInfo } from "@/model/actions/global";
@@ -63,6 +63,8 @@ class Editor extends Component {
   templateData = undefined;
   selectedItem = null;
   staticPicUrl = undefined;
+
+  backFirst = true;
 
   state = {
     textareaText: "",
@@ -203,7 +205,6 @@ class Editor extends Component {
 
   componentDidMount() {
     console.log(this.$router.params, "this is from router");
-
     wx.cloud.init();
     this._initPage();
     this.canIShareToQQZone();
@@ -257,14 +258,18 @@ class Editor extends Component {
     };
 
     const { userInfo = {} } = globalData;
-    const path = `/pages/mkn/index?ispro=true`;
+    let deShareImage;
+    if (shareImage.remoteUrl) {
+      deShareImage = encodeURIComponent(shareImage.remoteUrl);
+    }
+    const path = `/pages/mkn/index?ispro=true&shareImage=${deShareImage}`;
     // console.log('url',path)
     // const title = `@${userInfo.nickName}：${shareContent}`
     if (!shareImage.remoteUrl) {
       console.log("shareImage.remoteUrl", shareImage.remoteUrl);
       return {
         // title: title,
-        path: "/pages/mkn/index?ispro=true",
+        path: "/pages/mkn/index",
         imageUrl: currentScene.thumbnailUrl,
       };
     }
@@ -360,6 +365,12 @@ class Editor extends Component {
     // let foreground = result.foreground;
     const currentScene = globalData.sceneConfig; //来自于主页给每一项设置的，
     console.log(currentScene, "initiating the first scene&&adding");
+    if (this.$router.params.shareImage && this.backFirst) {
+      currentScene.thumbnailUrl = decodeURIComponent(
+        this.$router.params.shareImage
+      );
+      this.backFirst = false;
+    }
     this.setState(
       {
         // foreground,
@@ -1915,6 +1926,15 @@ class Editor extends Component {
                   />
                 )}
                 <View className="background-image">
+                  <View
+                    className={`bgBackground ${
+                      currentScene.isActive ? "activated" : ""
+                    }`}
+                    style={{
+                      width: this.state.drawBoard.width,
+                      height: this.state.drawBoard.height,
+                    }}
+                  ></View>
                   <Image
                     src={currentScene.bgUrl}
                     style="width:100%;height:100%;"

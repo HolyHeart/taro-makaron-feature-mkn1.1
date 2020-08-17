@@ -318,11 +318,13 @@ page {
   &.activated {
     display: block;
     position: absolute;
-    background: rgba(255, 51, 102, 0.5);
+    background: rgba(255, 51, 102, 1);
+    opacity: 0.5;
     top: 0;
     left: 0;
     animation: show;
-    animation-duration: 0.5s;
+    animation-duration: 1s;
+    animation-timing-function: ease-out;
   }
 }
 @keyframes show {

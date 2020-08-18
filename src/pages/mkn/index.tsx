@@ -286,7 +286,7 @@ class Editor extends Component {
   _initPage = async () => {
     await Session.set();
     const res =
-      this.templateData || (await service.mkn.getTemplate("GQVRVV85590")); // RGRFAG1145
+      this.templateData || (await service.mkn.getTemplate("HNYZOY47250")); // RGRFAG1145 // GQVRVV85590
 
     this.templateData = JSON.parse(JSON.stringify(res));
     this.initSceneData(res);
@@ -1469,7 +1469,8 @@ class Editor extends Component {
         item.category !== 1600 &&
         item.category !== 1 &&
         item.category != 10002 &&
-        item.category != 10003
+        item.category != 10003 &&
+        item.category != 10001
       );
     });
     if (judge) {

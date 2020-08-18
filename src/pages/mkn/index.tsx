@@ -242,7 +242,7 @@ class Editor extends Component {
     //   console.log('页面按钮分享', res.target)
     // }
     await this.handleOpenResult();
-    await this.delay(200);
+    await this.delay(1000);
     this.app.aldstat.sendEvent("生成页分享", {
       场景名: this.state.currentScene.sceneName,
       场景Id: this.state.currentScene.sceneId,
@@ -373,7 +373,6 @@ class Editor extends Component {
     }
     this.setState(
       {
-        // foreground,
         currentScene: {
           ...this.state.currentScene,
           ...currentScene,

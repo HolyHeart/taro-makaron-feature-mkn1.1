@@ -286,7 +286,7 @@ class Editor extends Component {
   _initPage = async () => {
     await Session.set();
     const res =
-      this.templateData || (await service.mkn.getTemplate("INWYBI55620")); // RGRFAG1145 // GQVRVV85590
+      this.templateData || (await service.mkn.getTemplate("NWWETU86160")); // RGRFAG1145 // GQVRVV85590
 
     this.templateData = JSON.parse(JSON.stringify(res));
     this.initSceneData(res);
@@ -519,8 +519,13 @@ class Editor extends Component {
     if (tempWidth > 650 || tempHeight > 650) {
       if (k <= 1) {
         // width<height
-        tempWidth = 360 * (rpHeight / 568) * factor * k;
         tempHeight = 360 * (rpHeight / 568) * factor;
+        tempWidth = 360 * (rpHeight / 568) * factor * k;
+        while (tempWidth > 650) {
+          //adjust tempWidth<650
+          tempWidth = tempWidth * 0.8;
+          tempHeight = tempHeight * 0.8;
+        }
       } else {
         //height <width
         tempWidth = 650;

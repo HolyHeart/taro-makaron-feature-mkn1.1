@@ -286,7 +286,7 @@ class Editor extends Component {
   _initPage = async () => {
     await Session.set();
     const res =
-      this.templateData || (await service.mkn.getTemplate("HNYZOY47250")); // RGRFAG1145 // GQVRVV85590
+      this.templateData || (await service.mkn.getTemplate("INWYBI55620")); // RGRFAG1145 // GQVRVV85590
 
     this.templateData = JSON.parse(JSON.stringify(res));
     this.initSceneData(res);
@@ -2004,11 +2004,7 @@ class Editor extends Component {
                           src={item.remoteUrl}
                           onClick={this.activatePicture.bind(this, index)}
                           className="singlePicture"
-                          mode={
-                            item.data.category === 10003
-                              ? "aspectFit"
-                              : "aspectFill"
-                          }
+                          mode={"aspectFit"}
                         />
                         <Button
                           className={item.isActive ? "acitivated" : ""}
@@ -2028,7 +2024,7 @@ class Editor extends Component {
                         <Image
                           src={item.remoteUrl}
                           className="singlePicture"
-                          mode="aspectFill"
+                          mode="aspectFit"
                         />
                         <Image
                           src={iconLock}

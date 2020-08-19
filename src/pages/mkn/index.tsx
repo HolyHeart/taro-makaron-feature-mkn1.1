@@ -238,8 +238,8 @@ class Editor extends Component {
     });
   }
   async onShareAppMessage(res) {
-    // if (res.from === 'button') {
-    //   console.log('页面按钮分享', res.target)
+    // if (res.from === "button") {
+    //   console.log("页面按钮分享", res.target);
     // }
     await this.handleOpenResult();
     await this.delay(1000);
@@ -287,7 +287,7 @@ class Editor extends Component {
     await Session.set();
     const res =
       this.templateData || (await service.mkn.getTemplate("INWYBI55620")); // RGRFAG1145 // GQVRVV85590
-
+    console.log(res, "初始化的templateData");
     this.templateData = JSON.parse(JSON.stringify(res));
     this.initSceneData(res);
   };
@@ -488,7 +488,7 @@ class Editor extends Component {
 
   // 背景
   handleBackgroundClick = () => {
-    this.setForegroundActiveStatus(false);
+    // this.setForegroundActiveStatus(false);
     this.setCoverListActiveStatus({ type: "all" }, false);
   };
   // 自定义背景
@@ -514,20 +514,14 @@ class Editor extends Component {
     let systemInfo = Taro.getSystemInfoSync();
     let factor = 750 / systemInfo.screenWidth;
     let rpHeight = systemInfo.screenHeight;
-    if (tempWidth > 650 || tempHeight > 650) {
-      if (k <= 1) {
-        // width<height
-        tempHeight = 360 * (rpHeight / 568) * factor;
-        tempWidth = 360 * (rpHeight / 568) * factor * k;
-        if (tempWidth > 650) {
-          let k2 = 650 / tempWidth;
-          tempWidth = 650;
-          tempHeight = tempHeight * k2;
-        }
-      } else {
-        //height <width
+    if (tempHeight >= 650) {
+      // width<height
+      tempHeight = 360 * (rpHeight / 568) * factor;
+      tempWidth = 360 * (rpHeight / 568) * factor * k;
+      if (tempWidth > 650) {
+        let k2 = 650 / tempWidth;
         tempWidth = 650;
-        tempHeight = 650 / k;
+        tempHeight = tempHeight * k2;
       }
     }
     return [tempWidth, tempHeight];
@@ -624,7 +618,7 @@ class Editor extends Component {
     });
   };
   handleCoverTouchstart = (sticker) => {
-    if (this.state.showType === 0) return false;
+    // if (this.state.showType === 0) return false;
     this.setCoverListActiveStatus({ type: "some", ids: [sticker.id] }, true);
     this.setForegroundActiveStatus(false);
   };
@@ -1136,7 +1130,7 @@ class Editor extends Component {
       width: 0,
       height: 0,
     };
-    if (originWidth > originHeight) {
+    if (imageRatio > 1) {
       // 以最短边计算
       result.autoWidth = frame.width * autoScale;
       result.autoHeight = result.autoWidth / imageRatio;
@@ -1480,7 +1474,6 @@ class Editor extends Component {
       this.staticPicUrl = result.thumbnailUrl;
       return this.canNotProc();
     }
-    console.log(result, "initial result");
 
     let foregroundList = result.config.layerConfig.filter((item) => {
       return item.category === 16;
@@ -1875,6 +1868,7 @@ class Editor extends Component {
       loading,
       showType,
       frame,
+      drawBoard,
       customBg,
       foreground,
       coverList,
@@ -1882,11 +1876,17 @@ class Editor extends Component {
       currentScene,
       result,
       canvas,
+      showStatePic,
+      textareaText,
       showTextarea,
     } = this.state;
 
     return (
-      <View className="container">
+      <ScrollView
+        scrollY
+        className="scrollPage"
+        style={{ height: this.state.screenHeight + "px" }}
+      >
         <Title
           color="#333"
           leftStyleObj={{ left: Taro.pxTransform(8) }}
@@ -1897,9 +1897,8 @@ class Editor extends Component {
         >
           马卡龙
         </Title>
-
         <View className={`page-editor`}>
-          {this.state.showType === 0 && (
+          {showType === 0 && (
             <View className="logoAndWord">
               <Image
                 src={image_makro}
@@ -1911,14 +1910,14 @@ class Editor extends Component {
           )}
           <View
             className={`main ${showTextarea ? "blur" : ""} ${
-              this.state.showStatePic ? "static" : ""
+              showStatePic ? "static" : ""
             }`}
           >
             <View className="pic-section">
               <View
                 style={{
-                  width: this.state.drawBoard.width,
-                  height: this.state.drawBoard.height,
+                  width: drawBoard.width,
+                  height: drawBoard.height,
                 }}
                 className={`crop`}
                 id="crop"
@@ -1935,8 +1934,8 @@ class Editor extends Component {
                       currentScene.isActive ? "activated" : ""
                     }`}
                     style={{
-                      width: this.state.drawBoard.width,
-                      height: this.state.drawBoard.height,
+                      width: drawBoard.width,
+                      height: drawBoard.height,
                     }}
                   ></View>
                   <Image
@@ -1966,7 +1965,7 @@ class Editor extends Component {
               </View>
             </View>
 
-            {this.state.showType && (
+            {showType && (
               <View
                 className={`scrollBox ${
                   coverList.length < 6 ? "listCenter" : ""
@@ -2000,7 +1999,7 @@ class Editor extends Component {
                     <View className="text">背景</View>
                   </View>
 
-                  {this.state.coverList.map((item, index) => {
+                  {coverList.map((item, index) => {
                     return !item.isLock ? (
                       <View className="block">
                         <Image
@@ -2042,11 +2041,9 @@ class Editor extends Component {
               </View>
             )}
 
-            {this.state.showType === 0 ? (
+            {showType === 0 ? (
               <View
-                className={`buttonPart ${
-                  this.state.showType === 0 ? "moreMargin" : ""
-                }`}
+                className={`buttonPart ${showType === 0 ? "moreMargin" : ""}`}
               >
                 <Button
                   style="flex:1;z-index:2;"
@@ -2063,11 +2060,9 @@ class Editor extends Component {
               ""
             )}
 
-            {this.state.showType && (
+            {showType && (
               <View
-                className={`buttonPart ${
-                  this.state.showType === 1 ? "lessWidth" : ""
-                }`}
+                className={`buttonPart ${showType === 1 ? "lessWidth" : ""}`}
               >
                 <Button
                   style="flex:1;margin-left:10px"
@@ -2092,12 +2087,12 @@ class Editor extends Component {
           </View>
 
           <Loading visible={loading} />
-          {this.state.showStatePic && (
+          {showStatePic && (
             <View
               className="static-Picture"
               style={{
-                width: this.state.drawBoard.width,
-                height: this.state.drawBoard.height,
+                width: drawBoard.width,
+                height: drawBoard.height,
               }}
             >
               {/* <View className="logoAndWord">
@@ -2123,10 +2118,10 @@ class Editor extends Component {
             uploadText={(data) => {
               this.uploadText(data);
             }}
-            value={this.state.textareaText}
+            value={textareaText}
           />
         )}
-      </View>
+      </ScrollView>
     );
   }
 }
